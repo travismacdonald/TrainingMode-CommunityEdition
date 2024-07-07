@@ -66,17 +66,17 @@
 	li	r3,0x0
 	stb	r3,0x6C(r26)
 
-  #SET FFA FLAG
-  li  r3,0
-  stb r3,0x8(r26)
+	#SET FFA FLAG
+	li	r3,0
+	stb r3,0x8(r26)
 
-  #Store SSS Stage
-  load	r3,0x80497758
-  lha	r4, 0x001E (r3)
-  sth	r4,0xE(r26)
+	#Store SSS Stage
+	load	r3,0x80497758
+	lha	r4, 0x001E (r3)
+	sth	r4,0xE(r26)
 
 #Get Event Code
-  bl  SkipPageList
+	bl	SkipPageList
 
 ##### Page List #######
 	EventJumpTable
@@ -105,7 +105,7 @@ bl	GrabMashOut
 .long -1
 #######################
 SpacieTech:
-bl  LedgetechCounter
+bl	LedgetechCounter
 bl	ArmadaShine
 bl	SideBSweetspot
 bl	EscapeSheik
@@ -114,25 +114,25 @@ bl	EscapeSheik
 
 SkipPageList:
 #Get Page Jump Table
-  mflr	r4		#Jump Table Start in r4
+	mflr	r4		#Jump Table Start in r4
 #Get Current Page
-  lwz r3,MemcardData(r13)
-  lbz r3,CurrentEventPage(r3)
-  mulli	r5,r3,0x4		#Each Pointer is 0x4 Long
-  add	r4,r4,r5		#Get Event's Pointer Address
-  lwz	r5,0x0(r4)		#Get bl Instruction
-  rlwinm	r5,r5,0,6,29		#Mask Bits 6-29 (the offset)
-  add	r4,r4,r5		#Gets ASCII Address in r4
+	lwz r3,MemcardData(r13)
+	lbz r3,CurrentEventPage(r3)
+	mulli	r5,r3,0x4		#Each Pointer is 0x4 Long
+	add	r4,r4,r5		#Get Event's Pointer Address
+	lwz	r5,0x0(r4)		#Get bl Instruction
+	rlwinm	r5,r5,0,6,29		#Mask Bits 6-29 (the offset)
+	add	r4,r4,r5		#Gets ASCII Address in r4
 #Get Event Code Pointer
-  mulli	r5,r25,0x4		#Each Pointer is 0x4 Long
-  add	r4,r4,r5		#Get Event's Pointer Address
-  lwz	r5,0x0(r4)		#Get bl Instruction
+	mulli	r5,r25,0x4		#Each Pointer is 0x4 Long
+	add	r4,r4,r5		#Get Event's Pointer Address
+	lwz	r5,0x0(r4)		#Get bl Instruction
 	cmpwi r5,-1
 	beq	EventNoExist
-  rlwinm	r5,r5,0,6,29		#Mask Bits 6-29 (the offset)
-  add	r4,r4,r5		#Gets ASCII Address in r4
-  mtctr	r4
-  bctr
+	rlwinm	r5,r5,0,6,29		#Mask Bits 6-29 (the offset)
+	add	r4,r4,r5		#Gets ASCII Address in r4
+	mtctr	r4
+	bctr
 
 EventNoExist:
 	b	exit
@@ -189,17 +189,17 @@ b	exit
 	backup
 
 	#Schedule Think
-    #r3 = function to run each frame
-    #r4 = priority
-    #r5 = pointer to Window and Option Count
-    #r6 = pointer to ASCII struct
+		#r3 = function to run each frame
+		#r4 = priority
+		#r5 = pointer to Window and Option Count
+		#r6 = pointer to ASCII struct
 	bl	EggsThink
 	mflr	r3
 	li	r4,9		#Priority (After Interrupt)
-  bl	EggsWindowInfo
-  mflr	r5
-  bl	EggsWindowText
-  mflr	r6
+	bl	EggsWindowInfo
+	mflr	r5
+	bl	EggsWindowText
+	mflr	r6
 	bl	CreateEventThinkFunction
 
 	bl	InitializeHighScore
@@ -211,13 +211,13 @@ b	exit
 		## Eggs-ercise THINK FUNCT ##
 		#########################
 
-    #Registers
-    .set EventData,31
-    .set MenuData,26
-    .set P1Data,27
-    .set P1GObj,28
+		#Registers
+		.set EventData,31
+		.set MenuData,26
+		.set P1Data,27
+		.set P1GObj,28
 
-    #Offsets
+		#Offsets
 		.set	DamageThreshold,(MenuData_OptionMenuMemory+0x2) +0x0
 		.set	DamageThresholdToggled,(MenuData_OptionMenuToggled) +0x0
 
@@ -228,12 +228,12 @@ b	exit
 		#Get and Backup Event Data
 		mr	r30,r3			#r30 = think entity
 		lwz	EventData,0x2c(r3)			#backup data pointer in r31
-    lwz MenuData,EventData_MenuDataPointer(EventData)
+		lwz MenuData,EventData_MenuDataPointer(EventData)
 
 		#Get Player Data
-    bl  GetAllPlayerPointers
-    mr P1GObj,r3
-    mr P1Data,r4
+		bl	GetAllPlayerPointers
+		mr P1GObj,r3
+		mr P1Data,r4
 
 		#No Staling
 		bl	ResetStaleMoves
@@ -260,27 +260,27 @@ b	exit
 		branchl	r12,SFX_PlaySoundAtFullVolume
 		EggsSkipFreePracticeCheck:
 
-    #Check If Toggled
-      lbz r3,DamageThresholdToggled(MenuData)
-		  cmpwi	r3,0x0
-		  beq	EggsSkipToggleCheck
+		#Check If Toggled
+			lbz r3,DamageThresholdToggled(MenuData)
+			cmpwi	r3,0x0
+			beq	EggsSkipToggleCheck
 		#Check If Already Free Practice
-		  lbz	r3,0x5(r31)
-		  cmpwi	r3,0x0
-		  bne	EggsSkipToggleCheck
+			lbz	r3,0x5(r31)
+			cmpwi	r3,0x0
+			bne	EggsSkipToggleCheck
 		#Make Free Practice
-		  li	r3,0x1
-		  stb	r3,0x5(r31)
+			li	r3,0x1
+			stb	r3,0x5(r31)
 		#Timer Now Counts Up
-		  load	r3,0x8046b6a0
-		  lbz	r0,0x24C8(r3)
-		  li	r4,1
-		  rlwimi	r0,r4,0,31,31
-		  stb	r0,0x24C8(r3)
+			load	r3,0x8046b6a0
+			lbz	r0,0x24C8(r3)
+			li	r4,1
+			rlwimi	r0,r4,0,31,31
+			stb	r0,0x24C8(r3)
 		#Play Sound To Indicate
-		  li	r3,0x82
-		  branchl	r12,SFX_PlaySoundAtFullVolume
-    EggsSkipToggleCheck:
+			li	r3,0x82
+			branchl	r12,SFX_PlaySoundAtFullVolume
+		EggsSkipToggleCheck:
 
 		#Check For First Frame
 		lbz	r3,0x4(r31)
@@ -303,15 +303,15 @@ b	exit
 
 		#Check If Target is Spawned
 		EggsTargetCheck:
-    #Check If Pointer is Stored
-		  lwz	r3,0x0(r31)
-		  cmpwi	r3,0x0
-		  beq	EggsThinkSpawn
-    #Check if Item GObj is live
-      lwz r3,0x2C(r3)
-      cmpwi r3,0x0
-      beq EggsThinkSpawn
-      b   EggsThinkSkipSpawn
+		#Check If Pointer is Stored
+			lwz	r3,0x0(r31)
+			cmpwi	r3,0x0
+			beq	EggsThinkSpawn
+		#Check if Item GObj is live
+			lwz r3,0x2C(r3)
+			cmpwi r3,0x0
+			beq EggsThinkSpawn
+			b	 EggsThinkSkipSpawn
 
 ################
 # Spawn Target #
@@ -322,88 +322,88 @@ b	exit
 .set TopCameraBound,22
 .set BottomCameraBound,23
 
-    EggsThinkSpawn:
-    .if debug==1
-      li r24,0      #Init loop count
-    .endif
+		EggsThinkSpawn:
+		.if debug==1
+			li r24,0			#Init loop count
+		.endif
 
-    EggsThinkSpawnLoop:
+		EggsThinkSpawnLoop:
 
-    .if debug==1
-      addi r24,r24,1  #Inc Loop Count
-    .endif
+		.if debug==1
+			addi r24,r24,1	#Inc Loop Count
+		.endif
 
-    #Get OnScreen Boundaries
-    #Left Camera
-      branchl r12,StageInfo_CameraLimitLeft_Load
-      fctiwz f1,f1
-      stfd f1,0x80(sp)
-      lwz LeftCameraBound,0x84(sp)
-    #Right Camera
-      branchl r12,StageInfo_CameraLimitRight_Load
-      fctiwz f1,f1
-      stfd f1,0x80(sp)
-      lwz RightCameraBound,0x84(sp)
-    #Top Camera
-      branchl r12,StageInfo_CameraLimitTop_Load
-      fctiwz f1,f1
-      stfd f1,0x80(sp)
-      lwz TopCameraBound,0x84(sp)
-    #Bottom Camera
-      branchl r12,StageInfo_CameraLimitBottom_Load
-      fctiwz f1,f1
-      stfd f1,0x80(sp)
-      lwz BottomCameraBound,0x84(sp)
+		#Get OnScreen Boundaries
+		#Left Camera
+			branchl r12,StageInfo_CameraLimitLeft_Load
+			fctiwz f1,f1
+			stfd f1,0x80(sp)
+			lwz LeftCameraBound,0x84(sp)
+		#Right Camera
+			branchl r12,StageInfo_CameraLimitRight_Load
+			fctiwz f1,f1
+			stfd f1,0x80(sp)
+			lwz RightCameraBound,0x84(sp)
+		#Top Camera
+			branchl r12,StageInfo_CameraLimitTop_Load
+			fctiwz f1,f1
+			stfd f1,0x80(sp)
+			lwz TopCameraBound,0x84(sp)
+		#Bottom Camera
+			branchl r12,StageInfo_CameraLimitBottom_Load
+			fctiwz f1,f1
+			stfd f1,0x80(sp)
+			lwz BottomCameraBound,0x84(sp)
 
-    #Get Random Velocity
+		#Get Random Velocity
 			branchl	r12,HSD_Randf
-      fmr f20,f1
-      li  r3,2
-      bl  IntToFloat
-      fadds f20,f20,f1
+			fmr f20,f1
+			li	r3,2
+			bl	IntToFloat
+			fadds f20,f20,f1
 
-    #Get Random X Value Between These
-      mr  r3,LeftCameraBound
-      mr  r4,RightCameraBound
-      bl  RandFloat
-      fmr f21,f1
+		#Get Random X Value Between These
+			mr	r3,LeftCameraBound
+			mr	r4,RightCameraBound
+			bl	RandFloat
+			fmr f21,f1
 
-    #Get Random Y Value Between These
-      mr   r3,BottomCameraBound
-      subi  r4,TopCameraBound,70        #Minus 40 so it doesnt fly up offscreen
-      bl  RandFloat
-      fmr f22,f1
+		#Get Random Y Value Between These
+			mr	 r3,BottomCameraBound
+			subi	r4,TopCameraBound,70				#Minus 40 so it doesnt fly up offscreen
+			bl	RandFloat
+			fmr f22,f1
 
-    .set EggSpawnGroundWidth,8
-    #Check If Egg is Above Ground
-      fmr f1,f21
-      fmr f2,f22
-      bl  FindGroundUnderCoordinate
-      cmpwi r3,0x0
-      beq EggsThinkSpawnLoop
-    #Check Left
-      li  r3,EggSpawnGroundWidth
-      bl  IntToFloat
-      fsubs f1,f21,f1
-      fmr f2,f22
-      bl  FindGroundUnderCoordinate
-      cmpwi r3,0x0
-      beq EggsThinkSpawnLoop
-    #Check Right
-      li  r3,EggSpawnGroundWidth
-      bl  IntToFloat
-      fadds f1,f21,f1
-      fmr f2,f22
-      bl  FindGroundUnderCoordinate
-      cmpwi r3,0x0
-      beq EggsThinkSpawnLoop
+		.set EggSpawnGroundWidth,8
+		#Check If Egg is Above Ground
+			fmr f1,f21
+			fmr f2,f22
+			bl	FindGroundUnderCoordinate
+			cmpwi r3,0x0
+			beq EggsThinkSpawnLoop
+		#Check Left
+			li	r3,EggSpawnGroundWidth
+			bl	IntToFloat
+			fsubs f1,f21,f1
+			fmr f2,f22
+			bl	FindGroundUnderCoordinate
+			cmpwi r3,0x0
+			beq EggsThinkSpawnLoop
+		#Check Right
+			li	r3,EggSpawnGroundWidth
+			bl	IntToFloat
+			fadds f1,f21,f1
+			fmr f2,f22
+			bl	FindGroundUnderCoordinate
+			cmpwi r3,0x0
+			beq EggsThinkSpawnLoop
 
-    .if debug==1
-      #OSReport Loop Count
-        load r3,0x803ead3c
-        mr r4,r24
-        branchl r12,OSReport
-    .endif
+		.if debug==1
+			#OSReport Loop Count
+				load r3,0x803ead3c
+				mr r4,r24
+				branchl r12,OSReport
+		.endif
 
 			SpawnEgg:
 			addi	r3,sp,0x80
@@ -486,112 +486,112 @@ b	exit
 			rlwimi	r3,r4,3,28,28
 			stb	r3, 0x0DCB (r5)
 
-      EggsThinkSkipSpawn:
-      #Not Grabbable Every Frame
-      lwz	r5,0x0(r31)
-      lwz	r5,0x2c(r5)
-      lbz	r3, 0x0DCA (r5)
-      li	r4,0x0
-      rlwimi	r3,r4,2,29,29
-      stb	r3, 0x0DCA (r5)
+			EggsThinkSkipSpawn:
+			#Not Grabbable Every Frame
+			lwz	r5,0x0(r31)
+			lwz	r5,0x2c(r5)
+			lbz	r3, 0x0DCA (r5)
+			li	r4,0x0
+			rlwimi	r3,r4,2,29,29
+			stb	r3, 0x0DCA (r5)
 
-      #Update HUD Score
-      li	r3,0
-      li	r4,5
-      branchl	r12,Playerblock_LoadTimesR3KilledR4
-      branchl	r12,HUD_KOCounter_UpdateKOs
+			#Update HUD Score
+			li	r3,0
+			li	r4,5
+			branchl	r12,Playerblock_LoadTimesR3KilledR4
+			branchl	r12,HUD_KOCounter_UpdateKOs
 
-      #Check If Free Practice
-        lbz	r3,0x5(r31)
-        cmpwi	r3,0x0
-        bne	EggsThinkExit
-      #Check For TimeUp
-        branchl	r12,MatchInfo_LoadSeconds		#Seconds Left
-        cmpwi	r3,0x0
-        bne	EggsThinkExit
-        branchl	r12,MatchInfo_LoadSubSeconds		#Sub-Seconds Left
-        cmpwi	r3,59
-        bne	EggsThinkExit
-      #On Event End
-        mr	r3,r30
-        branchl	r12,EventMatch_OnWinCondition			#EventMatch_OnWinCondition
+			#Check If Free Practice
+				lbz	r3,0x5(r31)
+				cmpwi	r3,0x0
+				bne	EggsThinkExit
+			#Check For TimeUp
+				branchl	r12,MatchInfo_LoadSeconds		#Seconds Left
+				cmpwi	r3,0x0
+				bne	EggsThinkExit
+				branchl	r12,MatchInfo_LoadSubSeconds		#Sub-Seconds Left
+				cmpwi	r3,59
+				bne	EggsThinkExit
+			#On Event End
+				mr	r3,r30
+				branchl	r12,EventMatch_OnWinCondition			#EventMatch_OnWinCondition
 
 EggsThinkExit:
-  mr  r3,MenuData
-  bl  ClearToggledOptions
-  restore
-  blr
+	mr	r3,MenuData
+	bl	ClearToggledOptions
+	restore
+	blr
 
 
 			Eggs_OnCollision:
 			blrl
 
-      #First check if this is an event
-        load r4,SceneController
-        lbz r4,Scene.CurrentMajor(r4)
-        cmpwi r4,Scene.EventMode
-        bne Eggs_OnCollisionOriginalFunction
-      #Now check if its eggs-ercise
-        lwz	r4, -0x77C0 (r13)
-        lbz	r4, 0x0535 (r4)         #get event ID
-        cmpwi r4,Event_Eggs
-        beq Eggs_OnCollisionStart
+			#First check if this is an event
+				load r4,SceneController
+				lbz r4,Scene.CurrentMajor(r4)
+				cmpwi r4,Scene.EventMode
+				bne Eggs_OnCollisionOriginalFunction
+			#Now check if its eggs-ercise
+				lwz	r4, -0x77C0 (r13)
+				lbz	r4, 0x0535 (r4)				 #get event ID
+				cmpwi r4,Event_Eggs
+				beq Eggs_OnCollisionStart
 
-      Eggs_OnCollisionOriginalFunction:
-      #Go to the original egg break function
-        branch r12,ItemCollision_Egg
+			Eggs_OnCollisionOriginalFunction:
+			#Go to the original egg break function
+				branch r12,ItemCollision_Egg
 
-      Eggs_OnCollisionStart:
-  			backup
-  			mr	r30,r3
-  			lwz	r31,0x2C(r3)			#Get Data
+			Eggs_OnCollisionStart:
+				backup
+				mr	r30,r3
+				lwz	r31,0x2C(r3)			#Get Data
 
 			#Check If Any Attack Should Break
-  			lwz	r3,0xDDC(r31)			         #Get Event Data
-        lwz r3,EventData_MenuDataPointer(r3)     #Get Menu Data
-  			lbz	r3,DamageThreshold(r3)			#Damage Behavior
-  			cmpwi	r3,0x1
-  			beq	Eggs_OnCollisionBreakEgg
+				lwz	r3,0xDDC(r31)							 #Get Event Data
+				lwz r3,EventData_MenuDataPointer(r3)		 #Get Menu Data
+				lbz	r3,DamageThreshold(r3)			#Damage Behavior
+				cmpwi	r3,0x1
+				beq	Eggs_OnCollisionBreakEgg
 			#Check Damage Dealt Before Exploding
-  			lwz	r3,0xCA0(r31)
-  			cmpwi	r3,11
-  			blt	Egg_OnCollisionExit
+				lwz	r3,0xCA0(r31)
+				cmpwi	r3,11
+				blt	Egg_OnCollisionExit
 
 			Eggs_OnCollisionBreakEgg:
 			#Increment Score
-  			li	r3,0
-  			li	r4,0
-  			li	r5,5
-  			branchl	r12,Playerblock_StoreTimesR3KilledR4
+				li	r3,0
+				li	r4,0
+				li	r5,5
+				branchl	r12,Playerblock_StoreTimesR3KilledR4
 
 			#Display Effect
-  			li	r3,1232
-  			mr	r4,r30
-  			addi	r5, r31, 76
-  			crclr	6
-  			branchl	r12,Textures_DisplayEffectTextures
+				li	r3,1232
+				mr	r4,r30
+				addi	r5, r31, 76
+				crclr	6
+				branchl	r12,Textures_DisplayEffectTextures
 
 			#Play Pop Sound
-  			mr	r3,r31
-  			li	r4,244
-  			li	r5,127
-  			li	r6,64
-  			branchl	r12,0x8026ae84
+				mr	r3,r31
+				li	r4,244
+				li	r5,127
+				li	r6,64
+				branchl	r12,0x8026ae84
 
 			#Explode
-  			mr	r3,r30
-  			branchl	r12,0x80289158
+				mr	r3,r30
+				branchl	r12,0x80289158
 
 			#Spawn New Egg
-  			lwz	r3,0xDDC(r31)			#Get Event Think
-  			li	r4,0x0			#Get 0
-  			stw	r4,0x0(r3)			#Zero Pointer
+				lwz	r3,0xDDC(r31)			#Get Event Think
+				li	r4,0x0			#Get 0
+				stw	r4,0x0(r3)			#Zero Pointer
 
 			Egg_OnCollisionExit:
-  			li	r3,0x0
+				li	r3,0x0
 			Egg_OnCollisionExitSkip:
-  			restore
-  			blr
+				restore
+				blr
 
 EggsLoadExit:
 restore
@@ -603,7 +603,7 @@ EggsWindowInfo:
 blrl
 #amount of options, amount of options in each window
 
-.long 0x0001FFFF  #1 window, Smash Attack has 2 options
+.long 0x0001FFFF	#1 window, Smash Attack has 2 options
 
 ####################################################
 
@@ -700,7 +700,7 @@ b	exit
 	bl	MultishineThink
 	mflr	r3
 	li	r4,17		#Priority (After Everything)
-  li  r5,0    #No Option Menu
+	li	r5,0		#No Option Menu
 	li	r6,0
 	bl	CreateEventThinkFunction
 
@@ -715,26 +715,26 @@ b	exit
 		MultishineThink:
 		blrl
 
-    .set EventData,31
-    .set Event,30
-    .set P1Data,27
-    .set P1GObj,28
+		.set EventData,31
+		.set Event,30
+		.set P1Data,27
+		.set P1GObj,28
 
 		backup
 
 		mr	Event,r3
 		lwz	EventData,0x2c(Event)
 
-    bl GetAllPlayerPointers
-    mr P1GObj,r3
-    mr P1Data,r4
+		bl GetAllPlayerPointers
+		mr P1GObj,r3
+		mr P1Data,r4
 
 	#First Frame Actions
 		bl	CheckIfFirstFrame
 		cmpwi	r3,0x0
 		beq	MultishineNotFirstFrame
-  #Init Positions
-    bl  PlacePlayersCenterStage
+	#Init Positions
+		bl	PlacePlayersCenterStage
 	MultishineNotFirstFrame:
 
 	#Check for grounded or aerial shine, frame 1
@@ -750,29 +750,29 @@ b	exit
 		cmpwi r3,0
 		bne Multishine_SkipShineCheck
 	#Increment Score
-  	li	r3,0
-  	li	r4,0
-  	li	r5,5
-  	branchl	r12,Playerblock_StoreTimesR3KilledR4
+		li	r3,0
+		li	r4,0
+		li	r5,5
+		branchl	r12,Playerblock_StoreTimesR3KilledR4
 	Multishine_SkipShineCheck:
 
 	#Check For TimeUp
-  	branchl	r12,MatchInfo_LoadSeconds		#Seconds Left
-    cmpwi	r3,0x0
-    bne	MultishineThinkExit
-    branchl	r12,MatchInfo_LoadSubSeconds		#Sub-Seconds Left
-    cmpwi	r3,59
-    bne	MultishineThinkExit
-  #On Event End
-    mr	r3,Event
-    branchl	r12,EventMatch_OnWinCondition			#EventMatch_OnWinCondition
+		branchl	r12,MatchInfo_LoadSeconds		#Seconds Left
+		cmpwi	r3,0x0
+		bne	MultishineThinkExit
+		branchl	r12,MatchInfo_LoadSubSeconds		#Sub-Seconds Left
+		cmpwi	r3,59
+		bne	MultishineThinkExit
+	#On Event End
+		mr	r3,Event
+		branchl	r12,EventMatch_OnWinCondition			#EventMatch_OnWinCondition
 
 	MultishineThinkExit:
-  #Update HUD Score
-  	li	r3,0
-  	li	r4,5
-    branchl	r12,Playerblock_LoadTimesR3KilledR4
-    branchl	r12,HUD_KOCounter_UpdateKOs
+	#Update HUD Score
+		li	r3,0
+		li	r4,5
+		branchl	r12,Playerblock_LoadTimesR3KilledR4
+		branchl	r12,HUD_KOCounter_UpdateKOs
 
 	MultishineLoadExit:
 	restore
@@ -827,7 +827,7 @@ b	exit
 	bl	ReactionThink
 	mflr	r3
 	li	r4,3		#Priority (Interrupt)
-  li  r5,0    #No Option Menu
+	li	r5,0		#No Option Menu
 	li	r6,0
 	bl	CreateEventThinkFunction
 
@@ -840,12 +840,12 @@ b	exit
 		ReactionThink:
 		blrl
 
-    .set EventData,31
-    .set Event,30
-    .set P1Data,27
-    .set P1GObj,28
-    .set P2Data,29
-    .set P2GObj,30
+		.set EventData,31
+		.set Event,30
+		.set P1Data,27
+		.set P1GObj,28
+		.set P2Data,29
+		.set P2GObj,30
 
 		#Constants
 		.set ShineTimerMax,7*60
@@ -863,18 +863,18 @@ b	exit
 		mr	Event,r3
 		lwz	EventData,0x2c(Event)
 
-    bl	GetAllPlayerPointers
-    mr	P1GObj,r3
-    mr	P1Data,r4
-    mr	P2GObj,r5
-    mr	P2Data,r6
+		bl	GetAllPlayerPointers
+		mr	P1GObj,r3
+		mr	P1Data,r4
+		mr	P2GObj,r5
+		mr	P2Data,r6
 
 	#First Frame Actions
 		bl	CheckIfFirstFrame
 		cmpwi	r3,0x0
 		beq	ReactionNotFirstFrame
-  #Init Positions
-    bl  PlacePlayersCenterStage
+	#Init Positions
+		bl	PlacePlayersCenterStage
 	#Savestate
 		addi r3,EventData,EventData_SaveStateStruct
 		li	r4,1
@@ -1090,7 +1090,7 @@ LedgeStallLoad:
 	bl	LedgeStallThink
 	mflr	r3
 	li	r4,3		#Priority (After EnvCOllision)
-  li  r5,0
+	li	r5,0
 	bl	CreateEventThinkFunction
 
 #Destroy Lava map_gobj proc
@@ -1136,7 +1136,7 @@ LedgeStallLoad:
 #Get Stage's Ledge IDs
 	lwz		r3,-0x6CB8 (r13)			#External Stage ID
 	bl		LedgedashCliffIDs
-	mflr  r4
+	mflr	r4
 	mulli	r3,r3,0x2
 	lhzx	r3,r3,r4
 #Get Ledge Coordinates
@@ -1150,12 +1150,12 @@ LedgeStallLoad:
 	bl	IntToFloat
 	lfs f2,0xD0(sp)		#Ledge X
 	fadds f1,f1,f2
-	stfs f1,0x10(r20)  #Camera X Position
+	stfs f1,0x10(r20)	#Camera X Position
 	li	r3,CameraBoxYOffset
 	bl	IntToFloat
 	lfs f2,0xD4(sp)		#Ledge Y
 	fadds f1,f1,f2
-	stfs f1,0x14(r20)  #Camera Y Position
+	stfs f1,0x14(r20)	#Camera Y Position
 #Make Boundaries around ledge position
 #Left Bound
 	li	r3,-10
@@ -1200,11 +1200,11 @@ LedgeStallThink:
 
 #Registers
 	.set REG_EventConstants,25
-  .set REG_MenuData,26
-  .set REG_EventData,31
+	.set REG_MenuData,26
+	.set REG_EventData,31
 	.set REG_EventGObj,24
-  .set REG_P1Data,27
-  .set REG_P1GObj,28
+	.set REG_P1Data,27
+	.set REG_P1GObj,28
 	.set REG_P2Data,29
 	.set REG_P2GObj,30
 
@@ -1231,14 +1231,14 @@ backup
 	lwz	REG_EventData,0x2c(REG_EventGObj)			#backup data pointer in r31
 
 #Get Player Pointers
-  bl GetAllPlayerPointers
-  mr REG_P1GObj,r3
-  mr REG_P1Data,r4
-  mr REG_P2GObj,r5
-  mr REG_P2Data,r6
+	bl GetAllPlayerPointers
+	mr REG_P1GObj,r3
+	mr REG_P1Data,r4
+	mr REG_P2GObj,r5
+	mr REG_P2Data,r6
 
 #Get Menu and Constants Pointers
-  lwz REG_MenuData,REG_EventData_REG_MenuDataPointer(REG_EventData)
+	lwz REG_MenuData,REG_EventData_REG_MenuDataPointer(REG_EventData)
 	bl	LedgeStallThink_Constants
 	mflr REG_EventConstants
 
@@ -1250,12 +1250,12 @@ backup
 		mr	r3,REG_P1GObj
 		mr	r4,REG_EventData
 		bl	LedgeStall_InitializePositions
-  #Clear Inputs
-    bl  RemoveFirstFrameInputs
+	#Clear Inputs
+		bl	RemoveFirstFrameInputs
 	#Save State
-  	addi r3,REG_EventData,EventData_SaveStateStruct
+		addi r3,REG_EventData,EventData_SaveStateStruct
 		li	r4,1			#Override failsafe code
-  	bl	SaveState_Save
+		bl	SaveState_Save
 LedgeStallThink_Start:
 
 #Check if player was damaged or died
@@ -1498,8 +1498,8 @@ backup
 .set REG_map_gobj_JObj,26
 
 #Init Registers
-  mr	REG_P1GObj,r3
-  lwz REG_P1Data,0x2C(REG_P1GObj)
+	mr	REG_P1GObj,r3
+	lwz REG_P1Data,0x2C(REG_P1GObj)
 	mr	REG_EventData,r4
 
 #Place on left ledge
@@ -1616,7 +1616,7 @@ b	exit
 	bl	LCancelThink
 	mflr	r3
 	li	r4,3		#Priority (After Interrupt)
-  li  r5,0    #No Option Menu
+	li	r5,0		#No Option Menu
 	bl	CreateEventThinkFunction
 
 	b	LCancelLoadExit
@@ -1630,42 +1630,42 @@ b	exit
 		LCancelThink:
 		blrl
 
-    .set EventData,31
-    .set P1Data,27
-    .set P1GObj,28
-    .set P2Data,29
-    .set P2GObj,30
+		.set EventData,31
+		.set P1Data,27
+		.set P1GObj,28
+		.set P2Data,29
+		.set P2GObj,30
 
 		backup
 
 		lwz	EventData,0x2c(r3)
 
-    bl GetAllPlayerPointers
-    mr P1GObj,r3
-    mr P1Data,r4
-    mr P2GObj,r5
-    mr P2Data,r6
+		bl GetAllPlayerPointers
+		mr P1GObj,r3
+		mr P1Data,r4
+		mr P2GObj,r5
+		mr P2Data,r6
 
 		bl	CheckIfFirstFrame
 		cmpwi	r3,0x0
 		beq	LCancelNotFirstFrame
 
-    #Init Positions
-      bl  PlacePlayersCenterStage
+		#Init Positions
+			bl	PlacePlayersCenterStage
 		#Check if P2-P4 Is Using the Event
 			li	r4,0x1		#Make CPU Controlled by P2
 			lbz	r3, -0x5108 (r13)
 			cmpwi	r3,0x0
 			beq	LCancelIsP1
 			li	r4,0x0
-    LCancelIsP1:
+		LCancelIsP1:
 			stb	r4,0x618(r29)
-    #Clear Inputs
-      bl  RemoveFirstFrameInputs
-    #Save State
-      addi r3,EventData,EventData_SaveStateStruct
+		#Clear Inputs
+			bl	RemoveFirstFrameInputs
+		#Save State
+			addi r3,EventData,EventData_SaveStateStruct
 			li	r4,1									#Override failsafe code
-      bl  SaveState_Save
+			bl	SaveState_Save
 		LCancelNotFirstFrame:
 
 		#Check For P2 Dpad Down Press
@@ -1739,9 +1739,9 @@ b	exit
 		addi r3,EventData,EventData_SaveStateStruct
 		bl	CheckForSaveAndLoad
 
-    mr  r3,P1GObj
-    mr  r4,P2GObj
-    addi r5,EventData,EventData_SaveStateStruct
+		mr	r3,P1GObj
+		mr	r4,P2GObj
+		addi r5,EventData,EventData_SaveStateStruct
 		bl	MoveCPU
 		bl	GiveFullShields
 		addi r3,EventData,EventData_SaveStateStruct+(1*0x8)
@@ -1812,10 +1812,10 @@ b	exit
 	bl	LedgedashThink
 	mflr	r3
 	li	r4,9		#Priority (After Interrupt)
-  bl  LedgedashWindowInfo
-  mflr r5
-  bl LedgedashWindowText
-  mflr r6
+	bl	LedgedashWindowInfo
+	mflr r5
+	bl LedgedashWindowText
+	mflr r6
 	bl	CreateEventThinkFunction
 
 	bl	InitializeHighScore
@@ -1837,22 +1837,22 @@ LedgedashLoad_SkipRemoveRandall:
 		## Ledgedash THINK FUNCT ##
 		#########################
 
-    #Registers
-    .set REG_EventData,31
-    .set MenuData,27
-    .set P1GObj,30
-    .set P1Data,29
+		#Registers
+		.set REG_EventData,31
+		.set MenuData,27
+		.set P1GObj,30
+		.set P1Data,29
 
-    #Offsets
+		#Offsets
 		.set firstFrameFlag,0x0
 		.set eventState,0x1
 		.set hitboxFoundFlag,0x2
-    .set currentLedge,0x3
+		.set currentLedge,0x3
 		.set timer,0x4
 		.set CameraBox,0x8
 		.set StartingLocation,(MenuData_OptionMenuMemory+0x2+0x0)
 		.set AutoRestore,(MenuData_OptionMenuMemory+0x2+0x1)
-    .set StartingLocationToggled,(MenuData_OptionMenuToggled+0x0)
+		.set StartingLocationToggled,(MenuData_OptionMenuToggled+0x0)
 		.set AutoRestoreToggled,(MenuData_OptionMenuToggled+0x1)
 
 		LedgedashThink:
@@ -1861,9 +1861,9 @@ LedgedashLoad_SkipRemoveRandall:
 
 		#INIT FUNCTION VARIABLES
 		lwz		REG_EventData,0x2c(r3)			#backup data pointer in r31
-		lwz   MenuData,EventData_MenuDataPointer(REG_EventData)
+		lwz	 MenuData,EventData_MenuDataPointer(REG_EventData)
 
-    bl    GetAllPlayerPointers
+		bl		GetAllPlayerPointers
 		mr		P1GObj,r3			#player block in r30
 		mr		P1Data,r4			#player data in r29
 
@@ -1887,8 +1887,8 @@ LedgedashLoad_SkipRemoveRandall:
 			#Set Tangible Frames High So It Doesn't Constantly Show
 				li	r3,100
 				stw	r3,0x2408(r29)
-      #Clear Inputs
-        bl  RemoveFirstFrameInputs
+			#Clear Inputs
+				bl	RemoveFirstFrameInputs
 			#Save State
 				addi r3,REG_EventData,EventData_SaveStateStruct
 				li	r4,1			#Override failsafe code
@@ -1907,7 +1907,7 @@ LedgedashLoad_SkipRemoveRandall:
 
 		#Check If Toggled Starting Location
 			lbz r3,StartingLocationToggled(MenuData)
-      cmpwi r3,0x0
+			cmpwi r3,0x0
 			beq	Ledgedash_SkipToggledLoadState
 			b		Ledgedash_LoadState
 		Ledgedash_SkipToggledLoadState:
@@ -1925,20 +1925,20 @@ LedgedashLoad_SkipRemoveRandall:
 			stw	r3,0x2340(P1Data)
 		LedgedashSkipRebirthTimer:
 
-    #Infinite Time While Holding Ledge
-      lwz	r3,0x10(P1Data)
-      cmpwi	r3,0xFD
-      bne	LedgedashSkipCliffTimer
-      li  r3,2
-      bl  IntToFloat
-      stfs f1,0x2344(P1Data)
-    LedgedashSkipCliffTimer:
+		#Infinite Time While Holding Ledge
+			lwz	r3,0x10(P1Data)
+			cmpwi	r3,0xFD
+			bne	LedgedashSkipCliffTimer
+			li	r3,2
+			bl	IntToFloat
+			stfs f1,0x2344(P1Data)
+		LedgedashSkipCliffTimer:
 
 		#Make sure nothing else besides Z is held
 			lhz	r3,0x662(P1Data)
-			rlwinm.  r0,r3,0,27,27
-      bne 0xC
-      cmpwi r3,0x0
+			rlwinm.	r0,r3,0,27,27
+			bne 0xC
+			cmpwi r3,0x0
 			bne GetProgressAndAS
 		#CHECK FOR DPAD TO CHANGE LEDGE
 			lwz	r3,0x668(P1Data)			#Get DPad
@@ -2005,7 +2005,7 @@ LedgedashLoad_SkipRemoveRandall:
 
 		#Check For BlackListed AS
 		## Terminator = FFFF
-		## Jump to    = 7FXX
+		## Jump to		= 7FXX
 		LedgedashASCheckLoop:
 			lhzu	r4,0x2(r3)		#Get Next Value
 			extsb	r0,r4
@@ -2024,8 +2024,8 @@ LedgedashLoad_SkipRemoveRandall:
 
 
 		LedgedashThinkEnd:
-	    mr  r3,MenuData
-	    bl  ClearToggledOptions
+			mr	r3,MenuData
+			bl	ClearToggledOptions
 			restore
 			blr
 
@@ -2115,7 +2115,7 @@ LedgedashLoad_SkipRemoveRandall:
 		#Place on Ledge
 			mr r3,REG_EventData
 			lbz	r4,currentLedge(REG_EventData)
-      bl Ledgedash_PlaceOnLedge
+			bl Ledgedash_PlaceOnLedge
 			b	Ledgedash_LoadState
 
 
@@ -2146,17 +2146,17 @@ LedgedashLoad_SkipRemoveRandall:
 			stb	r3,timer(r31)
 			cmpwi	r3,0x0
 			bgt	LedgedashThinkEnd
-    #Load State (to cleanup volatile entities)
-      addi r3,REG_EventData,EventData_SaveStateStruct
-      bl		SaveState_Load
+		#Load State (to cleanup volatile entities)
+			addi r3,REG_EventData,EventData_SaveStateStruct
+			bl		SaveState_Load
 		#Place on Ledge
 			mr r3,REG_EventData
 			lbz	r4,currentLedge(REG_EventData)
-      bl	Ledgedash_PlaceOnLedge
-    #Save State
-      addi r3,REG_EventData,EventData_SaveStateStruct
+			bl	Ledgedash_PlaceOnLedge
+		#Save State
+			addi r3,REG_EventData,EventData_SaveStateStruct
 			li	r4,1							#Override failsafe code
-      bl		SaveState_Save
+			bl		SaveState_Save
 
 		Ledgedash_LoadState:
 		#Reset all event variables
@@ -2181,7 +2181,7 @@ LedgedashLoad_SkipRemoveRandall:
 		#Get Stage's Ledges
 			lwz		r3,-0x6CB8 (r13)			#External Stage ID
 			bl		LedgedashCliffIDs
-			mflr  r4
+			mflr	r4
 			mulli	r3,r3,0x2
 			lhzx	r3,r3,r4
 		#Get Correct Ledge From Facing Direction
@@ -2236,16 +2236,16 @@ LedgedashLoad_SkipRemoveRandall:
 			bl	Custom_InterruptRebirthWait
 			mflr	r3
 			stw		r3,0x219C(r29)
-    #Update RebirthPlat Position
-      mr  r3,P1GObj
-      branchl r12,RebirthPlatform_UpdatePosition
+		#Update RebirthPlat Position
+			mr	r3,P1GObj
+			branchl r12,RebirthPlatform_UpdatePosition
 
 		Ledgedash_LoadState_SkipRespawnPlatform:
-      mr  r3,r30
-      bl  UpdatePosition
-    #Update Camera Box
-      mr  r3,P1GObj
-      bl  UpdateCameraBox
+			mr	r3,r30
+			bl	UpdatePosition
+		#Update Camera Box
+			mr	r3,P1GObj
+			bl	UpdateCameraBox
 
 		b		LedgedashThinkEnd
 
@@ -2254,7 +2254,7 @@ LedgedashLoad_SkipRemoveRandall:
 		## PlaceAboveLedge ##
 		#####################
 		Ledgedash_PlaceOnLedge:
-    backup
+		backup
 
 		.set	REG_EventData,31
 		.set	REG_P1GObj,30
@@ -2284,7 +2284,7 @@ LedgedashLoad_SkipRemoveRandall:
 		#Get Stage's Ledge IDs
 			lwz		r3,-0x6CB8 (r13)			#External Stage ID
 			bl		LedgedashCliffIDs
-			mflr  r4
+			mflr	r4
 			mulli	r3,r3,0x2
 			lhzx	r3,r3,r4
 		#Get Requested Ledge
@@ -2321,12 +2321,12 @@ LedgedashLoad_SkipRemoveRandall:
 			lfs f2,0xD0(sp)		#Ledge X
 			lfs f3,0x2C(REG_P1Data)
 			fmadds f1,f1,f3,f2
-			stfs f1,0x10(REG_CameraBox)  #Camera X Position
+			stfs f1,0x10(REG_CameraBox)	#Camera X Position
 			li	r3,CameraBoxYOffset
 			bl	IntToFloat
 			lfs f2,0xD4(sp)		#Ledge Y
 			fadds f1,f1,f2
-			stfs f1,0x14(REG_CameraBox)  #Camera Y Position
+			stfs f1,0x14(REG_CameraBox)	#Camera Y Position
 		#Make Boundaries around ledge position
 		#Left Bound
 			li	r3,-10
@@ -2345,9 +2345,9 @@ LedgedashLoad_SkipRemoveRandall:
 			bl	IntToFloat
 			stfs	f1,0x4C(REG_CameraBox)
 
-    #Update Camera Box
-      mr  r3,REG_P1GObj
-      bl  UpdateCameraBox
+		#Update Camera Box
+			mr	r3,REG_P1GObj
+			bl	UpdateCameraBox
 
 		restore
 		blr
@@ -2481,7 +2481,7 @@ LedgedashProg4:
 
 LedgedashWindowInfo:
 blrl
-.long 0x010101FF  #1 window, Respawn Platform has 2 options, AutoRestore has 2 options
+.long 0x010101FF	#1 window, Respawn Platform has 2 options, AutoRestore has 2 options
 
 LedgedashWindowText:
 blrl
@@ -2537,8 +2537,8 @@ SDITraining:
 #Make default color
 	lwz	r3,0x0(r29)
 	lwz	r3,0x18(r3)		#p2 pointer
-	li  r4,0x0
-	stb r4,0x3(r3)    #Default color
+	li	r4,0x0
+	stb r4,0x3(r3)		#Default color
 
 #STORE THINK FUNCTION
 SDITrainingStoreThink:
@@ -2563,7 +2563,7 @@ b	exit
 	bl	SDITrainingThink
 	mflr	r3
 	li	r4,3		#Priority (After Interrupt)
-  li  r5,0    #No Option Menu
+	li	r5,0		#No Option Menu
 	bl	CreateEventThinkFunction
 
 	b	SDITrainingLoadExit
@@ -2573,11 +2573,11 @@ b	exit
 		## SDI Training THINK FUNCT ##
 		#########################
 
-    .set EventData,31
-    .set P1Data,27
-    .set P1GObj,28
-    .set P2Data,29
-    .set P2GObj,30
+		.set EventData,31
+		.set P1Data,27
+		.set P1GObj,28
+		.set P2Data,29
+		.set P2GObj,30
 
 		SDITrainingThink:
 		blrl
@@ -2586,11 +2586,11 @@ b	exit
 		#INIT FUNCTION VARIABLES
 		lwz		EventData,0x2c(r3)			#backup data pointer in r31
 
-    bl  GetAllPlayerPointers
-    mr P1GObj,r3
-    mr P1Data,r4
-    mr P2GObj,r5
-    mr P2Data,r6
+		bl	GetAllPlayerPointers
+		mr P1GObj,r3
+		mr P1Data,r4
+		mr P2GObj,r5
+		mr P2Data,r6
 
 		li	r3,0xF
 		stw	r3,0x1A94(r29)
@@ -2601,34 +2601,34 @@ b	exit
 		cmpwi	r3,0x0
 		beq	SDITrainingThinkMain
 
-  			bl	SDITrainingFloats
-  			mflr	r3
-  			bl	Event_EnterGrab
+				bl	SDITrainingFloats
+				mflr	r3
+				bl	Event_EnterGrab
 			#Store 999 To Breakout
-  			lis	r3,0x4461
-  			stw	r3,0x1A4C(r27)
+				lis	r3,0x4461
+				stw	r3,0x1A4C(r27)
 			#Give Percent
-  			bl	SDITrainingStartingPercents
-  			mflr	r4
-  			lwz	r3,0x4(r27)		#Get Char ID
-  			lbzx	r3,r3,r4		#Get Percent
-  			load	r4,0x80453080		#P1 Static Block
-  			sth	r3,0x60(r4)		#Store Percent Int To Display Value
-  			sth	r3,0x62(r4)		#Store Percent Int To Display Value (Subchar)
-  			bl	IntToFloat
-  			stfs	f1,0x1830(r27)		#Store to Actual Damage Value
-      #Clear Inputs
-        bl  RemoveFirstFrameInputs
+				bl	SDITrainingStartingPercents
+				mflr	r4
+				lwz	r3,0x4(r27)		#Get Char ID
+				lbzx	r3,r3,r4		#Get Percent
+				load	r4,0x80453080		#P1 Static Block
+				sth	r3,0x60(r4)		#Store Percent Int To Display Value
+				sth	r3,0x62(r4)		#Store Percent Int To Display Value (Subchar)
+				bl	IntToFloat
+				stfs	f1,0x1830(r27)		#Store to Actual Damage Value
+			#Clear Inputs
+				bl	RemoveFirstFrameInputs
 			#Save State
-  			addi r3,EventData,EventData_SaveStateStruct
+				addi r3,EventData,EventData_SaveStateStruct
 				li	r4,1			#Override failsafe code
-  			bl	SaveState_Save
+				bl	SaveState_Save
 			#Random Start Time
-  			li	r3,60
-  			branchl	r12,HSD_Randi
-  			li	r4,0
-  			sub	r3,r4,r3
-  			stw	r3,0x4(r31)		#Reset Timer
+				li	r3,60
+				branchl	r12,HSD_Randi
+				li	r4,0
+				sub	r3,r4,r3
+				stw	r3,0x4(r31)		#Reset Timer
 
 
 		SDITrainingThinkMain:
@@ -2926,7 +2926,7 @@ stfs	f1,0xB0(r27)
 lfs	f1,0x4(r20)
 stfs	f1,0xB4(r27)
 mr	r3,r28
-bl  UpdatePosition
+bl	UpdatePosition
 mr	r3,r28
 bl	CheckIfPlayerHasAFollower
 cmpwi	r3,0
@@ -2936,7 +2936,7 @@ lfs	f1,0x0(r20)
 stfs	f1,0xB0(r5)
 lfs	f1,0x4(r20)
 stfs	f1,0xB4(r5)
-bl  UpdatePosition
+bl	UpdatePosition
 
 
 Event_EnterGrab_MoveP2:
@@ -2946,7 +2946,7 @@ stfs	f1,0xB0(r29)
 lfs	f1,0xC(r20)
 stfs	f1,0xB4(r29)
 mr	r3,r30
-bl  UpdatePosition
+bl	UpdatePosition
 mr	r3,r30
 bl	CheckIfPlayerHasAFollower
 cmpwi	r3,0
@@ -2956,7 +2956,7 @@ lfs	f1,0x8(r20)
 stfs	f1,0xB0(r5)
 lfs	f1,0xC(r20)
 stfs	f1,0xB4(r5)
-bl  UpdatePosition
+bl	UpdatePosition
 
 Event_EnterGrab_EnterGrabAS:
 #Store P1 into P2 Grab Pointer
@@ -3051,10 +3051,10 @@ b	exit
 	bl	ReversalThink
 	mflr	r3
 	li	r4,3		#Priority (After Interrupt)
-  bl	ReversalWindowInfo
-  mflr	r5
-  bl	ReversalWindowText
-  mflr	r6
+	bl	ReversalWindowInfo
+	mflr	r5
+	bl	ReversalWindowText
+	mflr	r6
 	bl	CreateEventThinkFunction
 
 	b	ReversalLoadExit
@@ -3064,39 +3064,39 @@ b	exit
 		## Reversal THINK FUNCT ##
 		#########################
 
-    .set MenuData,26
-    .set EventData,31
-    .set P1Data,27
-    .set P1GObj,28
-    .set P2Data,29
-    .set P2GObj,30
+		.set MenuData,26
+		.set EventData,31
+		.set P1Data,27
+		.set P1GObj,28
+		.set P2Data,29
+		.set P2GObj,30
 
 		.set firstFrameFlag,0x0
 		.set timer,0x4
 		.set CPUAttack,(MenuData_OptionMenuMemory+0x2)+(0x0)
 		.set P1FacingDirection,(MenuData_OptionMenuMemory+0x2)+(0x1)
 		.set CPUFacingDirection,(MenuData_OptionMenuMemory+0x2)+(0x2)
-    .set CPUAttackToggled,MenuData_OptionMenuToggled+(0x0)
-    .set P1FacingDirectionToggled,MenuData_OptionMenuToggled+(0x1)
-    .set CPUFacingDirectionToggled,MenuData_OptionMenuToggled+(0x2)
+		.set CPUAttackToggled,MenuData_OptionMenuToggled+(0x0)
+		.set P1FacingDirectionToggled,MenuData_OptionMenuToggled+(0x1)
+		.set CPUFacingDirectionToggled,MenuData_OptionMenuToggled+(0x2)
 		.set AerialThinkStruct,0x20
 
 		ReversalThink:
 		blrl
 
-    .set EventData,31
+		.set EventData,31
 
 		backup
 
 		#INIT FUNCTION VARIABLES
 		lwz		EventData,0x2c(r3)			#backup data pointer in r31
-    lwz MenuData,EventData_MenuDataPointer(EventData)
+		lwz MenuData,EventData_MenuDataPointer(EventData)
 
-    bl  GetAllPlayerPointers
-    mr P1GObj,r3
-    mr P1Data,r4
-    mr P2GObj,r5
-    mr P2Data,r6
+		bl	GetAllPlayerPointers
+		mr P1GObj,r3
+		mr P1Data,r4
+		mr P2GObj,r5
+		mr P2Data,r6
 
 		li	r3,0xF
 		stb	r3,0x1A94(r29)
@@ -3107,46 +3107,46 @@ b	exit
 		cmpwi	r3,0x0
 		beq	ReversalThinkMain
 
-  			#bl	Reversal_Floats
-  			#mflr r3
-  			#bl	InitializePositions
-      #Move PLayers Center Stage
-        bl  PlacePlayersCenterStage
-      #Clear Inputs
-        bl  RemoveFirstFrameInputs
-      #SaveState
-        addi  r3,EventData,0x10       #SaveState start
+				#bl	Reversal_Floats
+				#mflr r3
+				#bl	InitializePositions
+			#Move PLayers Center Stage
+				bl	PlacePlayersCenterStage
+			#Clear Inputs
+				bl	RemoveFirstFrameInputs
+			#SaveState
+				addi	r3,EventData,0x10			 #SaveState start
 				li	r4,1			#Override failsafe code
-  			bl	SaveState_Save
+				bl	SaveState_Save
 			#Set Frame 1 As Over
-  			li		r3,0x1
-  			stb		r3,0x0(r31)
+				li		r3,0x1
+				stb		r3,0x0(r31)
 			#Set Timer to -60
-  			li		r3,-60
-  			stw		r3,0x4(r31)
+				li		r3,-60
+				stw		r3,0x4(r31)
 
 
 		ReversalThinkMain:
 
 		bl	GiveFullShields
 
-    #Reset when menu is toggled
-      lbz r3,P1FacingDirectionToggled(MenuData)
-  		cmpwi	r3,0x0
-  		bne	ReversalReset			#Only Run When Hovered Over Facing Direction
-      lbz r3,CPUFacingDirectionToggled(MenuData)
-  		cmpwi	r3,0x0
-  		bne	ReversalReset			#Only Run When Hovered Over Facing Direction
-      lbz r3,CPUAttackToggled(MenuData)
-      cmpwi r3,0x0
-      bne ReversalReset
+		#Reset when menu is toggled
+			lbz r3,P1FacingDirectionToggled(MenuData)
+			cmpwi	r3,0x0
+			bne	ReversalReset			#Only Run When Hovered Over Facing Direction
+			lbz r3,CPUFacingDirectionToggled(MenuData)
+			cmpwi	r3,0x0
+			bne	ReversalReset			#Only Run When Hovered Over Facing Direction
+			lbz r3,CPUAttackToggled(MenuData)
+			cmpwi r3,0x0
+			bne ReversalReset
 		ReversalSkipFacingReset:
 
 		#Move Players Apart With DPad
-      addi  r3,EventData,0x10       #SaveState start
-  		bl	AdjustResetDistance
-  		cmpwi	r3,-1
-  		bne	ReversalReset
+			addi	r3,EventData,0x10			 #SaveState start
+			bl	AdjustResetDistance
+			cmpwi	r3,-1
+			bne	ReversalReset
 
 		ReversalThinkSequence:
 
@@ -3309,80 +3309,80 @@ b	exit
 			cmpwi	r20,150		#Restore After 120 Frames
 			blt	ReversalThinkExit
 		ReversalReset:
-    ReversalSwap:
-    #I fucking hate this code, i need to clean this up at some point.
-    #Get leftmost player pointer in r20, rightmost in r21
-      addi r5,EventData,0x10
-      lwz r3,0x0(r5)
-      lfs f1,0xB0(r3)
-      lwz r4,0x8(r5)
-      lfs f2,0xB0(r4)
-      fcmpo cr0,f1,f2
-      bgt 0x10
-      mr r20,r3
-      mr r21,r4
-      b 0xC
-      mr r20,r4
-      mr r21,r3
-    #Get which side to start on
-      li	r3,2        #0 = p1 on left, 1 = p1 on right
-      branchl r12,HSD_Randi
-      cmpwi r3,0x0
-      bne ReversalReset_RightSide
-    ReversalReset_LeftSide:
-    #Swap Position
-      addi r5,EventData,0x10
-      #Get Leftmost Chars Position
-        li  r3,1
-        bl  IntToFloat
-        fmr f2,f1
-        lfs f3,0xB0(r20)
-        lfs f4,0xB4(r20)
-      #Get Rightmost Chars Position
-        li  r3,-1
-        bl  IntToFloat
-        fmr f5,f1
-        lfs f6,0xB0(r21)
-        lfs f7,0xB4(r21)
-      #Store to P1 Data
-        lwz r3,0x0(r5)
-        stfs f2,0x2C(r3)
-        stfs f3,0xB0(r3)
-        stfs f4,0xB4(r3)
-      #Store to P2 Data
-        lwz r3,0x8(r5)
-        stfs f5,0x2C(r3)
-        stfs f6,0xB0(r3)
-        stfs f7,0xB4(r3)
-        b ReversalReset_SwapEnd
-    ReversalReset_RightSide:
-      addi r5,EventData,0x10
-      #Get Leftmost Chars Position
-        li  r3,1
-        bl  IntToFloat
-        fmr f2,f1
-        lfs f3,0xB0(r20)
-        lfs f4,0xB4(r20)
-      #Get Rightmost Chars Position
-        li  r3,-1
-        bl  IntToFloat
-        fmr f5,f1
-        lfs f6,0xB0(r21)
-        lfs f7,0xB4(r21)
-      #Store to P2 Data
-        lwz r3,0x8(r5)
-        stfs f2,0x2C(r3)
-        stfs f3,0xB0(r3)
-        stfs f4,0xB4(r3)
-      #Store to P1 Data
-        lwz r3,0x0(r5)
-        stfs f5,0x2C(r3)
-        stfs f6,0xB0(r3)
-        stfs f7,0xB4(r3)
-    ReversalReset_SwapEnd:
-    ReversalAdjustP1Direction:
+		ReversalSwap:
+		#I fucking hate this code, i need to clean this up at some point.
+		#Get leftmost player pointer in r20, rightmost in r21
+			addi r5,EventData,0x10
+			lwz r3,0x0(r5)
+			lfs f1,0xB0(r3)
+			lwz r4,0x8(r5)
+			lfs f2,0xB0(r4)
+			fcmpo cr0,f1,f2
+			bgt 0x10
+			mr r20,r3
+			mr r21,r4
+			b 0xC
+			mr r20,r4
+			mr r21,r3
+		#Get which side to start on
+			li	r3,2				#0 = p1 on left, 1 = p1 on right
+			branchl r12,HSD_Randi
+			cmpwi r3,0x0
+			bne ReversalReset_RightSide
+		ReversalReset_LeftSide:
+		#Swap Position
+			addi r5,EventData,0x10
+			#Get Leftmost Chars Position
+				li	r3,1
+				bl	IntToFloat
+				fmr f2,f1
+				lfs f3,0xB0(r20)
+				lfs f4,0xB4(r20)
+			#Get Rightmost Chars Position
+				li	r3,-1
+				bl	IntToFloat
+				fmr f5,f1
+				lfs f6,0xB0(r21)
+				lfs f7,0xB4(r21)
+			#Store to P1 Data
+				lwz r3,0x0(r5)
+				stfs f2,0x2C(r3)
+				stfs f3,0xB0(r3)
+				stfs f4,0xB4(r3)
+			#Store to P2 Data
+				lwz r3,0x8(r5)
+				stfs f5,0x2C(r3)
+				stfs f6,0xB0(r3)
+				stfs f7,0xB4(r3)
+				b ReversalReset_SwapEnd
+		ReversalReset_RightSide:
+			addi r5,EventData,0x10
+			#Get Leftmost Chars Position
+				li	r3,1
+				bl	IntToFloat
+				fmr f2,f1
+				lfs f3,0xB0(r20)
+				lfs f4,0xB4(r20)
+			#Get Rightmost Chars Position
+				li	r3,-1
+				bl	IntToFloat
+				fmr f5,f1
+				lfs f6,0xB0(r21)
+				lfs f7,0xB4(r21)
+			#Store to P2 Data
+				lwz r3,0x8(r5)
+				stfs f2,0x2C(r3)
+				stfs f3,0xB0(r3)
+				stfs f4,0xB4(r3)
+			#Store to P1 Data
+				lwz r3,0x0(r5)
+				stfs f5,0x2C(r3)
+				stfs f6,0xB0(r3)
+				stfs f7,0xB4(r3)
+		ReversalReset_SwapEnd:
+		ReversalAdjustP1Direction:
 		#Adjust P1 Facing Direction Based on Preference
-      addi r5,EventData,0x10
+			addi r5,EventData,0x10
 			lbz	r3,P1FacingDirection(MenuData)
 			cmpwi	r3,0x1
 			bne	ReversalAdjustP1Direction_Skip
@@ -3391,7 +3391,7 @@ b	exit
 			lfs	f1,0x2C(r3)
 			fneg	f1,f1
 			stfs	f1,0x2C(r3)
-    ReversalAdjustP1Direction_Skip:
+		ReversalAdjustP1Direction_Skip:
 		#Adjust CPU Facing Direction Based on Preference
 		ReversalAdjustCPUDirection:
 			lbz	r3,CPUFacingDirection(MenuData)
@@ -3402,7 +3402,7 @@ b	exit
 			lfs	f1,0x2C(r3)
 			fneg	f1,f1
 			stfs	f1,0x2C(r3)
-    ReversalAdjustCPUDirection_Skip:
+		ReversalAdjustCPUDirection_Skip:
 		#Restore
 		ReversalLoadState:
 			addi r3,EventData,EventData_SaveStateStruct
@@ -3418,8 +3418,8 @@ b	exit
 			stw r3,AerialThinkStruct(r31)
 
 		ReversalThinkExit:
-      mr  r3,MenuData
-      bl  ClearToggledOptions
+			mr	r3,MenuData
+			bl	ClearToggledOptions
 			bl	UpdateAllGFX
 			restore
 			blr
@@ -3525,7 +3525,7 @@ ReversalWindowInfo:
 blrl
 #amount of options, amount of options in each window
 
-.long 0x020A0101  #3 window, Smash Attack has 11 options, Facing Direction Has 2
+.long 0x020A0101	#3 window, Smash Attack has 11 options, Facing Direction Has 2
 
 ####################################################
 
@@ -3691,10 +3691,10 @@ b	exit
 	bl	PowershieldThink
 	mflr	r3
 	li	r4,3		#Priority (After Interrupt)
-  bl	PowershieldWindowInfo
-  mflr	r5
-  bl	PowershieldWindowText
-  mflr	r6
+	bl	PowershieldWindowInfo
+	mflr	r5
+	bl	PowershieldWindowText
+	mflr	r6
 	bl	CreateEventThinkFunction
 
 	bl	InitializeHighScore
@@ -3706,15 +3706,15 @@ b	exit
 		## Powershield THINK FUNCT ##
 		#########################
 
-    #Registers
-    .set MenuData,26
-    .set EventData,31
-    .set P1Data,27
-    .set P1GObj,28
-    .set P2Data,29
-    .set P2GObj,30
+		#Registers
+		.set MenuData,26
+		.set EventData,31
+		.set P1Data,27
+		.set P1GObj,28
+		.set P2Data,29
+		.set P2GObj,30
 
-    #Offsets
+		#Offsets
 		.set FireSpeed,(MenuData_OptionMenuMemory+0x2)+0x0
 
 		PowershieldThink:
@@ -3723,13 +3723,13 @@ b	exit
 
 		#INIT FUNCTION VARIABLES
 		lwz		EventData,0x2c(r3)			#backup data pointer in r31
-    lwz   MenuData,EventData_MenuDataPointer(EventData)
+		lwz	 MenuData,EventData_MenuDataPointer(EventData)
 
-    bl  GetAllPlayerPointers
-    mr P1GObj,r3
-    mr P1Data,r4
-    mr P2GObj,r5
-    mr P2Data,r6
+		bl	GetAllPlayerPointers
+		mr P1GObj,r3
+		mr P1Data,r4
+		mr P2GObj,r5
+		mr P2Data,r6
 
 		bl	StoreCPUTypeAndZeroInputs
 
@@ -3755,9 +3755,9 @@ b	exit
 
 		#DPad Changes Falco's Side
 		lhz	r3,0x662(r27)			#Get Held Buttons
-		rlwinm.  r0,r3,0,27,27
-    bne 0xC
-    cmpwi r3,0x0
+		rlwinm.	r0,r3,0,27,27
+		bne 0xC
+		cmpwi r3,0x0
 		bne	Powershield_SkipPositionChange
 		#CHECK FOR DPAD TO CHANGE Side
 		lwz	r3,0x668(r27)			#Get DPad
@@ -3988,8 +3988,8 @@ b	exit
 		b	PowershieldThinkExit
 
 		PowershieldThinkExit:
-    mr  r3,MenuData
-    bl  ClearToggledOptions
+		mr	r3,MenuData
+		bl	ClearToggledOptions
 		restore
 		blr
 
@@ -4104,10 +4104,10 @@ b	exit
 	bl	ShieldDropThink
 	mflr	r3
 	li	r4,3		#Priority (After Interrupt)
-  bl	ShieldDropWindowInfo
-  mflr	r5
-  bl	ShieldDropWindowText
-  mflr	r6
+	bl	ShieldDropWindowInfo
+	mflr	r5
+	bl	ShieldDropWindowText
+	mflr	r6
 	bl	CreateEventThinkFunction
 
 	b	ShieldDropLoadExit
@@ -4117,17 +4117,17 @@ b	exit
 		## Shield Drop THINK FUNCT ##
 		##########################
 
-    #Registers
-    .set MenuData,26
-    .set EventData,31
-    .set P1Data,27
-    .set P1GObj,28
-    .set P2Data,29
-    .set P2GObj,30
+		#Registers
+		.set MenuData,26
+		.set EventData,31
+		.set P1Data,27
+		.set P1GObj,28
+		.set P2Data,29
+		.set P2GObj,30
 
-    #Offsets
+		#Offsets
 		.set FacingDirection,(MenuData_OptionMenuMemory+0x2)+0x0
-    .set FacingDirectionToggled,(MenuData_OptionMenuToggled)+0x0
+		.set FacingDirectionToggled,(MenuData_OptionMenuToggled)+0x0
 
 		ShieldDropThink:
 		blrl
@@ -4135,13 +4135,13 @@ b	exit
 
 		#INIT FUNCTION VARIABLES
 		lwz		EventData,0x2c(r3)			#backup data pointer in r31
-    lwz   MenuData,EventData_MenuDataPointer(EventData)
+		lwz	 MenuData,EventData_MenuDataPointer(EventData)
 
-    bl  GetAllPlayerPointers
-    mr P1GObj,r3
-    mr P1Data,r4
-    mr P2GObj,r5
-    mr P2Data,r6
+		bl	GetAllPlayerPointers
+		mr P1GObj,r3
+		mr P1Data,r4
+		mr P2GObj,r5
+		mr P2Data,r6
 
 		bl	StoreCPUTypeAndZeroInputs
 
@@ -4151,23 +4151,23 @@ b	exit
 		beq	ShieldDropThinkMain
 
 			#Set Frame 1 As Over
-  			li	r3,0x1
-  			stb	r3,0x0(r31)
-  			bl	ShieldDrop_Floats
-  			mflr	r3
-  			bl	InitializePositions
-      #Clear Inputs
-        bl  RemoveFirstFrameInputs
+				li	r3,0x1
+				stb	r3,0x0(r31)
+				bl	ShieldDrop_Floats
+				mflr	r3
+				bl	InitializePositions
+			#Clear Inputs
+				bl	RemoveFirstFrameInputs
 			#Store Y Position to Last Known Y Position
-  			lfs	f1,0xB4(r29)
-  			stfs	f1,0x834(r29)
+				lfs	f1,0xB4(r29)
+				stfs	f1,0x834(r29)
 			#Save State
-  			addi r3,EventData,EventData_SaveStateStruct
+				addi r3,EventData,EventData_SaveStateStruct
 				li	r4,1			#Override failsafe code
-  			bl	SaveState_Save
+				bl	SaveState_Save
 			#Set Timer to -60
-  			li	r3,-60
-  			stw	r3,0x4(r31)
+				li	r3,-60
+				stw	r3,0x4(r31)
 
 
 
@@ -4179,12 +4179,12 @@ b	exit
 		lbz r3,FacingDirectionToggled(MenuData)
 		cmpwi	r3,0			#Check If Toggled An Option
 		bne	ShieldDropReset
-    lbz r3,FacingDirectionToggled(MenuData)
+		lbz r3,FacingDirectionToggled(MenuData)
 		cmpwi	r3,0			#Check If Toggled An Option
 		bne	ShieldDropReset
 
 		#Move Players Apart With DPad
-    addi  r3,EventData,0x10       #SaveState start
+		addi	r3,EventData,0x10			 #SaveState start
 		bl	AdjustResetDistance
 		cmpwi	r3,-1
 		bne	ShieldDropReset
@@ -4261,8 +4261,8 @@ b	exit
 		stw	r3,AerialThinkStruct(r31)
 
 		ShieldDropThinkExit:
-    mr  r3,MenuData
-    bl  ClearToggledOptions
+		mr	r3,MenuData
+		bl	ClearToggledOptions
 		bl	UpdateAllGFX
 		restore
 		blr
@@ -4275,15 +4275,15 @@ blrl
 .long 0x40F9999A		#P2 X Position
 .long 0x425999b4		#Top Plat Y Position
 .long 0x425999b4		#Top Plat Y Position
-.long 0x3E99999A  #Y Vel to Attack
-.long 0x40A00000  #Distance from Ground to L Cancel
+.long 0x3E99999A	#Y Vel to Attack
+.long 0x40A00000	#Distance from Ground to L Cancel
 
 #################################
 
 ShieldDropWindowInfo:
 blrl
 
-.long 0x0001FFFF  #1 Window, Facing Direction Has 2 Options
+.long 0x0001FFFF	#1 Window, Facing Direction Has 2 Options
 
 ################################
 
@@ -4360,10 +4360,10 @@ b	exit
 	bl	AttackOnShieldThink
 	mflr	r3
 	li	r4,3		#Priority (After Interrupt)
-  bl	AttackOnShieldWindowInfo
-  mflr	r5
-  bl	AttackOnShieldWindowText
-  mflr	r6
+	bl	AttackOnShieldWindowInfo
+	mflr	r5
+	bl	AttackOnShieldWindowText
+	mflr	r6
 	bl	CreateEventThinkFunction
 
 
@@ -4374,18 +4374,18 @@ b	exit
 		## Attack On Shield THINK FUNCT ##
 		#########################
 
-    #Registers
-    .set MenuData,26
-    .set EventData,31
-    .set P1Data,27
-    .set P1GObj,28
-    .set P2Data,29
-    .set P2GObj,30
+		#Registers
+		.set MenuData,26
+		.set EventData,31
+		.set P1Data,27
+		.set P1GObj,28
+		.set P2Data,29
+		.set P2GObj,30
 
 		.set firstFrameFlag,0x0
 		.set timer,0x4
 		.set OoSOption,MenuData_OptionMenuMemory+0x2 + 0x0
-  	.set OoSOptionToggled,MenuData_OptionMenuToggled + 0x0
+		.set OoSOptionToggled,MenuData_OptionMenuToggled + 0x0
 
 		AttackOnShieldThink:
 		blrl
@@ -4393,32 +4393,32 @@ b	exit
 
 		#INIT FUNCTION VARIABLES
 		lwz		EventData,0x2c(r3)			#backup data pointer in r31
-    lwz MenuData,EventData_MenuDataPointer(EventData)
+		lwz MenuData,EventData_MenuDataPointer(EventData)
 
-    bl  GetAllPlayerPointers
-    mr P1GObj,r3
-    mr P1Data,r4
-    mr P2GObj,r5
-    mr P2Data,r6
+		bl	GetAllPlayerPointers
+		mr P1GObj,r3
+		mr P1Data,r4
+		mr P2GObj,r5
+		mr P2Data,r6
 
 		bl	StoreCPUTypeAndZeroInputs
 
 		#ON FIRST FRAME
-  		bl	CheckIfFirstFrame
-  		cmpwi	r3,0x0
-  		beq	AttackOnShieldThinkMain
+			bl	CheckIfFirstFrame
+			cmpwi	r3,0x0
+			beq	AttackOnShieldThinkMain
 			#Set Frame 1 As Over
-  			li		r3,0x1
-  			stb		r3,0x0(r31)
-  			bl		AttackOnShield_Floats
-  			mflr	r3
-  			bl		InitializePositions
-      #Clear Inputs
-        bl  RemoveFirstFrameInputs
+				li		r3,0x1
+				stb		r3,0x0(r31)
+				bl		AttackOnShield_Floats
+				mflr	r3
+				bl		InitializePositions
+			#Clear Inputs
+				bl	RemoveFirstFrameInputs
 			#Save State
-  			addi r3,EventData,EventData_SaveStateStruct
+				addi r3,EventData,EventData_SaveStateStruct
 				li	r4,1			#Override failsafe code
-  			bl		SaveState_Save
+				bl		SaveState_Save
 
 
 
@@ -4432,7 +4432,7 @@ b	exit
 
 		AttackOnShieldThinkSequence:
 
-      lbz r3,OoSOptionToggled(MenuData)
+			lbz r3,OoSOptionToggled(MenuData)
 			cmpwi	r3,0
 			beq	AttackOnShieldNoOptionToggled
 		#Clear Last AS So CPU Doesnt Act Immediately
@@ -4463,7 +4463,7 @@ b	exit
 		beq AttackOnShieldUpSmashThink
 		cmpwi	r3,0x4
 		beq	AttackOnShieldShineThink
-    cmpwi	r3,0x7
+		cmpwi	r3,0x7
 		beq	AttackOnShieldWavedashThink
 		b	AttackOnShieldShieldWait
 
@@ -4507,25 +4507,25 @@ b	exit
 			stw	r3,0x1A88(r29)
 			b	AttackOnShieldCheckToReset
 
-      AttackOnShieldWavedashThink:
-      lwz	r3,0x10(r29)
+			AttackOnShieldWavedashThink:
+			lwz	r3,0x10(r29)
 			cmpwi	r3,0x19
 			bne	AttackOnShieldCheckToReset
-      #Get Random Airdodge Angle
-  			li	r3,30		#30 Different Angles
-  			branchl	r12,HSD_Randi
-  			addi	r3,r3,310		#Start at 310°
-  			bl	ComboTrainingDecideStickAngle_ConvertAngle
-        mr  r20,r3
-  		#Joystick X = X Component * (OpponentDirection)
-        bl  GetDirectionInRelationToP1
-  			mullw	r3,r3,r20
-  			stb	r3,0x1A8C(r29)
-  		#Joystick Y = Y Component
-  			stb	r4,0x1A8D(r29)
-  		#Press L To Wavedash
-  			li	r3,0xC0
-  			stw	r3,0x1A88(r29)
+			#Get Random Airdodge Angle
+				li	r3,30		#30 Different Angles
+				branchl	r12,HSD_Randi
+				addi	r3,r3,310		#Start at 310°
+				bl	ComboTrainingDecideStickAngle_ConvertAngle
+				mr	r20,r3
+			#Joystick X = X Component * (OpponentDirection)
+				bl	GetDirectionInRelationToP1
+				mullw	r3,r3,r20
+				stb	r3,0x1A8C(r29)
+			#Joystick Y = Y Component
+				stb	r4,0x1A8D(r29)
+			#Press L To Wavedash
+				li	r3,0xC0
+				stw	r3,0x1A88(r29)
 			b	AttackOnShieldCheckToReset
 
 		AttackOnShieldShieldWait:
@@ -4574,7 +4574,7 @@ b	exit
 		beq	AttackOnShieldSpotdodge
 		cmpwi 	r3,0x6
 		beq	AttackOnShieldRoll
-    cmpwi 	r3,0x7
+		cmpwi 	r3,0x7
 		beq	AttackOnShieldWavedash
 		cmpwi 	r3,0x8
 		beq	AttackOnShieldNone
@@ -4635,10 +4635,10 @@ b	exit
 		stw	r3,0x4(r31)
 		b	AttackOnShieldThinkExit
 
-    AttackOnShieldWavedash:
-    li	r3,0xCC0
+		AttackOnShieldWavedash:
+		li	r3,0xCC0
 		stw	r3,0x1A88(r29)		#Press X/Y
-    li	r3,48		#Init Timer
+		li	r3,48		#Init Timer
 		stw	r3,0x4(r31)
 		b	AttackOnShieldThinkExit
 
@@ -4664,7 +4664,7 @@ b	exit
 		branchl	r12,HSD_Randi		#Get Random Number in Between
 		add	r3,r3,r23		#Add to Starting Coord
 		#Cast to Float
-		bl  IntToFloat
+		bl	IntToFloat
 		lwz	r3,0x10(r31)		#P1 Backup
 		stfs	f1,0xB0(r3)		#P1 Backup X Pos
 		li	r3,0x1			#Opposing Sides of Stage
@@ -4677,8 +4677,8 @@ b	exit
 		b	AttackOnShieldThinkExit
 
 		AttackOnShieldThinkExit:
-    mr  r3,MenuData
-    bl  ClearToggledOptions
+		mr	r3,MenuData
+		bl	ClearToggledOptions
 		restore
 		blr
 
@@ -4691,7 +4691,7 @@ blrl
 .long 0x41A00000		#P2 X Position
 .long 0x38d1b717		#FD Floor Y Coord
 .long 0x38d1b717		#FD Floor Y Coord
-.long 0x14460000    #P1 X Rand Pos Range
+.long 0x14460000		#P1 X Rand Pos Range
 
 #################################
 
@@ -4699,7 +4699,7 @@ AttackOnShieldWindowInfo:
 blrl
 #amount of options, amount of options in each window
 
-.long 0x0008FFFF  #1 window, OoS Option has 10 options
+.long 0x0008FFFF	#1 window, OoS Option has 10 options
 
 ####################################################
 
@@ -4806,7 +4806,7 @@ b	exit
 	bl	LedgetechThink
 	mflr	r3
 	li	r4,3		#Priority (After Interrupt)
-  li  r5,0    #No Option Menu
+	li	r5,0		#No Option Menu
 	bl	CreateEventThinkFunction
 
 	b	LedgetechLoadExit
@@ -4820,22 +4820,22 @@ b	exit
 		LedgetechThink:
 		blrl
 
-    .set P1Data,27
-    .set P1GObj,28
-    .set P2Data,29
-    .set P2GObj,30
-    .set EventData,31
+		.set P1Data,27
+		.set P1GObj,28
+		.set P2Data,29
+		.set P2GObj,30
+		.set EventData,31
 
 		backup
 
 		#INIT FUNCTION VARIABLES
 		lwz		EventData,0x2c(r3)			#backup data pointer in r31
 
-    bl  GetAllPlayerPointers
-    mr P1GObj,r3
-    mr P1Data,r4
-    mr P2GObj,r5
-    mr P2Data,r6
+		bl	GetAllPlayerPointers
+		mr P1GObj,r3
+		mr P1Data,r4
+		mr P2GObj,r5
+		mr P2Data,r6
 
 		bl	StoreCPUTypeAndZeroInputs
 
@@ -4844,24 +4844,24 @@ b	exit
 		cmpwi	r3,0x0
 		beq	LedgetechThinkMain
 
-    #Clear Inputs
-      bl  RemoveFirstFrameInputs
-    #Random Side of Stage
-      li  r3,2
-      branchl r12,HSD_Randi
-      bl  Ledgetech_InitializePositions
+		#Clear Inputs
+			bl	RemoveFirstFrameInputs
+		#Random Side of Stage
+			li	r3,2
+			branchl r12,HSD_Randi
+			bl	Ledgetech_InitializePositions
 		#Enter SquatWait
-		  mr r3,P2GObj
-		  branchl r12,AS_SquatWait
+			mr r3,P2GObj
+			branchl r12,AS_SquatWait
 		#P1 Has 90%
 			li	r3,90
 			load	r4,0x80453080		#P1 Static Block
 			sth	r3,0x60(r4)		#Store Percent Int To Display Value
 			lis	r3,0x42B4
 			stw	r3,0x1830(r27)
-    #Always Hold Down (Crouch Cancel)
-      li	r3,-127
-      stb	r3,0x1A8D(P2Data)
+		#Always Hold Down (Crouch Cancel)
+			li	r3,-127
+			stb	r3,0x1A8D(P2Data)
 		#Save State
 			addi r3,EventData,EventData_SaveStateStruct
 			li	r4,1			#Override failsafe
@@ -5052,16 +5052,16 @@ b	exit
 		bne	LedgetechThinkExit	#Exit If Not
 
 		LedgetechRestoreState:
-	  #Restore State
-    	addi r3,EventData,EventData_SaveStateStruct
-    	bl	SaveState_Load
-    #Random Side of Stage
-      li  r3,2
-      branchl r12,HSD_Randi
-      bl  Ledgetech_InitializePositions
+		#Restore State
+			addi r3,EventData,EventData_SaveStateStruct
+			bl	SaveState_Load
+		#Random Side of Stage
+			li	r3,2
+			branchl r12,HSD_Randi
+			bl	Ledgetech_InitializePositions
 		#Enter SquatWait
-		  mr r3,P2GObj
-		  branchl r12,AS_SquatWait
+			mr r3,P2GObj
+			branchl r12,AS_SquatWait
 
 		#Set Timer
 		li	r3,0
@@ -5103,25 +5103,25 @@ backup
 	mr	LedgeSide,r3
 
 #Change Facing Directions
-  cmpwi LedgeSide,0x0
-  beq	Ledgetech_InitializePositions_GetLeftLedgeID
+	cmpwi LedgeSide,0x0
+	beq	Ledgetech_InitializePositions_GetLeftLedgeID
 Ledgetech_InitializePositions_GetRightLedgeID:
  #Change Facing Direction
 	li	r3,-1
 	bl	IntToFloat
 	stfs	f1,0x2C(P1Data)
-  li	r3,1
-  bl	IntToFloat
-  stfs	f1,0x2C(P2Data)
+	li	r3,1
+	bl	IntToFloat
+	stfs	f1,0x2C(P2Data)
 	b	Ledgetech_InitializePositions_DirectionChangeEnd
 Ledgetech_InitializePositions_GetLeftLedgeID:
 #Change Facing Direction
 	li	r3,1
-  bl	IntToFloat
-  stfs	f1,0x2C(P1Data)
-  li	r3,-1
-  bl	IntToFloat
-  stfs	f1,0x2C(P2Data)
+	bl	IntToFloat
+	stfs	f1,0x2C(P1Data)
+	li	r3,-1
+	bl	IntToFloat
+	stfs	f1,0x2C(P2Data)
 Ledgetech_InitializePositions_DirectionChangeEnd:
 
 #Get Ledge Coordinates
@@ -5131,61 +5131,61 @@ Ledgetech_InitializePositions_DirectionChangeEnd:
 
 Ledgetech_InitializePositions_StorePosition:
 #Place P2 a few Mm behind it
-  li  r3,10
-  bl  IntToFloat
-  lfs f2,0x2C(P2Data)
-  fmuls f1,f1,f2
-  lfs f2,0x80(sp)
-  fsubs f1,f2,f1
-  stfs f1,0xB0(P2Data)
-  lfs f1,0x84(sp)
-  stfs f1,0xB4(P2Data)
+	li	r3,10
+	bl	IntToFloat
+	lfs f2,0x2C(P2Data)
+	fmuls f1,f1,f2
+	lfs f2,0x80(sp)
+	fsubs f1,f2,f1
+	stfs f1,0xB0(P2Data)
+	lfs f1,0x84(sp)
+	stfs f1,0xB4(P2Data)
 #Find Ground Below Player
-  mr  r3,P2GObj
-  bl  FindGroundNearPlayer
-  cmpwi r3,0    #Check if ground was found
-  beq Ledgetech_InitializePositions_SkipGroundCorrection
-  stfs f1,0xB0(P2Data)
-  stfs f2,0xB4(P2Data)
-  stw r4,0x83C(P2Data)
-  Ledgetech_InitializePositions_SkipGroundCorrection:
+	mr	r3,P2GObj
+	bl	FindGroundNearPlayer
+	cmpwi r3,0		#Check if ground was found
+	beq Ledgetech_InitializePositions_SkipGroundCorrection
+	stfs f1,0xB0(P2Data)
+	stfs f2,0xB4(P2Data)
+	stw r4,0x83C(P2Data)
+	Ledgetech_InitializePositions_SkipGroundCorrection:
 #Enter into Wait
-  mr  r3,P2GObj
-  branchl r12,AS_Wait
+	mr	r3,P2GObj
+	branchl r12,AS_Wait
 #Update Position
-  mr  r3,P2GObj
-  bl  UpdatePosition
+	mr	r3,P2GObj
+	bl	UpdatePosition
 #Update ECB Values for the ground ID
-  mr r3,P2GObj
-  branchl r12,EnvironmentCollision_WaitLanding
+	mr r3,P2GObj
+	branchl r12,EnvironmentCollision_WaitLanding
 #Set Grounded
-  mr r3,P2Data
-  branchl r12,Air_SetAsGrounded
+	mr r3,P2Data
+	branchl r12,Air_SetAsGrounded
 #Update Camera
-  mr r3,P2GObj
-  bl  UpdateCameraBox
+	mr r3,P2GObj
+	bl	UpdateCameraBox
 
 #Enter Rebirth
-  lwz	r26,0x2C(P1Data)
-  mr		r3,P1GObj
-  branchl		r12,AS_Rebirth
-  stw	r26,0x2C(P1Data)
+	lwz	r26,0x2C(P1Data)
+	mr		r3,P1GObj
+	branchl		r12,AS_Rebirth
+	stw	r26,0x2C(P1Data)
 #Place P1 a few Mm in front of it
-  li  r3,60
-  bl  IntToFloat
-  lfs f2,0x2C(P1Data)
-  fmuls f1,f1,f2
-  lfs f2,0x80(sp)
-  fsubs f1,f2,f1
-  stfs f1,0xB0(P1Data)
-  lfs f1,0x84(sp)
-  stfs f1,0xB4(P1Data)
+	li	r3,60
+	bl	IntToFloat
+	lfs f2,0x2C(P1Data)
+	fmuls f1,f1,f2
+	lfs f2,0x80(sp)
+	fsubs f1,f2,f1
+	stfs f1,0xB0(P1Data)
+	lfs f1,0x84(sp)
+	stfs f1,0xB4(P1Data)
 #Enter RebirthWait
-  mr		r3,P1GObj
-  branchl		r12,AS_RebirthWait
+	mr		r3,P1GObj
+	branchl		r12,AS_RebirthWait
 #Update Position
-  mr  r3,P1GObj
-  bl  UpdatePosition
+	mr	r3,P1GObj
+	bl	UpdatePosition
 #Store Blr as Physics
 	bl		BlrFunctionPointer
 	mflr		r3
@@ -5195,11 +5195,11 @@ Ledgetech_InitializePositions_StorePosition:
 	mflr	r3
 	stw		r3,0x219C(P1Data)
 #Update RebirthPlat Position
-  mr  r3,P1GObj
-  branchl r12,RebirthPlatform_UpdatePosition
+	mr	r3,P1GObj
+	branchl r12,RebirthPlatform_UpdatePosition
 #Update Camera
-  mr r3,P1GObj
-  bl  UpdateCameraBox
+	mr r3,P1GObj
+	bl	UpdateCameraBox
 
 restore
 blr
@@ -5250,7 +5250,7 @@ b	exit
 	bl	AmsahTechThink
 	mflr	r3
 	li	r4,3		#Priority (After Interrupt)
-  li  r5,0    #No Option Menu
+	li	r5,0		#No Option Menu
 	bl	CreateEventThinkFunction
 
 	b	AmsahTechLoadExit
@@ -5260,14 +5260,14 @@ b	exit
 		## Amsah Tech THINK FUNCT ##
 		#########################
 
-    .set EventData,31
-    .set P1Gobj,28
-    .set P1Data,27
-    .set P2GObj,30
-    .set P2Data,29
+		.set EventData,31
+		.set P1Gobj,28
+		.set P1Data,27
+		.set P2GObj,30
+		.set P2Data,29
 
-    #Offsets
-    .set Timer,0x8
+		#Offsets
+		.set Timer,0x8
 
 		AmsahTechThink:
 		blrl
@@ -5276,11 +5276,11 @@ b	exit
 		#INIT FUNCTION VARIABLES
 		lwz		EventData,0x2c(r3)			#backup data pointer in r31
 
-    bl  GetAllPlayerPointers
-    mr P1GObj,r3
-    mr P1Data,r4
-    mr P2GObj,r5
-    mr P2Data,r6
+		bl	GetAllPlayerPointers
+		mr P1GObj,r3
+		mr P1Data,r4
+		mr P2GObj,r5
+		mr P2Data,r6
 
 		bl	StoreCPUTypeAndZeroInputs
 
@@ -5289,20 +5289,20 @@ b	exit
 		cmpwi	r3,0x0
 		beq	AmsahTechThinkMain
 
-      #Move Players
-        bl  PlacePlayersCenterStage
+			#Move Players
+				bl	PlacePlayersCenterStage
 			#P1 Has 120%
-  			li	r3,120
-  			load	r4,0x80453080		#P1 Static Block
-  			sth	r3,0x60(r4)		#Store Percent Int To Display Value
-  			bl	IntToFloat
-  			stfs	f1,0x1830(P1Data)
-      #Clear Inputs
-        bl  RemoveFirstFrameInputs
+				li	r3,120
+				load	r4,0x80453080		#P1 Static Block
+				sth	r3,0x60(r4)		#Store Percent Int To Display Value
+				bl	IntToFloat
+				stfs	f1,0x1830(P1Data)
+			#Clear Inputs
+				bl	RemoveFirstFrameInputs
 			#Save State
-  			addi r3,EventData,EventData_SaveStateStruct
+				addi r3,EventData,EventData_SaveStateStruct
 				li	r4,1			#Override failsafe code
-  			bl	SaveState_Save
+				bl	SaveState_Save
 
 
 
@@ -5368,11 +5368,11 @@ b	exit
 		b	AmsahTechCheckUpBTimer
 
 		AmsahTechIsTaunting:
-  #Check for Frame 1 of Taunt
-    lhz r3,0x23EC(P1Data)
-    cmpwi r3,0x1
-    bne AmsahTechCheckUpBTimer
-  #Check If UpB Timer is Set
+	#Check for Frame 1 of Taunt
+		lhz r3,0x23EC(P1Data)
+		cmpwi r3,0x1
+		bne AmsahTechCheckUpBTimer
+	#Check If UpB Timer is Set
 		lwz	r3,0x8(r31)
 		cmpwi	r3,0x0		#Timer Already Set
 		bne	AmsahTechCheckUpBTimer
@@ -5381,77 +5381,77 @@ b	exit
 		cmpwi	r3,0xE
 		bne	AmsahTechCheckUpBTimer
 
-  #Move Marth X Mm in front of P1, facing him
-  #Get Position
-    li  r3,10
-    bl  IntToFloat          #Offset from P1
-    lfs f3,0xB0(P1Data)     #P1 X
-    lfs f2,0xB4(P1Data)     #P1 Y
-    lfs f4,0x2C(P1Data)     #Facing Direction
-    fmuls f1,f1,f4
-    fadds f1,f1,f3
-  #Check If P2 Will Be Grounded
-    li  r3,0
-    bl  FindGroundNearPlayer
-    cmpwi r3,0    #Check if ground was found
-    beq AmsahTech_NoGroundFound
-    stfs f1,0xB0(P2Data)
-    stfs f2,0xB4(P2Data)
-    stw r4,0x83C(P2Data)
-    lfs f1,0x2C(P1Data)
-    fneg f1,f1
-    stfs f1,0x2C(P2Data)
-  #Enter Wait
-    mr  r3,P2GObj
-    branchl r12,AS_Wait
-  #Update Position
-    mr  r3,P2GObj
-    bl  UpdatePosition
-  #Update ECB Values for the ground ID
-    mr r3,P2GObj
-    branchl r12,EnvironmentCollision_WaitLanding
-  #Set Grounded
-    mr r3,P2Data
-    branchl r12,Air_SetAsGrounded
-  #Set UpB Timer
-    li	r3,30
-    stw	r3,Timer(EventData)
-  #Store To Backups as Well
-    lwz	r3,0x18(EventData)		#P2 Backup
-    lfs	f1,0xB0(P2Data)	     	#Get P2 X
-    stfs	f1,0xB0(r3)	       	#Store to P2 Backup
-    lfs	f1,0xB4(P2Data)	     	#Get P2 Y
-    stfs	f1,0xB4(r3)	       	#Store to P2 Backup
-    lfs	f1,0x2C(P2Data)	     	#Get P2 Facing
-    stfs	f1,0x2C(r3)	       	#Store to P2 Backup
-    lwz r4,0x83C(P2Data)      #Get P2 Ground ID
-    stw r4,0x83C(r3)          #Store to P2 Backup
-    lwz	r3,0x10(EventData)		#P1 Backup
-    lfs	f1,0xB0(P1Data)	    	#Get P1 X
-    stfs	f1,0xB0(r3)	       	#Store to P1 Backup
-    lfs	f1,0xB4(P1Data)	    	#Get P1 X
-    stfs	f1,0xB4(r3)	       	#Store to P1 Backup
-    lfs	f1,0x2C(P1Data)	     	#Get P1 Facing
-    stfs	f1,0x2C(r3)		      #Store to P1 Backup
-    lwz r4,0x83C(P1Data)      #Get P1 Ground ID
-    stw r4,0x83C(r3)          #Store to P1 Backup
-  	mr	r3,P1GObj
-  	bl	CheckIfPlayerHasAFollower
-  	cmpwi	r3,0x0
-  	beq	AmsahTechNoSubchar
-  	lwz	r3,0x14(EventData)		#P1 Subchar Backup
-  	lfs	f1,0xB0(r4)		#Get P1 Subchar X
-  	stfs	f1,0xB0(r3)		#Store to P1 Subchar Backup
-  	lfs	f1,0x2C(r4)		#Get P1 Subchar Facing
-  	stfs	f1,0x2C(r3)		#Store to P1 Subchar Backup
+	#Move Marth X Mm in front of P1, facing him
+	#Get Position
+		li	r3,10
+		bl	IntToFloat					#Offset from P1
+		lfs f3,0xB0(P1Data)		 #P1 X
+		lfs f2,0xB4(P1Data)		 #P1 Y
+		lfs f4,0x2C(P1Data)		 #Facing Direction
+		fmuls f1,f1,f4
+		fadds f1,f1,f3
+	#Check If P2 Will Be Grounded
+		li	r3,0
+		bl	FindGroundNearPlayer
+		cmpwi r3,0		#Check if ground was found
+		beq AmsahTech_NoGroundFound
+		stfs f1,0xB0(P2Data)
+		stfs f2,0xB4(P2Data)
+		stw r4,0x83C(P2Data)
+		lfs f1,0x2C(P1Data)
+		fneg f1,f1
+		stfs f1,0x2C(P2Data)
+	#Enter Wait
+		mr	r3,P2GObj
+		branchl r12,AS_Wait
+	#Update Position
+		mr	r3,P2GObj
+		bl	UpdatePosition
+	#Update ECB Values for the ground ID
+		mr r3,P2GObj
+		branchl r12,EnvironmentCollision_WaitLanding
+	#Set Grounded
+		mr r3,P2Data
+		branchl r12,Air_SetAsGrounded
+	#Set UpB Timer
+		li	r3,30
+		stw	r3,Timer(EventData)
+	#Store To Backups as Well
+		lwz	r3,0x18(EventData)		#P2 Backup
+		lfs	f1,0xB0(P2Data)			 	#Get P2 X
+		stfs	f1,0xB0(r3)				 	#Store to P2 Backup
+		lfs	f1,0xB4(P2Data)			 	#Get P2 Y
+		stfs	f1,0xB4(r3)				 	#Store to P2 Backup
+		lfs	f1,0x2C(P2Data)			 	#Get P2 Facing
+		stfs	f1,0x2C(r3)				 	#Store to P2 Backup
+		lwz r4,0x83C(P2Data)			#Get P2 Ground ID
+		stw r4,0x83C(r3)					#Store to P2 Backup
+		lwz	r3,0x10(EventData)		#P1 Backup
+		lfs	f1,0xB0(P1Data)				#Get P1 X
+		stfs	f1,0xB0(r3)				 	#Store to P1 Backup
+		lfs	f1,0xB4(P1Data)				#Get P1 X
+		stfs	f1,0xB4(r3)				 	#Store to P1 Backup
+		lfs	f1,0x2C(P1Data)			 	#Get P1 Facing
+		stfs	f1,0x2C(r3)					#Store to P1 Backup
+		lwz r4,0x83C(P1Data)			#Get P1 Ground ID
+		stw r4,0x83C(r3)					#Store to P1 Backup
+		mr	r3,P1GObj
+		bl	CheckIfPlayerHasAFollower
+		cmpwi	r3,0x0
+		beq	AmsahTechNoSubchar
+		lwz	r3,0x14(EventData)		#P1 Subchar Backup
+		lfs	f1,0xB0(r4)		#Get P1 Subchar X
+		stfs	f1,0xB0(r3)		#Store to P1 Subchar Backup
+		lfs	f1,0x2C(r4)		#Get P1 Subchar Facing
+		stfs	f1,0x2C(r3)		#Store to P1 Subchar Backup
 	AmsahTechNoSubchar:
-    b AmsahTechCheckToReset
+		b AmsahTechCheckToReset
 
-  AmsahTech_NoGroundFound:
-  #Play Error SFX
-    li	r3,0xAF
-    bl PlaySFX
-    b AmsahTechCheckToReset
+	AmsahTech_NoGroundFound:
+	#Play Error SFX
+		li	r3,0xAF
+		bl PlaySFX
+		b AmsahTechCheckToReset
 
 		AmsahTechCheckUpBTimer:
 		#Check For UpBTimer
@@ -5509,10 +5509,10 @@ AmsahTech_Floats:
 blrl
 .long 0x4308ca0c		#P1 X Position
 .long 0x42942371		#P2 X Position
-.long 0x00000000  #P1 Y Position
+.long 0x00000000	#P1 Y Position
 .long 0x38d1b717		#FD Floor Y Coord
 .long 0x41800000 	#Distance to place Marth from P1
-.long 0x428C0000  #FD Stage Boundary X
+.long 0x428C0000	#FD Stage Boundary X
 
 #################################
 
@@ -5560,10 +5560,10 @@ b	exit
 	bl	ComboTrainingThink
 	mflr	r3
 	li	r4,3												#Priority (After Interrupt)
-  bl	ComboTrainingWindowInfo			#r4 = pointer to option info
-  mflr	r5
-  bl	ComboTrainingWindowText			#r5 = pointer to ASCII struct
-  mflr	r6
+	bl	ComboTrainingWindowInfo			#r4 = pointer to option info
+	mflr	r5
+	bl	ComboTrainingWindowText			#r5 = pointer to ASCII struct
+	mflr	r6
 	bl	CreateEventThinkFunction
 
 	bl	InitializeHighScore
@@ -5575,22 +5575,22 @@ b	exit
 		## Combo Training THINK FUNCT ##
 		#########################
 
-    #Registers
-    .set MenuData,26
-    .set EventData,31
-    .set P1Data,27
-    .set P1GObj,28
-    .set P2Data,29
-    .set P2GObj,30
+		#Registers
+		.set MenuData,26
+		.set EventData,31
+		.set P1Data,27
+		.set P1GObj,28
+		.set P2Data,29
+		.set P2GObj,30
 
-    #Offsets
+		#Offsets
 		.set EventState,0x8
 		.set DIBehavior,(MenuData_OptionMenuMemory+0x2)+0x0
 		.set SDIBehavior,(MenuData_OptionMenuMemory+0x2)+0x1
 		.set TechOption,(MenuData_OptionMenuMemory+0x2)+0x2
 		.set PostHitstunAction,(MenuData_OptionMenuMemory+0x2)+0x3
 		.set GrabMashout,(MenuData_OptionMenuMemory+0x2)+0x4
-    .set DIBehaviorToggled,(MenuData_OptionMenuToggled)+0x0
+		.set DIBehaviorToggled,(MenuData_OptionMenuToggled)+0x0
 		.set SDIBehaviorToggled,(MenuData_OptionMenuToggled)+0x1
 		.set TechOptionToggled,(MenuData_OptionMenuToggled)+0x2
 		.set PostHitstunActionToggled,(MenuData_OptionMenuToggled)+0x3
@@ -5618,13 +5618,13 @@ b	exit
 		#INIT FUNCTION VARIABLES
 		lwz		r31,0x2c(r3)			#backup data pointer in r31
 
-    bl  GetAllPlayerPointers
-    mr P1GObj,r3
-    mr P1Data,r4
-    mr P2GObj,r5
-    mr P2Data,r6
+		bl	GetAllPlayerPointers
+		mr P1GObj,r3
+		mr P1Data,r4
+		mr P2GObj,r5
+		mr P2Data,r6
 
-    lwz MenuData,EventData_MenuDataPointer(EventData)
+		lwz MenuData,EventData_MenuDataPointer(EventData)
 
 		bl	StoreCPUTypeAndZeroInputs
 
@@ -5633,16 +5633,16 @@ b	exit
 		cmpwi	r3,0x0
 		beq	ComboTrainingThinkMain
 
-        bl  PlacePlayersCenterStage
-      #Clear Inputs
-        bl  RemoveFirstFrameInputs
+				bl	PlacePlayersCenterStage
+			#Clear Inputs
+				bl	RemoveFirstFrameInputs
 			#Save State
-  			addi r3,EventData,EventData_SaveStateStruct
+				addi r3,EventData,EventData_SaveStateStruct
 				li	r4,1			#Override failsafe code
-  			bl	SaveState_Save
+				bl	SaveState_Save
 			#Init Score Count
-  			lhz	r3,-0x4ea8(r13)
-  			branchl	r12,HUD_KOCounter_UpdateKOs
+				lhz	r3,-0x4ea8(r13)
+				branchl	r12,HUD_KOCounter_UpdateKOs
 
 
 		ComboTrainingThinkMain:
@@ -5697,9 +5697,9 @@ b	exit
 		lbz	r3,EventState(r31)
 		cmpwi	r3,0x0
 		bne	ComboTrainingSkipMoveCPU
-    mr  r3,P1GObj
-    mr  r4,P2GObj
-    addi r5,EventData,0x10
+		mr	r3,P1GObj
+		mr	r4,P2GObj
+		addi r5,EventData,0x10
 		bl	MoveCPU
 		ComboTrainingSkipMoveCPU:
 
@@ -5871,7 +5871,7 @@ ComboTrainingMashOutOfGrab:
 			beq	ComboTrainingCheckIfBeingThrown
 		#Check If In Last Frame of Hitlag
 			lfs	f1,-0x7418(rtoc)		#1fp
-			lfs	f2,0x195C(r29)		  #hitlag frames left
+			lfs	f2,0x195C(r29)			#hitlag frames left
 			fcmpo	cr0,f1,f2
 			bne	ComboTrainingCheckToReset
 		#Check If Attack Was Strong
@@ -6485,8 +6485,8 @@ ComboTrainingMashOutOfGrab:
 		li	r3,0x0
 		stb	r3,EventState(r31)
 		ComboTrainingThinkExit:
-    mr  r3,MenuData
-    bl  ClearToggledOptions
+		mr	r3,MenuData
+		bl	ClearToggledOptions
 		bl	UpdateAllGFX
 		restore
 		blr
@@ -6982,8 +6982,8 @@ ComboTrainingWindowInfo:
 blrl
 #amount of options, amount of options in each window
 
-.long 0x04060304  #5 windows, DI has 7 options, SDI has 4 Options, Tech Has 5 Options
-.long 0x02020000  #PostHitstun has 3 options, Mash has 3 options
+.long 0x04060304	#5 windows, DI has 7 options, SDI has 4 Options, Tech Has 5 Options
+.long 0x02020000	#PostHitstun has 3 options, Mash has 3 options
 
 ####################################################
 
@@ -7212,7 +7212,7 @@ b	exit
 	bl	WaveshineSDIThink
 	mflr	r3
 	li	r4,3		#Priority (After Interrupt)
-  li  r5,0
+	li	r5,0
 	bl	CreateEventThinkFunction
 
 /*
@@ -7221,45 +7221,45 @@ b	exit
 	load	r3,0x80432290
 	lwz	r3,0x10(r3)
 	lwz	r6,0x4(r3)
-  lis r3, 0x4040
-  li r5, 0x0
-  ori r4, r5, 0xF488
-  stwx r3, r6, r4
-  ori r4, r5, 0xF4CC
-  stwx r3, r6, r4
-  ori r4, r5, 0xF4D0
-  stwx r3, r6, r4
-  ori r4, r5, 0xF590
-  stwx r3, r6, r4
-  lis r4, 0x1
-  ori r4, r4, 0x88
-  stwx r3, r6, r4
-  lis r4, 0x1
-  ori r4, r4, 0x608
-  stwx r3, r6, r4
-  lis r3, 0x4248
-  ori r4, r5, 0xF4D8
-  stwx r3, r6, r4
-  lis r4, 0x5
-  ori r4, r4, 0x1B90
-  stwx r5, r6, r4
-  lis r5, 0x5
-  lis r3, 0xC3AA
-  ori r3, r3, 0x91EC
-  ori r4, r5, 0x1F20
-  stwx r3, r6, r4
-  lis r3, 0x43AA
-  ori r3, r3, 0x91EC
-  ori r4, r5, 0x1F60
-  stwx r3, r6, r4
-  lis r3, 0xC3D0
-  ori r3, r3, 0x91EC
-  ori r4, r5, 0x1FA0
-  stwx r3, r6, r4
-  lis r3, 0x43D0
-  ori r3, r3, 0x91EC
-  ori r4, r5, 0x1FE0
-  stwx r3, r6, r4
+	lis r3, 0x4040
+	li r5, 0x0
+	ori r4, r5, 0xF488
+	stwx r3, r6, r4
+	ori r4, r5, 0xF4CC
+	stwx r3, r6, r4
+	ori r4, r5, 0xF4D0
+	stwx r3, r6, r4
+	ori r4, r5, 0xF590
+	stwx r3, r6, r4
+	lis r4, 0x1
+	ori r4, r4, 0x88
+	stwx r3, r6, r4
+	lis r4, 0x1
+	ori r4, r4, 0x608
+	stwx r3, r6, r4
+	lis r3, 0x4248
+	ori r4, r5, 0xF4D8
+	stwx r3, r6, r4
+	lis r4, 0x5
+	ori r4, r4, 0x1B90
+	stwx r5, r6, r4
+	lis r5, 0x5
+	lis r3, 0xC3AA
+	ori r3, r3, 0x91EC
+	ori r4, r5, 0x1F20
+	stwx r3, r6, r4
+	lis r3, 0x43AA
+	ori r3, r3, 0x91EC
+	ori r4, r5, 0x1F60
+	stwx r3, r6, r4
+	lis r3, 0xC3D0
+	ori r3, r3, 0x91EC
+	ori r4, r5, 0x1FA0
+	stwx r3, r6, r4
+	lis r3, 0x43D0
+	ori r3, r3, 0x91EC
+	ori r4, r5, 0x1FE0
+	stwx r3, r6, r4
 */
 
 	b	WaveshineSDILoadExit
@@ -7273,22 +7273,22 @@ b	exit
 		WaveshineSDIThink:
 			blrl
 
-      .set EventData,31
-      .set P1Data,27
-      .set P1GObj,28
-      .set P2Data,29
-      .set P2GObj,30
+			.set EventData,31
+			.set P1Data,27
+			.set P1GObj,28
+			.set P2Data,29
+			.set P2GObj,30
 
 			backup
 
 		#INIT FUNCTION VARIABLES
 			lwz		EventData,0x2c(r3)			#backup data pointer in r31
 
-      bl  GetAllPlayerPointers
-      mr P1GObj,r3
-      mr P1Data,r4
-      mr P2GObj,r5
-      mr P2Data,r6
+			bl	GetAllPlayerPointers
+			mr P1GObj,r3
+			mr P1Data,r4
+			mr P2GObj,r5
+			mr P2Data,r6
 
 		bl	StoreCPUTypeAndZeroInputs
 
@@ -7309,8 +7309,8 @@ b	exit
 					bl	WaveshineSDI_Floats
 					mflr	r3
 					bl	InitializePositions
-        #Clear Inputs
-          bl  RemoveFirstFrameInputs
+				#Clear Inputs
+					bl	RemoveFirstFrameInputs
 				#Store Ground As Last Known Position
 					lfs	f1, 0x00B4 (r29)
 					stfs	f1, 0x0834 (r29)
@@ -7622,11 +7622,11 @@ WaveshineSDI_Floats:
 blrl
 .long 0xC28C0000		#P1 X Position
 .long 0xc2982e6c 	#P2 X Position
-.long 0x38d1b717  #P1 Y Position
+.long 0x38d1b717	#P1 Y Position
 .long 0x38d1b717		#FD Floor Y Coord
-.long 0x40A00000  #5fp
-.long 0x40F00000  #Distance From Opponent to Waveshine
-.long 0x42A00000  #X Coord To Stop
+.long 0x40A00000	#5fp
+.long 0x40F00000	#Distance From Opponent to Waveshine
+.long 0x42A00000	#X Coord To Stop
 
 #################################
 
@@ -7672,7 +7672,7 @@ SlideOffLoad:
 	bl	SlideOffThink
 	mflr	r3
 	li	r4,3		#Priority (After EnvCOllision)
-  li  r5,0
+	li	r5,0
 	bl	CreateEventThinkFunction
 	b	SlideOffThink_Exit
 
@@ -7685,10 +7685,10 @@ SlideOffThink:
 
 #Registers
 	.set REG_EventConstants,25
-  .set REG_MenuData,26
-  .set REG_EventData,31
-  .set REG_P1Data,27
-  .set REG_P1GObj,28
+	.set REG_MenuData,26
+	.set REG_EventData,31
+	.set REG_P1Data,27
+	.set REG_P1GObj,28
 	.set REG_P2Data,29
 	.set REG_P2GObj,30
 
@@ -7721,14 +7721,14 @@ backup
 	lwz	REG_EventData,0x2c(r3)			#backup data pointer in r31
 
 #Get Player Pointers
-  bl GetAllPlayerPointers
-  mr REG_P1GObj,r3
-  mr REG_P1Data,r4
-  mr REG_P2GObj,r5
-  mr REG_P2Data,r6
+	bl GetAllPlayerPointers
+	mr REG_P1GObj,r3
+	mr REG_P1Data,r4
+	mr REG_P2GObj,r5
+	mr REG_P2Data,r6
 
 #Get Menu and Constants Pointers
-  lwz REG_MenuData,REG_EventData_REG_MenuDataPointer(REG_EventData)
+	lwz REG_MenuData,REG_EventData_REG_MenuDataPointer(REG_EventData)
 	bl	SlideOffThink_Constants
 	mflr REG_EventConstants
 
@@ -7742,12 +7742,12 @@ backup
 		mr	r3,REG_P1GObj
 		mr	r4,REG_P2GObj
 		bl	SlideOff_InitializePositions
-  #Clear Inputs
-    bl  RemoveFirstFrameInputs
+	#Clear Inputs
+		bl	RemoveFirstFrameInputs
 	#Save State
-  	addi r3,REG_EventData,EventData_SaveStateStruct
+		addi r3,REG_EventData,EventData_SaveStateStruct
 		li	r4,1			#Override failsafe code
-  	bl	SaveState_Save
+		bl	SaveState_Save
 	#Init State
 		li	r3,EventState_Hitstun
 		stb	r3,EventState(REG_EventData)
@@ -8137,9 +8137,9 @@ backup
 	li	r3,-1
 	bl	IntToFloat
 	stfs	f1,0x2C(REG_P1Data)
-  li	r3,1
-  bl	IntToFloat
-  stfs	f1,0x2C(REG_P2Data)
+	li	r3,1
+	bl	IntToFloat
+	stfs	f1,0x2C(REG_P2Data)
 
 #Get Starting Coordinates
 	lfs f1,P1X(REG_EventConstants)
@@ -8303,7 +8303,7 @@ GrabMashOutLoad:
 	bl	GrabMashOutThink
 	mflr	r3
 	li	r4,3		#Priority (After EnvCOllision)
-  li  r5,0
+	li	r5,0
 	bl	CreateEventThinkFunction
 	b	GrabMashOutThink_Exit
 
@@ -8316,10 +8316,10 @@ GrabMashOutThink:
 
 #Registers
 	.set REG_EventConstants,25
-  .set REG_MenuData,26
-  .set REG_EventData,31
-  .set REG_P1Data,27
-  .set REG_P1GObj,28
+	.set REG_MenuData,26
+	.set REG_EventData,31
+	.set REG_P1Data,27
+	.set REG_P1GObj,28
 	.set REG_P2Data,29
 	.set REG_P2GObj,30
 
@@ -8345,14 +8345,14 @@ backup
 	lwz	REG_EventData,0x2c(r3)			#backup data pointer in r31
 
 #Get Player Pointers
-  bl GetAllPlayerPointers
-  mr REG_P1GObj,r3
-  mr REG_P1Data,r4
-  mr REG_P2GObj,r5
-  mr REG_P2Data,r6
+	bl GetAllPlayerPointers
+	mr REG_P1GObj,r3
+	mr REG_P1Data,r4
+	mr REG_P2GObj,r5
+	mr REG_P2Data,r6
 
 #Get Menu and Constants Pointers
-  lwz REG_MenuData,REG_EventData_REG_MenuDataPointer(REG_EventData)
+	lwz REG_MenuData,REG_EventData_REG_MenuDataPointer(REG_EventData)
 	bl	GrabMashOutThink_Constants
 	mflr REG_EventConstants
 
@@ -8367,12 +8367,12 @@ backup
 		mr	r4,REG_P2GObj
 		mr	r5,REG_EventData
 		bl	GrabMashOut_InitializePositions
-  #Clear Inputs
-    bl  RemoveFirstFrameInputs
+	#Clear Inputs
+		bl	RemoveFirstFrameInputs
 	#Save State
-  	addi r3,REG_EventData,EventData_SaveStateStruct
+		addi r3,REG_EventData,EventData_SaveStateStruct
 		li	r4,1			#Override failsafe code
-  	bl	SaveState_Save
+		bl	SaveState_Save
 GrabMashOutThink_Start:
 
 #Reset if anyone died
@@ -8504,9 +8504,9 @@ blrl
 .set P2Y,0xC
 
 .float -8		#p1 x
-.float  0		#p1 y
-.float  8		#p2 x
-.float  0		#p2 y
+.float	0		#p1 y
+.float	8		#p2 x
+.float	0		#p2 y
 ###########################################
 
 GrabMashOut_TopText:
@@ -8531,10 +8531,10 @@ backup
 .set REG_EventData,26
 
 #Init Registers
-  mr	REG_P1GObj,r3
-  lwz REG_P1Data,0x2C(REG_P1GObj)
-  mr	REG_P2GObj,r4
-  lwz REG_P2Data,0x2C(REG_P2GObj)
+	mr	REG_P1GObj,r3
+	lwz REG_P1Data,0x2C(REG_P1GObj)
+	mr	REG_P2GObj,r4
+	lwz REG_P2Data,0x2C(REG_P2GObj)
 	mr	REG_EventData,r5
 
 GrabMashOut_InitializePositions_DetermineFacingDirection:
@@ -8551,9 +8551,9 @@ GrabMashOut_InitializePositions_DetermineFacingDirection_End:
 	mr	r3,REG_FacingDirection
 	bl	IntToFloat
 	stfs	f1,0x2C(REG_P1Data)
-  mulli	r3,REG_FacingDirection,-1
-  bl	IntToFloat
-  stfs	f1,0x2C(REG_P2Data)
+	mulli	r3,REG_FacingDirection,-1
+	bl	IntToFloat
+	stfs	f1,0x2C(REG_P2Data)
 
 #Get Starting Coordinates
 	lfs f1,P1X(REG_EventConstants)
@@ -8663,8 +8663,8 @@ b	exit
 	#Schedule Think
 	bl	Event16Think
 	mflr	r3
-  li  r4,3
-  li  r5,0
+	li	r4,3
+	li	r5,0
 	bl	CreateEventThinkFunction
 
 	b	Event16LoadExit
@@ -8678,22 +8678,22 @@ b	exit
 		Event16Think:
 		blrl
 
-    .set EventData,31
-    .set P1Data,27
-    .set P1GObj,28
-    .set P2Data,29
-    .set P2GObj,30
+		.set EventData,31
+		.set P1Data,27
+		.set P1GObj,28
+		.set P2Data,29
+		.set P2GObj,30
 
 		backup
 
 		#INIT FUNCTION VARIABLES
 			lwz		EventData,0x2c(r3)			#backup data pointer in r31
 
-      bl  GetAllPlayerPointers
-      mr P1GObj,r3
-      mr P1Data,r4
-      mr P2GObj,r5
-      mr P2Data,r6
+			bl	GetAllPlayerPointers
+			mr P1GObj,r3
+			mr P1Data,r4
+			mr P2GObj,r5
+			mr P2Data,r6
 
 		li	r3,0xF
 		stw	r3,0x1A94(r29)
@@ -8716,8 +8716,8 @@ b	exit
 					bl	Event16_Floats
 					mflr	r3
 					bl	Event_EnterGrab
-        #Clear Inputs
-          bl  RemoveFirstFrameInputs
+				#Clear Inputs
+					bl	RemoveFirstFrameInputs
 				#Store Ground As Last Known Position
 					lfs	f1, 0x00B4 (r29)
 					stfs	f1, 0x0834 (r29)
@@ -8792,7 +8792,7 @@ LedgetechCounterLoad:
 	bl	LedgetechCounterThink
 	mflr	r3
 	li	r4,3		#Priority (After EnvCOllision)
-  li  r5,0
+	li	r5,0
 	bl	CreateEventThinkFunction
 	b	LedgetechCounterThink_Exit
 
@@ -8805,10 +8805,10 @@ LedgetechCounterThink:
 
 #Registers
 	.set EventConstants,25
-  .set MenuData,26
-  .set EventData,31
-  .set P1Data,27
-  .set P1GObj,28
+	.set MenuData,26
+	.set EventData,31
+	.set P1Data,27
+	.set P1GObj,28
 	.set P2Data,29
 	.set P2GObj,30
 
@@ -8826,13 +8826,13 @@ backup
 #INIT FUNCTION VARIABLES
 	lwz		EventData,0x2c(r3)			#backup data pointer in r31
 
-  bl  GetAllPlayerPointers
-  mr P1GObj,r3
-  mr P1Data,r4
-  mr P2GObj,r5
-  mr P2Data,r6
+	bl	GetAllPlayerPointers
+	mr P1GObj,r3
+	mr P1Data,r4
+	mr P2GObj,r5
+	mr P2Data,r6
 
-  lwz MenuData,EventData_MenuDataPointer(EventData)
+	lwz MenuData,EventData_MenuDataPointer(EventData)
 
 	bl	LedgetechCounter_Constants
 	mflr EventConstants
@@ -8844,9 +8844,9 @@ backup
 	cmpwi	r3,0x0
 	beq	LedgetechCounterThink_Start
 	#Random Side of Stage
-		li  r3,2
+		li	r3,2
 		branchl r12,HSD_Randi
-		bl  Ledgetech_InitializePositions
+		bl	Ledgetech_InitializePositions
 	#Move Marth forward a bit
 		lfs f1,0x2C(P2Data)
 		lfs f2,0x4(EventConstants)
@@ -8859,15 +8859,15 @@ backup
 		lfs f2,0xB4(P1Data)
 		fadds f1,f1,f2
 		stfs f1,0xB4(P1Data)
-  #Clear Inputs
-    bl  RemoveFirstFrameInputs
+	#Clear Inputs
+		bl	RemoveFirstFrameInputs
 	#Save State
-  	addi r3,EventData,EventData_SaveStateStruct
+		addi r3,EventData,EventData_SaveStateStruct
 		li	r4,1			#Override failsafe code
-  	bl	SaveState_Save
+		bl	SaveState_Save
 	#Init Score Count
-  	lhz	r3,-0x4ea8(r13)
-  	branchl	r12,HUD_KOCounter_UpdateKOs
+		lhz	r3,-0x4ea8(r13)
+		branchl	r12,HUD_KOCounter_UpdateKOs
 
 LedgetechCounterThink_Start:
 
@@ -8943,12 +8943,12 @@ LedgetechCounterThink_CheckForTimer:
 
 LedgetechCounterThink_Restore:
 #Load State
-  addi r3,EventData,EventData_SaveStateStruct
-  bl	SaveState_Load
+	addi r3,EventData,EventData_SaveStateStruct
+	bl	SaveState_Load
 #Random Side of Stage
-	li  r3,2
+	li	r3,2
 	branchl r12,HSD_Randi
-	bl  Ledgetech_InitializePositions
+	bl	Ledgetech_InitializePositions
 #Move Marth forward a bit
 	lfs f1,0x2C(P2Data)
 	lfs f2,0x4(EventConstants)
@@ -9020,7 +9020,7 @@ ArmadaShineLoad:
 	bl	ArmadaShineThink
 	mflr	r3
 	li	r4,3		#Priority (After EnvCOllision)
-  li  r5,0
+	li	r5,0
 	bl	CreateEventThinkFunction
 
 #Remove randall
@@ -9043,10 +9043,10 @@ ArmadaShineThink:
 
 #Registers
 	.set REG_EventConstants,25
-  .set REG_MenuData,26
-  .set REG_EventData,31
-  .set REG_P1Data,27
-  .set REG_P1GObj,28
+	.set REG_MenuData,26
+	.set REG_EventData,31
+	.set REG_P1Data,27
+	.set REG_P1GObj,28
 	.set REG_P2Data,29
 	.set REG_P2GObj,30
 
@@ -9071,14 +9071,14 @@ backup
 	lwz	REG_EventData,0x2c(r3)			#backup data pointer in r31
 
 #Get Player Pointers
-  bl GetAllPlayerPointers
-  mr REG_P1GObj,r3
-  mr REG_P1Data,r4
-  mr REG_P2GObj,r5
-  mr REG_P2Data,r6
+	bl GetAllPlayerPointers
+	mr REG_P1GObj,r3
+	mr REG_P1Data,r4
+	mr REG_P2GObj,r5
+	mr REG_P2Data,r6
 
 #Get Menu and Constants Pointers
-  lwz REG_MenuData,REG_EventData_REG_MenuDataPointer(REG_EventData)
+	lwz REG_MenuData,REG_EventData_REG_MenuDataPointer(REG_EventData)
 	bl	ArmadaShineThink_Constants
 	mflr REG_EventConstants
 
@@ -9092,12 +9092,12 @@ backup
 		mr	r3,REG_P1GObj
 		mr	r4,REG_P2GObj
 		bl	ArmadaShine_InitializePositions
-  #Clear Inputs
-    bl  RemoveFirstFrameInputs
+	#Clear Inputs
+		bl	RemoveFirstFrameInputs
 	#Save State
-  	addi r3,REG_EventData,EventData_SaveStateStruct
+		addi r3,REG_EventData,EventData_SaveStateStruct
 		li	r4,1			#Override failsafe code
-  	bl	SaveState_Save
+		bl	SaveState_Save
 	#Init State
 		li	r3,EventState_Hitstun
 		stb	r3,EventState(REG_EventData)
@@ -9109,8 +9109,8 @@ ArmadaShineThink_Start:
 	bne ArmadaShineThink_Restore
 
 #DPad left to instant reset
-  lbz	r3, 0x0618 (REG_P1Data)
-  bl	GetInputStruct
+	lbz	r3, 0x0618 (REG_P1Data)
+	bl	GetInputStruct
 	lwz	r4,InputStruct_InstantButtons(r3)
 	rlwinm. r0,r4,0,31,31
 	bne	ArmadaShineThink_Restore
@@ -9364,11 +9364,11 @@ ArmadaShineThink_RecoverStart_CollisionLoop:
 	stfs	REG_CurrXPos,0x1C(REG_ECBStruct)
 	stfs	REG_CurrYPos,0x20(REG_ECBStruct)
 #Check if frame X or greater
-  lwz	r5, 0x02D4 (REG_P2Data)
-  lfs f1,0x70(r5)
-  fctiwz  f1,f1
-  stfd  f1,-0x10(sp)
-  lwz r3,-0x0C(sp)
+	lwz	r5, 0x02D4 (REG_P2Data)
+	lfs f1,0x70(r5)
+	fctiwz	f1,f1
+	stfd	f1,-0x10(sp)
+	lwz r3,-0x0C(sp)
 	cmpw	REG_LoopCount,r3
 	blt	ArmadaShineThink_RecoverStart_CollisionLoop_SkipDecay
 ArmadaShineThink_RecoverStart_CollisionLoop_Decay:
@@ -9395,11 +9395,11 @@ ArmadaShineThink_RecoverStart_CollisionLoop_SkipDecay:
 	lfs	REG_CurrYPos,0x8(REG_ECBStruct)
 #Inc Loop
 	addi	REG_LoopCount,REG_LoopCount,1
-  lwz	r5, 0x02D4 (REG_P2Data)
-  lfs	f1, 0x0068 (r5)
-  fctiwz  f1,f1
-  stfd  f1,-0x10(sp)
-  lwz r3,-0x0C(sp)
+	lwz	r5, 0x02D4 (REG_P2Data)
+	lfs	f1, 0x0068 (r5)
+	fctiwz	f1,f1
+	stfd	f1,-0x10(sp)
+	lwz r3,-0x0C(sp)
 	cmpw	REG_LoopCount,r3
 	blt	ArmadaShineThink_RecoverStart_CollisionLoop
 #End Loop
@@ -9496,25 +9496,25 @@ backup
 	mr	LedgeSide,r3
 
 #Change Facing Directions
-  cmpwi LedgeSide,0x0
-  beq	ArmadaShine_InitializePositions_GetLeftLedgeID
+	cmpwi LedgeSide,0x0
+	beq	ArmadaShine_InitializePositions_GetLeftLedgeID
 ArmadaShine_InitializePositions_GetRightLedgeID:
  #Change Facing Direction
 	li	r3,-1
 	bl	IntToFloat
 	stfs	f1,0x2C(REG_P1Data)
-  li	r3,-1
-  bl	IntToFloat
-  stfs	f1,0x2C(REG_P2Data)
+	li	r3,-1
+	bl	IntToFloat
+	stfs	f1,0x2C(REG_P2Data)
 	b	ArmadaShine_InitializePositions_DirectionChangeEnd
 ArmadaShine_InitializePositions_GetLeftLedgeID:
 #Change Facing Direction
 	li	r3,1
-  bl	IntToFloat
-  stfs	f1,0x2C(REG_P1Data)
-  li	r3,1
-  bl	IntToFloat
-  stfs	f1,0x2C(REG_P2Data)
+	bl	IntToFloat
+	stfs	f1,0x2C(REG_P1Data)
+	li	r3,1
+	bl	IntToFloat
+	stfs	f1,0x2C(REG_P2Data)
 ArmadaShine_InitializePositions_DirectionChangeEnd:
 
 #Get Ledge Coordinates
@@ -9684,7 +9684,7 @@ SideBSweetspotLoad:
 	bl	SideBSweetspotThink
 	mflr	r3
 	li	r4,3		#Priority (After EnvCOllision)
-  li  r5,0
+	li	r5,0
 	bl	CreateEventThinkFunction
 	b	SideBSweetspotThink_Exit
 
@@ -9697,10 +9697,10 @@ SideBSweetspotThink:
 
 #Registers
 	.set REG_EventConstants,25
-  .set REG_MenuData,26
-  .set REG_EventData,31
-  .set REG_P1Data,27
-  .set REG_P1GObj,28
+	.set REG_MenuData,26
+	.set REG_EventData,31
+	.set REG_P1Data,27
+	.set REG_P1GObj,28
 	.set REG_P2Data,29
 	.set REG_P2GObj,30
 
@@ -9730,14 +9730,14 @@ backup
 	lwz	REG_EventData,0x2c(r3)			#backup data pointer in r31
 
 #Get Player Pointers
-  bl GetAllPlayerPointers
-  mr REG_P1GObj,r3
-  mr REG_P1Data,r4
-  mr REG_P2GObj,r5
-  mr REG_P2Data,r6
+	bl GetAllPlayerPointers
+	mr REG_P1GObj,r3
+	mr REG_P1Data,r4
+	mr REG_P2GObj,r5
+	mr REG_P2Data,r6
 
 #Get Menu and Constants Pointers
-  lwz REG_MenuData,REG_EventData_REG_MenuDataPointer(REG_EventData)
+	lwz REG_MenuData,REG_EventData_REG_MenuDataPointer(REG_EventData)
 	bl	SideBSweetspotThink_Constants
 	mflr REG_EventConstants
 
@@ -9752,12 +9752,12 @@ backup
 		mr	r4,REG_P2GObj
 		mr	r5,REG_EventData
 		bl	SideBSweetspot_InitializePositions
-  #Clear Inputs
-    bl  RemoveFirstFrameInputs
+	#Clear Inputs
+		bl	RemoveFirstFrameInputs
 	#Save State
-  	addi r3,REG_EventData,EventData_SaveStateStruct
+		addi r3,REG_EventData,EventData_SaveStateStruct
 		li	r4,1			#Override failsafe code
-  	bl	SaveState_Save
+		bl	SaveState_Save
 SideBSweetspotThink_Start:
 
 #P2 intangible
@@ -9834,8 +9834,8 @@ SideBSweetspotThink_WaitToAttackSkip:
 	b	SideBSweetspotThink_WaitToAttack_CheckForBlacklistMovesSkip
 SideBSweetspotThink_WaitToAttack_BlacklistMove:
 #PLay Error SFX
-  li	r3,0xAF
-  bl  PlaySFX
+	li	r3,0xAF
+	bl	PlaySFX
 #Start Timer
 	li	r3,ResetTimer
 	stb r3,Timer(REG_EventData)
@@ -9954,9 +9954,9 @@ blrl
 .set RunDistance,0x18
 
 .float -8		#p1 x
-.float  0		#p1 y
-.float  8		#p2 x
-.float  0		#p2 y
+.float	0		#p1 y
+.float	8		#p2 x
+.float	0		#p2 y
 .float 14		#16
 .float 1.1
 .float 23
@@ -9980,10 +9980,10 @@ backup
 .set HitlagFrames,12
 
 #Init Registers
-  mr	REG_P1GObj,r3
-  lwz REG_P1Data,0x2C(REG_P1GObj)
-  mr	REG_P2GObj,r4
-  lwz REG_P2Data,0x2C(REG_P2GObj)
+	mr	REG_P1GObj,r3
+	lwz REG_P1Data,0x2C(REG_P1GObj)
+	mr	REG_P2GObj,r4
+	lwz REG_P2Data,0x2C(REG_P2GObj)
 	mr	REG_EventData,r5
 
 #Get random side
@@ -9993,25 +9993,25 @@ backup
 	mr	LedgeSide,r3
 
 #Change Facing Directions
-  cmpwi LedgeSide,0x0
-  beq	SideBSweet_InitializePositions_GetLeftLedgeID
+	cmpwi LedgeSide,0x0
+	beq	SideBSweet_InitializePositions_GetLeftLedgeID
 SideBSweet_InitializePositions_GetRightLedgeID:
  #Change Facing Direction
 	li	r3,-1
 	bl	IntToFloat
 	stfs	f1,0x2C(REG_P1Data)
-  li	r3,1
-  bl	IntToFloat
-  stfs	f1,0x2C(REG_P2Data)
+	li	r3,1
+	bl	IntToFloat
+	stfs	f1,0x2C(REG_P2Data)
 	b	SideBSweet_InitializePositions_DirectionChangeEnd
 SideBSweet_InitializePositions_GetLeftLedgeID:
 #Change Facing Direction
 	li	r3,1
-  bl	IntToFloat
-  stfs	f1,0x2C(REG_P1Data)
-  li	r3,-1
-  bl	IntToFloat
-  stfs	f1,0x2C(REG_P2Data)
+	bl	IntToFloat
+	stfs	f1,0x2C(REG_P1Data)
+	li	r3,-1
+	bl	IntToFloat
+	stfs	f1,0x2C(REG_P2Data)
 SideBSweet_InitializePositions_DirectionChangeEnd:
 
 #Get Ledge Coordinates
@@ -10187,7 +10187,7 @@ EscapeSheikLoad:
 	bl	EscapeSheikThink
 	mflr	r3
 	li	r4,3		#Priority (After EnvCOllision)
-  li  r5,0
+	li	r5,0
 	bl	CreateEventThinkFunction
 	b	EscapeSheikThink_Exit
 
@@ -10200,10 +10200,10 @@ EscapeSheikThink:
 
 #Registers
 	.set REG_EventConstants,25
-  .set REG_MenuData,26
-  .set REG_EventData,31
-  .set REG_P1Data,27
-  .set REG_P1GObj,28
+	.set REG_MenuData,26
+	.set REG_EventData,31
+	.set REG_P1Data,27
+	.set REG_P1GObj,28
 	.set REG_P2Data,29
 	.set REG_P2GObj,30
 
@@ -10240,14 +10240,14 @@ backup
 	lwz	REG_EventData,0x2c(r3)			#backup data pointer in r31
 
 #Get Player Pointers
-  bl GetAllPlayerPointers
-  mr REG_P1GObj,r3
-  mr REG_P1Data,r4
-  mr REG_P2GObj,r5
-  mr REG_P2Data,r6
+	bl GetAllPlayerPointers
+	mr REG_P1GObj,r3
+	mr REG_P1Data,r4
+	mr REG_P2GObj,r5
+	mr REG_P2Data,r6
 
 #Get Menu and Constants Pointers
-  lwz REG_MenuData,REG_EventData_REG_MenuDataPointer(REG_EventData)
+	lwz REG_MenuData,REG_EventData_REG_MenuDataPointer(REG_EventData)
 	bl	EscapeSheikThink_Constants
 	mflr REG_EventConstants
 
@@ -10262,12 +10262,12 @@ backup
 		mr	r4,REG_P2GObj
 		mr	r5,REG_EventData
 		bl	EscapeSheik_InitializePositions
-  #Clear Inputs
-    bl  RemoveFirstFrameInputs
+	#Clear Inputs
+		bl	RemoveFirstFrameInputs
 	#Save State
-  	addi r3,REG_EventData,EventData_SaveStateStruct
+		addi r3,REG_EventData,EventData_SaveStateStruct
 		li	r4,1			#Override failsafe code
-  	bl	SaveState_Save
+		bl	SaveState_Save
 EscapeSheikThink_Start:
 
 #Reset if anyone died
@@ -10323,8 +10323,8 @@ EscapeSheikThink_CheckForMistimedShine:
 	cmpwi	r3,0
 	bne	EscapeSheikThink_CheckForMistimedShine_End
 #Get this frames inputs
-  lbz	r4, 0x0618 (REG_P1Data)
-  bl	GetInputStruct
+	lbz	r4, 0x0618 (REG_P1Data)
+	bl	GetInputStruct
 	mr	r5,r3
 #Check B Button
 	lwz	r3,InputStruct_InstantButtons(r5)
@@ -10626,7 +10626,7 @@ EscapeSheikThink_Chase_PassiveStandThink:
 	lwz r4,0x84(sp)
 	mullw r4,r4,REG_Direction
 	cmpw r3,r4
-	bne  EscapeSheikThink_Chase_PassiveStandThink_FacingSkip
+	bne	EscapeSheikThink_Chase_PassiveStandThink_FacingSkip
 #If under frame 20, run instead
 	li	r5,127
 	lhz r3,FramesinCurrentAS(REG_P1Data)
@@ -10651,7 +10651,7 @@ EscapeSheikThink_Chase_PassiveStandThink_FacingSkip:
 #Wait until no longer turning
 	lwz r3,0x10(REG_P2Data)
 	cmpwi r3,ASID_Turn
-	bne  EscapeSheikThink_Chase_PassiveStandThink_RunTowardCheckMovementDirection
+	bne	EscapeSheikThink_Chase_PassiveStandThink_RunTowardCheckMovementDirection
 #If turning, wait til frame 2 to make a decision
 	lhz r3,FramesinCurrentAS(REG_P2Data)
 	cmpwi r3,2
@@ -10671,7 +10671,7 @@ EscapeSheikThink_Chase_PassiveStandThink_RunTowardCheckMovementDirection:
 	lwz r4,0x84(sp)
 	mullw r4,r4,REG_Direction
 	cmpw r3,r4
-	bne  EscapeSheikThink_Chase_PassiveStandThink_RunTowardsSkip
+	bne	EscapeSheikThink_Chase_PassiveStandThink_RunTowardsSkip
 EscapeSheikThink_Chase_PassiveStandThink_RunTowards:
 #Run Towards
 	lfs f1,0x2C(REG_P2Data)
@@ -10918,9 +10918,9 @@ blrl
 .set RunDistance,0x18
 
 .float -8		#p1 x
-.float  0		#p1 y
-.float  8		#p2 x
-.float  0		#p2 y
+.float	0		#p1 y
+.float	8		#p2 x
+.float	0		#p2 y
 .float 14		#16
 .float 1.1
 .float 23
@@ -10960,10 +10960,10 @@ backup
 .set REG_EventData,26
 
 #Init Registers
-  mr	REG_P1GObj,r3
-  lwz REG_P1Data,0x2C(REG_P1GObj)
-  mr	REG_P2GObj,r4
-  lwz REG_P2Data,0x2C(REG_P2GObj)
+	mr	REG_P1GObj,r3
+	lwz REG_P1Data,0x2C(REG_P1GObj)
+	mr	REG_P2GObj,r4
+	lwz REG_P2Data,0x2C(REG_P2GObj)
 	mr	REG_EventData,r5
 
 EscapeSheik_InitializePositions_DetermineFacingDirection:
@@ -10980,9 +10980,9 @@ EscapeSheik_InitializePositions_DetermineFacingDirection_End:
 	mr	r3,REG_FacingDirection
 	bl	IntToFloat
 	stfs	f1,0x2C(REG_P1Data)
-  mulli	r3,REG_FacingDirection,-1
-  bl	IntToFloat
-  stfs	f1,0x2C(REG_P2Data)
+	mulli	r3,REG_FacingDirection,-1
+	bl	IntToFloat
+	stfs	f1,0x2C(REG_P2Data)
 
 #Get Starting Coordinates
 	lfs f1,P1X(REG_EventConstants)
@@ -11162,8 +11162,8 @@ b	exit
 					bl	Event16_Floats
 					mflr	r3
 					#bl	InitializePositions
-        #Clear Inputs
-          bl  RemoveFirstFrameInputs
+				#Clear Inputs
+					bl	RemoveFirstFrameInputs
 				#Save State
 					mr	r3,r31
 					bl	SaveState_Save
@@ -11461,7 +11461,7 @@ Event16_Floats:
 blrl
 .long 0xC28C0000		#P1 X Position
 .long 0xc2982e6c 	#P2 X Position
-.long 0x38d1b717  #P1 Y Position
+.long 0x38d1b717	#P1 Y Position
 .long 0x38d1b717		#FD Floor Y Coord
 .long 0x40A00000		#Top Most Y Value = -5
 .long 0xC1700000	 #Bottom-most Y Value = -15
@@ -11487,7 +11487,7 @@ Event16CheckIfLineUpWithLedge_CheckNextFrame:
 #Check If Out Of Range Next Range
 lfs	f1,0xB4(r29)	#Get Y Coord
 lfs	f2,0x84(r29)	#Get Y Vel
-fadds	f1,f1,f2	    #Get Next Frames Position
+fadds	f1,f1,f2			#Get Next Frames Position
 #Check If Will Be Above Ledge Next Frame
 lfs	f2,0x10(r21)
 fcmpo	cr0,f1,f2
@@ -11854,7 +11854,7 @@ branchl	r12,0x8008a2bc		#Enter Wait
 lfs	f1,0x10(r20)
 stfs	f1,0xB0(r27)
 mr	r3,r28
-bl  UpdatePosition
+bl	UpdatePosition
 
 #Move P2
 mr	r3,r30
@@ -11862,7 +11862,7 @@ branchl	r12,0x8008a2bc		#Enter Wait
 lfs	f1,0x14(r20)
 stfs	f1,0xB0(r29)
 mr	r3,r30
-bl  UpdatePosition
+bl	UpdatePosition
 
 restore
 blr
@@ -11979,91 +11979,91 @@ backup
 
 mr	Function,r3
 mr	Priority,r4
-mr  WindowOptionCount,r5
-mr  ASCIIStruct,r6
+mr	WindowOptionCount,r5
+mr	ASCIIStruct,r6
 
 ########################
 ## Create Event Think ##
 ########################
 
 #Create GObj
-  li	r3,6		#GObj Type
-  li	r4,7		#On-Pause Function
-  li	r5,80
-  branchl	r12,GObj_Create
+	li	r3,6		#GObj Type
+	li	r4,7		#On-Pause Function
+	li	r5,80
+	branchl	r12,GObj_Create
 
 #Backup Allocation
-  mr	EventGObj,r3
+	mr	EventGObj,r3
 
 #Schedule Task
-  mr	r4,Function
-  mr	r5,Priority
-  branchl	r12,GObj_AddProc
+	mr	r4,Function
+	mr	r5,Priority
+	branchl	r12,GObj_AddProc
 
 #Give Task Some Data Space
-  li	r3,EventData_DataSize		#50 bytes of space
-  branchl	r12,HSD_MemAlloc		#HSD_MemAlloc
-  mr	EventData,r3
+	li	r3,EventData_DataSize		#50 bytes of space
+	branchl	r12,HSD_MemAlloc		#HSD_MemAlloc
+	mr	EventData,r3
 
 #Initalize GObj
-  mr	r6,r3
-  mr	r3,EventGObj		#task space
-  li	r4,0x0		#typedef
-  load	r5,HSD_Free		#destructor (HSD_Free)
-  branchl	r12,GObj_AddUserData		#Create Data Block
+	mr	r6,r3
+	mr	r3,EventGObj		#task space
+	li	r4,0x0		#typedef
+	load	r5,HSD_Free		#destructor (HSD_Free)
+	branchl	r12,GObj_AddUserData		#Create Data Block
 
 #Zero Dataspace
-  mr	r3,EventData
-  li	r4,EventData_DataSize
-  branchl	r12,ZeroAreaLength		#zero length
+	mr	r3,EventData
+	li	r4,EventData_DataSize
+	branchl	r12,ZeroAreaLength		#zero length
 
 ##############################
 ## Create Option Menu Think ##
 ##############################
 
 #Check if Option Menu is enabled for this event
-  cmpwi WindowOptionCount,0
-  beq CreateEventThinkFunction_NoOptionMenu
+	cmpwi WindowOptionCount,0
+	beq CreateEventThinkFunction_NoOptionMenu
 
 #Create GObj
-  li	r3,6		#GObj Type
-  li	r4,0		#On-Pause Function
-  li	r5,80
-  branchl	r12,GObj_Create
+	li	r3,6		#GObj Type
+	li	r4,0		#On-Pause Function
+	li	r5,80
+	branchl	r12,GObj_Create
 
 #Backup Allocation
-  mr	MenuGObj,r3
+	mr	MenuGObj,r3
 
 #Schedule Task
-  bl  OptionMenuThink
-  mflr r4
-  li	r5,22          #Last Function to Run
-  branchl	r12,GObj_AddProc
+	bl	OptionMenuThink
+	mflr r4
+	li	r5,22					#Last Function to Run
+	branchl	r12,GObj_AddProc
 
 #Give Task Some Data Space
-  li	r3,MenuData_DataSize		#50 bytes of space
-  branchl	r12,HSD_MemAlloc		#HSD_MemAlloc
-  mr	MenuData,r3
+	li	r3,MenuData_DataSize		#50 bytes of space
+	branchl	r12,HSD_MemAlloc		#HSD_MemAlloc
+	mr	MenuData,r3
 
 #Initalize GObj
-  mr	r6,MenuData
-  mr	r3,MenuGObj		#task space
-  li	r4,0x0	    	#typedef
-  load	r5,HSD_Free		#destructor (HSD_Free)
-  branchl	r12,GObj_AddUserData		#Create Data Block
+	mr	r6,MenuData
+	mr	r3,MenuGObj		#task space
+	li	r4,0x0				#typedef
+	load	r5,HSD_Free		#destructor (HSD_Free)
+	branchl	r12,GObj_AddUserData		#Create Data Block
 
 #Zero Dataspace
-  mr	r3,MenuData
-  li	r4,MenuData_DataSize
-  branchl	r12,ZeroAreaLength		#zero length
+	mr	r3,MenuData
+	li	r4,MenuData_DataSize
+	branchl	r12,ZeroAreaLength		#zero length
 
 #Store Option Menu info to Dataspace
-  stw WindowOptionCount,MenuData_WindowOptionCountPointer(MenuData)
-  stw ASCIIStruct,MenuData_ASCIIStructPointer(MenuData)
+	stw WindowOptionCount,MenuData_WindowOptionCountPointer(MenuData)
+	stw ASCIIStruct,MenuData_ASCIIStructPointer(MenuData)
 
 #Store Pointers to Each Other
-  stw MenuData,EventData_MenuDataPointer(EventData)
-  stw EventData,MenuData_EventDataPointer(MenuData)
+	stw MenuData,EventData_MenuDataPointer(EventData)
+	stw EventData,MenuData_EventDataPointer(MenuData)
 CreateEventThinkFunction_NoOptionMenu:
 
 #Disable Hazards
@@ -12085,26 +12085,26 @@ blrl
 backup
 
 #Load Data Pointer
-  lwz MenuData,0x2C(r3)
+	lwz MenuData,0x2C(r3)
 
 #Check If Paused
-  li  r3,1
-  branchl r12,DevelopMode_FrameAdvanceCheck
-  cmpwi r3,0x2
-  bne OptionMenuThink_Exit
+	li	r3,1
+	branchl r12,DevelopMode_FrameAdvanceCheck
+	cmpwi r3,0x2
+	bne OptionMenuThink_Exit
 
 #Run OptionThink Code
 OptionMenuThink_CheckInputs:
-  addi r3,MenuData,MenuData_OptionMenuMemory
-  lwz r4,MenuData_WindowOptionCountPointer(MenuData)
-  lwz r5,MenuData_ASCIIStructPointer(MenuData)
-  bl	OptionWindow
+	addi r3,MenuData,MenuData_OptionMenuMemory
+	lwz r4,MenuData_WindowOptionCountPointer(MenuData)
+	lwz r5,MenuData_ASCIIStructPointer(MenuData)
+	bl	OptionWindow
 
 #Store Modified Option Bool
-  cmpwi r3,0
-  beq OptionMenuThink_Exit
-  addi r5,MenuData,MenuData_OptionMenuToggled
-  stbx r3,r4,r5
+	cmpwi r3,0
+	beq OptionMenuThink_Exit
+	addi r5,MenuData,MenuData_OptionMenuToggled
+	stbx r3,r4,r5
 
 OptionMenuThink_Exit:
 restore
@@ -12120,21 +12120,21 @@ ClearToggledOptions:
 #r3 = Menu Data
 
 #Get Amount of Options
-  lwz r4,MenuData_WindowOptionCountPointer(r3)
-  lbz r4,0x0(r4)
+	lwz r4,MenuData_WindowOptionCountPointer(r3)
+	lbz r4,0x0(r4)
 
 #Loop Through All Data
-  addi r3,r3,MenuData_OptionMenuToggled
-  li  r5,0
+	addi r3,r3,MenuData_OptionMenuToggled
+	li	r5,0
 
 ClearToggledOptions_Loop:
-  stbx r5,r3,r4     #Zero Byte
-  subi r4,r4,1
-  cmpwi r4,0
-  bge ClearToggledOptions_Loop
+	stbx r5,r3,r4		 #Zero Byte
+	subi r4,r4,1
+	cmpwi r4,0
+	bge ClearToggledOptions_Loop
 
 ClearToggledOptions_Exit:
-  blr
+	blr
 
 ######################
 ## Save States Main ##
@@ -12191,39 +12191,39 @@ SaveState_OnDeathCheckLoop:
 #Get Proper Player Data
 	mr		r3,REG_LoopCount
 	mr		r4,REG_isSubchar
-	bl		SaveState_GetPlayerDataPointer  #returns player slot,player pointer and player data
-	cmpwi		r3,0xFF				                #check if player didnt exist
+	bl		SaveState_GetPlayerDataPointer	#returns player slot,player pointer and player data
+	cmpwi		r3,0xFF												#check if player didnt exist
 	beq		SaveState_OnDeathCheckInc				#move on with loop
 #Check for on-death function
 	lwz		r3,0x21E0(r5)
-  cmpwi r3,0x0
-  bne SaveState_OnDeathCheckExit
+	cmpwi r3,0x0
+	bne SaveState_OnDeathCheckExit
 	lwz		r3,0x21E4(r5)
-  cmpwi r3,0x0
-  bne SaveState_OnDeathCheckExit
+	cmpwi r3,0x0
+	bne SaveState_OnDeathCheckExit
 	lwz		r3,0x21E8(r5)
-  cmpwi r3,0x0
-  bne SaveState_OnDeathCheckExit
+	cmpwi r3,0x0
+	bne SaveState_OnDeathCheckExit
 #Check if holding an item
 	lwz		r3,0x1974(r5)
-  cmpwi r3,0x0
-  bne SaveState_OnDeathCheckExit
+	cmpwi r3,0x0
+	bne SaveState_OnDeathCheckExit
 	lwz		r3,0x1978(r5)
-  cmpwi r3,0x0
-  bne SaveState_OnDeathCheckExit
+	cmpwi r3,0x0
+	bne SaveState_OnDeathCheckExit
 #Check for fighter accessory
 	lwz		r3,0x20A0(r5)
-  cmpwi r3,0x0
-  bne SaveState_OnDeathCheckExit
-  b SaveState_OnDeathCheckInc
+	cmpwi r3,0x0
+	bne SaveState_OnDeathCheckExit
+	b SaveState_OnDeathCheckInc
 
 SaveState_OnDeathCheckExit:
 #PLay Error SFX
-  li	r3,0xAF
-  bl  PlaySFX
-  li	r3,0xAF
-  bl  PlaySFX
-  b SaveState_SaveExit
+	li	r3,0xAF
+	bl	PlaySFX
+	li	r3,0xAF
+	bl	PlaySFX
+	b SaveState_SaveExit
 
 SaveState_OnDeathCheckInc:
 #Check For Subchar Before Looping
@@ -12278,7 +12278,7 @@ SaveState_SaveLoopInit:
 		#Get Player Data Length
 		SaveState_Save_GetPlayerBlockLength:
 		load		r3,0x80458fd0
-		lwz    	REG_PlayerDataSize,0x20(r3)			#get player block length in REG_PlayerDataSize
+		lwz			REG_PlayerDataSize,0x20(r3)			#get player block length in REG_PlayerDataSize
 		addi		r3,REG_PlayerDataSize,0x100			#add static block length
 		addi		r3,r3,0x10			#add additional storage
 		branchl		r12,HSD_MemAlloc			#HSD_MemAlloc
@@ -12399,7 +12399,7 @@ SaveState_Load:
 		#Get Player Block Length in REG_PlayerDataSize
 		SaveState_Load_GetPlayerBlockLength:
 		load		REG_PlayerDataSize,0x80458fd0
-		lwz    		REG_PlayerDataSize,0x20(REG_PlayerDataSize)		#REG_PlayerDataSize = length
+		lwz				REG_PlayerDataSize,0x20(REG_PlayerDataSize)		#REG_PlayerDataSize = length
 
 		#Get Pointer From Task Struct
 		cmpwi		REG_isSubchar,0x0		#check if subcharacter
@@ -12490,27 +12490,27 @@ SaveState_Load:
 		li	r3,0x0
 		stw	r3,0x5A8(REG_PlayerData)
 
-    #Remove Respawn Platform JObj Pointer and Think Function
-    stw r3,0x20A0(REG_PlayerData)
-    stw r3,0x21B0(REG_PlayerData)
+		#Remove Respawn Platform JObj Pointer and Think Function
+		stw r3,0x20A0(REG_PlayerData)
+		stw r3,0x21B0(REG_PlayerData)
 
-    #Remove Held Item Pointer
-    stw r3,0x1974(REG_PlayerData)
+		#Remove Held Item Pointer
+		stw r3,0x1974(REG_PlayerData)
 
-    #Update ECB Position
+		#Update ECB Position
 		mr		r3,REG_PlayerGObj
-		bl  UpdatePosition
+		bl	UpdatePosition
 
-    #Stop Player's SFX
-    mr  r3,REG_PlayerData
-    branchl r12,SFX_StopAllCharacterSFX
+		#Stop Player's SFX
+		mr	r3,REG_PlayerData
+		branchl r12,SFX_StopAllCharacterSFX
 
-    #Stop Crowd SFX
-    branchl r12,SFXManager_StopSFXIfPlaying
+		#Stop Crowd SFX
+		branchl r12,SFXManager_StopSFXIfPlaying
 
-    #Remove GFX
-    mr  r3,REG_PlayerGObj
-    branchl	r12,GFX_RemoveAll
+		#Remove GFX
+		mr	r3,REG_PlayerGObj
+		branchl	r12,GFX_RemoveAll
 
 		/* #Removing this, causes ground issues when restoring. instead im removing the OSReport call for the error
 		#If Grounded, Change Ground Variable Back
@@ -12529,9 +12529,9 @@ SaveState_Load:
 		lwz		r4,0x890(REG_PlayerData)
 		stw		r3,0x8(r4)
 
-    #Update Camera Box Position
-    mr  r3,REG_PlayerGObj
-    bl  UpdateCameraBox
+		#Update Camera Box Position
+		mr	r3,REG_PlayerGObj
+		bl	UpdateCameraBox
 
 		#Remake HUD For Dead Players (Taken from Achilles' GitHub)
 		cmpwi		REG_isSubchar,0x1		#dont run this on subcharacters
@@ -12576,32 +12576,32 @@ SaveState_Load:
 		cmpw		REG_LoopCount,REG_PlayerTotal
 		blt		SaveState_LoadLoop
 
-    SaveState_LoadEnd:
+		SaveState_LoadEnd:
 
-    /*
-    SaveState_Load_RemoveAllGFX:
-    #Get First GFX
-      lwz  r3,-0x3E74 (r13)
-      lwz  r20,0x30(r3)
-    #Check if exists
-    SaveState_Load_CheckIfGFXExists:
-      cmpwi r20,0
-      beq SaveState_Load_RemoveAllGFXEnd
-    #Check if this is a particle GObj?
-      lbz r3,0x4(r20)
-      cmpwi r3,1
-      beq SaveState_Load_GetNextGFX
-    #Remove this GFX
-      mr  r3,r20
-      branchl r12,0x80390228
-    #Get next GFX
-    SaveState_Load_GetNextGFX:
-      lwz r20,0x8(r20)
-      b SaveState_Load_CheckIfGFXExists
-    SaveState_Load_RemoveAllGFXEnd:
-    */
+		/*
+		SaveState_Load_RemoveAllGFX:
+		#Get First GFX
+			lwz	r3,-0x3E74 (r13)
+			lwz	r20,0x30(r3)
+		#Check if exists
+		SaveState_Load_CheckIfGFXExists:
+			cmpwi r20,0
+			beq SaveState_Load_RemoveAllGFXEnd
+		#Check if this is a particle GObj?
+			lbz r3,0x4(r20)
+			cmpwi r3,1
+			beq SaveState_Load_GetNextGFX
+		#Remove this GFX
+			mr	r3,r20
+			branchl r12,0x80390228
+		#Get next GFX
+		SaveState_Load_GetNextGFX:
+			lwz r20,0x8(r20)
+			b SaveState_Load_CheckIfGFXExists
+		SaveState_Load_RemoveAllGFXEnd:
+		*/
 
-  SaveState_LoadExit:
+	SaveState_LoadExit:
 	restore
 	blr
 
@@ -12688,44 +12688,44 @@ backup
 mr	r29,r3		#Task Data
 
 #Init Loop
-  li  LoopCount,0
+	li	LoopCount,0
 #Loop
 CheckForSaveAndLoad_Loop:
-  mr  r3,LoopCount
-  branchl r12,PlayerBlock_LoadMainCharDataOffset
-  cmpwi r3,0x0
-  beq CheckForSaveAndLoad_Inc
+	mr	r3,LoopCount
+	branchl r12,PlayerBlock_LoadMainCharDataOffset
+	cmpwi r3,0x0
+	beq CheckForSaveAndLoad_Inc
 CheckForSaveAndLoad_CheckInputs:
-  load r3,0x804c21cc
-  #load r3,0x804c1fac
-  mulli r0,LoopCount,68
-  add r4,r3,r0
+	load r3,0x804c21cc
+	#load r3,0x804c1fac
+	mulli r0,LoopCount,68
+	add r4,r3,r0
 #Make Sure Nothing Else Is Held
-  lhz	r3,0x2(r4)
-  rlwinm.  r0,r3,0,0,26
-  bne	CheckForSaveAndLoad_Inc
-  lwz	r3,0x8(r4)
-  rlwinm.	r0,r3,0,30,30
-  beq	CheckForSaveAndLoad_NoSave
-  mr	r3,r29
+	lhz	r3,0x2(r4)
+	rlwinm.	r0,r3,0,0,26
+	bne	CheckForSaveAndLoad_Inc
+	lwz	r3,0x8(r4)
+	rlwinm.	r0,r3,0,30,30
+	beq	CheckForSaveAndLoad_NoSave
+	mr	r3,r29
 	li	r4,0			#run failsafe code
-  bl	SaveState_Save
-  li	r3,0x0
-  b	CheckForSaveAndLoad_Exit
+	bl	SaveState_Save
+	li	r3,0x0
+	b	CheckForSaveAndLoad_Exit
 CheckForSaveAndLoad_NoSave:
-  rlwinm.	r0,r3,0,31,31
-  beq	CheckForSaveAndLoad_Inc
-  mr	r3,r29
-  bl	SaveState_Load
-  mr	r3,r29
-  bl	SaveState_Load
-  li	r3,0x1
-  b	CheckForSaveAndLoad_Exit
+	rlwinm.	r0,r3,0,31,31
+	beq	CheckForSaveAndLoad_Inc
+	mr	r3,r29
+	bl	SaveState_Load
+	mr	r3,r29
+	bl	SaveState_Load
+	li	r3,0x1
+	b	CheckForSaveAndLoad_Exit
 
 CheckForSaveAndLoad_Inc:
-  addi LoopCount,LoopCount,1
-  cmpwi LoopCount,4
-  blt CheckForSaveAndLoad_Loop
+	addi LoopCount,LoopCount,1
+	cmpwi LoopCount,4
+	blt CheckForSaveAndLoad_Loop
 
 CheckForSaveAndLoad_Exit:
 restore
@@ -12902,7 +12902,7 @@ cmpwi	r4,0x169		#Shine Loop Ground
 beq	Multishine_JumpCancelShine
 cmpwi	r4,0x19		#JumpF
 beq	Multishine_StartShine
-b       CPUActions_MultiShine_Exit
+b			 CPUActions_MultiShine_Exit
 
 Multishine_StartShine:
 li	r3,-127		#Down
@@ -13002,7 +13002,7 @@ RAndDPadChangesEventOption_CursorUp:
 		lbz	r4,0x1(OptionWindowMemory)
 		subi	r4,r4,1
 		stb	r4,0x1(OptionWindowMemory)
-    b RAndDPadChangesEventOption_PlayScrollSFX
+		b RAndDPadChangesEventOption_PlayScrollSFX
 
 b	RAndDPadChangesEventOption_DisplayWindow
 
@@ -13084,15 +13084,15 @@ stbx	r3,r5,OptionWindowMemory		#Store New Option Byte Value
 b	RAndDPadChangesEventOption_PlayScrollSFX
 
 RAndDPadChangesEventOption_PlayScrollSFX:
-li  r3,0x2
+li	r3,0x2
 branchl r12,SFX_MenuCommonSound
 
 RAndDPadChangesEventOption_DisplayWindow:
 #Display Text For The New Option Value
 mr	r3,r27			#p1 (no offsetting window)
-li	r4,1			  #text timeout
+li	r4,1				#text timeout
 li	r5,0x2			#window instance #3
-li	r6,0			  #window ID #3
+li	r6,0				#window ID #3
 branchl	r12,TextCreateFunction		#create text custom function
 mr	text,r3			#backup text pointer
 
@@ -13133,38 +13133,38 @@ mr	text,r3			#backup text pointer
 ############################
 
 #Check if at the top of the screen
-  lbz r3,0x1(r20)
-  cmpwi r3,0x0
-  beq RAndDPadChangesEventOption_DisplayDownArrow
+	lbz r3,0x1(r20)
+	cmpwi r3,0x0
+	beq RAndDPadChangesEventOption_DisplayDownArrow
 #Create Title Text
-	li r3,-20        #Y
-  bl  IntToFloat
-  fmr f2,f1
-  li  r3,-210      #X
-  bl  IntToFloat
+	li r3,-20				#Y
+	bl	IntToFloat
+	fmr f2,f1
+	li	r3,-210			#X
+	bl	IntToFloat
 	mr 	r3,text			#text pointer
-	bl  RAndDPadChangesEventOption_UpArrowText
-  mflr r4
+	bl	RAndDPadChangesEventOption_UpArrowText
+	mflr r4
 	branchl r12,Text_InitializeSubtext
 
 RAndDPadChangesEventOption_DisplayDownArrow:
 #Check if at the bottom of the screen
-  lbz r3,0x0(r21)
-  cmpwi r3,2
-  blt RAndDPadChangesEventOption_DisplayArrowExit
-  lbz r4,0x1(r20)
-  sub r3,r3,r4
-  cmpwi r3,2
-  ble RAndDPadChangesEventOption_DisplayArrowExit
+	lbz r3,0x0(r21)
+	cmpwi r3,2
+	blt RAndDPadChangesEventOption_DisplayArrowExit
+	lbz r4,0x1(r20)
+	sub r3,r3,r4
+	cmpwi r3,2
+	ble RAndDPadChangesEventOption_DisplayArrowExit
 #Create Title Text
-  li  r3,320      #Y value
-  bl  IntToFloat
-  fmr f2,f1
-  li  r3,-210     #X Value
-  bl  IntToFloat
+	li	r3,320			#Y value
+	bl	IntToFloat
+	fmr f2,f1
+	li	r3,-210		 #X Value
+	bl	IntToFloat
 	mr 	r3,text			#text pointer
-	bl  RAndDPadChangesEventOption_DownArrowText
-  mflr r4
+	bl	RAndDPadChangesEventOption_DownArrowText
+	mflr r4
 	branchl r12,Text_InitializeSubtext
 
 RAndDPadChangesEventOption_DisplayArrowExit:
@@ -13397,10 +13397,10 @@ backup
 	lbz REG_isSubcharBool,0xC(r6)
 
 #Get inputs
-  load r4,0x804c21cc
+	load r4,0x804c21cc
 	lbz r3,0x618(r3)
-  mulli r0,r3,68
-  add r5,r4,r0
+	mulli r0,r3,68
+	add r5,r4,r0
 #Make Sure L Is Held
 	lwz r3,0x0(r5)		#get held inputs
 	rlwinm. r0,r3,0,25,25
@@ -13471,7 +13471,7 @@ DPadCPUPercent_StorePercent:
 	stfs	f1,0x1830(r3)
 #Backed Up Static Playerblock
 	load	r4,0x80458fd0					#get player block length
-	lwz   r4,0x20(r4)						#get player block length
+	lwz	 r4,0x20(r4)						#get player block length
 	lwz r3,0x0(REG_SaveStruct)	#only the main character has a static block backup
 	add	r3,r3,r4								#static block start
 	sth	REG_PercentInt,0x60(r3)
@@ -13503,7 +13503,7 @@ stfs	f1,0xB0(r27)
 lfs	f1,0x8(r20)
 stfs	f1,0xB4(r27)
 mr	r3,r28
-bl  UpdatePosition
+bl	UpdatePosition
 mr	r3,r28
 bl	UpdateCameraBox
 mr	r3,r28
@@ -13520,7 +13520,7 @@ stfs	f1,0xB0(r25)
 lfs	f1,0x8(r20)
 stfs	f1,0xB4(r25)
 mr	r3,r24
-bl  UpdatePosition
+bl	UpdatePosition
 mr	r3,r24
 bl	UpdateCameraBox
 
@@ -13533,7 +13533,7 @@ stfs	f1,0xB0(r29)
 lfs	f1,0xC(r20)
 stfs	f1,0xB4(r29)
 mr	r3,r30
-bl  UpdatePosition
+bl	UpdatePosition
 mr	r3,r30
 bl	UpdateCameraBox
 mr	r3,r30
@@ -13550,7 +13550,7 @@ stfs	f1,0xB0(r25)
 lfs	f1,0xC(r20)
 stfs	f1,0xB4(r25)
 mr	r3,r24
-bl  UpdatePosition
+bl	UpdatePosition
 mr	r3,r24
 bl	UpdateCameraBox
 
@@ -13738,8 +13738,8 @@ IntToFloat:
 mflr r0
 stw r0, 0x4(r1)
 stwu	r1,-0x100(r1)	# make space for 12 registers
-stmw  r20,0x8(r1)
-stfs  f2,0x38(r1)
+stmw	r20,0x8(r1)
+stfs	f2,0x38(r1)
 
 lis	r0, 0x4330
 lfd	f2, -0x6758 (rtoc)
@@ -13749,8 +13749,8 @@ stw	r3,0xF4(sp)
 lfd	f1,0xF0(sp)
 fsubs	f1,f1,f2		#Convert To Float
 
-lfs  f2,0x38(r1)
-lmw  r20,0x8(r1)
+lfs	f2,0x38(r1)
+lmw	r20,0x8(r1)
 lwz r0, 0x104(r1)
 addi	r1,r1,0x100	# release the space
 mtlr r0
@@ -14013,17 +14013,17 @@ MoveCPU:
 backup
 
 #Get Variables
-  mr  P1GObj,r3
-  lwz P1Data,0x2C(P1GObj)
-  mr  P2GObj,r4
-  lwz P2Data,0x2C(P2GObj)
-  mr  SaveStateStruct,r5
+	mr	P1GObj,r3
+	lwz P1Data,0x2C(P1GObj)
+	mr	P2GObj,r4
+	lwz P2Data,0x2C(P2GObj)
+	mr	SaveStateStruct,r5
 
 #Get Input
-  lbz	r4, 0x0618 (P1Data)
-  load r3,InputStructStart
-  mulli	r0, r4, 68
-  add	r5, r0, r3
+	lbz	r4, 0x0618 (P1Data)
+	load r3,InputStructStart
+	mulli	r0, r4, 68
+	add	r5, r0, r3
 
 #Check DPad Down
 	lwz	r3,0xC(r5)
@@ -14038,88 +14038,88 @@ backup
 	bne	MoveCPUExit
 
 #Make Sure Player is Grounded
-  lwz r3,0xE0(P1Data)
-  cmpwi r3,0x0
-  bne MoveCPU_NoGroundFound
+	lwz r3,0xE0(P1Data)
+	cmpwi r3,0x0
+	bne MoveCPU_NoGroundFound
 
 #Get Position
-  li  r3,10
-  bl  IntToFloat          #Offset from P1
-  lfs f3,0xB0(P1Data)     #P1 X
-  lfs f2,0xB4(P1Data)     #P1 Y
-  lfs f4,0x2C(P1Data)     #Facing Direction
-  fmuls f1,f1,f4
-  fadds f1,f1,f3
+	li	r3,10
+	bl	IntToFloat					#Offset from P1
+	lfs f3,0xB0(P1Data)		 #P1 X
+	lfs f2,0xB4(P1Data)		 #P1 Y
+	lfs f4,0x2C(P1Data)		 #Facing Direction
+	fmuls f1,f1,f4
+	fadds f1,f1,f3
 #Check If P2 Will Be Grounded
-  li  r3,0
-  bl  FindGroundNearPlayer
-  cmpwi r3,0    #Check if ground was found
-  beq MoveCPU_NoGroundFound
-  stfs f1,0xB0(P2Data)
-  stfs f2,0xB4(P2Data)
-  stw r4,0x83C(P2Data)
-  lfs f1,0x2C(P1Data)
-  fneg f1,f1
-  stfs f1,0x2C(P2Data)
+	li	r3,0
+	bl	FindGroundNearPlayer
+	cmpwi r3,0		#Check if ground was found
+	beq MoveCPU_NoGroundFound
+	stfs f1,0xB0(P2Data)
+	stfs f2,0xB4(P2Data)
+	stw r4,0x83C(P2Data)
+	lfs f1,0x2C(P1Data)
+	fneg f1,f1
+	stfs f1,0x2C(P2Data)
 #Enter Wait
-  mr  r3,P2GObj
-  branchl r12,AS_Wait
+	mr	r3,P2GObj
+	branchl r12,AS_Wait
 #Update Position
-  mr  r3,P2GObj
-  bl  UpdatePosition
+	mr	r3,P2GObj
+	bl	UpdatePosition
 #Update ECB Values for the ground ID
-  mr r3,P2GObj
-  branchl r12,EnvironmentCollision_WaitLanding
+	mr r3,P2GObj
+	branchl r12,EnvironmentCollision_WaitLanding
 #Set Grounded
-  mr r3,P2Data
-  branchl r12,Air_SetAsGrounded
+	mr r3,P2Data
+	branchl r12,Air_SetAsGrounded
 
 #Check For Follower
-  mr  r3,P2GObj
-  bl  CheckIfPlayerHasAFollower
-  cmpwi r3,0
-  beq MoveCPU_NoFollower
-  mr P2Subchar,r3
-  mr P2SubcharData,r4
+	mr	r3,P2GObj
+	bl	CheckIfPlayerHasAFollower
+	cmpwi r3,0
+	beq MoveCPU_NoFollower
+	mr P2Subchar,r3
+	mr P2SubcharData,r4
 #Init Player Data Values (So CPU Init is called and nana knows where popp is)
-  mr r3,P2Subchar
-  branchl r12,0x80068354
+	mr r3,P2Subchar
+	branchl r12,0x80068354
 #Copy Positions
-  lfs f1,0xB0(P2Data)
-  stfs f1,0xB0(P2SubcharData)
-  lfs f1,0xB4(P2Data)
-  stfs f1,0xB4(P2SubcharData)
-  lwz r3,0x83C(P2Data)
-  stw r3,0x83C(P2SubcharData)
-  lfs f1,0x2C(P2Data)
-  stfs f1,0x2C(P2SubcharData)
+	lfs f1,0xB0(P2Data)
+	stfs f1,0xB0(P2SubcharData)
+	lfs f1,0xB4(P2Data)
+	stfs f1,0xB4(P2SubcharData)
+	lwz r3,0x83C(P2Data)
+	stw r3,0x83C(P2SubcharData)
+	lfs f1,0x2C(P2Data)
+	stfs f1,0x2C(P2SubcharData)
 #Enter Wait
-  mr  r3,P2Subchar
-  branchl r12,AS_Wait
+	mr	r3,P2Subchar
+	branchl r12,AS_Wait
 #Update Position
-  mr  r3,P2Subchar
-  bl  UpdatePosition
+	mr	r3,P2Subchar
+	bl	UpdatePosition
 #Update ECB Values for the ground ID
-  mr r3,P2Subchar
-  branchl r12,EnvironmentCollision_WaitLanding
+	mr r3,P2Subchar
+	branchl r12,EnvironmentCollision_WaitLanding
 #Set Grounded
-  mr r3,P2SubcharData
-  branchl r12,Air_SetAsGrounded
+	mr r3,P2SubcharData
+	branchl r12,Air_SetAsGrounded
 
 MoveCPU_NoFollower:
 #Savestate
-  mr  r3,SaveStateStruct
+	mr	r3,SaveStateStruct
 	li	r4,1			#Override failsafe code
-  bl  SaveState_Save
+	bl	SaveState_Save
 #Play SFX
-  li r3,0xDD
-  bl  PlaySFX
-  b MoveCPUExit
+	li r3,0xDD
+	bl	PlaySFX
+	b MoveCPUExit
 
 MoveCPU_NoGroundFound:
 #PLay Error SFX
-  li	r3,0xAF
-  bl  PlaySFX
+	li	r3,0xAF
+	bl	PlaySFX
 
 MoveCPUNoSubchar:
 MoveCPUExit:
@@ -14137,95 +14137,95 @@ AdjustResetDistance:
 
 backup
 
-mr  SaveStateStruct,r3
+mr	SaveStateStruct,r3
 
 #Make Sure Nothing is Held
-  lhz	r3,0x662(r27)
-  rlwinm.  r0,r3,0,27,27
-  bne 0xC
-  cmpwi r3,0x0
-  bne	AdjustResetDistance_NoPress
+	lhz	r3,0x662(r27)
+	rlwinm.	r0,r3,0,27,27
+	bne 0xC
+	cmpwi r3,0x0
+	bne	AdjustResetDistance_NoPress
 
 
 #Check For DPad Right
 AdjustResetDistance_CheckRightDPad:
-  lwz	r3,0x668(r27)			#Get DPad
-  rlwinm.	r0,r3,0,30,30
-  beq	AdjustResetDistance_CheckLeftDPad
+	lwz	r3,0x668(r27)			#Get DPad
+	rlwinm.	r0,r3,0,30,30
+	beq	AdjustResetDistance_CheckLeftDPad
 #Move Apart
 #Determine if P2 is to the left or right of P1 + Get X Pos Multiplier
-  bl  GetDirectionInRelationToP1
-  bl  IntToFloat
-  fmr P2Direction,f1
+	bl	GetDirectionInRelationToP1
+	bl	IntToFloat
+	fmr P2Direction,f1
 #Load P1 Backup X Location
-  lwz	r20,0x0(SaveStateStruct)
-  lfs	PlayerX,0xB0(r20)
+	lwz	r20,0x0(SaveStateStruct)
+	lfs	PlayerX,0xB0(r20)
 #Add One in the correct direction
-  li	r3,1
-  bl	IntToFloat
-  fneg P2Direction,P2Direction
-  fmuls f1,f1,P2Direction
-  fadds	P1X,f1,PlayerX           #New P1 X
+	li	r3,1
+	bl	IntToFloat
+	fneg P2Direction,P2Direction
+	fmuls f1,f1,P2Direction
+	fadds	P1X,f1,PlayerX					 #New P1 X
 #Load P2 Backup X Location
-  lwz	r21,0x8(SaveStateStruct)
-  lfs	PlayerX,0xB0(r21)
+	lwz	r21,0x8(SaveStateStruct)
+	lfs	PlayerX,0xB0(r21)
 #Add One in the correct direction
-  li	r3,1
-  bl	IntToFloat
-  fneg P2Direction,P2Direction
-  fmuls f1,f1,P2Direction
-  fadds	P2X,f1,PlayerX            #New P2 X
+	li	r3,1
+	bl	IntToFloat
+	fneg P2Direction,P2Direction
+	fmuls f1,f1,P2Direction
+	fadds	P2X,f1,PlayerX						#New P2 X
 #Check if already 30 Mm apart
-  fsubs f2,P1X,P2X
-  fabs f2,f2        #get abs distance from each other in f2
-  li	r3,30
-  bl	IntToFloat
-  fcmpo	cr0,f2,f1
-  bge	AdjustResetDistance_NoPress
+	fsubs f2,P1X,P2X
+	fabs f2,f2				#get abs distance from each other in f2
+	li	r3,30
+	bl	IntToFloat
+	fcmpo	cr0,f2,f1
+	bge	AdjustResetDistance_NoPress
 #Store Back To PlayerBlock
-  stfs	P1X,0xB0(r20)
-  stfs	P2X,0xB0(r21)
-  b	AdjustResetDistance_WasPressed
+	stfs	P1X,0xB0(r20)
+	stfs	P2X,0xB0(r21)
+	b	AdjustResetDistance_WasPressed
 
 
 #Check For DPad Left
 AdjustResetDistance_CheckLeftDPad:
-  rlwinm.	r0,r3,0,31,31
-  beq	AdjustResetDistance_NoPress
+	rlwinm.	r0,r3,0,31,31
+	beq	AdjustResetDistance_NoPress
 #Move Together
 #Determine if P2 is to the left or right of P1 + Get X Pos Multiplier
-  bl  GetDirectionInRelationToP1
-  bl  IntToFloat
-  fmr P2Direction,f1
+	bl	GetDirectionInRelationToP1
+	bl	IntToFloat
+	fmr P2Direction,f1
 #Load P1 Backup X Location
-  lwz	r20,0x0(SaveStateStruct)
-  lfs	PlayerX,0xB0(r20)
+	lwz	r20,0x0(SaveStateStruct)
+	lfs	PlayerX,0xB0(r20)
 #Add One in the correct direction
-  li	r3,1
-  bl	IntToFloat
-  #fneg P2Direction,P2Direction
-  fmuls f1,f1,P2Direction
-  fadds	P1X,f1,PlayerX           #New P1 X
+	li	r3,1
+	bl	IntToFloat
+	#fneg P2Direction,P2Direction
+	fmuls f1,f1,P2Direction
+	fadds	P1X,f1,PlayerX					 #New P1 X
 #Load P2 Backup X Location
-  lwz	r21,0x8(SaveStateStruct)
-  lfs	PlayerX,0xB0(r21)
+	lwz	r21,0x8(SaveStateStruct)
+	lfs	PlayerX,0xB0(r21)
 #Add One in the correct direction
-  li	r3,1
-  bl	IntToFloat
-  fneg P2Direction,P2Direction
-  fmuls f1,f1,P2Direction
-  fadds	P2X,f1,PlayerX            #New P2 X
+	li	r3,1
+	bl	IntToFloat
+	fneg P2Direction,P2Direction
+	fmuls f1,f1,P2Direction
+	fadds	P2X,f1,PlayerX						#New P2 X
 #Check if already 10 Mm apart
-  fsubs f2,P1X,P2X
-  fabs f2,f2        #get abs distance from each other in f2
-  li	r3,10
-  bl	IntToFloat
-  fcmpo	cr0,f2,f1
-  ble	AdjustResetDistance_NoPress
+	fsubs f2,P1X,P2X
+	fabs f2,f2				#get abs distance from each other in f2
+	li	r3,10
+	bl	IntToFloat
+	fcmpo	cr0,f2,f1
+	ble	AdjustResetDistance_NoPress
 #Store Back To PlayerBlock
-  stfs	P1X,0xB0(r20)
-  stfs	P2X,0xB0(r21)
-  b	AdjustResetDistance_WasPressed
+	stfs	P1X,0xB0(r20)
+	stfs	P2X,0xB0(r21)
+	b	AdjustResetDistance_WasPressed
 
 
 AdjustResetDistance_NoPress:
@@ -14343,9 +14343,9 @@ blr
 
 PerformAerialThink:
 #in
-#   r3    CPU Player Pointer
-#   r4    Pointer to dedicated memory to use
-#   r5    Attack to Perform (0 = Random, 1 = Fair, 2 = Nair, 3 = Dair)
+#	 r3		CPU Player Pointer
+#	 r4		Pointer to dedicated memory to use
+#	 r5		Attack to Perform (0 = Random, 1 = Fair, 2 = Nair, 3 = Dair)
 
 .set player,31
 .set playerdata,30
@@ -14359,56 +14359,56 @@ PerformAerialThink:
 backup
 
 #Get player pointers and frame count
-  mr  player,r3                     #Get Player
-  lwz playerdata,0x2C(player)       #Get Playerdata
-  mr  variables,r4                  #Get Variable Memory
-  lfs	f1,0x894(playerdata)          #Get Frames as Int
-  fctiwz	f1,f1
-  stfd	f1,0xF0(sp)
-  lwz	frame,0xF4(sp)
+	mr	player,r3										 #Get Player
+	lwz playerdata,0x2C(player)			 #Get Playerdata
+	mr	variables,r4									#Get Variable Memory
+	lfs	f1,0x894(playerdata)					#Get Frames as Int
+	fctiwz	f1,f1
+	stfd	f1,0xF0(sp)
+	lwz	frame,0xF4(sp)
 	mr	aerialToPerform,r5						#Aerial to perform
 
 #Check To Aerial
-  lbz r3,performAerial(variables)
-  cmpwi r3,0x0
-  bne PerformAerialThink_Exit
+	lbz r3,performAerial(variables)
+	cmpwi r3,0x0
+	bne PerformAerialThink_Exit
 
 #Check Which Action to Perform
-  lwz r3,0x10(playerdata)   #Get Action State
+	lwz r3,0x10(playerdata)	 #Get Action State
 
 #Branch To Think Functions
-  #During Wait
-    cmpwi r3,0xE
-    beq PerformAerialThink_DuringWait
-  #During Jump
-    cmpwi r3,0x19
-    beq PerformAerialThink_DuringJump
-    cmpwi r3,0x1A
-    beq PerformAerialThink_DuringJump
-  #During Attack
-    cmpwi r3,0x41
-    blt 0x10
-    cmpwi r3,0x45
-    bgt 0x8
-    b PerformAerialThink_DuringAttack
-  #During Landing
-	  cmpwi r3,0x2A
+	#During Wait
+		cmpwi r3,0xE
+		beq PerformAerialThink_DuringWait
+	#During Jump
+		cmpwi r3,0x19
+		beq PerformAerialThink_DuringJump
+		cmpwi r3,0x1A
+		beq PerformAerialThink_DuringJump
+	#During Attack
+		cmpwi r3,0x41
+		blt 0x10
+		cmpwi r3,0x45
+		bgt 0x8
+		b PerformAerialThink_DuringAttack
+	#During Landing
+		cmpwi r3,0x2A
 		beq	PerformAerialThink_DuringLanding
-    cmpwi r3,0x46
-    blt 0x10
-    cmpwi r3,0x4A
-    bgt 0x8
-    b PerformAerialThink_DuringLanding
+		cmpwi r3,0x46
+		blt 0x10
+		cmpwi r3,0x4A
+		bgt 0x8
+		b PerformAerialThink_DuringLanding
 	#None of The Above
 		b PerformAerialThink_Exit
 
 
 
 PerformAerialThink_DuringWait:
-  #Input Jump
-    li	r3,0x800
-    stw	r3,0x1A88(playerdata)
-  #Determine Which Aerial Attack To Do
+	#Input Jump
+		li	r3,0x800
+		stw	r3,0x1A88(playerdata)
+	#Determine Which Aerial Attack To Do
 	#Check To Randomize
 		cmpwi aerialToPerform,0x0
 		beq PerformAerialThink_GetRandomAttack
@@ -14417,68 +14417,68 @@ PerformAerialThink_DuringWait:
 		stb r3,aerialAttack(variables)
 		b	PerformAerialThink_CheckForValidAttack
 	PerformAerialThink_GetRandomAttack:
-    li	r3,3
-  	branchl	r12,HSD_Randi
-  	stb r3,aerialAttack(variables)
-  #Determine Frame to Attack on
-  PerformAerialThink_CheckForValidAttack:
-    lwz r4,0x4(playerdata)      #get char ID
-    bl  PerformAerial_FrameData
-    mflr  r5
-    mulli	r4,r4,0xC		#Get Characters Offset
-    add	r4,r4,r5		#Get Characters Table Entry Start
-    mulli	r3,r3,0x2		#Move Frame Data is 0x2 Long
-    add	r27,r3,r4		#Get Moves Frame Data
-    lbz	r4,0x0(r27)		#First Possible Frame
-    lbz	r5,0x1(r27)		#Last Possible Frame
-    cmpwi	r4,0x0
-    bne	PerformAerialThink_GetRandomFrame
-    cmpwi	r5,0x0
-    bne	PerformAerialThink_GetRandomFrame
-  #Move Disabled For Char, Get a New One
-    b	PerformAerialThink_GetRandomAttack
-  PerformAerialThink_GetRandomFrame:
-    sub	r3,r5,r4		#Get Amount of Possibilities
-    branchl	r12,HSD_Randi		#Get Random Frame
-    lbz	r4,0x0(r27)		#First Possible Frame
-    add	r3,r3,r4		#Adjust for First Possible Frame
-    stb	r3,attackFrame(variables)		#Store Frame to Attack on
-  b PerformAerialThink_Exit
+		li	r3,3
+		branchl	r12,HSD_Randi
+		stb r3,aerialAttack(variables)
+	#Determine Frame to Attack on
+	PerformAerialThink_CheckForValidAttack:
+		lwz r4,0x4(playerdata)			#get char ID
+		bl	PerformAerial_FrameData
+		mflr	r5
+		mulli	r4,r4,0xC		#Get Characters Offset
+		add	r4,r4,r5		#Get Characters Table Entry Start
+		mulli	r3,r3,0x2		#Move Frame Data is 0x2 Long
+		add	r27,r3,r4		#Get Moves Frame Data
+		lbz	r4,0x0(r27)		#First Possible Frame
+		lbz	r5,0x1(r27)		#Last Possible Frame
+		cmpwi	r4,0x0
+		bne	PerformAerialThink_GetRandomFrame
+		cmpwi	r5,0x0
+		bne	PerformAerialThink_GetRandomFrame
+	#Move Disabled For Char, Get a New One
+		b	PerformAerialThink_GetRandomAttack
+	PerformAerialThink_GetRandomFrame:
+		sub	r3,r5,r4		#Get Amount of Possibilities
+		branchl	r12,HSD_Randi		#Get Random Frame
+		lbz	r4,0x0(r27)		#First Possible Frame
+		add	r3,r3,r4		#Adjust for First Possible Frame
+		stb	r3,attackFrame(variables)		#Store Frame to Attack on
+	b PerformAerialThink_Exit
 
 PerformAerialThink_DuringJump:
-  #Check To Attack
-    lbz r3,attackFrame(variables)
-    cmpw r3,frame
-    bne PerformAerialThink_InputFastfallAndLCancel
+	#Check To Attack
+		lbz r3,attackFrame(variables)
+		cmpw r3,frame
+		bne PerformAerialThink_InputFastfallAndLCancel
 
-  #Perform Attack
-    lbz	r3,aerialAttack(variables)		#Get Attack ID
-    cmpwi	r3,0x0
-    beq	PerformAerialThink_Fair
-    cmpwi	r3,0x1
-    beq	PerformAerialThink_Nair
-    cmpwi	r3,0x2
-    beq	PerformAerialThink_Dair
+	#Perform Attack
+		lbz	r3,aerialAttack(variables)		#Get Attack ID
+		cmpwi	r3,0x0
+		beq	PerformAerialThink_Fair
+		cmpwi	r3,0x1
+		beq	PerformAerialThink_Nair
+		cmpwi	r3,0x2
+		beq	PerformAerialThink_Dair
 
-    PerformAerialThink_Fair:
-      li	r3,127		            #Forward
-      lfs	f1,0x2C(playerdata)		#Facing Direction
-      fctiwz	f1,f1
-      stfd	f1,0xF0(sp)
-      lwz	r4,0xF4(sp)
-      mullw	r3,r3,r4		         #Forward * facing direction
-      stb	r3,0x1A8E(playerdata)
-      b	PerformAerialThink_InputFastfallAndLCancel
+		PerformAerialThink_Fair:
+			li	r3,127								#Forward
+			lfs	f1,0x2C(playerdata)		#Facing Direction
+			fctiwz	f1,f1
+			stfd	f1,0xF0(sp)
+			lwz	r4,0xF4(sp)
+			mullw	r3,r3,r4						 #Forward * facing direction
+			stb	r3,0x1A8E(playerdata)
+			b	PerformAerialThink_InputFastfallAndLCancel
 
-    PerformAerialThink_Nair:
-      li	r3,0x100
-      stw	r3,0x1A88(playerdata)
-      b	PerformAerialThink_InputFastfallAndLCancel
+		PerformAerialThink_Nair:
+			li	r3,0x100
+			stw	r3,0x1A88(playerdata)
+			b	PerformAerialThink_InputFastfallAndLCancel
 
-    PerformAerialThink_Dair:
-      li	r3,-127
-      stb	r3,0x1A8F(playerdata)
-      b	PerformAerialThink_InputFastfallAndLCancel
+		PerformAerialThink_Dair:
+			li	r3,-127
+			stb	r3,0x1A8F(playerdata)
+			b	PerformAerialThink_InputFastfallAndLCancel
 
 b PerformAerialThink_InputFastfallAndLCancel
 
@@ -14487,9 +14487,9 @@ b PerformAerialThink_InputFastfallAndLCancel
 
 PerformAerialThink_DuringLanding:
 #Set Sequence as Over
-  li  r3,1
-  stb r3,performAerial(variables)
-  b PerformAerialThink_Exit
+	li	r3,1
+	stb r3,performAerial(variables)
+	b PerformAerialThink_Exit
 
 PerformAerialThink_InputFastfallAndLCancel:
 #Input Fastfall
@@ -14497,23 +14497,23 @@ PerformAerialThink_InputFastfallAndLCancel:
 		lbz	r3,0x221A(playerdata)
 		rlwinm.	r3,r3,0,28,28
 		bne	PerformAerialThink_InputLCancel
-  #Check If Falling
-    lfs	f2,0x84(playerdata)
-    lfs	f0, -0x76B0 (rtoc)
-    fcmpo	cr0,f2,f0
-    bge	PerformAerialThink_InputLCancel
-  #Check If Inputting A Nair
-    lwz	r3,0x1A88(playerdata)
-    cmpwi	r3,0x100
-    beq	PerformAerialThink_InputLCancel
-  #Input Down to FF
-    li	r3,-127
-    stb	r3,0x1A8D(playerdata)		#Analog Y
+	#Check If Falling
+		lfs	f2,0x84(playerdata)
+		lfs	f0, -0x76B0 (rtoc)
+		fcmpo	cr0,f2,f0
+		bge	PerformAerialThink_InputLCancel
+	#Check If Inputting A Nair
+		lwz	r3,0x1A88(playerdata)
+		cmpwi	r3,0x100
+		beq	PerformAerialThink_InputLCancel
+	#Input Down to FF
+		li	r3,-127
+		stb	r3,0x1A8D(playerdata)		#Analog Y
 
-  PerformAerialThink_InputLCancel:
-  #Spoof Mash L
-   li r3,0x1
-   stb r3,0x67F(playerdata)
+	PerformAerialThink_InputLCancel:
+	#Spoof Mash L
+	 li r3,0x1
+	 stb r3,0x67F(playerdata)
 
 b PerformAerialThink_Exit
 
@@ -14524,143 +14524,143 @@ blrl
 #Mario
 .long 0x00040012		#Fair and Nair
 .long 0x00100005		#Dar and UAir
-.long 0x0005FFFF    #Bair and Nothing
+.long 0x0005FFFF		#Bair and Nothing
 
 #Fox
 .long 0x0009000A		#Fair and Nair
 .long 0x00080005		#Dar and UAir
-.long 0x0005FFFF    #Bair and Nothing
+.long 0x0005FFFF		#Bair and Nothing
 
 #Cptn Falcon
 .long 0x0006000E		#Fair and Nair
 .long 0x00040005		#Dar and UAir
-.long 0x0005FFFF    #Bair and Nothing
+.long 0x0005FFFF		#Bair and Nothing
 
 #DK
 .long 0x00050005		#Fair and Nair
 .long 0x00050005		#Dar and UAir
-.long 0x0005FFFF    #Bair and Nothing
+.long 0x0005FFFF		#Bair and Nothing
 
 #Kirby
 .long 0x00050005		#Fair and Nair
 .long 0x00050005		#Dar and UAir
-.long 0x0005FFFF    #Bair and Nothing
+.long 0x0005FFFF		#Bair and Nothing
 
 #Bowser
 .long 0x00050005		#Fair and Nair
 .long 0x00050005		#Dar and UAir
-.long 0x0005FFFF    #Bair and Nothing
+.long 0x0005FFFF		#Bair and Nothing
 
 #link
 .long 0x00050005		#Fair and Nair
 .long 0x00050005		#Dar and UAir
-.long 0x0005FFFF    #Bair and Nothing
+.long 0x0005FFFF		#Bair and Nothing
 
 #Sheik
 .long 0x10140018		#Fair and Nair
 .long 0x00000005		#Dar (was 0-A) and UAir
-.long 0x0005FFFF    #Bair and Nothing
+.long 0x0005FFFF		#Bair and Nothing
 
 #Ness
 .long 0x00050005		#Fair and Nair
 .long 0x00050005		#Dar and UAir
-.long 0x0005FFFF    #Bair and Nothing
+.long 0x0005FFFF		#Bair and Nothing
 
 #Peach
 .long 0x000D001A		#Fair and Nair
 .long 0x000E0005		#Dar and UAir
-.long 0x0005FFFF    #Bair and Nothing
+.long 0x0005FFFF		#Bair and Nothing
 
 #Popo
 .long 0x00050005		#Fair and Nair
 .long 0x00050005		#Dar and UAir
-.long 0x0005FFFF    #Bair and Nothing
+.long 0x0005FFFF		#Bair and Nothing
 
 #Nana
 .long 0x00050005		#Fair and Nair
 .long 0x00050005		#Dar and UAir
-.long 0x0005FFFF    #Bair and Nothing
+.long 0x0005FFFF		#Bair and Nothing
 
 #Pikachu
 .long 0x000C000F		#Fair and Nair
 .long 0x00080005		#Dar and UAir
-.long 0x0005FFFF    #Bair and Nothing
+.long 0x0005FFFF		#Bair and Nothing
 
 #Samus
 .long 0x00200020		#Fair and Nair
 .long 0x080D0005		#Dar and UAir
-.long 0x0005FFFF    #Bair and Nothing
+.long 0x0005FFFF		#Bair and Nothing
 
 #Yoshi
 .long 0x00050005		#Fair and Nair
 .long 0x00050005		#Dar and UAir
-.long 0x0005FFFF    #Bair and Nothing
+.long 0x0005FFFF		#Bair and Nothing
 
 #Jiggs
 .long 0x00100010		#Fair and Nair
 .long 0x00100005		#Dar and UAir
-.long 0x0005FFFF    #Bair and Nothing
+.long 0x0005FFFF		#Bair and Nothing
 
 #mewtwo
 .long 0x00050019		#Fair and Nair
 .long 0x00050005		#Dar and UAir
-.long 0x0005FFFF    #Bair and Nothing
+.long 0x0005FFFF		#Bair and Nothing
 
 #Luigi
 .long 0x0017001B		#Fair and Nair
 .long 0x00110005		#Dar and UAir
-.long 0x0005FFFF    #Bair and Nothing
+.long 0x0005FFFF		#Bair and Nothing
 
 #Marth
 .long 0x00160013		#Fair and Nair
 .long 0x00120005		#Dar and UAir
-.long 0x0005FFFF    #Bair and Nothing
+.long 0x0005FFFF		#Bair and Nothing
 
 #Zelda
 .long 0x00050005		#Fair and Nair
 .long 0x00050005		#Dar and UAir
-.long 0x0005FFFF    #Bair and Nothing
+.long 0x0005FFFF		#Bair and Nothing
 
 #YLink
 .long 0x00050005		#Fair and Nair
 .long 0x00050005		#Dar and UAir
-.long 0x0005FFFF    #Bair and Nothing
+.long 0x0005FFFF		#Bair and Nothing
 
 #Doc
 .long 0x00050005		#Fair and Nair
 .long 0x00050005		#Dar and UAir
-.long 0x0005FFFF    #Bair and Nothing
+.long 0x0005FFFF		#Bair and Nothing
 
 #Falco
 .long 0x070B000D		#Fair and Nair
 .long 0x000C0005		#Dar and UAir
-.long 0x0005FFFF    #Bair and Nothing
+.long 0x0005FFFF		#Bair and Nothing
 
 #Pichu
 .long 0x00050005		#Fair and Nair
 .long 0x00050005		#Dar and UAir
-.long 0x0005FFFF    #Bair and Nothing
+.long 0x0005FFFF		#Bair and Nothing
 
 #GaW
 .long 0x00050005		#Fair and Nair
 .long 0x00050005		#Dar and UAir
-.long 0x0005FFFF    #Bair and Nothing
+.long 0x0005FFFF		#Bair and Nothing
 
 #Ganon
 .long 0x00050005		#Fair and Nair
 .long 0x00050005		#Dar and UAir
-.long 0x0005FFFF    #Bair and Nothing
+.long 0x0005FFFF		#Bair and Nothing
 
 #Roy
 .long 0x00050005		#Fair and Nair
 .long 0x00050005		#Dar and UAir
-.long 0x0005FFFF    #Bair and Nothing
+.long 0x0005FFFF		#Bair and Nothing
 
 ####################################
 
 PerformAerialThink_Exit:
-  restore
-  blr
+	restore
+	blr
 
 #####################################
 RandFloat:
@@ -14750,34 +14750,34 @@ UpdatePosition:
 backup
 
 #Backup Pointer
-  mr  PlayerGObj,r3
-  lwz PlayerData,0x2C(PlayerGObj)
+	mr	PlayerGObj,r3
+	lwz PlayerData,0x2C(PlayerGObj)
 
 #Update Position (Copy Physics XYZ into all ECB XYZ)
 #X
-  lwz	r3, 0x00B0 (PlayerData)
-  stw	r3, 0x06F4 (PlayerData)
-  stw	r3, 0x0700 (PlayerData)
+	lwz	r3, 0x00B0 (PlayerData)
+	stw	r3, 0x06F4 (PlayerData)
+	stw	r3, 0x0700 (PlayerData)
 	stw	r3, 0x070C (PlayerData)
 	stw	r3, 0x0718 (PlayerData)
 #Y
-  lwz	r3, 0x00B4 (PlayerData)
-  stw	r3, 0x06F8 (PlayerData)
-  stw	r3, 0x0704 (PlayerData)
+	lwz	r3, 0x00B4 (PlayerData)
+	stw	r3, 0x06F8 (PlayerData)
+	stw	r3, 0x0704 (PlayerData)
 	stw	r3, 0x0710 (PlayerData)
 	stw	r3, 0x071C (PlayerData)
 #Z
-  lwz	r3, 0x00B8 (PlayerData)
-  stw	r3, 0x06FC (PlayerData)
-  stw	r3, 0x0708 (PlayerData)
+	lwz	r3, 0x00B8 (PlayerData)
+	stw	r3, 0x06FC (PlayerData)
+	stw	r3, 0x0708 (PlayerData)
 	stw	r3, 0x0714 (PlayerData)
 	stw	r3, 0x0720 (PlayerData)
 #Update Collision Frame ID
-  lwz	r3, -0x51F4 (r13)
-  stw r3, 0x728(PlayerData)
+	lwz	r3, -0x51F4 (r13)
+	stw r3, 0x728(PlayerData)
 
-  #branchl	r12,0x80081b38     #Stopped using this because it deletes way too much ECB info
-  #branchl r12,0x80082a68      #Better than the above function, but all i need is to copy current position into the ECB previous values
+	#branchl	r12,0x80081b38		 #Stopped using this because it deletes way too much ECB info
+	#branchl r12,0x80082a68			#Better than the above function, but all i need is to copy current position into the ECB previous values
 
 #Adjust JObj position (code copied from 8006c324)
 	lwz r3,0x28(PlayerGObj)			#get character model JObj
@@ -14791,11 +14791,11 @@ backup
 	#branchl r12,0x803732e8
 
 #Update Static Player Block Coords
-  lbz r3,0xC(PlayerData)
-  lbz	r4, 0x221F (PlayerData)
-  rlwinm	r4, r4, 29, 31, 31
-  addi  r5,PlayerData,176
-  branchl r12,0x80032828
+	lbz r3,0xC(PlayerData)
+	lbz	r4, 0x221F (PlayerData)
+	rlwinm	r4, r4, 29, 31, 31
+	addi	r5,PlayerData,176
+	branchl r12,0x80032828
 
 restore
 blr
@@ -14817,22 +14817,22 @@ lhz r4,0x2(r5)
 #Get Coordinates
 lwz r5, -0x51E8 (r13)
 mulli r3,r3,24
-addi  r3,r3,8
-add  r3,r3,r5
-lfs f1,0x0(r3)    #Left X
-lfs f2,0x4(r3)    #Left Y
+addi	r3,r3,8
+add	r3,r3,r5
+lfs f1,0x0(r3)		#Left X
+lfs f2,0x4(r3)		#Left Y
 mulli r4,r4,24
-addi  r4,r4,8
-add  r4,r4,r5
-lfs f3,0x0(r4)    #Right X
-lfs f4,0x4(r4)    #Right Y
+addi	r4,r4,8
+add	r4,r4,r5
+lfs f3,0x0(r4)		#Right X
+lfs f4,0x4(r4)		#Right Y
 
 #Get Center Value
-lfs f5,-0x4df0(rtoc)    #2f
+lfs f5,-0x4df0(rtoc)		#2f
 fadds f1,f1,f3
-fdivs f1,f1,f5          #Center X
+fdivs f1,f1,f5					#Center X
 fadds f2,f2,f4
-fdivs f2,f2,f5          #Center Y
+fdivs f2,f2,f5					#Center Y
 
 blr
 
@@ -14846,42 +14846,42 @@ PlacePlayersCenterStage:
 backup
 
 #Loop through players 1 and 2
-  .set count,27
-  .set player,26
-  .set playerdata,25
-  .set subchar,24
-  .set subchardata,23
+	.set count,27
+	.set player,26
+	.set playerdata,25
+	.set subchar,24
+	.set subchardata,23
 
-  li  count,0
+	li	count,0
 
 PlacePlayersCenterStage_Loop:
 #Get Player GObj
-  mr  r3,r27
-  branchl r12,PlayerBlock_LoadMainCharDataOffset
+	mr	r3,r27
+	branchl r12,PlayerBlock_LoadMainCharDataOffset
 #Check if exists
-  cmpwi r3,0x0
-  beq PlacePlayersCenterStage_IncLoop
-  mr  player,r3
-  lwz playerdata,0x2C(player)
+	cmpwi r3,0x0
+	beq PlacePlayersCenterStage_IncLoop
+	mr	player,r3
+	lwz playerdata,0x2C(player)
 #Get Subchar Bool
-  bl CheckIfPlayerHasAFollower
-  mr  subchar,r3
-  mr  subchardata,r4
+	bl CheckIfPlayerHasAFollower
+	mr	subchar,r3
+	mr	subchardata,r4
 #Call function to do heavy lifting
-  mr  r3,player
-  bl  PlacePlayersCenterStage_DoStuff
+	mr	r3,player
+	bl	PlacePlayersCenterStage_DoStuff
 #Check if subchar exits
-  cmpwi subchar,0
-  beq PlacePlayersCenterStage_IncLoop
+	cmpwi subchar,0
+	beq PlacePlayersCenterStage_IncLoop
 #Call function for this character
-  mr  r3,subchar
-  bl  PlacePlayersCenterStage_DoStuff
+	mr	r3,subchar
+	bl	PlacePlayersCenterStage_DoStuff
 #Next Player
 PlacePlayersCenterStage_IncLoop:
-  addi count,count,1
-  cmpwi count,6
-  blt PlacePlayersCenterStage_Loop
-  b PlacePlayersCenterStage_Exit
+	addi count,count,1
+	cmpwi count,6
+	blt PlacePlayersCenterStage_Loop
+	b PlacePlayersCenterStage_Exit
 
 #*****************************#
 PlacePlayersCenterStage_DoStuff:
@@ -14895,68 +14895,68 @@ PlacePlayersCenterStage_DoStuff:
 backup
 
 #Get Pointers
-  mr  player,r3
-  lwz playerdata,0x2C(r3)
+	mr	player,r3
+	lwz playerdata,0x2C(r3)
 
 #Get Constants
-  bl  PlacePlayersCenterStage_Constants
-  mflr constants
-  lbz r3,0xC(playerdata)
-  mulli r3,r3,0x2
-  add constants,constants,r3
+	bl	PlacePlayersCenterStage_Constants
+	mflr constants
+	lbz r3,0xC(playerdata)
+	mulli r3,r3,0x2
+	add constants,constants,r3
 
 #Initialize Player Data (Mainly for ICs so Nana knows where Popo is)
-  mr  r3,player
-  branchl r12,0x80068354
+	mr	r3,player
+	branchl r12,0x80068354
 
 #Get Stage's Ground ID
-  lwz		r3,-0x6CB8 (r13)			#External Stage ID
-  bl		ComboTraining_StartingGroundIDs
-  mflr  r4
-  mulli	r3,r3,0x2
-  lhzx	r3,r3,r4
-  bl  GetGroundCenter
-  fmr f30,f1
-  fmr f31,f2
+	lwz		r3,-0x6CB8 (r13)			#External Stage ID
+	bl		ComboTraining_StartingGroundIDs
+	mflr	r4
+	mulli	r3,r3,0x2
+	lhzx	r3,r3,r4
+	bl	GetGroundCenter
+	fmr f30,f1
+	fmr f31,f2
 
 #Facing Directions
-  lbz r3,0x0(constants) #This players facing direction
-  extsb r3,r3
-  bl  IntToFloat
-  stfs f1,0x2C(playerdata)
+	lbz r3,0x0(constants) #This players facing direction
+	extsb r3,r3
+	bl	IntToFloat
+	stfs f1,0x2C(playerdata)
 
 #Move Players
-  lbz r3,0x1(constants) #This players X offset
-  extsb r3,r3
-  bl  IntToFloat
-  fadds f2,f1,f30   #Player X = X+6
-  stfs f2,0xB0(playerdata)
-  stfs f31,0xB4(playerdata)
+	lbz r3,0x1(constants) #This players X offset
+	extsb r3,r3
+	bl	IntToFloat
+	fadds f2,f1,f30	 #Player X = X+6
+	stfs f2,0xB0(playerdata)
+	stfs f31,0xB4(playerdata)
 
 #Enter into Wait
-  mr  r3,player
-  branchl r12,AS_Wait
+	mr	r3,player
+	branchl r12,AS_Wait
 #Find Ground Below Player
-  mr  r3,player
-  bl  FindGroundNearPlayer
-  cmpwi r3,0    #Check if ground was found
-  beq PlacePlayersCenterStage_DoStuff_SkipGroundCorrection
-  stfs f1,0xB0(playerdata)
-  stfs f2,0xB4(playerdata)
-  stw r4,0x83C(playerdata)
-  PlacePlayersCenterStage_DoStuff_SkipGroundCorrection:
+	mr	r3,player
+	bl	FindGroundNearPlayer
+	cmpwi r3,0		#Check if ground was found
+	beq PlacePlayersCenterStage_DoStuff_SkipGroundCorrection
+	stfs f1,0xB0(playerdata)
+	stfs f2,0xB4(playerdata)
+	stw r4,0x83C(playerdata)
+	PlacePlayersCenterStage_DoStuff_SkipGroundCorrection:
 #Update Position
-  mr  r3,player
-  bl  UpdatePosition
+	mr	r3,player
+	bl	UpdatePosition
 #Update ECB Values for the ground ID
-  mr r3,player
-  branchl r12,EnvironmentCollision_WaitLanding
+	mr r3,player
+	branchl r12,EnvironmentCollision_WaitLanding
 #Set Grounded
-  mr r3,playerdata
-  branchl r12,Air_SetAsGrounded
+	mr r3,playerdata
+	branchl r12,Air_SetAsGrounded
 #Update Camera
-  mr r3,player
-  bl  UpdateCameraBox
+	mr r3,player
+	bl	UpdateCameraBox
 
 PlacePlayersCenterStage_DoStuff_Exit:
 restore
@@ -14991,67 +14991,67 @@ stfs f30,0x38(sp)
 stfs f31,0x3C(sp)
 
 #Check If Given Player GObj
-  cmpwi r3,0x0
-  bne FindGroundNearPlayer_GObjPassedIn
+	cmpwi r3,0x0
+	bne FindGroundNearPlayer_GObjPassedIn
 
 FindGroundNearPlayer_CoordinatesPassedIn:
 #Backup Coords
-  fmr f30,f1
-  fmr f31,f2
+	fmr f30,f1
+	fmr f31,f2
 #Get 10f
-  li  r3,10
-  bl  IntToFloat
+	li	r3,10
+	bl	IntToFloat
 #Get Bottom Coord
-  fmr f3,f30       #Bottom X is same as Top X
-  fsubs f4,f31,f1  #Bottom Y is Top Y - 1000
+	fmr f3,f30			 #Bottom X is same as Top X
+	fsubs f4,f31,f1	#Bottom Y is Top Y - 1000
 #Move Top Coords Back
-  fmr f1,f30
-  fmr f2,f31
-  lfs	f0, -0x7188 (rtoc)
-  fadds f2,f2,f0
-  b FindGroundNearPlayer_Continue
+	fmr f1,f30
+	fmr f2,f31
+	lfs	f0, -0x7188 (rtoc)
+	fadds f2,f2,f0
+	b FindGroundNearPlayer_Continue
 
 
 FindGroundNearPlayer_GObjPassedIn:
 #Init Variables
-  mr  player,r3
-  lwz playerdata,0x2C(player)
+	mr	player,r3
+	lwz playerdata,0x2C(player)
 #Get Players X and Y+10
-  lfs f1,0xB0(playerdata)
-  lfs f2,0xB4(playerdata)
-  lfs	f0, -0x7188 (rtoc)
-  fadds f2,f2,f0
+	lfs f1,0xB0(playerdata)
+	lfs f2,0xB4(playerdata)
+	lfs	f0, -0x7188 (rtoc)
+	fadds f2,f2,f0
 #Get Bottom Coord (X and Y-1000)
-  lfs f3,0xB0(playerdata)
-  lfs f4,0xB0(playerdata)
-  lfs	f0,-0x71A8 (rtoc)
-  fsubs f4,f4,f0
+	lfs f3,0xB0(playerdata)
+	lfs f4,0xB0(playerdata)
+	lfs	f0,-0x71A8 (rtoc)
+	fsubs f4,f4,f0
 
 FindGroundNearPlayer_Continue:
 #Get Unk f5 argument
-  lfs	f5, -0x7208 (rtoc)
+	lfs	f5, -0x7208 (rtoc)
 #Setup stack for return values
-  addi r3,sp,0x54   #(Returns Ground Coordinates
-  addi r4,sp,0x44   #(Returns Ground ID)
-  addi r5,sp,0x40   #(Returns Ground Type)
-  addi r6,sp,0x48   #(Returns Unk)
+	addi r3,sp,0x54	 #(Returns Ground Coordinates
+	addi r4,sp,0x44	 #(Returns Ground ID)
+	addi r5,sp,0x40	 #(Returns Ground Type)
+	addi r6,sp,0x48	 #(Returns Unk)
 #Unk arguments
-  li  r7,-1
-  li  r8,-1
-  li  r9,-1
+	li	r7,-1
+	li	r8,-1
+	li	r9,-1
 #Additional function pointer
-  li  r10,0
+	li	r10,0
 #Call function
-  branchl r12,Raycast_GroundLine
+	branchl r12,Raycast_GroundLine
 
 #Check if ground exists
-  cmpwi r3,0
-  beq FindGroundNearPlayer_Exit
+	cmpwi r3,0
+	beq FindGroundNearPlayer_Exit
 
 #Return Coordinates of ground below player
-  lfs f1,0x54(sp)
-  lfs f2,0x58(sp)
-  lwz r4,0x44(sp)
+	lfs f1,0x54(sp)
+	lfs f2,0x58(sp)
+	lwz r4,0x44(sp)
 
 FindGroundNearPlayer_Exit:
 lfs f30,0x38(sp)
@@ -15072,42 +15072,42 @@ stfs f31,0x3C(sp)
 
 FindGroundUnderCoordinate_CoordinatesPassedIn:
 #Backup Coords
-  fmr f30,f1
-  fmr f31,f2
+	fmr f30,f1
+	fmr f31,f2
 #Get 1000f
-  li  r3,1000
-  bl  IntToFloat
+	li	r3,1000
+	bl	IntToFloat
 #Get Bottom Coord
-  fmr f3,f30       #Bottom X is same as Top X
-  fsubs f4,f31,f1  #Bottom Y is Top Y - 1000
+	fmr f3,f30			 #Bottom X is same as Top X
+	fsubs f4,f31,f1	#Bottom Y is Top Y - 1000
 #Move Top Coords Back
-  fmr f1,f30
-  fmr f2,f31
+	fmr f1,f30
+	fmr f2,f31
 
 FindGroundUnderCoordinate_Continue:
 #Get Unk f5 argument
-  lfs	f5, -0x7208 (rtoc)
+	lfs	f5, -0x7208 (rtoc)
 #Setup stack for return values
-  addi r3,sp,0x54   #(Returns Ground Coordinates
-  addi r4,sp,0x44   #(Returns Ground ID)
-  addi r5,sp,0x40   #(Returns Ground Type)
-  addi r6,sp,0x48   #(Returns Unk)
+	addi r3,sp,0x54	 #(Returns Ground Coordinates
+	addi r4,sp,0x44	 #(Returns Ground ID)
+	addi r5,sp,0x40	 #(Returns Ground Type)
+	addi r6,sp,0x48	 #(Returns Unk)
 #Unk arguments
-  li  r7,-1
-  li  r8,-1
-  li  r9,-1
-  li  r10,0
+	li	r7,-1
+	li	r8,-1
+	li	r9,-1
+	li	r10,0
 #Call function
-  branchl r12,Raycast_GroundLine
+	branchl r12,Raycast_GroundLine
 
 #Check if ground exists
-  cmpwi r3,0
-  beq FindGroundUnderCoordinate_Exit
+	cmpwi r3,0
+	beq FindGroundUnderCoordinate_Exit
 
 #Return Coordinates of ground below player
-  lfs f1,0x54(sp)
-  lfs f2,0x58(sp)
-  lwz r4,0x44(sp)
+	lfs f1,0x54(sp)
+	lfs f2,0x58(sp)
+	lwz r4,0x44(sp)
 
 FindGroundUnderCoordinate_Exit:
 lfs f30,0x38(sp)
@@ -15127,23 +15127,23 @@ backup
 	lwz REG_GObjData,0x2C(REG_GObj)
 
 #Find Ground Below Player
-  mr  r3,REG_GObj
-  bl  FindGroundNearPlayer
-  cmpwi r3,0    #Check if ground was found
-  beq PlacePlayerOnGround_SkipGroundCorrection
-  stfs f1,0xB0(REG_GObjData)
-  stfs f2,0xB4(REG_GObjData)
-  stw r4,0x83C(REG_GObjData)
-  PlacePlayerOnGround_SkipGroundCorrection:
+	mr	r3,REG_GObj
+	bl	FindGroundNearPlayer
+	cmpwi r3,0		#Check if ground was found
+	beq PlacePlayerOnGround_SkipGroundCorrection
+	stfs f1,0xB0(REG_GObjData)
+	stfs f2,0xB4(REG_GObjData)
+	stw r4,0x83C(REG_GObjData)
+	PlacePlayerOnGround_SkipGroundCorrection:
 #Update Position
-  mr  r3,REG_GObj
-  bl  UpdatePosition
+	mr	r3,REG_GObj
+	bl	UpdatePosition
 #Update ECB Values for the ground ID
-  mr r3,REG_GObj
-  branchl r12,EnvironmentCollision_WaitLanding
+	mr r3,REG_GObj
+	branchl r12,EnvironmentCollision_WaitLanding
 #Set Grounded
-  mr r3,REG_GObjData
-  branchl r12,Air_SetAsGrounded
+	mr r3,REG_GObjData
+	branchl r12,Air_SetAsGrounded
 
 PlacePlayerOnGround_Exit:
 	restore
@@ -15168,26 +15168,26 @@ UpdateCameraBox:
 backup
 
 #Get Pointer
-  mr  player,r3
-  lwz playerdata,0x2C(player)
+	mr	player,r3
+	lwz playerdata,0x2C(player)
 
 #Update Camera Box Position
-  mr  r3,player
-  branchl r12,Camera_UpdatePlayerCameraBoxPosition
+	mr	r3,player
+	branchl r12,Camera_UpdatePlayerCameraBoxPosition
 
 #Update Camera Box Direction Tween
-#  lwz r3,0x2C(player)
-#  branchl r12,0x80076064
+#	lwz r3,0x2C(player)
+#	branchl r12,0x80076064
 
 #Update Camera Box Direction Tween
-  lwz r3,0x890(playerdata)
-  lfs f1,0x40(r3)     #Leftmost Bound
-  stfs f1,0x2C(r3)    #Current Left Box Bound
-  lfs f1,0x44(r3)     #Rightmost Bound
-  stfs f1,0x30(r3)    #Current Right Box Bound
+	lwz r3,0x890(playerdata)
+	lfs f1,0x40(r3)		 #Leftmost Bound
+	stfs f1,0x2C(r3)		#Current Left Box Bound
+	lfs f1,0x44(r3)		 #Rightmost Bound
+	stfs f1,0x30(r3)		#Current Right Box Bound
 
 #Correct Camera Position
-  branchl r12,Camera_CorrectPosition
+	branchl r12,Camera_CorrectPosition
 
 restore
 blr
@@ -15212,41 +15212,41 @@ GetAllPlayerPointers:
 backup
 
 #Get Space to Store all Pointer to
-  addi r21,sp,0x40
+	addi r21,sp,0x40
 #Init Loop Count
-  li  r20,0
+	li	r20,0
 
 GetAllPlayerPointers_Loop:
 #Get GObj
-  mr  r3,r20
-  branchl r12,PlayerBlock_LoadMainCharDataOffset
+	mr	r3,r20
+	branchl r12,PlayerBlock_LoadMainCharDataOffset
 #Check If Exists
-  cmpwi r3,0x0
-  li    r4,0      #Zero Data pointer just in case it doesnt exist
-  beq GetAllPlayerPointers_StoreToStack
+	cmpwi r3,0x0
+	li		r4,0			#Zero Data pointer just in case it doesnt exist
+	beq GetAllPlayerPointers_StoreToStack
 #Get Data
-  lwz r4,0x2C(r3)
+	lwz r4,0x2C(r3)
 #Store Both to Stack
 GetAllPlayerPointers_StoreToStack:
-  mulli r5,r20,8
-  add r5,r5,r21
-  stw r3,0x0(r5)
-  stw r4,0x4(r5)
+	mulli r5,r20,8
+	add r5,r5,r21
+	stw r3,0x0(r5)
+	stw r4,0x4(r5)
 
 GetAllPlayerPointers_IncLoop:
-  addi r20,r20,1
-  cmpwi r20,4
-  blt GetAllPlayerPointers_Loop
+	addi r20,r20,1
+	cmpwi r20,4
+	blt GetAllPlayerPointers_Loop
 
 GetAllPlayerPointers_LoadPointers:
-  lwz r3,0x00(r21)
-  lwz r4,0x04(r21)
-  lwz r5,0x08(r21)
-  lwz r6,0x0C(r21)
-  lwz r7,0x10(r21)
-  lwz r8,0x14(r21)
-  lwz r9,0x18(r21)
-  lwz r10,0x1C(r21)
+	lwz r3,0x00(r21)
+	lwz r4,0x04(r21)
+	lwz r5,0x08(r21)
+	lwz r6,0x0C(r21)
+	lwz r7,0x10(r21)
+	lwz r8,0x14(r21)
+	lwz r9,0x18(r21)
+	lwz r10,0x1C(r21)
 
 GetAllPlayerPointers_Exit:
 restore
@@ -15256,31 +15256,31 @@ blr
 RemoveFirstFrameInputs:
 
 RemoveFirstFrameInputs_GetFirstPlayer:
-  lwz	r3, -0x3E74 (r13)
-  lwz	r12, 0x0020 (r3)
-  b	RemoveFirstFrameInputs_CheckIfPlayerExists
+	lwz	r3, -0x3E74 (r13)
+	lwz	r12, 0x0020 (r3)
+	b	RemoveFirstFrameInputs_CheckIfPlayerExists
 
 RemoveFirstFrameInputs_GetNextPlayer:
-  lwz	r12,0x8(r12)
+	lwz	r12,0x8(r12)
 
 RemoveFirstFrameInputs_CheckIfPlayerExists:
-  cmpwi	r12,0x0
-  beq	RemoveFirstFrameInputs_Exit
-  lwz	r5,0x2C(r12)
+	cmpwi	r12,0x0
+	beq	RemoveFirstFrameInputs_Exit
+	lwz	r5,0x2C(r12)
 
 #Remove Input Flag
-  lbz	r0, 0x221D (r5)
-  li	r3,0x1
-  rlwimi	r0,r3,4,27,27
-  stb	r0,0x221D (r5)
+	lbz	r0, 0x221D (r5)
+	li	r3,0x1
+	rlwimi	r0,r3,4,27,27
+	stb	r0,0x221D (r5)
 #Store Current Input
-  lbz	r4, 0x0618 (r5)
-  load r3,InputStructStart
-  mulli	r0, r4, 68
-  add	r3, r0, r3
-  lwz	r0, 0 (r3)
-  stw	r0, 0x065C (r5)
-  b	RemoveFirstFrameInputs_GetNextPlayer
+	lbz	r4, 0x0618 (r5)
+	load r3,InputStructStart
+	mulli	r0, r4, 68
+	add	r3, r0, r3
+	lwz	r0, 0 (r3)
+	stw	r0, 0x065C (r5)
+	b	RemoveFirstFrameInputs_GetNextPlayer
 
 RemoveFirstFrameInputs_Exit:
 blr
@@ -15384,9 +15384,9 @@ InitializeMatch_Exit:
 
 GetDistance:
 	lfs	f3,0x0(r3)	#X
-	lfs	f4,0x4(r3)  #Y
-	lfs	f5,0x0(r4)  #X
-	lfs	f6,0x4(r4)  #Y
+	lfs	f4,0x4(r3)	#Y
+	lfs	f5,0x0(r4)	#X
+	lfs	f6,0x4(r4)	#Y
 	fsubs	f1,f5,f3
 	fsubs	f2,f4,f6
 	fmuls	f1,f1,f1
@@ -15407,38 +15407,38 @@ GetLedgeCoordinates:
 backup
 
 #Backup Ledge Choice (0 = Left, 1 = Right)
-  mr	LedgeSide,r3
-  mr  Return,r4
+	mr	LedgeSide,r3
+	mr	Return,r4
 
 #Get Stage's Ledge IDs
-  lwz		r3,-0x6CB8 (r13)			#External Stage ID
-  bl		LedgedashCliffIDs
-  mflr  r4
-  mulli	r3,r3,0x2
-  lhzx	r3,r3,r4
+	lwz		r3,-0x6CB8 (r13)			#External Stage ID
+	bl		LedgedashCliffIDs
+	mflr	r4
+	mulli	r3,r3,0x2
+	lhzx	r3,r3,r4
 #Get Requested Ledge
 	cmpwi LedgeSide,0x0
 	beq	GetLedgeCoordinates_GetLeftLedgeID
 
 GetLedgeCoordinates_GetRightLedgeID:
-  rlwinm	LedgeID,r3,0,24,31
+	rlwinm	LedgeID,r3,0,24,31
 #Get Ledge Coords (0x80 = X, 0x84 = Y)
-  mr  r3,LedgeID
-  mr 	r4,Return
-  branchl	r12,Stage_GetRightOfLineCoordinates
-  b	GetLedgeCoordinates_Exit
+	mr	r3,LedgeID
+	mr 	r4,Return
+	branchl	r12,Stage_GetRightOfLineCoordinates
+	b	GetLedgeCoordinates_Exit
 
 GetLedgeCoordinates_GetLeftLedgeID:
 	rlwinm	LedgeID,r3,24,24,31
 #Get Ledge Coords (0x80 = X, 0x84 = Y)
-  mr  r3,LedgeID
-  mr 	r4,Return
-  branchl	r12,Stage_GetLeftOfLineCoordinates
+	mr	r3,LedgeID
+	mr 	r4,Return
+	branchl	r12,Stage_GetLeftOfLineCoordinates
 	b	GetLedgeCoordinates_Exit
 
 GetLedgeCoordinates_Exit:
-  restore
-  blr
+	restore
+	blr
 
 ##########################################
 GetAngleBetweenPoints:
@@ -15623,10 +15623,10 @@ DisableHazards_SkipList:
 	mulli	r4,r4,4
 	add r4,r3,r4
 	lwz r5,0x0(r4)				#Get bl Instruction
-  rlwinm	r5,r5,0,6,29	#Mask Bits 6-29 (the offset)
+	rlwinm	r5,r5,0,6,29	#Mask Bits 6-29 (the offset)
 	cmpwi r5,0						#If pointer is null, exit
 	beq	DisableHazards_SkipList_Exit
-  add	r4,r4,r5					#Pointer to code now in r4
+	add	r4,r4,r5					#Pointer to code now in r4
 	mtctr r4
 	bctr
 
@@ -15742,15 +15742,15 @@ DisableHazards_RagdollFix:
 backup
 
 #Create GObj
-  li	r3,3		#GObj Type
-  li	r4,5		#On-Pause Function
-  li	r5,0
-  branchl	r12,GObj_Create
+	li	r3,3		#GObj Type
+	li	r4,5		#On-Pause Function
+	li	r5,0
+	branchl	r12,GObj_Create
 #Schedule Task
 	bl	DisableHazards_RagdollFix_Think
 	mflr r4
-  li	r5,4		#Priority
-  branchl	r12,GObj_AddProc
+	li	r5,4		#Priority
+	branchl	r12,GObj_AddProc
 	b	DisableHazards_RagdollFix_Exit
 
 #********************************#
@@ -15843,7 +15843,7 @@ mr	REG_LedgeID,r4
 #Get Stage's Ledge IDs
 	lwz		r3,-0x6CB8 (r13)			#External Stage ID
 	bl		LedgedashCliffIDs
-	mflr  r4
+	mflr	r4
 	mulli	r3,r3,0x2
 	lhzx	r3,r3,r4
 #Get Requested Ledge
@@ -15882,7 +15882,7 @@ PlaceOnLedge_StoreLedgeIDAndPosition:
 	mr r3,REG_P1Data
 	branchl r12,Air_StoreBool_LoseGroundJump_NoECBfor10Frames
 #Set ECB Update Flag
-	mr  r3,REG_P1Data
+	mr	r3,REG_P1Data
 	branchl r12,DataOffset_ECBBottomUpdateEnable
 #Update ECB Corner Positions
 	addi	r3,REG_P1Data,0x6F0
@@ -15908,9 +15908,9 @@ PlaceOnLedge_StoreLedgeIDAndPosition:
 	blr
 ###########################################
 GetInputStruct:
-  load r4,InputStructStart
-  mulli	r0, r3, 68
-  add	r3, r0, r4
+	load r4,InputStructStart
+	mulli	r0, r3, 68
+	add	r3, r0, r4
 	blr
 
 ###########################################
