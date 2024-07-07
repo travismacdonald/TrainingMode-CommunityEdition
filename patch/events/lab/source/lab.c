@@ -631,6 +631,21 @@ static CPUAction Lab_CPUActionJumpTowards[] = {
 
     -1,
 };
+static CPUAction Lab_CPUActionJumpNeutral[] = {
+    {
+        ASID_JUMPS, // state to perform this action. -1 for last
+        0,          // first possible frame to perform this action
+        0,          // last possible frame to perfrom this action
+        0,          // left stick X value
+        0,          // left stick Y value
+        0,          // c stick X value
+        0,          // c stick Y value
+        0,          // button to input
+        0,          // is the last input
+        0,          // specify stick direction
+    },
+    -1,
+};
 static CPUAction Lab_CPUActionAirdodge[] = {
     {
         ASID_DAMAGEAIR, // state to perform this action. -1 for last
@@ -843,13 +858,14 @@ static CPUAction *Lab_CPUActions[] = {
     &Lab_CPUActionJumpAway,
     // jump towards 16
     &Lab_CPUActionJumpTowards,
+    // jump neutral 16
+    &Lab_CPUActionJumpNeutral,
     // airdodge 17
     &Lab_CPUActionAirdodge,
     // fastfall 18
     &Lab_CPUActionFFTumble,
     // wiggle fastfall 19
     &Lab_CPUActionFFWiggle,
-    // wiggle fastfall 19
     &Lab_CPUActionJab,
     &Lab_CPUActionFTilt,
     &Lab_CPUActionUTilt,
@@ -878,6 +894,7 @@ enum CPU_ACTIONS
     CPUACT_FULLHOP,
     CPUACT_JUMPAWAY,
     CPUACT_JUMPTOWARDS,
+    CPUACT_JUMPNEUTRAL,
     CPUACT_AIRDODGE,
     CPUACT_FFTUMBLE,
     CPUACT_FFWIGGLE,
@@ -908,6 +925,7 @@ static char *CPU_ACTIONS_NAMES[] = {
     "CPUACT_FULLHOP",
     "CPUACT_JUMPAWAY",
     "CPUACT_JUMPTOWARDS",
+    "CPUACT_JUMPNEUTRAL",
     "CPUACT_AIRDODGE",
     "CPUACT_FFTUMBLE",
     "CPUACT_FFWIGGLE",
@@ -920,7 +938,7 @@ static char *CPU_ACTIONS_NAMES[] = {
     "CPUACT_FSMASH",
 };
 static u8 GrAcLookup[] = {CPUACT_NONE, CPUACT_SPOTDODGE, CPUACT_SHIELD, CPUACT_GRAB, CPUACT_UPB, CPUACT_DOWNB, CPUACT_USMASH, CPUACT_DSMASH, CPUACT_FSMASH, CPUACT_ROLLAWAY, CPUACT_ROLLTOWARDS, CPUACT_ROLLRDM, CPUACT_NAIR, CPUACT_FAIR, CPUACT_DAIR, CPUACT_BAIR, CPUACT_UAIR, CPUACT_JAB, CPUACT_FTILT, CPUACT_UTILT, CPUACT_DTILT, CPUACT_SHORTHOP, CPUACT_FULLHOP};
-static u8 AirAcLookup[] = {CPUACT_NONE, CPUACT_AIRDODGE, CPUACT_JUMPAWAY, CPUACT_JUMPTOWARDS, CPUACT_UPB, CPUACT_DOWNB, CPUACT_NAIR, CPUACT_FAIR, CPUACT_DAIR, CPUACT_BAIR, CPUACT_UAIR, CPUACT_FFTUMBLE, CPUACT_FFWIGGLE};
+static u8 AirAcLookup[] = {CPUACT_NONE, CPUACT_AIRDODGE, CPUACT_JUMPAWAY, CPUACT_JUMPTOWARDS, CPUACT_JUMPNEUTRAL, CPUACT_UPB, CPUACT_DOWNB, CPUACT_NAIR, CPUACT_FAIR, CPUACT_DAIR, CPUACT_BAIR, CPUACT_UAIR, CPUACT_FFTUMBLE, CPUACT_FFWIGGLE};
 static u8 ShieldAcLookup[] = {CPUACT_NONE, CPUACT_GRAB, CPUACT_SHORTHOP, CPUACT_FULLHOP, CPUACT_SPOTDODGE, CPUACT_ROLLAWAY, CPUACT_ROLLTOWARDS, CPUACT_ROLLRDM, CPUACT_UPB, CPUACT_DOWNB, CPUACT_NAIR, CPUACT_FAIR, CPUACT_DAIR, CPUACT_BAIR, CPUACT_UAIR};
 
 // Main Menu
@@ -1270,7 +1288,7 @@ static char **LabValues_SDIDir[] = {"Random", "Away", "Towards"};
 static char **LabValues_Tech[] = {"Random", "Neutral", "Away", "Towards", "None"};
 static char **LabValues_Getup[] = {"Random", "Stand", "Away", "Towards", "Attack"};
 static char **LabValues_CounterGround[] = {"None", "Spotdodge", "Shield", "Grab", "Up B", "Down B", "Up Smash", "Down Smash", "Forward Smash", "Roll Away", "Roll Towards", "Roll Random", "Neutral Air", "Forward Air", "Down Air", "Back Air", "Up Air", "Jab", "Forward Tilt", "Up Tilt", "Down Tilt", "Short Hop", "Full Hop"};
-static char **LabValues_CounterAir[] = {"None", "Airdodge", "Jump Away", "Jump Towards", "Up B", "Down B", "Neutral Air", "Forward Air", "Down Air", "Back Air", "Up Air", "Tumble Fastfall", "Wiggle Fastfall"};
+static char **LabValues_CounterAir[] = {"None", "Airdodge", "Jump Away", "Jump Towards", "Jump Neutral", "Up B", "Down B", "Neutral Air", "Forward Air", "Down Air", "Back Air", "Up Air", "Tumble Fastfall", "Wiggle Fastfall"};
 static char **LabValues_CounterShield[] = {"None", "Grab", "Short Hop", "Full Hop", "Spotdodge", "Roll Away", "Roll Towards", "Roll Random", "Up B", "Down B", "Neutral Air", "Forward Air", "Down Air", "Back Air", "Up Air"};
 static char **LabValues_GrabEscape[] = {"None", "Medium", "High", "Perfect"};
 static EventOption LabOptions_CPU[] = {
