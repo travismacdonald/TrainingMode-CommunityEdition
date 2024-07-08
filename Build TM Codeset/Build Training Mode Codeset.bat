@@ -1,3 +1,0 @@
-gecko build
-
-pause
