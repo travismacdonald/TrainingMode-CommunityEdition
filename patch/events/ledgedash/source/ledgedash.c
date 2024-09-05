@@ -1226,4 +1226,4 @@ void Tips_Think(LedgedashData *event_data, FighterData *hmn_data)
 }
 
 // Initial Menu
-static EventMenu *Event_Menu = &LdshMenu_Main;
+EventMenu *Event_Menu = &LdshMenu_Main;

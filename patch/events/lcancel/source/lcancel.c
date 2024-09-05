@@ -909,4 +909,4 @@ float Bezier(float time, float start, float end)
 }
 
 // Initial Menu
-static EventMenu *Event_Menu = &LabMenu_Main;
+EventMenu *Event_Menu = &LabMenu_Main;

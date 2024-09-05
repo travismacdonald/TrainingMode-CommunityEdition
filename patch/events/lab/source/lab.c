@@ -1,6 +1,33 @@
 #include "lab.h"
 static char nullString[] = " ";
 
+#include <stddef.h>
+
+// char __foo01[] = {[offsetof(FtStateData, phys)] = ""};
+// char __foo02[] = {[offsetof(FtStateData, input)] = ""};
+// char __foo03[] = {[offsetof(FtStateData, flags)] = ""};
+// char __foo04[] = {[offsetof(FtStateData, fighter_var)] = ""};
+// char __foo05[] = {[offsetof(FtStateData, state_var)] = ""};
+// char __foo06[] = {[offsetof(FtStateData, ftcmd_var)] = ""};
+// char __foo07[] = {[offsetof(FtStateData, dmg)] = ""};
+// char __foo08[] = {[offsetof(FtStateData, grab)] = ""};
+// char __foo09[] = {[offsetof(FtStateData, jump)] = ""};
+// char __foo0A[] = {[offsetof(FtStateData, smash)] = ""};
+// char __foo0B[] = {[offsetof(FtStateData, hurtstatus)] = ""};
+// char __foo0C[] = {[offsetof(FtStateData, shield)] = ""};
+// char __foo0D[] = {[offsetof(FtStateData, shield_bubble)] = ""};
+// char __foo0E[] = {[offsetof(FtStateData, reflect_bubble)] = ""};
+// char __foo0F[] = {[offsetof(FtStateData, absorb_bubble)] = ""};
+// char __foo10[] = {[offsetof(FtStateData, reflect_hit)] = ""};
+// char __foo11[] = {[offsetof(FtStateData, absorb_hit)] = ""};
+// char __foo12[] = {[offsetof(FtStateData, cb)] = ""};
+
+
+
+//char __foo2[] = {[sizeof(FtStateData)] = ""};
+//char __foo3[] = {[sizeof(Playerblock)] = ""};
+
+
 // CPU Action Definitions
 static CPUAction Lab_CPUActionShield[] = {
     {
@@ -6810,4 +6837,4 @@ void Event_Think(GOBJ *event)
     return;
 }
 // Initial Menu
-static EventMenu *Event_Menu = &LabMenu_Main;
+EventMenu *Event_Menu = &LabMenu_Main;
