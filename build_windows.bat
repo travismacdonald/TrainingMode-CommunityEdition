@@ -1,4 +1,8 @@
 @echo off
+setlocal
+
+REM set directory to location of this file. Needed when drag n dropping across directories.
+cd /d %~dp0
 
 set ISO="%~1"
 
@@ -116,3 +120,6 @@ if exist "build" (
 )
 
 :end
+
+REM pause if not run from command line
+echo %CMDCMDLINE% | findstr /C:"/c">nul && pause
