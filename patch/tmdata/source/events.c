@@ -71,54 +71,6 @@ static EventDesc Lab = {
     .defaultOSD = 0xFFFFFFFF,
 };
 
-// Edgeguard
-// Match Data
-static EventMatchData Edgeguard_MatchData = {
-    .timer = MATCH_TIMER_HIDE,
-    .matchType = MATCH_MATCHTYPE_TIME,
-    .isDisableMusic = false,
-    .hideGo = true,
-    .hideReady = true,
-    .isCreateHUD = false,
-    .isDisablePause = true,
-    // byte 0x3
-    .timerRunOnPause = false,   // 0x01
-    .isHidePauseHUD = true,     // 0x02
-    .isShowLRAStart = true,     // 0x04
-    .isCheckForLRAStart = true, // 0x08
-    .isShowZRetry = false,      // 0x10
-    .isCheckForZRetry = false,  // 0x20
-    .isShowAnalogStick = true,  // 0x40
-    .isShowScore = false,       // 0x80
-
-    .isRunStockLogic = false, // 0x20
-    .isDisableHit = false,    // 0x20
-    .useKOCounter = false,
-    .playerKind = -1,
-    .cpuKind = -1,        // 0xFF=
-    .stage = 32,          // 0xFFFF
-    .timerSeconds = 0,    // 0xFFFFFFFF
-    .timerSubSeconds = 0, // 0xFF
-    .onCheckPause = 0,
-    .onMatchEnd = 0,
-};
-// Event Struct
-static EventDesc Edgeguard = {
-    // Event Name
-    .eventName = "Edgeguard Training\n",
-    .eventDescription = "Practice edgeguards!\n",
-    .eventTutorial = "",
-    .eventFile = "EvEdgd",
-    .isChooseCPU = true,
-    .isSelectStage = false,
-    .use_savestates = false,
-    .disable_hazards = true,
-    .scoreType = 0,
-    .callbackPriority = 3,
-    .matchData = &Edgeguard_MatchData,
-    .defaultOSD = 0xFFFFFFFF,
-};
-
 // L-Cancel Training
 // Match Data
 static EventMatchData LCancel_MatchData = {
@@ -1176,7 +1128,6 @@ static EventPage Minigames_Page = {
 // Page 2 Events
 static EventDesc *General_Events[] = {
     &Lab,
-    &Edgeguard,
     &LCancel,
     &Ledgedash,
     &Wavedash,
