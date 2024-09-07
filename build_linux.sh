@@ -40,7 +40,6 @@ set -e
 trap cleanup ERR
 
 echo EXTRACT ISO FILES -----------------------------------------------
-# mono gcr.exe --extract ${ISO} . || ( echo ERROR: ISO Extraction failed. Are mono and gcr.exe present? && exit 1 )
 ./gc_fst extract ${ISO}
 
 echo MAKE SPACE IN ISO -----------------------------------------------
@@ -50,35 +49,38 @@ echo BUILD C FILES --------------------------------------------------------
 
 mkdir root/TM/
 
-echo build patch/tmdata
-cp "patch/tmdata/assets/evMenu.dat" "root/TM/TmDt.dat"
-mono "MexTK/MexTK.exe" -ff -i "patch/tmdata/source/events.c" -b "build" -s tmFunction -dat "root/TM/TmDt.dat" -t "MexTK/tmFunction.txt" -q -ow -l "MexTK/melee.link" -op 1 || ( echo ERROR: Failed to compile 'events.c' && exit 1)
-mono "MexTK/MexTK.exe" -trim "root/TM/TmDt.dat" || ( echo ERROR: Dat file trimming failed && exit 1 )
-
-echo build patch/events/lab
-cp "patch/events/lab/assets/labData.dat" "root/TM/EvLab.dat"
-mono "MexTK/MexTK.exe" -ff -i "patch/events/lab/source/lab.c" -b "build" -s evFunction -dat "root/TM/EvLab.dat" -t "MexTK/evFunction.txt" -q -ow -l "MexTK/melee.link" -op 1 || ( echo ERROR: Failed to compile 'lab.c' && exit 1)
-mono "MexTK/MexTK.exe" -trim "root/TM/EvLab.dat" || ( echo ERROR: Dat file trimming failed && exit 1 )
-
-echo build patch/events/lab_css
-cp "patch/events/lab/assets/importData.dat" "root/TM/EvLabCSS.dat"
-mono "MexTK/MexTK.exe" -ff -i "patch/events/lab/source/lab_css.c" -b "build" -s cssFunction -dat "root/TM/EvLabCSS.dat" -t "MexTK/cssFunction.txt" -q -ow -l "MexTK/melee.link" -op 1 || ( echo ERROR: Failed to compile 'lab_css.c' && exit 1)
-mono "MexTK/MexTK.exe" -trim "root/TM/EvLabCSS.dat" || ( echo ERROR: Dat file trimming failed && exit 1 )
-
-echo build patch/events/lcancel
-cp "patch/events/lcancel/assets/lclData.dat" "root/TM/EvLCl.dat"
-mono "MexTK/MexTK.exe" -ff -i "patch/events/lcancel/source/lcancel.c" -b "build" -s evFunction -dat "root/TM/EvLCl.dat" -t "MexTK/evFunction.txt" -q -ow -l "MexTK/melee.link" -op 1 || ( echo ERROR: Failed to compile 'lcancel.c' && exit 1)
-mono "MexTK/MexTK.exe" -trim "root/TM/EvLCl.dat" || ( echo ERROR: Dat file trimming failed && exit 1 )
-
-echo build patch/events/ledgedash
-cp "patch/events/ledgedash/assets/ldshData.dat" "root/TM/EvLdsh.dat"
-mono "MexTK/MexTK.exe" -ff -i "patch/events/ledgedash/source/ledgedash.c" -b "build" -s evFunction -dat "root/TM/EvLdsh.dat" -t "MexTK/evFunction.txt" -q -ow -l "MexTK/melee.link" -op 1 || ( echo ERROR: Failed to compile 'ledgedash.c' && exit 1)
-mono "MexTK/MexTK.exe" -trim "root/TM/EvLdsh.dat" || ( echo ERROR: Dat file trimming failed && exit 1 )
-
-echo build patch/events/wavedash
-cp "patch/events/wavedash/assets/wdshData.dat" "root/TM/EvWdsh.dat"
-mono "MexTK/MexTK.exe" -ff -i "patch/events/wavedash/source/wavedash.c" -b "build" -s evFunction -dat "root/TM/EvWdsh.dat" -t "MexTK/evFunction.txt" -q -ow -l "MexTK/melee.link" -op 1 || ( echo ERROR: Failed to compile 'wavedash.c' && exit 1)
-mono "MexTK/MexTK.exe" -trim "root/TM/EvLdsh.dat" || ( echo ERROR: Dat file trimming failed && exit 1 )
+# run build steps in parallel
+(
+    echo build patch/tmdata
+    cp "patch/tmdata/assets/evMenu.dat" "root/TM/TmDt.dat"
+    mono "MexTK/MexTK.exe" -ff -i "patch/tmdata/source/events.c" -b "build" -s tmFunction -dat "root/TM/TmDt.dat" -t "MexTK/tmFunction.txt" -q -ow -l "MexTK/melee.link" -op 1 || ( echo ERROR: Failed to compile 'events.c' && exit 1)
+    mono "MexTK/MexTK.exe" -trim "root/TM/TmDt.dat" || ( echo ERROR: Dat file trimming failed && exit 1 )
+) & (
+    echo build patch/events/lab
+    cp "patch/events/lab/assets/labData.dat" "root/TM/EvLab.dat"
+    mono "MexTK/MexTK.exe" -ff -i "patch/events/lab/source/lab.c" -b "build" -s evFunction -dat "root/TM/EvLab.dat" -t "MexTK/evFunction.txt" -q -ow -l "MexTK/melee.link" -op 1 || ( echo ERROR: Failed to compile 'lab.c' && exit 1)
+    mono "MexTK/MexTK.exe" -trim "root/TM/EvLab.dat" || ( echo ERROR: Dat file trimming failed && exit 1 )
+) & (
+    echo build patch/events/lab_css
+    cp "patch/events/lab/assets/importData.dat" "root/TM/EvLabCSS.dat"
+    mono "MexTK/MexTK.exe" -ff -i "patch/events/lab/source/lab_css.c" -b "build" -s cssFunction -dat "root/TM/EvLabCSS.dat" -t "MexTK/cssFunction.txt" -q -ow -l "MexTK/melee.link" -op 1 || ( echo ERROR: Failed to compile 'lab_css.c' && exit 1)
+    mono "MexTK/MexTK.exe" -trim "root/TM/EvLabCSS.dat" || ( echo ERROR: Dat file trimming failed && exit 1 )
+) & (
+    echo build patch/events/lcancel
+    cp "patch/events/lcancel/assets/lclData.dat" "root/TM/EvLCl.dat"
+    mono "MexTK/MexTK.exe" -ff -i "patch/events/lcancel/source/lcancel.c" -b "build" -s evFunction -dat "root/TM/EvLCl.dat" -t "MexTK/evFunction.txt" -q -ow -l "MexTK/melee.link" -op 1 || ( echo ERROR: Failed to compile 'lcancel.c' && exit 1)
+    mono "MexTK/MexTK.exe" -trim "root/TM/EvLCl.dat" || ( echo ERROR: Dat file trimming failed && exit 1 )
+) & (
+    echo build patch/events/ledgedash
+    cp "patch/events/ledgedash/assets/ldshData.dat" "root/TM/EvLdsh.dat"
+    mono "MexTK/MexTK.exe" -ff -i "patch/events/ledgedash/source/ledgedash.c" -b "build" -s evFunction -dat "root/TM/EvLdsh.dat" -t "MexTK/evFunction.txt" -q -ow -l "MexTK/melee.link" -op 1 || ( echo ERROR: Failed to compile 'ledgedash.c' && exit 1)
+    mono "MexTK/MexTK.exe" -trim "root/TM/EvLdsh.dat" || ( echo ERROR: Dat file trimming failed && exit 1 )
+) & (
+    echo build patch/events/wavedash
+    cp "patch/events/wavedash/assets/wdshData.dat" "root/TM/EvWdsh.dat"
+    mono "MexTK/MexTK.exe" -ff -i "patch/events/wavedash/source/wavedash.c" -b "build" -s evFunction -dat "root/TM/EvWdsh.dat" -t "MexTK/evFunction.txt" -q -ow -l "MexTK/melee.link" -op 1 || ( echo ERROR: Failed to compile 'wavedash.c' && exit 1)
+    mono "MexTK/MexTK.exe" -trim "root/TM/EvLdsh.dat" || ( echo ERROR: Dat file trimming failed && exit 1 )
+) & wait
 
 echo BUILD ASM FILES --------------------------------------------------------
 
@@ -103,9 +105,8 @@ cp Additional\ ISO\ Files/codes.gct root/
 cp Additional\ ISO\ Files/*.mth root/
 
 echo REBUILD ISO --------------------------------------------------------
-# mono gcr.exe --rebuild root "TM-MORE.iso" --noGameTOC
 ./gc_fst rebuild root TM-More.iso
 
-echo ############ TM-More.iso has been created ######################
+echo "############ TM-More.iso has been created ######################"
 
 cleanup 0
