@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 
+ISO="$(readlink -e ${1})"
+ISO_OUT="$(pwd)/TM-More.iso"
+
+# move to script dir
+cd "$(dirname ${0})"
+
 if [ -z ${1} ]; then 
     echo ERROR: iso path not passed
     echo USAGE: build_linux.sh vanilla_melee.iso
     exit 1
 fi
-
-ISO=${1}
 
 if ! [ -x "$(command -v powerpc-eabi-as)" ]; then
     echo ERROR: 'powerpc-eabi-as' was not found. Was devkitpro installed and /opt/devkitpro/devkitPPC/bin/ added to the PATH?
@@ -105,7 +109,7 @@ cp Additional\ ISO\ Files/codes.gct root/
 cp Additional\ ISO\ Files/*.mth root/
 
 echo REBUILD ISO --------------------------------------------------------
-./gc_fst rebuild root TM-More.iso
+./gc_fst rebuild root ${ISO_OUT}
 
 echo "############ TM-More.iso has been created ######################"
 
