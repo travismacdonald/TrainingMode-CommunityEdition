@@ -1,6 +1,7 @@
 .PHONY: clean all
 
 clean:
+	rm -rf TM-More.iso
 	rm -rf ./root
 	rm -rf ./build/
 
