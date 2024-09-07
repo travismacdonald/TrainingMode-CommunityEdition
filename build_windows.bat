@@ -20,14 +20,6 @@ if not exist %ISO% (
     goto end
 )
 
-if not exist "root" (
-    mkdir "root"
-)
-
-if not exist "root\TM" (
-    mkdir "root\TM"
-)
-
 if not exist "C:/devkitPro/devkitPPC" (
     echo ERROR: devkitPro not found at "C:/devkitPro/devkitPPC"
     echo Please install devkitPro with the GameCube package
@@ -37,12 +29,14 @@ if not exist "C:/devkitPro/devkitPPC" (
 )
 
 echo EXTRACT ISO FILES -----------------------------------------------
-gcrv1.3.exe --extract %ISO% . || ( echo ERROR: ISO Extraction failed. Is gcrv1.3.exe present? & goto cleanup )
+gc_fst extract %ISO% || ( echo ERROR: ISO Extraction failed. & goto cleanup )
 
 echo MAKE SPACE IN ISO -----------------------------------------------
 del "root\MvHowto.mth" "root\MvOmake15.mth" "root\MvOpen.mth"
 
 echo BUILD C FILES --------------------------------------------------------
+
+mkdir "root\TM\"
 
 echo build patch\tmdata
 copy "patch\tmdata\assets\evMenu.dat" "root\TM\TmDt.dat"
@@ -98,7 +92,7 @@ xcopy /s /e /y "Additional ISO Files\codes.gct" "root\"
 xcopy /s /e /y "Additional ISO Files\*.mth" "root\"
 
 echo REBUILD ISO --------------------------------------------------------
-gcrv1.3.exe --rebuild root "TM-MORE.iso" --noGameTOC
+gc_fst rebuild root "TM-MORE.iso" || ( echo ERROR: ISO rebuild failed. & goto cleanup )
 
 echo ############ TM-More.iso has been created ######################
 
