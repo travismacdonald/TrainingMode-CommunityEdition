@@ -30,6 +30,7 @@ if not exist "C:/devkitPro/devkitPPC" (
 
 echo EXTRACT ISO FILES -----------------------------------------------
 gc_fst extract %ISO% || ( echo ERROR: ISO Extraction failed. & goto cleanup )
+gc_fst set-header "root/&&systemdata/ISO.hdr" "GTME01" "Melee Training Mode - More"
 
 echo MAKE SPACE IN ISO -----------------------------------------------
 del "root\MvHowto.mth" "root\MvOmake15.mth" "root\MvOpen.mth"

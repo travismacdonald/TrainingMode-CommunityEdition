@@ -8,7 +8,7 @@ Training Mode is a modpack for Super Smash Bros. Melee that aims to streamline p
 
 ### Windows
 1. [Install DevKitPro](https://github.com/devkitPro/installer/releases/latest). Install the Gamecube (aka PPC or PowerPC) package.
-2. Drag your legally obtained SSBM v1.02 ISO on to the 'build_windows.bat' file. If all goes well, 'TM-MORE.iso' will be created.
+2. Drag your legally obtained SSBM v1.02 ISO on to the 'build_windows.bat' file. If all goes well, 'TM-More.iso' will be created.
 
 ### Linux
 1. [Install DevKitPro](https://devkitpro.org/wiki/Getting_Started#Unix-like_platforms). Install the Gamecube (gamecube-dev) package.
@@ -16,8 +16,7 @@ Training Mode is a modpack for Super Smash Bros. Melee that aims to streamline p
 2. [Install Mono](https://www.mono-project.com/download/stable/#download-lin). Prefer installation through your package manager.
     - I would like nothing more than to remove mono, msbuild, .NET, C#, and Microsoft from my life. 
     Alas it is just as deeply ingrained the SSBM ecosystem as I am.
-    One day I or someone should rewrite these tools in a truly portable language.
 3. Install xdelta3. This should be simple to install through your package manager.
-4. Run `build_linux.sh <path to melee iso>`. If all goes well, 'TM-MORE.iso' will be created.
+4. Run `make iso=path-to-melee.iso all`. If all goes well, 'TM-More.iso' will be created.
     - If the provided 'gecko' binary fails (maybe due to glibc versioning issues), you can compile your own binary from [here](https://github.com/JLaferri/gecko). YOU MUST USE VERSION 3.4.0.
     - If the provided 'gc_fst' binary fails (maybe due to glibc versioning issues), you can compile your own binary from [here](https://github.com/AlexanderHarrison/gc_fst).
