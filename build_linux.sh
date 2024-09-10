@@ -53,6 +53,10 @@ trap cleanup ERR
 echo EXTRACT ISO FILES -----------------------------------------------
 ./gc_fst extract ${ISO}
 
+# replace ISO header
+echo -n GTME01 | dd conv=notrunc bs=1 count=6 of="root/&&systemdata/ISO.hdr"
+echo -n 'Melee Training Mode - More' | dd of="root/&&systemdata/ISO.hdr" conv=notrunc bs=1 seek=32 count=26
+
 echo MAKE SPACE IN ISO -----------------------------------------------
 rm "root/MvHowto.mth" "root/MvOmake15.mth" "root/MvOpen.mth"
 
@@ -110,11 +114,12 @@ rm "Start.dol"
 echo COPYING EXTRA FILES ----------------------------------------------------
 
 cp Additional\ ISO\ Files/codes.gct root/
+cp -f Additional\ ISO\ Files/opening.bnr root/
 cp Additional\ ISO\ Files/*.mth root/
 
 echo REBUILD ISO --------------------------------------------------------
-./gc_fst rebuild root ${ISO_OUT}
+# ./gc_fst rebuild root ${ISO_OUT}
 
 echo "############ TM-More.iso has been created ######################"
 
-cleanup 0
+# cleanup 0

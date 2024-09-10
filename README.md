@@ -1,4 +1,4 @@
-﻿<img  src="Logos/Uncle-Punch-Training-Mode-banner.png"  alt=""  width="300"/>
+﻿<img  src="Logos/Training-Mode-banner.png"  alt=""  width="300"/>
 
 # Training Mode - A Melee Modpack for Practicing Tech
 

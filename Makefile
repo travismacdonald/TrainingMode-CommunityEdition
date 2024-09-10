@@ -44,6 +44,7 @@ root/TM/EvWdsh.dat: root/ patch/events/wavedash/*
 root/codes.gct: root/
 	cd "Build TM Codeset" && ./gecko build
 	cp Additional\ ISO\ Files/codes.gct root/
+	cp -f Additional\ ISO\ Files/opening.bnr root/
 	cp Additional\ ISO\ Files/*.mth root/
 
 root/&&systemdata/Start.dol: root/
