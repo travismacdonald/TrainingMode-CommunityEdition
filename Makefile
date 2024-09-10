@@ -9,6 +9,7 @@ root/:
 	rm -rf ./root
 	./gc_fst extract ${iso}
 	mkdir root/TM/
+	./gc_fst set-header "root/&&systemdata/ISO.hdr" GTME01 "Melee Training Mode - More"
 	rm root/MvHowto.mth root/MvOmake15.mth root/MvOpen.mth
 
 root/TM/TmDt.dat: root/ patch/tmdata/*
