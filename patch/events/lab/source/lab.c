@@ -3,31 +3,6 @@ static char nullString[] = " ";
 
 #include <stddef.h>
 
-// char __foo01[] = {[offsetof(FtStateData, phys)] = ""};
-// char __foo02[] = {[offsetof(FtStateData, input)] = ""};
-// char __foo03[] = {[offsetof(FtStateData, flags)] = ""};
-// char __foo04[] = {[offsetof(FtStateData, fighter_var)] = ""};
-// char __foo05[] = {[offsetof(FtStateData, state_var)] = ""};
-// char __foo06[] = {[offsetof(FtStateData, ftcmd_var)] = ""};
-// char __foo07[] = {[offsetof(FtStateData, dmg)] = ""};
-// char __foo08[] = {[offsetof(FtStateData, grab)] = ""};
-// char __foo09[] = {[offsetof(FtStateData, jump)] = ""};
-// char __foo0A[] = {[offsetof(FtStateData, smash)] = ""};
-// char __foo0B[] = {[offsetof(FtStateData, hurtstatus)] = ""};
-// char __foo0C[] = {[offsetof(FtStateData, shield)] = ""};
-// char __foo0D[] = {[offsetof(FtStateData, shield_bubble)] = ""};
-// char __foo0E[] = {[offsetof(FtStateData, reflect_bubble)] = ""};
-// char __foo0F[] = {[offsetof(FtStateData, absorb_bubble)] = ""};
-// char __foo10[] = {[offsetof(FtStateData, reflect_hit)] = ""};
-// char __foo11[] = {[offsetof(FtStateData, absorb_hit)] = ""};
-// char __foo12[] = {[offsetof(FtStateData, cb)] = ""};
-
-
-
-//char __foo2[] = {[sizeof(FtStateData)] = ""};
-//char __foo3[] = {[sizeof(Playerblock)] = ""};
-
-
 // CPU Action Definitions
 static CPUAction Lab_CPUActionShield[] = {
     {
@@ -616,16 +591,16 @@ static CPUAction Lab_CPUActionJumpAway[] = {
         2,          // specify stick direction
     },
     {
-        ASID_ACTIONABLE, // state to perform this action. -1 for last
-        0,               // first possible frame to perform this action
-        0,               // last possible frame to perfrom this action
-        127,             // left stick X value
-        0,               // left stick Y value
-        0,               // c stick X value
-        0,               // c stick Y value
-        PAD_BUTTON_X,    // button to input
-        0,               // is the last input
-        STCKDIR_AWAY,    // specify stick direction
+        ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
+        0,                  // first possible frame to perform this action
+        0,                  // last possible frame to perfrom this action
+        127,                // left stick X value
+        0,                  // left stick Y value
+        0,                  // c stick X value
+        0,                  // c stick Y value
+        PAD_BUTTON_X,       // button to input
+        1,                  // is the last input
+        STCKDIR_AWAY,       // specify stick direction
     },
 
     -1,
@@ -644,16 +619,16 @@ static CPUAction Lab_CPUActionJumpTowards[] = {
         1,          // specify stick direction
     },
     {
-        ASID_ACTIONABLE, // state to perform this action. -1 for last
-        0,               // first possible frame to perform this action
-        0,               // last possible frame to perfrom this action
-        127,             // left stick X value
-        0,               // left stick Y value
-        0,               // c stick X value
-        0,               // c stick Y value
-        PAD_BUTTON_X,    // button to input
-        0,               // is the last input
-        STCKDIR_TOWARD,  // specify stick direction
+        ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
+        0,                  // first possible frame to perform this action
+        0,                  // last possible frame to perfrom this action
+        127,                // left stick X value
+        0,                  // left stick Y value
+        0,                  // c stick X value
+        0,                  // c stick Y value
+        PAD_BUTTON_X,       // button to input
+        1,                  // is the last input
+        STCKDIR_TOWARD,     // specify stick direction
     },
 
     -1,
@@ -671,6 +646,19 @@ static CPUAction Lab_CPUActionJumpNeutral[] = {
         0,          // is the last input
         0,          // specify stick direction
     },
+    {
+        ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
+        0,               // first possible frame to perform this action
+        0,               // last possible frame to perfrom this action
+        0,               // left stick X value
+        0,               // left stick Y value
+        0,               // c stick X value
+        0,               // c stick Y value
+        PAD_BUTTON_X,    // button to input
+        1,               // is the last input
+        STCKDIR_NONE,    // specify stick direction
+    },
+
     -1,
 };
 static CPUAction Lab_CPUActionAirdodge[] = {

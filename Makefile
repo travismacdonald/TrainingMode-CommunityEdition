@@ -6,6 +6,7 @@ clean:
 	rm -rf ./build/
 
 root/:
+	rm -rf ./build
 	rm -rf ./root
 	./gc_fst extract ${iso}
 	mkdir root/TM/
