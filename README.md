@@ -4,6 +4,19 @@
 
 Training Mode is a modpack for Super Smash Bros. Melee that aims to streamline practice by providing pre-made individual training scenarios. This mod utilizes the event mode present in Super Smash Bros. Melee and reworks them to focus around specific techniques, complete with automatic savestate functionality to allow for rapid-fire practice. Some events have included video tutorials playable in-game (ISO version only) to teach the player about the tech and how to perform it. In addition to these events, Training Mode also includes onscreen text displays which provide you with information otherwise unavailable to you mid-game.
 
+## Changes
+- New Training Lab Features:
+    - New neutral jump option for CPUs, set as the default.
+    - Jump actions no longer make the CPU SD.
+    - SDI multiplier is set to low by default.
+    - This is just the beginning. Much more planned in the near future!
+- Features in progress:
+    - Edgeguard training event.
+- Developer Features:
+    - Simple and easily reproducible builds on Windows and Linux.
+    - Fast recompilation on Linux using make.
+    - Simplified and performant [tool](https://github.com/AlexanderHarrison/gc_fst) to extract and rebuild ISOs.
+
 ## Compilation
 
 ### Windows
