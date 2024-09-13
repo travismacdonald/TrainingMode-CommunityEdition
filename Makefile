@@ -1,9 +1,12 @@
-.PHONY: clean all
+.PHONY: clean iso all release
+
+dats = root/codes.gct root/TM/EvLdsh.dat root/TM/EvWdsh.dat root/TM/EvLCl.dat root/TM/EvLabCSS.dat root/TM/EvLab.dat root/TM/TmDt.dat
 
 clean:
 	rm -rf TM-More.iso
 	rm -rf ./root
 	rm -rf ./build/
+	rm -rf TM-More/
 
 root/:
 	rm -rf ./build
@@ -54,7 +57,26 @@ root/&&systemdata/Start.dol: root/
 	xdelta3 -d -f -s "Start.dol" "Build TM Start.dol/patch.xdelta" "root/&&systemdata/Start.dol"
 	rm "Start.dol"
 
-TM-More.iso: root/&&systemdata/Start.dol root/codes.gct root/TM/EvLdsh.dat root/TM/EvWdsh.dat root/TM/EvLCl.dat root/TM/EvLabCSS.dat root/TM/EvLab.dat root/TM/TmDt.dat
+TM-More.iso: root/&&systemdata/Start.dol $(dats)
 	./gc_fst rebuild root TM-More.iso
 
-all: TM-More.iso
+iso: TM-More.iso
+
+TM-More.zip: TM-More.iso Release\ Scripts/*
+	rm -rf TM-More/
+	mkdir TM-More
+	cp -rf --parents "root/&&systemdata/Start.dol" "root/&&systemdata/ISO.hdr" $(dats) TM-More/
+	mv TM-More/root/ TM-More/patch/
+	cp Additional\ ISO\ Files/codes.gct TM-More/patch/
+	cp -f Additional\ ISO\ Files/opening.bnr TM-More/patch/
+	cp Additional\ ISO\ Files/*.mth TM-More/patch/
+	cp -r Release\ Scripts/* TM-More/
+	cp gc_fst TM-More/
+	cp gc_fst.exe TM-More/
+	zip -r TM-More.zip TM-More/
+	rm -r TM-More/
+
+release: TM-More.zip
+
+all: iso release
+
