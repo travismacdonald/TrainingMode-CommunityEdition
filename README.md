@@ -19,7 +19,7 @@ Keep an eye out!
 ## Changes From the Original
 - New Training Lab Features:
     - New neutral jump option for CPUs, set as the default.
-    - Jump actions no longer make the CPU SD.
+    - Jump actions no longer make the CPU self-destruct.
     - SDI multiplier is set to low by default.
     - This is just the beginning. Much more planned in the near future!
 - Features in progress:
@@ -42,8 +42,8 @@ Keep an eye out!
     Alas it is just as deeply ingrained the SSBM ecosystem as I am.
 3. Install xdelta3. This should be simple to install through your package manager.
 4. Run `make iso=path-to-melee.iso all`. If all goes well, 'TM-More.iso' will be created.
-    - If the provided 'gecko' binary fails (maybe due to glibc versioning issues), you can compile your own binary from [here](https://github.com/JLaferri/gecko). YOU MUST USE VERSION 3.4.0.
-    - If the provided 'gc_fst' binary fails (maybe due to glibc versioning issues), you can compile your own binary from [here](https://github.com/AlexanderHarrison/gc_fst).
+    - If the provided 'gecko' binary fails (likely due to libc issues), you can compile your own binary from [here](https://github.com/JLaferri/gecko). YOU MUST USE VERSION 3.4.0.
+    - If the provided 'gc_fst' binary fails (likely due to libc issues), you can compile your own binary from [here](https://github.com/AlexanderHarrison/gc_fst).
 
 ## How to make changes:  
 - If you want to alter an event (Easy):
