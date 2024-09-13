@@ -7,9 +7,9 @@ It contains all the features you know: savestates, combo training, eggs-ercise, 
 
 Training Mode - More has completely overhauled the build process. 
 Now any developer can easily add new features to the modpack.
-Have some specific tech you want to train? Find a bug that's been annoying you? Come make a PR!
+Have some specific tech you want to train? Find a bug that's been annoying you? Come make a PR! 
 
-Even if you aren't a dev, feel free to file an issue to request a new feature.
+Feel free to file an issue to request a new feature.
 
 Please note that releases are not being distributed at the moment.
 Building the ISO is currently restricted to developers.
@@ -46,13 +46,12 @@ Keep an eye out!
     - If the provided 'gc_fst' binary fails (maybe due to glibc versioning issues), you can compile your own binary from [here](https://github.com/AlexanderHarrison/gc_fst).
 
 ## How to make changes:  
-- If you want to alter an event (EASY):
+- If you want to alter an event (Easy):
     - The training lab, lcancel, ledgedash, and wavedash events are written in c. This makes them much easier to modify than the other events. Poke around in their source in `patch/events/`.
     - The other events are written in assembly. This will be harder to modify than the other events. Prefer making a new event.
-- If you want to make a new event (HARD):
+- If you want to make a new event (Hard):
     - Add a directory to the `patch/events/` and follow the structure of the other events.
-    - The dat file is a little tricky to create. However, most events won't need many assets. You can get away without using one.
-          - You can also import the menu backgrounds from the ledgedash event to make a menu like the lab event. 
+    - The dat file is a little tricky to create. However, most events won't need many assets. You can get away without having a dat file. If you just want to use menu backgrounds, you can import the dat file from the ledgedash event. If you do want to create a new dat file, use [HSDRaw](https://github.com/Ploaj/HSDLib).
     - Add the required compilation steps in `Makefile` and `build_windows.bat`. Follow the same structure as the other events. Be sure to use the evFunction mode.
     - Implement the `Event_Init`, `Event_Update`, `Event_Think` methods and `Event_Menu` pointer. Poke around the other events to figure out how the data flows.
 - Other changes may be easy or difficult. Poke around the repo and/or file an issue.
