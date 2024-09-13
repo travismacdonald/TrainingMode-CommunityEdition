@@ -11,10 +11,8 @@ Have some specific tech you want to train? Find a bug that's been annoying you? 
 
 Feel free to file an issue to request a new feature.
 
-Please note that releases are not being distributed at the moment.
-Building the ISO is currently restricted to developers.
-A public release will be made when more useful features are added.
-Keep an eye out!
+To download the ISO, click 'Releases' on the right side, then download "TM-More.zip".
+Unzip, then drag your melee iso on the 'Drag Vanilla Melee Here.bat' file.
 
 ## Changes From the Original
 - New Training Lab Features:
@@ -41,7 +39,7 @@ Keep an eye out!
     - I would like nothing more than to remove mono, msbuild, .NET, C#, and Microsoft from my life. 
     Alas it is just as deeply ingrained the SSBM ecosystem as I am.
 3. Install xdelta3. This should be simple to install through your package manager.
-4. Run `make iso=path-to-melee.iso all`. If all goes well, 'TM-More.iso' will be created.
+4. Run `make iso=path-to-melee.iso iso`. If all goes well, 'TM-More.iso' will be created.
     - If the provided 'gecko' binary fails (likely due to libc issues), you can compile your own binary from [here](https://github.com/JLaferri/gecko). YOU MUST USE VERSION 3.4.0.
     - If the provided 'gc_fst' binary fails (likely due to libc issues), you can compile your own binary from [here](https://github.com/AlexanderHarrison/gc_fst).
 
