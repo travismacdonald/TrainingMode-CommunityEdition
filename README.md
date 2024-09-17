@@ -6,12 +6,7 @@ Training Mode - More is an expanded and updated version of UnclePunch's training
 
 To download the ISO, click 'Releases' on the right side, then download "TM-More.zip".
 Unzip, then drag your melee iso on the 'Drag Vanilla Melee Here.bat' file.
-
 Feel free to file an issue to request a new feature.
-
-We have completely overhauled the build process.
-Now any developer can easily add new features to the modpack.
-Have some specific tech you want to train? Find a bug that's been annoying you? Come make a PR!
 
 ## Changes From the Original
 - New Training Lab Features:
@@ -27,6 +22,11 @@ Have some specific tech you want to train? Find a bug that's been annoying you? 
     - Simplified and performant [tool](https://github.com/AlexanderHarrison/gc_fst) to extract and rebuild ISOs.
 
 ## Compilation
+
+We have completely overhauled the build process.
+Now any developer can easily compile an iso from source and add new features to the modpack.
+Have some specific tech you want to train? Find a bug that's been annoying you? Come make a PR!
+
 ### Windows
 1. [Install DevKitPro](https://github.com/devkitPro/installer/releases/latest). Install the Gamecube (aka PPC or PowerPC) package.
 2. Drag your legally obtained SSBM v1.02 ISO on to the 'build_windows.bat' file. If all goes well, 'TM-More.iso' will be created.
