@@ -2,24 +2,23 @@
 
 # Training Mode - More :: A Melee Modpack for Practicing Tech
 
-Training Mode - More is an expanded version of the ubiquitous training modpack for Super Smash Bros. Melee.
-It contains all the features you know: savestates, combo training, eggs-ercise, etc., with even more coming soon.
-
-Training Mode - More has completely overhauled the build process. 
-Now any developer can easily add new features to the modpack.
-Have some specific tech you want to train? Find a bug that's been annoying you? Come make a PR! 
-
-Feel free to file an issue to request a new feature.
+Training Mode - More is an expanded and updated version of UnclePunch's training modpack for Super Smash Bros. Melee.
 
 To download the ISO, click 'Releases' on the right side, then download "TM-More.zip".
 Unzip, then drag your melee iso on the 'Drag Vanilla Melee Here.bat' file.
+
+Feel free to file an issue to request a new feature.
+
+We have completely overhauled the build process.
+Now any developer can easily add new features to the modpack.
+Have some specific tech you want to train? Find a bug that's been annoying you? Come make a PR!
 
 ## Changes From the Original
 - New Training Lab Features:
     - New neutral jump option for CPUs, set as the default.
     - Jump actions no longer make the CPU self-destruct.
     - SDI multiplier is set to low by default.
-    - This is just the beginning. Much more planned in the near future!
+    - Much more planned in the near future!
 - Features in progress:
     - Edgeguard training event.
 - Developer Features:
