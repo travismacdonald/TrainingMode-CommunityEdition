@@ -15,8 +15,9 @@ Feel free to file an issue to request a new feature!
     - Jump actions no longer make the CPU self-destruct.
     - SDI multiplier is set to low by default.
     - Much more planned in the near future!
-- Features in progress:
+- Work in progress:
     - Edgeguard training event.
+    - Fixing Export/Import replay crash.
 - Developer Features:
     - Simple and easily reproducible builds on Windows and Linux.
     - Fast recompilation on Linux using make.
