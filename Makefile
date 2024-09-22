@@ -46,7 +46,7 @@ root/TM/EvWdsh.dat: root/ patch/events/wavedash/*
 	mono "MexTK/MexTK.exe" -ff -i "patch/events/wavedash/source/wavedash.c" -b "build" -s evFunction -dat "root/TM/EvWdsh.dat" -t "MexTK/evFunction.txt" -q -ow -l "MexTK/melee.link" -op 1
 	mono "MexTK/MexTK.exe" -trim "root/TM/EvLdsh.dat"
 
-root/codes.gct: root/
+root/codes.gct: root/ Additional\ ISO\ Files/*
 	cd "Build TM Codeset" && ./gecko build
 	cp Additional\ ISO\ Files/codes.gct root/
 	cp -f Additional\ ISO\ Files/opening.bnr root/
