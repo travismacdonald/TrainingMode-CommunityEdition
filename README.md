@@ -10,6 +10,7 @@ Feel free to file an issue to request a new feature!
 
 ## Changes From the Original
 - New Training Lab Features:
+    - Updated to UCF 0.84 (Allows practicing with dashback out of crouch).
     - New neutral jump option for CPUs, set as the default.
     - Jump actions no longer make the CPU self-destruct.
     - SDI multiplier is set to low by default.
