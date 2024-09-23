@@ -12,12 +12,13 @@ Feel free to file an issue to request a new feature!
 - New Training Lab Features:
     - Updated to UCF 0.84 (Allows practicing with dashback out of crouch).
     - New neutral jump option for CPUs, set as the default.
+    - Reworked recording UI. Now allows resaveing existing recordings with different percents or positioning.
     - Jump actions no longer make the CPU self-destruct.
-    - SDI multiplier is set to low by default.
+    - SDI and mashing are set to none by default.
     - Much more planned in the near future!
 - Work in progress:
     - Edgeguard training event.
-    - Fixing Export/Import replay crash.
+    - Fixing Export/Import replay crashes.
 - Developer Features:
     - Simple and easily reproducible builds on Windows and Linux.
     - Fast recompilation on Linux using make.
