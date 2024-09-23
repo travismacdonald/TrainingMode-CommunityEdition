@@ -4,9 +4,11 @@
 
 Training Mode - More is an expanded and updated version of UnclePunch's training modpack for Super Smash Bros. Melee.
 
-To download the ISO, click 'Releases' on the right side, then download "TM-More.zip".
+[comment]: <> (To download the ISO, click 'Releases' on the right side, then download "TM-More.zip".
 Unzip, then drag your melee iso on the 'Drag Vanilla Melee Here.bat' file.
-Feel free to file an issue to request a new feature!
+Feel free to file an issue to request a new feature!)
+
+To download the ISO, click 'Releases' on the right side, then download "TM-More.zip".
 
 ## Changes From the Original
 - New Training Lab Features:
