@@ -1352,7 +1352,7 @@ static EventOption LabOptions_CPU[] = {
     {
         .option_kind = OPTKIND_STRING,                                                 // the type of option this is; menu, string list, integer list, etc
         .value_num = sizeof(LabValues_SDIFreq) / 4,                                    // number of values for this option
-        .option_val = 1,                                                               // value of this option
+        .option_val = 0,                                                               // value of this option
         .menu = 0,                                                                     // pointer to the menu that pressing A opens
         .option_name = "Smash DI Frequency",                                           // pointer to a string
         .desc = "Adjust how often the CPU will alter their position\nduring hitstop.", // string describing what this option does
@@ -1414,7 +1414,7 @@ static EventOption LabOptions_CPU[] = {
     {
         .option_kind = OPTKIND_STRING,                               // the type of option this is; menu, string list, integer list, etc
         .value_num = sizeof(LabValues_GrabEscape) / 4,               // number of values for this option
-        .option_val = CPUMASH_HIGH,                                  // value of this option
+        .option_val = CPUMASH_MED,                                   // value of this option
         .menu = 0,                                                   // pointer to the menu that pressing A opens
         .option_name = "Grab Escape",                                // pointer to a string
         .desc = "Adjust how the CPU will attempt to escape\ngrabs.", // string describing what this option does
@@ -1607,20 +1607,20 @@ static EventOption LabOptions_Record[] = {
         .value_num = 0,                                                                          // number of values for this option
         .option_val = 0,                                                                         // value of this option
         .menu = 0,                                                                               // pointer to the menu that pressing A opens
-        .option_name = "Export",                                                                 // pointer to a string
-        .desc = "Export the recording to a memory card\nfor later use or to share with others.", // string describing what this option does
+        .option_name = "Delete Positions",                                                       // pointer to a string
+        .desc = "Delete the current initial position\nand recordings.",                          // string describing what this option does
         .option_values = 0,                                                                      // pointer to an array of strings
-        .onOptionSelect = Export_Init,
+        .onOptionSelect = Record_DeleteState,
     },
     {
         .option_kind = OPTKIND_FUNC,                                                             // the type of option this is; menu, string list, integer list, etc
         .value_num = 0,                                                                          // number of values for this option
         .option_val = 0,                                                                         // value of this option
         .menu = 0,                                                                               // pointer to the menu that pressing A opens
-        .option_name = "Delete Positions",                                                       // pointer to a string
-        .desc = "Delete the current initial position\nand recordings.",                          // string describing what this option does
+        .option_name = "Export",                                                                 // pointer to a string
+        .desc = "Export the recording to a memory card\nfor later use or to share with others.", // string describing what this option does
         .option_values = 0,                                                                      // pointer to an array of strings
-        .onOptionSelect = Record_DeleteState,
+        .onOptionSelect = Export_Init,
     },
 };
 static EventMenu LabMenu_Record = {

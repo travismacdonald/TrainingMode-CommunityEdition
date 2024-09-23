@@ -510,8 +510,8 @@ enum sdi_dir
 #define OPTREC_LOOP 5
 #define OPTREC_AUTOLOAD 6
 #define OPTREC_RESAVE 7
-#define OPTREC_DELETE 8
-#define OPTREC_EXPORT 9
+#define OPTREC_EXPORT 8
+#define OPTREC_DELETE 9
 
 // Recording Modes
 #define RECMODE_OFF 0
