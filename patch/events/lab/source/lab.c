@@ -1519,7 +1519,7 @@ static const EventOption Record_Save = {
     .onOptionSelect = Record_InitState,
 };
 
-static EventOption Record_Load = {
+static const EventOption Record_Load = {
     .option_kind = OPTKIND_FUNC,                                                             // the type of option this is; menu, string list, integer list, etc
     .value_num = 0,                                                                          // number of values for this option
     .option_val = 0,                                                                         // value of this option
@@ -1597,10 +1597,30 @@ static EventOption LabOptions_Record[] = {
         .value_num = 0,                                                                          // number of values for this option
         .option_val = 0,                                                                         // value of this option
         .menu = 0,                                                                               // pointer to the menu that pressing A opens
+        .option_name = "Resave Positions",                                                       // pointer to a string
+        .desc = "Save the current position, without\nremoving recorded inputs.",                 // string describing what this option does
+        .option_values = 0,                                                                      // pointer to an array of strings
+        .onOptionSelect = Record_ResaveState,
+    },
+    {
+        .option_kind = OPTKIND_FUNC,                                                             // the type of option this is; menu, string list, integer list, etc
+        .value_num = 0,                                                                          // number of values for this option
+        .option_val = 0,                                                                         // value of this option
+        .menu = 0,                                                                               // pointer to the menu that pressing A opens
         .option_name = "Export",                                                                 // pointer to a string
         .desc = "Export the recording to a memory card\nfor later use or to share with others.", // string describing what this option does
         .option_values = 0,                                                                      // pointer to an array of strings
         .onOptionSelect = Export_Init,
+    },
+    {
+        .option_kind = OPTKIND_FUNC,                                                             // the type of option this is; menu, string list, integer list, etc
+        .value_num = 0,                                                                          // number of values for this option
+        .option_val = 0,                                                                         // value of this option
+        .menu = 0,                                                                               // pointer to the menu that pressing A opens
+        .option_name = "Delete Positions",                                                       // pointer to a string
+        .desc = "Delete the current initial position\nand recordings.",                          // string describing what this option does
+        .option_values = 0,                                                                      // pointer to an array of strings
+        .onOptionSelect = Record_DeleteState,
     },
 };
 static EventMenu LabMenu_Record = {
@@ -4889,11 +4909,30 @@ void Record_Update(int ply, RecInputData *input_data, int rec_mode)
 void Record_InitState(GOBJ *menu_gobj)
 {
     if (event_vars->Savestate_Save(rec_state))
-    {
-
-        Record_OnSuccessfulSave();
-    }
+        Record_OnSuccessfulSave(1);
     return;
+}
+
+void Record_ResaveState(GOBJ *menu_gobj)
+{
+    if (event_vars->Savestate_Save(rec_state))
+        Record_OnSuccessfulSave(0);
+    return;
+}
+void Record_DeleteState(GOBJ *menu_gobj) 
+{
+    for (int i = 0; i < sizeof(LabOptions_Record) / sizeof(EventOption); i++)
+    {
+        if (i == OPTREC_SAVE_LOAD) {
+            LabOptions_Record[i] = Record_Save;
+            LabOptions_Record[i].disable = 0;
+        } else {
+            LabOptions_Record[i].disable = 1;
+        }
+    }
+
+    LabMenu_Record.scroll = 0;
+    LabMenu_Record.cursor = 0;
 }
 void Record_RestoreState(GOBJ *menu_gobj)
 {
@@ -5088,31 +5127,35 @@ int Record_GetEndFrame()
 
     return end_frame;
 }
-void Record_OnSuccessfulSave()
+void Record_OnSuccessfulSave(int deleteRecordings)
 {
+    LabOptions_Record[OPTREC_SAVE_LOAD] = Record_Load;
+
     // enable other options
-    for (int i = 1; i < sizeof(LabOptions_Record) / sizeof(EventOption); i++)
+    for (int i = 0; i < sizeof(LabOptions_Record) / sizeof(EventOption); i++)
     {
         LabOptions_Record[i].disable = 0;
     }
 
-    // clear slots
-    for (int i = 0; i < REC_SLOTS; i++)
-    {
-        // clear data
-        memset(rec_data.hmn_inputs[i], 0, sizeof(RecInputData));
-        memset(rec_data.cpu_inputs[i], 0, sizeof(RecInputData));
+    if (deleteRecordings) {
+        // clear slots
+        for (int i = 0; i < REC_SLOTS; i++)
+        {
+            // clear data
+            memset(rec_data.hmn_inputs[i], 0, sizeof(RecInputData));
+            memset(rec_data.cpu_inputs[i], 0, sizeof(RecInputData));
 
-        // init frame this recording starts on
-        rec_data.hmn_inputs[i]->start_frame = -1;
-        rec_data.cpu_inputs[i]->start_frame = -1;
+            // init frame this recording starts on
+            rec_data.hmn_inputs[i]->start_frame = -1;
+            rec_data.cpu_inputs[i]->start_frame = -1;
+        }
+
+        // init settings
+        LabOptions_Record[OPTREC_HMNMODE].option_val = 0; // set hmn to off
+        LabOptions_Record[OPTREC_HMNSLOT].option_val = 1; // set hmn to slot 1
+        LabOptions_Record[OPTREC_CPUMODE].option_val = 0; // set cpu to off
+        LabOptions_Record[OPTREC_CPUSLOT].option_val = 1; // set cpu to slot 1
     }
-
-    // init settings
-    LabOptions_Record[OPTREC_HMNMODE].option_val = 0; // set hmn to off
-    LabOptions_Record[OPTREC_HMNSLOT].option_val = 1; // set hmn to slot 1
-    LabOptions_Record[OPTREC_CPUMODE].option_val = 0; // set cpu to off
-    LabOptions_Record[OPTREC_CPUSLOT].option_val = 1; // set cpu to slot 1
 
     // also save to personal savestate
     event_vars->Savestate_Save(event_vars->savestate);

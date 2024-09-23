@@ -385,6 +385,8 @@ void Record_ChangeSlot(GOBJ *menu_gobj, int value);
 void Record_MemcardSave(GOBJ *menu_gobj);
 void Record_MemcardLoad(int slot, int file_no);
 void Record_InitState(GOBJ *menu_gobj);
+void Record_ResaveState(GOBJ *menu_gobj);
+void Record_DeleteState(GOBJ *menu_gobj);
 void Record_RestoreState(GOBJ *menu_gobj);
 void Record_CObjThink(GOBJ *gobj);
 void Record_GX(GOBJ *gobj, int pass);
@@ -507,7 +509,9 @@ enum sdi_dir
 #define OPTREC_CPUSLOT 4
 #define OPTREC_LOOP 5
 #define OPTREC_AUTOLOAD 6
-#define OPTREC_DELETE 7
+#define OPTREC_RESAVE 7
+#define OPTREC_DELETE 8
+#define OPTREC_EXPORT 9
 
 // Recording Modes
 #define RECMODE_OFF 0
