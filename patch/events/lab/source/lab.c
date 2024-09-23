@@ -1507,27 +1507,31 @@ static EventMenu LabMenu_CPU = {
 static char **LabValues_RecordSlot[] = {"Random", "Slot 1", "Slot 2", "Slot 3", "Slot 4", "Slot 5", "Slot 6"};
 static char **LabValues_HMNRecordMode[] = {"Off", "Record", "Playback"};
 static char **LabValues_CPURecordMode[] = {"Off", "Control", "Record", "Playback"};
+
+static const EventOption Record_Save = {
+    .option_kind = OPTKIND_FUNC,                                             // the type of option this is; menu, string list, integer list, etc
+    .value_num = 0,                                                          // number of values for this option
+    .option_val = 0,                                                         // value of this option
+    .menu = 0,                                                               // pointer to the menu that pressing A opens
+    .option_name = "Save Positions",                                         // pointer to a string
+    .desc = "Save the current fighter positions\nas the initial positions.", // string describing what this option does
+    .option_values = 0,                                                      // pointer to an array of strings
+    .onOptionSelect = Record_InitState,
+};
+
+static EventOption Record_Load = {
+    .option_kind = OPTKIND_FUNC,                                                             // the type of option this is; menu, string list, integer list, etc
+    .value_num = 0,                                                                          // number of values for this option
+    .option_val = 0,                                                                         // value of this option
+    .menu = 0,                                                                               // pointer to the menu that pressing A opens
+    .option_name = "Restore Positions",                                                      // pointer to a string
+    .desc = "Load the saved fighter positions and \nstart the sequence from the beginning.", // string describing what this option does
+    .option_values = 0,                                                                      // pointer to an array of strings
+    .onOptionSelect = Record_RestoreState,
+};
+
 static EventOption LabOptions_Record[] = {
-    {
-        .option_kind = OPTKIND_FUNC,                                             // the type of option this is; menu, string list, integer list, etc
-        .value_num = 0,                                                          // number of values for this option
-        .option_val = 0,                                                         // value of this option
-        .menu = 0,                                                               // pointer to the menu that pressing A opens
-        .option_name = "Save Positions",                                         // pointer to a string
-        .desc = "Save the current fighter positions\nas the initial positions.", // string describing what this option does
-        .option_values = 0,                                                      // pointer to an array of strings
-        .onOptionSelect = Record_InitState,
-    },
-    {
-        .option_kind = OPTKIND_FUNC,                                                             // the type of option this is; menu, string list, integer list, etc
-        .value_num = 0,                                                                          // number of values for this option
-        .option_val = 0,                                                                         // value of this option
-        .menu = 0,                                                                               // pointer to the menu that pressing A opens
-        .option_name = "Restore Positions",                                                      // pointer to a string
-        .desc = "Load the saved fighter positions and \nstart the sequence from the beginning.", // string describing what this option does
-        .option_values = 0,                                                                      // pointer to an array of strings
-        .onOptionSelect = Record_RestoreState,
-    },
+    Record_Save,
     {
         .option_kind = OPTKIND_STRING,                               // the type of option this is; menu, string list, integer list, etc
         .value_num = sizeof(LabValues_HMNRecordMode) / 4,            // number of values for this option
@@ -4502,9 +4506,10 @@ GOBJ *Record_Init()
     rec_state->is_exist = 0;
 
     // disable menu options
-    for (int i = 1; i < sizeof(LabOptions_Record) / sizeof(EventOption); i++)
+    for (int i = 0; i < sizeof(LabOptions_Record) / sizeof(EventOption); i++)
     {
-        LabOptions_Record[i].disable = 1;
+        if (i != OPTREC_SAVE_LOAD)
+            LabOptions_Record[i].disable = 1;
     }
 
     // allocate input arrays

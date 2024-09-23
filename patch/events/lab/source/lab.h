@@ -500,14 +500,14 @@ enum sdi_dir
 };
 
 // Recording Options
-#define OPTREC_SAVE 0
-#define OPTREC_LOAD 1
-#define OPTREC_HMNMODE 2
-#define OPTREC_HMNSLOT 3
-#define OPTREC_CPUMODE 4
-#define OPTREC_CPUSLOT 5
-#define OPTREC_LOOP 6
-#define OPTREC_AUTOLOAD 7
+#define OPTREC_SAVE_LOAD 0
+#define OPTREC_HMNMODE 1
+#define OPTREC_HMNSLOT 2
+#define OPTREC_CPUMODE 3
+#define OPTREC_CPUSLOT 4
+#define OPTREC_LOOP 5
+#define OPTREC_AUTOLOAD 6
+#define OPTREC_DELETE 7
 
 // Recording Modes
 #define RECMODE_OFF 0
