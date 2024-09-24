@@ -3015,7 +3015,7 @@ blrl
 .long 0x0030190F # Kirby = 0 / Bowser = 25 / Link = 25 / Sheik = 15
 .long 0x00000000 # Ness = 0 / Peach = 0 / Popo = 0 / Nana = 0
 .long 0x08050F00 # Pikachu = 8 / Samus = 5 / Yoshi = 15 / Jiggs = 0
-.long 0x00001400 # Mewtwo = 0 / Luigi = 0 / Marth = 20 / Zelda = 0
+.long 0x00001800 # Mewtwo = 0 / Luigi = 0 / Marth = 20 / Zelda = 0
 .long 0x19085F00 # YLink = 25 / Doc = 8 / Falco = 95 / Pichu = 0
 .long 0x002D3A00 # GaW = 0 / Ganon = 45 / Roy = 58
 
