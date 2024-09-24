@@ -17,6 +17,7 @@ To download the ISO, click 'Releases' on the right side, then download "TM-More.
     - Reworked recording UI. Now allows resaveing existing recordings with different percents or positioning.
     - Jump actions no longer make the CPU self-destruct.
     - SDI and mashing are set to none by default.
+    - Hazard toggle in training lab.
     - Much more planned in the near future!
 - Work in progress:
     - Edgeguard training event.
