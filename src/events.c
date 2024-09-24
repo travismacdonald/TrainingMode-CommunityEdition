@@ -1587,18 +1587,19 @@ int Savestate_Save(Savestate *savestate)
 
         FighterData *fighter_data = fighter->userdata;
 
-        if ((fighter_data->cb.OnDeath != 0) ||
-            (fighter_data->cb.OnDeath2 != 0) ||
-            (fighter_data->cb.OnDeath3 != 0) ||
-            (fighter_data->heldItem != 0) ||
-            (fighter_data->x1978 != 0) ||
-            (fighter_data->accessory != 0) ||
-            ((fighter_data->kind == 8) && ((fighter_data->state >= 342) && (fighter_data->state <= 344)))) // hardcode ness' usmash because it doesnt destroy the yoyo via onhit callback...
-        {
-            // cannot save
-            canSave = 0;
-            break;
-        }
+        // Aitch: temporarily remove savestate restrictions to find bugs
+        //if ((fighter_data->cb.OnDeath != 0) ||
+        //    (fighter_data->cb.OnDeath2 != 0) ||
+        //    (fighter_data->cb.OnDeath3 != 0) ||
+        //    (fighter_data->heldItem != 0) ||
+        //    (fighter_data->x1978 != 0) ||
+        //    (fighter_data->accessory != 0) ||
+        //    ((fighter_data->kind == 8) && ((fighter_data->state >= 342) && (fighter_data->state <= 344)))) // hardcode ness' usmash because it doesnt destroy the yoyo via onhit callback...
+        //{
+        //    // cannot save
+        //    canSave = 0;
+        //    break;
+        //}
 
         fighter = fighter->next;
     }

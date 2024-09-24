@@ -807,32 +807,58 @@ int CPUAction_CheckMultipleState(GOBJ *cpu, int group_kind)
 
     return isActionable;
 }
-int CPU_IsThrown(GOBJ *cpu)
-{
+
+int CPU_IsThrown(GOBJ *cpu, GOBJ *hmn) {
     FighterData *cpu_data = cpu->userdata;
+    FighterData *hmn_data = hmn->userdata;
 
     int is_thrown = 0;
     int cpu_state = cpu_data->state;
+    int hmn_kind = hmn_data->kind;
 
-    // check if thrown
-    if (((cpu_state >= ASID_THROWNF) && (cpu_state <= ASID_THROWNLW)) || (cpu_state == ASID_CAPTURECAPTAIN) || (cpu_state == ASID_THROWNKOOPAF) || (cpu_state == ASID_THROWNKOOPAB) || (cpu_state == ASID_THROWNKOOPAAIRF) || ((cpu_state >= ASID_THROWNFF) && (cpu_state <= ASID_THROWNFLW)))
-        is_thrown = 1;
+    // hardcode DK cargo throw
+    if (hmn_kind == 3 && (cpu_state == ASID_THROWNF || cpu_state == ASID_THROWNFF)) return 0;
 
-    return is_thrown;
+    if (ASID_THROWNF <= cpu_state && cpu_state <= ASID_THROWNLW)   return 1;
+    if (ASID_THROWNFF <= cpu_state && cpu_state <= ASID_THROWNFLW) return 1;
+    if (cpu_state == ASID_CAPTURECAPTAIN)                          return 1;
+    if (cpu_state == ASID_THROWNKOOPAF)                            return 1;
+    if (cpu_state == ASID_THROWNKOOPAB)                            return 1;
+    if (cpu_state == ASID_THROWNKOOPAAIRF)                         return 1;
+    if (cpu_state == ASID_THROWNKOOPAAIRB)                         return 1;
+
+    return 0;
 }
-int CPU_IsGrabbed(GOBJ *cpu)
+
+int CPU_IsGrabbed(GOBJ *cpu, GOBJ *hmn)
 {
     FighterData *cpu_data = cpu->userdata;
+    FighterData *hmn_data = hmn->userdata;
 
-    int is_grabbed = 0;
     int cpu_state = cpu_data->state;
+    int hmn_kind = hmn_data->kind;
 
-    // check if thrown
-    if ((cpu_state == ASID_CAPTUREWAITHI) || (cpu_state == ASID_CAPTUREWAITLW) || (cpu_state == ASID_CAPTUREWAITKOOPA) || (cpu_state == ASID_CAPTUREWAITKOOPAAIR) || (cpu_state == ASID_CAPTUREWAITKIRBY) || (cpu_state == ASID_DAMAGEICE) || (cpu_state == ASID_CAPTUREMASTERHAND) || (cpu_state == ASID_YOSHIEGG) || (cpu_state == ASID_CAPTUREKIRBYYOSHI) || (cpu_state == ASID_KIRBYYOSHIEGG) || (cpu_state == ASID_CAPTURELEADEAD) || (cpu_state == ASID_CAPTURELIKELIKE) || (cpu_state == ASID_CAPTUREWAITCRAZYHAND) || ((cpu_state >= ASID_SHOULDEREDWAIT) && (cpu_state <= ASID_SHOULDEREDTURN)))
-        is_grabbed = 1;
+    // hardcode DK cargo throw
+    if (hmn_kind == 3 && (cpu_state == ASID_THROWNF || cpu_state == ASID_THROWNFF)) return 1;
 
-    return is_grabbed;
+    if (cpu_state == ASID_CAPTUREWAITHI)        return 1;
+    if (cpu_state == ASID_CAPTUREWAITLW)        return 1;
+    if (cpu_state == ASID_CAPTUREWAITKOOPA)     return 1;
+    if (cpu_state == ASID_CAPTUREWAITKOOPAAIR)  return 1;
+    if (cpu_state == ASID_CAPTUREWAITKIRBY)     return 1;
+    if (cpu_state == ASID_DAMAGEICE)            return 1;
+    if (cpu_state == ASID_CAPTUREMASTERHAND)    return 1;
+    if (cpu_state == ASID_YOSHIEGG)             return 1;
+    if (cpu_state == ASID_CAPTUREKIRBYYOSHI)    return 1;
+    if (cpu_state == ASID_KIRBYYOSHIEGG)        return 1;
+    if (cpu_state == ASID_CAPTURELEADEAD)       return 1;
+    if (cpu_state == ASID_CAPTURELIKELIKE)      return 1;
+    if (cpu_state == ASID_CAPTUREWAITCRAZYHAND) return 1;
+    if (ASID_SHOULDEREDWAIT <= cpu_state && cpu_state <= ASID_SHOULDEREDTURN) return 1;
+
+    return 0;
 }
+
 int LCancel_CPUPerformAction(GOBJ *cpu, int action_id, GOBJ *hmn)
 {
     FighterData *cpu_data = cpu->userdata;
@@ -970,11 +996,9 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
     cpu_data->cpu.ai = 15;
 
     // if first throw frame, advance hitnum
-    int is_thrown = CPU_IsThrown(cpu);
-    if ((is_thrown == 1) && (eventData->cpu_isthrown == 0))
-    {
+    int is_thrown = CPU_IsThrown(cpu, hmn);
+    if (is_thrown == 1 && eventData->cpu_isthrown == 0)
         eventData->cpu_hitnum++;
-    }
     eventData->cpu_isthrown = is_thrown;
 
     // ALWAYS CHECK FOR X AND OVERRIDE STATE
@@ -988,7 +1012,7 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         Fighter_ZeroCPUInputs(cpu_data);
     }
     // check if being held in a grab
-    if (CPU_IsGrabbed(cpu) == 1)
+    if (CPU_IsGrabbed(cpu, hmn) == 1)
     {
         eventData->cpu_state = CPUSTATE_GRABBED;
     }
@@ -1080,7 +1104,7 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
     CPULOGIC_GRABBED:
     {
         // if no longer being grabbed, exit
-        if (CPU_IsGrabbed(cpu) == 0)
+        if (CPU_IsGrabbed(cpu, hmn) == 0)
         {
             eventData->cpu_state = CPUSTATE_RECOVER;
             goto CPULOGIC_RECOVER;
