@@ -1,4 +1,4 @@
-#include "lab.h"
+#include "lab_common.h"
 
 #include "cpu_actions.h"
 #include "menus.h"

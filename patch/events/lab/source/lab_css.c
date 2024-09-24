@@ -1,4 +1,4 @@
-#include "lab.h"
+#include "lab_common.h"
 
 // Static Variables
 static Arch_ImportData *stc_import_assets;

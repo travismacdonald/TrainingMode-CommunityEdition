@@ -1,3 +1,1152 @@
+// VARS ####################################################
+
+// General Options
+enum gen_option
+{
+    OPTGEN_FRAME,
+    OPTGEN_FRAMEBTN,
+    OPTGEN_HMNPCNT,
+    OPTGEN_MODEL,
+    OPTGEN_HIT,
+    OPTGEN_COLL,
+    OPTGEN_CAM,
+    OPTGEN_HUD,
+    OPTGEN_DI,
+    OPTGEN_INPUT,
+    OPTGEN_STALE,
+};
+
+// CPU Options
+enum cpu_option
+{
+    OPTCPU_PCNT,
+    OPTCPU_BEHAVE,
+    OPTCPU_SHIELD,
+    OPTCPU_INTANG,
+    OPTCPU_SDIFREQ,
+    OPTCPU_SDIDIR,
+    OPTCPU_TDI,
+    OPTCPU_CUSTOMTDI,
+    OPTCPU_TECH,
+    OPTCPU_GETUP,
+    OPTCPU_MASH,
+    //OPTCPU_RESET,
+    OPTCPU_CTRGRND,
+    OPTCPU_CTRAIR,
+    OPTCPU_CTRSHIELD,
+    OPTCPU_CTRFRAMES,
+    OPTCPU_CTRHITS,
+    OPTCPU_SHIELDHITS,
+};
+
+// SDI Freq
+enum sdi_freq
+{
+    SDIFREQ_NONE,
+    SDIFREQ_LOW,
+    SDIFREQ_MED,
+    SDIFREQ_HIGH,
+};
+
+// SDI Freq
+enum sdi_dir
+{
+    SDIDIR_RANDOM,
+    SDIDIR_AWAY,
+    SDIDIR_TOWARD,
+};
+
+// Recording Options
+#define OPTREC_SAVE_LOAD 0
+#define OPTREC_HMNMODE 1
+#define OPTREC_HMNSLOT 2
+#define OPTREC_CPUMODE 3
+#define OPTREC_CPUSLOT 4
+#define OPTREC_LOOP 5
+#define OPTREC_AUTOLOAD 6
+#define OPTREC_RESAVE 7
+#define OPTREC_EXPORT 8
+#define OPTREC_DELETE 9
+
+// Recording Modes
+#define RECMODE_OFF 0
+#define RECMODE_CTRL 1
+#define RECMODE_REC 2
+#define RECMODE_PLAY 3
+
+// Info Display Options
+//#define OPTINF_TOGGLE 0
+#define OPTINF_PLAYER 0
+#define OPTINF_SIZE 1
+#define OPTINF_PRESET 2
+#define OPTINF_ROW1 3
+
+// Info Display Rows
+enum infdisp_rows
+{
+    INFDISPROW_NONE,
+    INFDISPROW_POS,
+    INFDISPROW_STATE,
+    INFDISPROW_FRAME,
+    INFDISPROW_SELFVEL,
+    INFDISPROW_KBVEL,
+    INFDISPROW_TOTALVEL,
+    INFDISPROW_ENGLSTICK,
+    INFDISPROW_SYSLSTICK,
+    INFDISPROW_ENGCSTICK,
+    INFDISPROW_SYSCSTICK,
+    INFDISPROW_ENGTRIGGER,
+    INFDISPROW_SYSTRIGGER,
+    INFDISPROW_LEDGECOOLDOWN,
+    INFDISPROW_INTANGREMAIN,
+    INFDISPROW_HITSTOP,
+    INFDISPROW_HITSTUN,
+    INFDISPROW_SHIELDHEALTH,
+    INFDISPROW_SHIELDSTUN,
+    INFDISPROW_GRIP,
+    INFDISPROW_ECBLOCK,
+    INFDISPROW_ECBBOT,
+    INFDISPROW_JUMPS,
+    INFDISPROW_WALLJUMPS,
+    INFDISPROW_JAB,
+    INFDISPROW_LINE,
+    INFDISPROW_BLASTLR,
+    INFDISPROW_BLASTUD,
+};
+
+// CPU States
+enum cpu_state
+{
+    CPUSTATE_START,
+    CPUSTATE_GRABBED,
+    CPUSTATE_SDI,
+    CPUSTATE_TDI,
+    CPUSTATE_TECH,
+    CPUSTATE_GETUP,
+    CPUSTATE_COUNTER,
+    CPUSTATE_RECOVER,
+};
+
+// Grab Escape Options
+enum cpu_mash
+{
+    CPUMASH_NONE,
+    CPUMASH_MED,
+    CPUMASH_HIGH,
+    CPUMASH_PERFECT,
+};
+
+#define INTANG_COLANIM 10
+
+// Grab Escape RNG Def
+#define CPUMASHRNG_MED 35
+#define CPUMASHRNG_HIGH 55
+
+// Behavior Definitions
+#define CPUBEHAVE_STAND 0
+#define CPUBEHAVE_SHIELD 1
+#define CPUBEHAVE_CROUCH 2
+#define CPUBEHAVE_JUMP 3
+
+// SDI Definitions
+#define CPUSDI_RANDOM 0
+#define CPUSDI_NONE 1
+
+// TDI Definitions
+#define CPUTDI_RANDOM 0
+#define CPUTDI_IN 1
+#define CPUTDI_OUT 2
+#define CPUTDI_FLOORHUG 3
+#define CPUTDI_CUSTOM 4
+#define CPUTDI_NONE 5
+#define CPUTDI_NUM 6
+
+// Tech Definitions
+#define CPUTECH_RANDOM 0
+#define CPUTECH_NEUTRAL 1
+#define CPUTECH_AWAY 2
+#define CPUTECH_TOWARDS 3
+#define CPUTECH_NONE 4
+
+// Getup Definitions
+#define CPUGETUP_RANDOM 0
+#define CPUGETUP_STAND 1
+#define CPUGETUP_AWAY 2
+#define CPUGETUP_TOWARD 3
+#define CPUGETUP_ATTACK 4
+
+// Stick Direction Definitions
+enum STICKDIR
+{
+    STCKDIR_NONE,
+    STCKDIR_TOWARD,
+    STCKDIR_AWAY,
+    STCKDIR_FRONT,
+    STCKDIR_BACK,
+    STICKDIR_RDM,
+};
+
+// Hit kind defintions
+#define HITKIND_DAMAGE 0
+#define HITKIND_SHIELD 1
+
+// ACTIONS #################################################
+
+// CPU Action Definitions
+static CPUAction Lab_CPUActionShield[] = {
+    {
+        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
+        0,                     // first possible frame to perform this action
+        0,                     // last possible frame to perfrom this action
+        0,                     // left stick X value
+        0,                     // left stick Y value
+        0,                     // c stick X value
+        0,                     // c stick Y value
+        PAD_TRIGGER_R,         // button to input
+        1,                     // is the last input
+        0,                     // specify stick direction
+    },
+    {
+        ASID_GUARDREFLECT, // state to perform this action. -1 for last
+        0,                 // first possible frame to perform this action
+        0,                 // last possible frame to perfrom this action
+        0,                 // left stick X value
+        0,                 // left stick Y value
+        0,                 // c stick X value
+        0,                 // c stick Y value
+        PAD_TRIGGER_R,     // button to input
+        1,                 // is the last input
+        0,                 // specify stick direction
+    },
+    {
+        ASID_GUARD,    // state to perform this action. -1 for last
+        0,             // first possible frame to perform this action
+        0,             // last possible frame to perfrom this action
+        0,             // left stick X value
+        0,             // left stick Y value
+        0,             // c stick X value
+        0,             // c stick Y value
+        PAD_TRIGGER_R, // button to input
+        1,             // is the last input
+        0,             // specify stick direction
+    },
+    -1,
+};
+static CPUAction Lab_CPUActionGrab[] = {
+    {
+        ASID_GUARD,                   // state to perform this action. -1 for last
+        0,                            // first possible frame to perform this action
+        0,                            // last possible frame to perfrom this action
+        0,                            // left stick X value
+        0,                            // left stick Y value
+        0,                            // c stick X value
+        0,                            // c stick Y value
+        PAD_BUTTON_A | PAD_TRIGGER_R, // button to input
+        1,                            // is the last input
+        0,                            // specify stick direction
+    },
+    {
+        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
+        0,                     // first possible frame to perform this action
+        0,                     // last possible frame to perfrom this action
+        0,                     // left stick X value
+        0,                     // left stick Y value
+        0,                     // c stick X value
+        0,                     // c stick Y value
+        PAD_TRIGGER_Z,         // button to input
+        1,                     // is the last input
+        0,                     // specify stick direction
+    },
+    -1,
+};
+static CPUAction Lab_CPUActionUpB[] = {
+    {
+        ASID_GUARD,                   // state to perform this action. -1 for last
+        0,                            // first possible frame to perform this action
+        0,                            // last possible frame to perfrom this action
+        0,                            // left stick X value
+        0,                            // left stick Y value
+        0,                            // c stick X value
+        0,                            // c stick Y value
+        PAD_TRIGGER_R | PAD_BUTTON_X, // button to input
+        0,                            // is the last input
+        0,                            // specify stick direction
+    },
+    {
+        ASID_GUARD,   // state to perform this action. -1 for last
+        0,            // first possible frame to perform this action
+        0,            // last possible frame to perfrom this action
+        0,            // left stick X value
+        0,            // left stick Y value
+        0,            // c stick X value
+        0,            // c stick Y value
+        PAD_BUTTON_X, // button to input
+        0,            // is the last input
+        0,            // specify stick direction
+    },
+    {
+        ASID_KNEEBEND, // state to perform this action. -1 for last
+        0,             // first possible frame to perform this action
+        0,             // last possible frame to perfrom this action
+        0,             // left stick X value
+        127,           // left stick Y value
+        0,             // c stick X value
+        0,             // c stick Y value
+        PAD_BUTTON_B,  // button to input
+        1,             // is the last input
+        0,             // specify stick direction
+    },
+    {
+        ASID_ACTIONABLE, // state to perform this action. -1 for last
+        0,               // first possible frame to perform this action
+        0,               // last possible frame to perfrom this action
+        0,               // left stick X value
+        127,             // left stick Y value
+        0,               // c stick X value
+        0,               // c stick Y value
+        PAD_BUTTON_B,    // button to input
+        1,               // is the last input
+        0,               // specify stick direction
+    },
+    -1,
+};
+static CPUAction Lab_CPUActionDownB[] = {
+    {
+        ASID_GUARD,                   // state to perform this action. -1 for last
+        0,                            // first possible frame to perform this action
+        0,                            // last possible frame to perfrom this action
+        0,                            // left stick X value
+        0,                            // left stick Y value
+        0,                            // c stick X value
+        0,                            // c stick Y value
+        PAD_TRIGGER_R | PAD_BUTTON_X, // button to input
+        0,                            // is the last input
+        0,                            // specify stick direction
+    },
+    {
+        ASID_GUARD,   // state to perform this action. -1 for last
+        0,            // first possible frame to perform this action
+        0,            // last possible frame to perfrom this action
+        0,            // left stick X value
+        0,            // left stick Y value
+        0,            // c stick X value
+        0,            // c stick Y value
+        PAD_BUTTON_X, // button to input
+        1,            // is the last input
+        0,            // specify stick direction
+    },
+    {
+        ASID_ACTIONABLE, // state to perform this action. -1 for last
+        0,               // first possible frame to perform this action
+        0,               // last possible frame to perfrom this action
+        0,               // left stick X value
+        -127,            // left stick Y value
+        0,               // c stick X value
+        0,               // c stick Y value
+        PAD_BUTTON_B,    // button to input
+        1,               // is the last input
+        0,               // specify stick direction
+    },
+    -1,
+};
+static CPUAction Lab_CPUActionSpotdodge[] = {
+    {
+        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
+        0,                     // first possible frame to perform this action
+        0,                     // last possible frame to perfrom this action
+        0,                     // left stick X value
+        -127,                  // left stick Y value
+        0,                     // c stick X value
+        0,                     // c stick Y value
+        PAD_TRIGGER_R,         // button to input
+        1,                     // is the last input
+        0,                     // specify stick direction
+    },
+    -1,
+};
+static CPUAction Lab_CPUActionRollAway[] = {
+    {
+        ASID_GUARD,    // state to perform this action. -1 for last
+        0,             // first possible frame to perform this action
+        0,             // last possible frame to perfrom this action
+        127,           // left stick X value
+        0,             // left stick Y value
+        0,             // c stick X value
+        0,             // c stick Y value
+        PAD_TRIGGER_R, // button to input
+        1,             // is the last input
+        STCKDIR_AWAY,  // specify stick direction
+    },
+    {
+        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
+        0,                     // first possible frame to perform this action
+        0,                     // last possible frame to perfrom this action
+        0,                     // left stick X value
+        0,                     // left stick Y value
+        0,                     // c stick X value
+        0,                     // c stick Y value
+        PAD_TRIGGER_R,         // button to input
+        0,                     // is the last input
+        0,                     // specify stick direction
+    },
+    {
+        ASID_GUARDREFLECT, // state to perform this action. -1 for last
+        0,                 // first possible frame to perform this action
+        0,                 // last possible frame to perfrom this action
+        127,               // left stick X value
+        0,                 // left stick Y value
+        0,                 // c stick X value
+        0,                 // c stick Y value
+        PAD_TRIGGER_R,     // button to input
+        1,                 // is the last input
+        STCKDIR_AWAY,      // specify stick direction
+    },
+    -1,
+};
+static CPUAction Lab_CPUActionRollTowards[] = {
+    {
+        ASID_GUARD,     // state to perform this action. -1 for last
+        0,              // first possible frame to perform this action
+        0,              // last possible frame to perfrom this action
+        127,            // left stick X value
+        0,              // left stick Y value
+        0,              // c stick X value
+        0,              // c stick Y value
+        PAD_TRIGGER_R,  // button to input
+        1,              // is the last input
+        STCKDIR_TOWARD, // specify stick direction
+    },
+    {
+        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
+        0,                     // first possible frame to perform this action
+        0,                     // last possible frame to perfrom this action
+        0,                     // left stick X value
+        0,                     // left stick Y value
+        0,                     // c stick X value
+        0,                     // c stick Y value
+        PAD_TRIGGER_R,         // button to input
+        0,                     // is the last input
+        0,                     // specify stick direction
+    },
+    {
+        ASID_GUARDREFLECT, // state to perform this action. -1 for last
+        0,                 // first possible frame to perform this action
+        0,                 // last possible frame to perfrom this action
+        127,               // left stick X value
+        0,                 // left stick Y value
+        0,                 // c stick X value
+        0,                 // c stick Y value
+        PAD_TRIGGER_R,     // button to input
+        1,                 // is the last input
+        STCKDIR_TOWARD,    // specify stick direction
+    },
+    -1,
+};
+static CPUAction Lab_CPUActionRollRandom[] = {
+    {
+        ASID_GUARD,    // state to perform this action. -1 for last
+        0,             // first possible frame to perform this action
+        0,             // last possible frame to perfrom this action
+        127,           // left stick X value
+        0,             // left stick Y value
+        0,             // c stick X value
+        0,             // c stick Y value
+        PAD_TRIGGER_R, // button to input
+        1,             // is the last input
+        STICKDIR_RDM,  // specify stick direction
+    },
+    {
+        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
+        0,                     // first possible frame to perform this action
+        0,                     // last possible frame to perfrom this action
+        0,                     // left stick X value
+        0,                     // left stick Y value
+        0,                     // c stick X value
+        0,                     // c stick Y value
+        PAD_TRIGGER_R,         // button to input
+        0,                     // is the last input
+        0,                     // specify stick direction
+    },
+    {
+        ASID_GUARDREFLECT, // state to perform this action. -1 for last
+        0,                 // first possible frame to perform this action
+        0,                 // last possible frame to perfrom this action
+        127,               // left stick X value
+        0,                 // left stick Y value
+        0,                 // c stick X value
+        0,                 // c stick Y value
+        PAD_TRIGGER_R,     // button to input
+        1,                 // is the last input
+        STICKDIR_RDM,      // specify stick direction
+    },
+    -1,
+};
+static CPUAction Lab_CPUActionNair[] = {
+    {
+        ASID_GUARD,                   // state to perform this action. -1 for last
+        0,                            // first possible frame to perform this action
+        0,                            // last possible frame to perfrom this action
+        0,                            // left stick X value
+        0,                            // left stick Y value
+        0,                            // c stick X value
+        0,                            // c stick Y value
+        PAD_TRIGGER_R | PAD_BUTTON_X, // button to input
+        0,                            // is the last input
+        0,                            // specify stick direction
+    },
+    {
+        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
+        0,                     // first possible frame to perform this action
+        0,                     // last possible frame to perfrom this action
+        0,                     // left stick X value
+        0,                     // left stick Y value
+        0,                     // c stick X value
+        0,                     // c stick Y value
+        PAD_BUTTON_X,          // button to input
+        0,                     // is the last input
+        0,                     // specify stick direction
+    },
+    {
+        ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
+        0,                  // first possible frame to perform this action
+        0,                  // last possible frame to perfrom this action
+        0,                  // left stick X value
+        0,                  // left stick Y value
+        0,                  // c stick X value
+        0,                  // c stick Y value
+        PAD_BUTTON_A,       // button to input
+        1,                  // is the last input
+        0,                  // specify stick direction
+    },
+    -1,
+};
+static CPUAction Lab_CPUActionFair[] = {
+    {
+        ASID_GUARD,                   // state to perform this action. -1 for last
+        0,                            // first possible frame to perform this action
+        0,                            // last possible frame to perfrom this action
+        0,                            // left stick X value
+        0,                            // left stick Y value
+        0,                            // c stick X value
+        0,                            // c stick Y value
+        PAD_TRIGGER_R | PAD_BUTTON_X, // button to input
+        0,                            // is the last input
+        0,                            // specify stick direction
+    },
+    {
+        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
+        0,                     // first possible frame to perform this action
+        0,                     // last possible frame to perfrom this action
+        0,                     // left stick X value
+        0,                     // left stick Y value
+        0,                     // c stick X value
+        0,                     // c stick Y value
+        PAD_BUTTON_X,          // button to input
+        0,                     // is the last input
+        0,                     // specify stick direction
+    },
+    {
+        ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
+        0,                  // first possible frame to perform this action
+        0,                  // last possible frame to perfrom this action
+        0,                  // left stick X value
+        0,                  // left stick Y value
+        127,                // c stick X value
+        0,                  // c stick Y value
+        0,                  // button to input
+        1,                  // is the last input
+        3,                  // specify stick direction
+    },
+    -1,
+};
+static CPUAction Lab_CPUActionDair[] = {
+    {
+        ASID_GUARD,                   // state to perform this action. -1 for last
+        0,                            // first possible frame to perform this action
+        0,                            // last possible frame to perfrom this action
+        0,                            // left stick X value
+        0,                            // left stick Y value
+        0,                            // c stick X value
+        0,                            // c stick Y value
+        PAD_TRIGGER_R | PAD_BUTTON_X, // button to input
+        0,                            // is the last input
+        0,                            // specify stick direction
+    },
+    {
+        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
+        0,                     // first possible frame to perform this action
+        0,                     // last possible frame to perfrom this action
+        0,                     // left stick X value
+        0,                     // left stick Y value
+        0,                     // c stick X value
+        0,                     // c stick Y value
+        PAD_BUTTON_X,          // button to input
+        0,                     // is the last input
+        0,                     // specify stick direction
+    },
+    {
+        ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
+        0,                  // first possible frame to perform this action
+        0,                  // last possible frame to perfrom this action
+        0,                  // left stick X value
+        0,                  // left stick Y value
+        0,                  // c stick X value
+        -127,               // c stick Y value
+        0,                  // button to input
+        1,                  // is the last input
+        0,                  // specify stick direction
+    },
+    -1,
+};
+static CPUAction Lab_CPUActionBair[] = {
+    {
+        ASID_GUARD,                   // state to perform this action. -1 for last
+        0,                            // first possible frame to perform this action
+        0,                            // last possible frame to perfrom this action
+        0,                            // left stick X value
+        0,                            // left stick Y value
+        0,                            // c stick X value
+        0,                            // c stick Y value
+        PAD_TRIGGER_R | PAD_BUTTON_X, // button to input
+        0,                            // is the last input
+        0,                            // specify stick direction
+    },
+    {
+        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
+        0,                     // first possible frame to perform this action
+        0,                     // last possible frame to perfrom this action
+        0,                     // left stick X value
+        0,                     // left stick Y value
+        0,                     // c stick X value
+        0,                     // c stick Y value
+        PAD_BUTTON_X,          // button to input
+        0,                     // is the last input
+        0,                     // specify stick direction
+    },
+    {
+        ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
+        0,                  // first possible frame to perform this action
+        0,                  // last possible frame to perfrom this action
+        0,                  // left stick X value
+        0,                  // left stick Y value
+        127,                // c stick X value
+        0,                  // c stick Y value
+        0,                  // button to input
+        1,                  // is the last input
+        4,                  // specify stick direction
+    },
+    -1,
+};
+static CPUAction Lab_CPUActionUair[] = {
+    {
+        ASID_GUARD,                   // state to perform this action. -1 for last
+        0,                            // first possible frame to perform this action
+        0,                            // last possible frame to perfrom this action
+        0,                            // left stick X value
+        0,                            // left stick Y value
+        0,                            // c stick X value
+        0,                            // c stick Y value
+        PAD_TRIGGER_R | PAD_BUTTON_X, // button to input
+        0,                            // is the last input
+        0,                            // specify stick direction
+    },
+    {
+        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
+        0,                     // first possible frame to perform this action
+        0,                     // last possible frame to perfrom this action
+        0,                     // left stick X value
+        0,                     // left stick Y value
+        0,                     // c stick X value
+        0,                     // c stick Y value
+        PAD_BUTTON_X,          // button to input
+        0,                     // is the last input
+        0,                     // specify stick direction
+    },
+    {
+        ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
+        0,                  // first possible frame to perform this action
+        0,                  // last possible frame to perfrom this action
+        0,                  // left stick X value
+        0,                  // left stick Y value
+        0,                  // c stick X value
+        127,                // c stick Y value
+        0,                  // button to input
+        1,                  // is the last input
+        0,                  // specify stick direction
+    },
+    -1,
+};
+static CPUAction Lab_CPUActionJump[] = {
+    {
+        ASID_GUARD,                   // state to perform this action. -1 for last
+        0,                            // first possible frame to perform this action
+        0,                            // last possible frame to perfrom this action
+        0,                            // left stick X value
+        0,                            // left stick Y value
+        0,                            // c stick X value
+        0,                            // c stick Y value
+        PAD_TRIGGER_R | PAD_BUTTON_X, // button to input
+        0,                            // is the last input
+        0,                            // specify stick direction
+    },
+    {
+        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
+        0,                     // first possible frame to perform this action
+        0,                     // last possible frame to perfrom this action
+        0,                     // left stick X value
+        0,                     // left stick Y value
+        0,                     // c stick X value
+        0,                     // c stick Y value
+        PAD_BUTTON_X,          // button to input
+        1,                     // is the last input
+        0,                     // specify stick direction
+    },
+    {
+        ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
+        0,                  // first possible frame to perform this action
+        0,                  // last possible frame to perfrom this action
+        0,                  // left stick X value
+        0,                  // left stick Y value
+        0,                  // c stick X value
+        0,                  // c stick Y value
+        0,                  // button to input
+        1,                  // is the last input
+        0,                  // specify stick direction
+    },
+    -1,
+};
+static CPUAction Lab_CPUActionJumpFull[] = {
+    {
+        ASID_GUARD,                   // state to perform this action. -1 for last
+        0,                            // first possible frame to perform this action
+        0,                            // last possible frame to perfrom this action
+        0,                            // left stick X value
+        0,                            // left stick Y value
+        0,                            // c stick X value
+        0,                            // c stick Y value
+        PAD_TRIGGER_R | PAD_BUTTON_X, // button to input
+        0,                            // is the last input
+        0,                            // specify stick direction
+    },
+    {
+        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
+        0,                     // first possible frame to perform this action
+        0,                     // last possible frame to perfrom this action
+        0,                     // left stick X value
+        0,                     // left stick Y value
+        0,                     // c stick X value
+        0,                     // c stick Y value
+        PAD_BUTTON_X,          // button to input
+        0,                     // is the last input
+        0,                     // specify stick direction
+    },
+    {
+        ASID_KNEEBEND, // state to perform this action. -1 for last
+        0,             // first possible frame to perform this action
+        0,             // last possible frame to perfrom this action
+        0,             // left stick X value
+        0,             // left stick Y value
+        0,             // c stick X value
+        0,             // c stick Y value
+        PAD_BUTTON_X,  // button to input
+        0,             // is the last input
+        0,             // specify stick direction
+    },
+    {
+        ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
+        0,                  // first possible frame to perform this action
+        0,                  // last possible frame to perfrom this action
+        0,                  // left stick X value
+        0,                  // left stick Y value
+        0,                  // c stick X value
+        0,                  // c stick Y value
+        0,                  // button to input
+        1,                  // is the last input
+        0,                  // specify stick direction
+    },
+    -1,
+};
+static CPUAction Lab_CPUActionJumpAway[] = {
+    {
+        ASID_JUMPS, // state to perform this action. -1 for last
+        0,          // first possible frame to perform this action
+        0,          // last possible frame to perfrom this action
+        127,        // left stick X value
+        0,          // left stick Y value
+        0,          // c stick X value
+        0,          // c stick Y value
+        0,          // button to input
+        0,          // is the last input
+        2,          // specify stick direction
+    },
+    {
+        ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
+        0,                  // first possible frame to perform this action
+        0,                  // last possible frame to perfrom this action
+        127,                // left stick X value
+        0,                  // left stick Y value
+        0,                  // c stick X value
+        0,                  // c stick Y value
+        PAD_BUTTON_X,       // button to input
+        1,                  // is the last input
+        STCKDIR_AWAY,       // specify stick direction
+    },
+
+    -1,
+};
+static CPUAction Lab_CPUActionJumpTowards[] = {
+    {
+        ASID_JUMPS, // state to perform this action. -1 for last
+        0,          // first possible frame to perform this action
+        0,          // last possible frame to perfrom this action
+        127,        // left stick X value
+        0,          // left stick Y value
+        0,          // c stick X value
+        0,          // c stick Y value
+        0,          // button to input
+        0,          // is the last input
+        1,          // specify stick direction
+    },
+    {
+        ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
+        0,                  // first possible frame to perform this action
+        0,                  // last possible frame to perfrom this action
+        127,                // left stick X value
+        0,                  // left stick Y value
+        0,                  // c stick X value
+        0,                  // c stick Y value
+        PAD_BUTTON_X,       // button to input
+        1,                  // is the last input
+        STCKDIR_TOWARD,     // specify stick direction
+    },
+
+    -1,
+};
+static CPUAction Lab_CPUActionJumpNeutral[] = {
+    {
+        ASID_JUMPS, // state to perform this action. -1 for last
+        0,          // first possible frame to perform this action
+        0,          // last possible frame to perfrom this action
+        0,          // left stick X value
+        0,          // left stick Y value
+        0,          // c stick X value
+        0,          // c stick Y value
+        0,          // button to input
+        0,          // is the last input
+        0,          // specify stick direction
+    },
+    {
+        ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
+        0,               // first possible frame to perform this action
+        0,               // last possible frame to perfrom this action
+        0,               // left stick X value
+        0,               // left stick Y value
+        0,               // c stick X value
+        0,               // c stick Y value
+        PAD_BUTTON_X,    // button to input
+        1,               // is the last input
+        STCKDIR_NONE,    // specify stick direction
+    },
+
+    -1,
+};
+static CPUAction Lab_CPUActionAirdodge[] = {
+    {
+        ASID_DAMAGEAIR, // state to perform this action. -1 for last
+        0,              // first possible frame to perform this action
+        0,              // last possible frame to perfrom this action
+        127,            // left stick X value
+        0,              // left stick Y value
+        0,              // c stick X value
+        0,              // c stick Y value
+        0,              // button to input
+        0,              // is the last input
+        0,              // specify stick direction
+    },
+    {
+        ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
+        0,                  // first possible frame to perform this action
+        0,                  // last possible frame to perfrom this action
+        0,                  // left stick X value
+        0,                  // left stick Y value
+        0,                  // c stick X value
+        0,                  // c stick Y value
+        PAD_TRIGGER_R,      // button to input
+        1,                  // is the last input
+        0,                  // specify stick direction
+    },
+    -1,
+};
+static CPUAction Lab_CPUActionFFTumble[] = {
+    {
+        ASID_DAMAGEAIR, // state to perform this action. -1 for last
+        0,              // first possible frame to perform this action
+        0,              // last possible frame to perfrom this action
+        0,              // left stick X value
+        -127,           // left stick Y value
+        0,              // c stick X value
+        0,              // c stick Y value
+        0,              // button to input
+        1,              // is the last input
+        0,              // specify stick direction
+    },
+    -1,
+};
+static CPUAction Lab_CPUActionFFWiggle[] = {
+    {
+        ASID_DAMAGEAIR, // state to perform this action. -1 for last
+        0,              // first possible frame to perform this action
+        0,              // last possible frame to perfrom this action
+        127,            // left stick X value
+        0,              // left stick Y value
+        0,              // c stick X value
+        0,              // c stick Y value
+        0,              // button to input
+        0,              // is the last input
+        0,              // specify stick direction
+    },
+    {
+        ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
+        0,                  // first possible frame to perform this action
+        0,                  // last possible frame to perfrom this action
+        0,                  // left stick X value
+        -127,               // left stick Y value
+        0,                  // c stick X value
+        0,                  // c stick Y value
+        0,                  // button to input
+        1,                  // is the last input
+        0,                  // specify stick direction
+    },
+    -1,
+};
+static CPUAction Lab_CPUActionJab[] = {
+    {
+        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
+        0,                     // first possible frame to perform this action
+        0,                     // last possible frame to perfrom this action
+        0,                     // left stick X value
+        0,                     // left stick Y value
+        0,                     // c stick X value
+        0,                     // c stick Y value
+        PAD_BUTTON_A,          // button to input
+        1,                     // is the last input
+        0,                     // specify stick direction
+    },
+    -1,
+};
+static CPUAction Lab_CPUActionFTilt[] = {
+    {
+        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
+        0,                     // first possible frame to perform this action
+        0,                     // last possible frame to perfrom this action
+        80,                    // left stick X value
+        0,                     // left stick Y value
+        0,                     // c stick X value
+        0,                     // c stick Y value
+        PAD_BUTTON_A,          // button to input
+        1,                     // is the last input
+        STCKDIR_TOWARD,        // specify stick direction
+    },
+    -1,
+};
+static CPUAction Lab_CPUActionUTilt[] = {
+    {
+        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
+        0,                     // first possible frame to perform this action
+        0,                     // last possible frame to perfrom this action
+        0,                     // left stick X value
+        80,                    // left stick Y value
+        0,                     // c stick X value
+        0,                     // c stick Y value
+        PAD_BUTTON_A,          // button to input
+        1,                     // is the last input
+        0,                     // specify stick direction
+    },
+    -1,
+};
+static CPUAction Lab_CPUActionDTilt[] = {
+    {
+        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
+        0,                     // first possible frame to perform this action
+        0,                     // last possible frame to perfrom this action
+        0,                     // left stick X value
+        -80,                   // left stick Y value
+        0,                     // c stick X value
+        0,                     // c stick Y value
+        PAD_BUTTON_A,          // button to input
+        1,                     // is the last input
+        0,                     // specify stick direction
+    },
+    -1,
+};
+static CPUAction Lab_CPUActionUSmash[] = {
+    {
+        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
+        0,                     // first possible frame to perform this action
+        0,                     // last possible frame to perfrom this action
+        0,                     // left stick X value
+        0,                     // left stick Y value
+        0,                     // c stick X value
+        127,                   // c stick Y value
+        0,                     // button to input
+        1,                     // is the last input
+        0,                     // specify stick direction
+    },
+    -1,
+};
+static CPUAction Lab_CPUActionDSmash[] = {
+    {
+        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
+        0,                     // first possible frame to perform this action
+        0,                     // last possible frame to perfrom this action
+        0,                     // left stick X value
+        0,                     // left stick Y value
+        0,                     // c stick X value
+        -127,                  // c stick Y value
+        0,                     // button to input
+        1,                     // is the last input
+        0,                     // specify stick direction
+    },
+    -1,
+};
+static CPUAction Lab_CPUActionFSmash[] = {
+    {
+        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
+        0,                     // first possible frame to perform this action
+        0,                     // last possible frame to perfrom this action
+        0,                     // left stick X value
+        0,                     // left stick Y value
+        127,                   // c stick X value
+        0,                     // c stick Y value
+        0,                     // button to input
+        1,                     // is the last input
+        STCKDIR_TOWARD,        // specify stick direction
+    },
+    -1,
+};
+
+static CPUAction *Lab_CPUActions[] = {
+    // none 0
+    0,
+    // shield 1
+    &Lab_CPUActionShield,
+    // grab 2
+    &Lab_CPUActionGrab,
+    // up b 3
+    &Lab_CPUActionUpB,
+    // down b 4
+    &Lab_CPUActionDownB,
+    // spotdodge 5
+    &Lab_CPUActionSpotdodge,
+    // roll away 6
+    &Lab_CPUActionRollAway,
+    // roll towards 7
+    &Lab_CPUActionRollTowards,
+    // roll random
+    &Lab_CPUActionRollRandom,
+    // nair 8
+    &Lab_CPUActionNair,
+    // fair 9
+    &Lab_CPUActionFair,
+    // dair 10
+    &Lab_CPUActionDair,
+    // bair 11
+    &Lab_CPUActionBair,
+    // uair 12
+    &Lab_CPUActionUair,
+    // short hop 13
+    &Lab_CPUActionJump,
+    // full hop 14
+    &Lab_CPUActionJumpFull,
+    // jump away 15
+    &Lab_CPUActionJumpAway,
+    // jump towards 16
+    &Lab_CPUActionJumpTowards,
+    // jump neutral 16
+    &Lab_CPUActionJumpNeutral,
+    // airdodge 17
+    &Lab_CPUActionAirdodge,
+    // fastfall 18
+    &Lab_CPUActionFFTumble,
+    // wiggle fastfall 19
+    &Lab_CPUActionFFWiggle,
+    &Lab_CPUActionJab,
+    &Lab_CPUActionFTilt,
+    &Lab_CPUActionUTilt,
+    &Lab_CPUActionDTilt,
+    &Lab_CPUActionUSmash,
+    &Lab_CPUActionDSmash,
+    &Lab_CPUActionFSmash,
+};
+enum CPU_ACTIONS
+{
+    CPUACT_NONE,
+    CPUACT_SHIELD,
+    CPUACT_GRAB,
+    CPUACT_UPB,
+    CPUACT_DOWNB,
+    CPUACT_SPOTDODGE,
+    CPUACT_ROLLAWAY,
+    CPUACT_ROLLTOWARDS,
+    CPUACT_ROLLRDM,
+    CPUACT_NAIR,
+    CPUACT_FAIR,
+    CPUACT_DAIR,
+    CPUACT_BAIR,
+    CPUACT_UAIR,
+    CPUACT_SHORTHOP,
+    CPUACT_FULLHOP,
+    CPUACT_JUMPAWAY,
+    CPUACT_JUMPTOWARDS,
+    CPUACT_JUMPNEUTRAL,
+    CPUACT_AIRDODGE,
+    CPUACT_FFTUMBLE,
+    CPUACT_FFWIGGLE,
+    CPUACT_JAB,
+    CPUACT_FTILT,
+    CPUACT_UTILT,
+    CPUACT_DTILT,
+    CPUACT_USMASH,
+    CPUACT_DSMASH,
+    CPUACT_FSMASH,
+};
+static char *CPU_ACTIONS_NAMES[] = {
+    "CPUACT_NONE",
+    "CPUACT_SHIELD",
+    "CPUACT_GRAB",
+    "CPUACT_UPB",
+    "CPUACT_DOWNB",
+    "CPUACT_SPOTDODGE",
+    "CPUACT_ROLLAWAY",
+    "CPUACT_ROLLTOWARDS",
+    "CPUACT_ROLLRDM",
+    "CPUACT_NAIR",
+    "CPUACT_FAIR",
+    "CPUACT_DAIR",
+    "CPUACT_BAIR",
+    "CPUACT_UAIR",
+    "CPUACT_SHORTHOP",
+    "CPUACT_FULLHOP",
+    "CPUACT_JUMPAWAY",
+    "CPUACT_JUMPTOWARDS",
+    "CPUACT_JUMPNEUTRAL",
+    "CPUACT_AIRDODGE",
+    "CPUACT_FFTUMBLE",
+    "CPUACT_FFWIGGLE",
+    "CPUACT_JAB",
+    "CPUACT_FTILT",
+    "CPUACT_UTILT",
+    "CPUACT_DTILT",
+    "CPUACT_USMASH",
+    "CPUACT_DSMASH",
+    "CPUACT_FSMASH",
+};
+static u8 GrAcLookup[] = {CPUACT_NONE, CPUACT_SPOTDODGE, CPUACT_SHIELD, CPUACT_GRAB, CPUACT_UPB, CPUACT_DOWNB, CPUACT_USMASH, CPUACT_DSMASH, CPUACT_FSMASH, CPUACT_ROLLAWAY, CPUACT_ROLLTOWARDS, CPUACT_ROLLRDM, CPUACT_NAIR, CPUACT_FAIR, CPUACT_DAIR, CPUACT_BAIR, CPUACT_UAIR, CPUACT_JAB, CPUACT_FTILT, CPUACT_UTILT, CPUACT_DTILT, CPUACT_SHORTHOP, CPUACT_FULLHOP};
+static u8 AirAcLookup[] = {CPUACT_NONE, CPUACT_AIRDODGE, CPUACT_JUMPAWAY, CPUACT_JUMPTOWARDS, CPUACT_JUMPNEUTRAL, CPUACT_UPB, CPUACT_DOWNB, CPUACT_NAIR, CPUACT_FAIR, CPUACT_DAIR, CPUACT_BAIR, CPUACT_UAIR, CPUACT_FFTUMBLE, CPUACT_FFWIGGLE};
+static u8 ShieldAcLookup[] = {CPUACT_NONE, CPUACT_GRAB, CPUACT_SHORTHOP, CPUACT_FULLHOP, CPUACT_SPOTDODGE, CPUACT_ROLLAWAY, CPUACT_ROLLTOWARDS, CPUACT_ROLLRDM, CPUACT_UPB, CPUACT_DOWNB, CPUACT_NAIR, CPUACT_FAIR, CPUACT_DAIR, CPUACT_BAIR, CPUACT_UAIR};
+
+// MENUS ###################################################
+
 // Main Menu
 static char **LabOptions_OffOn[] = {"Off", "On"};
 static EventOption LabOptions_Main[] = {
