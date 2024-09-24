@@ -742,6 +742,9 @@ int CPUAction_CheckMultipleState(GOBJ *cpu, int group_kind)
     if (group_kind == 1)
     {
         // check ground actionable
+        //
+        // Aitch: we may not need this anymore because of the hitstun check below.
+        // But there's no harm to keeping it around, just in case.
         for (int i = 0; i < sizeof(grActionable); i++)
         {
             if (cpu_state == grActionable[i])
@@ -751,16 +754,16 @@ int CPUAction_CheckMultipleState(GOBJ *cpu, int group_kind)
             }
         }
 
-        // Hardcode sakurai angle check. 
+        // Aitch: Hardcode all non-knockdown knockback.
         // Opponent is actionable when hitstun runs out, even though animation hasn't ended.
-        if (cpu_data->state == ASID_DAMAGEN2) {
+        if (ASID_DAMAGEHI1 <= cpu_state && cpu_state <= ASID_DAMAGEAIR3) {
             float hitstun = *((float*)&cpu_data->state_var.stateVar1);
             if (hitstun == 0.0)
                 isActionable = 1;
         }
 
         // landing
-        if (cpu_data->state == ASID_LANDING && cpu_data->stateFrame >= cpu_data->attr.normal_landing_lag)
+        if (cpu_state == ASID_LANDING && cpu_data->stateFrame >= cpu_data->attr.normal_landing_lag)
             isActionable = 1;
     }
     // air
@@ -901,6 +904,8 @@ int LCancel_CPUPerformAction(GOBJ *cpu, int action_id, GOBJ *hmn)
             if ((action_input->state >= ASID_ACTIONABLE) && (action_input->state <= ASID_FALLS))
                 isState = CPUAction_CheckMultipleState(cpu, (action_input->state - ASID_ACTIONABLE));
             else if (action_input->state == cpu_state)
+                isState = 1;
+            else if (action_input->state == ASID_ANY)
                 isState = 1;
 
             // check if this is the current state

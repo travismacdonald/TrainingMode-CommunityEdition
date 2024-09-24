@@ -349,9 +349,26 @@ static CPUAction Lab_CPUActionDownB[] = {
     },
     -1,
 };
+
+// We buffer this for a single frame.
+// For some reason spotdodge is only possible frame 2 when floorhugging 
+// an attack that would have otherwise knocked you into the air without knockdown.
+// This doesn't occur with rolls for some reason.
 static CPUAction Lab_CPUActionSpotdodge[] = {
     {
         ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
+        0,                     // first possible frame to perform this action
+        0,                     // last possible frame to perfrom this action
+        0,                     // left stick X value
+        -127,                  // left stick Y value
+        0,                     // c stick X value
+        0,                     // c stick Y value
+        PAD_TRIGGER_R,         // button to input
+        0,                     // is the last input
+        0,                     // specify stick direction
+    },
+    {
+        ASID_ANY,              // state to perform this action. -1 for last
         0,                     // first possible frame to perform this action
         0,                     // last possible frame to perfrom this action
         0,                     // left stick X value

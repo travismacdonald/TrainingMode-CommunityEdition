@@ -428,6 +428,7 @@ enum FtCommonBone
 #define ASID_DAMAGEAIR 1003
 #define ASID_JUMPS 1004
 #define ASID_FALLS 1005
+#define ASID_ANY 1006
 
 enum Ft_AttackKind
 {
