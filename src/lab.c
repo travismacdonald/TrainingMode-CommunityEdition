@@ -750,8 +750,17 @@ int CPUAction_CheckMultipleState(GOBJ *cpu, int group_kind)
                 break;
             }
         }
+
+        // Hardcode sakurai angle check. 
+        // Opponent is actionable when hitstun runs out, even though animation hasn't ended.
+        if (cpu_data->state == ASID_DAMAGEN2) {
+            float hitstun = *((float*)&cpu_data->state_var.stateVar1);
+            if (hitstun == 0.0)
+                isActionable = 1;
+        }
+
         // landing
-        if ((cpu_data->state == ASID_LANDING) && (cpu_data->stateFrame >= cpu_data->attr.normal_landing_lag))
+        if (cpu_data->state == ASID_LANDING && cpu_data->stateFrame >= cpu_data->attr.normal_landing_lag)
             isActionable = 1;
     }
     // air
