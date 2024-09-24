@@ -144,6 +144,7 @@ typedef struct MenuData
     int (*custom_gobj_think)(GOBJ *custom_gobj);     // per frame function. Returns bool indicating if the program should check to unpause
     void *(*custom_gobj_destroy)(GOBJ *custom_gobj); // on destroy function
 } MenuData;
+
 typedef struct FtStateData
 {
     int is_exist;
