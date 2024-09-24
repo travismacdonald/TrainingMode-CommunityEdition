@@ -54,7 +54,7 @@ static EventMatchData Lab_MatchData = {
     .onMatchEnd = 0,
 };
 // Event Struct
-static EventDesc Lab = {
+EventDesc Lab = {
     // Event Name
     .eventName = "Training Lab\n",
     .eventDescription = "Free practice with\ncomplete control.\n",
@@ -103,7 +103,7 @@ static EventMatchData LCancel_MatchData = {
     .onMatchEnd = 0,
 };
 // Event Struct
-static EventDesc LCancel = {
+EventDesc LCancel = {
     // Event Name
     .eventName = "L-Cancel Training\n",
     .eventDescription = "Practice L-Cancelling on\na stationary CPU.\n",
@@ -151,7 +151,7 @@ static EventMatchData Ledgedash_MatchData = {
     .onMatchEnd = 0,
 };
 // Event Struct
-static EventDesc Ledgedash = {
+EventDesc Ledgedash = {
     .eventName = "Ledgedash Training\n",
     .eventDescription = "Practice Ledgedashes!\nUse D-Pad to change ledge.\n",
     .eventTutorial = "TvLedDa",
@@ -198,7 +198,7 @@ static EventMatchData Wavedash_MatchData = {
     .onMatchEnd = 0,
 };
 // Event Struct
-static EventDesc Wavedash = {
+EventDesc Wavedash = {
     .eventName = "Wavedash Training\n",
     .eventDescription = "Practice timing your wavedash,\na fundamental movement technique.\n",
     .eventTutorial = "TvWvDsh",
@@ -245,7 +245,7 @@ static EventMatchData Combo_MatchData = {
     .onMatchEnd = 0,
 };
 // Event Struct
-static EventDesc Combo = {
+EventDesc Combo = {
 
     .eventName = "Combo Training\n",
     .eventDescription = "L+DPad adjusts percent | DPadDown moves CPU\nDPad right/left saves and loads positions.",
@@ -293,7 +293,7 @@ static EventMatchData AttackOnShield_MatchData = {
     .onMatchEnd = 0,
 };
 // Event Struct
-static EventDesc AttackOnShield = {
+EventDesc AttackOnShield = {
     .eventName = "Attack on Shield\n",
     .eventDescription = "Practice attacks on a shielding opponent\nPause to change their OoS option\n",
     .eventTutorial = "TvLC",
@@ -340,7 +340,7 @@ static EventMatchData Reversal_MatchData = {
     .onMatchEnd = 0,
 };
 // Event Struct
-static EventDesc Reversal = {
+EventDesc Reversal = {
     .eventName = "Reversal Training\n",
     .eventDescription = "Practice OoS punishes! DPad left/right\nmoves characters close and further apart.",
     .eventTutorial = "TvLC",
@@ -387,7 +387,7 @@ static EventMatchData SDI_MatchData = {
     .onMatchEnd = 0,
 };
 // Event Struct
-static EventDesc SDI = {
+EventDesc SDI = {
     .eventName = "SDI Training\n",
     .eventDescription = "Use Smash DI to escape\nFox's up-air attack!",
     .eventTutorial = "TvLC",
@@ -435,7 +435,7 @@ static EventMatchData Powershield_MatchData = {
     .onMatchEnd = 0,
 };
 // Event Struct
-static EventDesc Powershield = {
+EventDesc Powershield = {
     .eventName = "Powershield Training\n",
     .eventDescription = "Powershield Falco's laser!\nPause to change to fire-rate.",
     .eventTutorial = "TvLC",
@@ -482,7 +482,7 @@ static EventMatchData Ledgetech_MatchData = {
     .onMatchEnd = 0,
 };
 // Event Struct
-static EventDesc Ledgetech = {
+EventDesc Ledgetech = {
     .eventName = "Ledge-Tech Training\n",
     .eventDescription = "Practice ledge-teching\nFalco's down-smash",
     .eventTutorial = "TvLC",
@@ -529,7 +529,7 @@ static EventMatchData AmsahTech_MatchData = {
     .onMatchEnd = 0,
 };
 // Event Struct
-static EventDesc AmsahTech = {
+EventDesc AmsahTech = {
     .eventName = "Amsah-Tech Training\n",
     .eventDescription = "Taunt to have Marth Up-B,\nthen ASDI down and tech!\n",
     .eventTutorial = "TvLC",
@@ -576,7 +576,7 @@ static EventMatchData ShieldDrop_MatchData = {
     .onMatchEnd = 0,
 };
 // Event Struct
-static EventDesc ShieldDrop = {
+EventDesc ShieldDrop = {
     .eventName = "Shield Drop Training\n",
     .eventDescription = "Counter with a shield-drop aerial!\nDPad left/right moves players apart.",
     .eventTutorial = "TvLC",
@@ -623,7 +623,7 @@ static EventMatchData WaveshineSDI_MatchData = {
     .onMatchEnd = 0,
 };
 // Event Struct
-static EventDesc WaveshineSDI = {
+EventDesc WaveshineSDI = {
     .eventName = "Waveshine SDI\n",
     .eventDescription = "Use Smash DI to get out\nof Fox's waveshine!",
     .eventTutorial = "TvLC",
@@ -670,7 +670,7 @@ static EventMatchData SlideOff_MatchData = {
     .onMatchEnd = 0,
 };
 // Event Struct
-static EventDesc SlideOff = {
+EventDesc SlideOff = {
     .eventName = "Slide-Off Training\n",
     .eventDescription = "Use Slide-Off DI to slide off\nthe platform and counter attack!\n",
     .eventTutorial = "TvLC",
@@ -717,7 +717,7 @@ static EventMatchData GrabMash_MatchData = {
     .onMatchEnd = 0,
 };
 // Event Struct
-static EventDesc GrabMash = {
+EventDesc GrabMash = {
     .eventName = "Grab Mash Training\n",
     .eventDescription = "Mash buttons to escape the grab\nas quickly as possible!\n",
     .eventTutorial = "TvLC",
@@ -764,7 +764,7 @@ static EventMatchData TechCounter_MatchData = {
     .onMatchEnd = 0,
 };
 // Event Struct
-static EventDesc TechCounter = {
+EventDesc TechCounter = {
     .eventName = "Ledgetech Marth Counter\n",
     .eventDescription = "Practice ledge-teching\nMarth's counter!\n",
     .eventTutorial = "TvLC",
@@ -811,7 +811,7 @@ static EventMatchData ArmadaShine_MatchData = {
     .onMatchEnd = 0,
 };
 // Event Struct
-static EventDesc ArmadaShine = {
+EventDesc ArmadaShine = {
     .eventName = "Armada-Shine Training\n",
     .eventDescription = "Finish the enemy Fox\nwith an Armada Shine!",
     .eventTutorial = "TvLC",
@@ -858,7 +858,7 @@ static EventMatchData SideBSweet_MatchData = {
     .onMatchEnd = 0,
 };
 // Event Struct
-static EventDesc SideBSweet = {
+EventDesc SideBSweet = {
     .eventName = "Side-B Sweetspot\n",
     .eventDescription = "Use a sweetspot Side-B to avoid Marth's\ndown-tilt and grab the ledge!",
     .eventTutorial = "TvLC",
@@ -905,7 +905,7 @@ static EventMatchData EscapeSheik_MatchData = {
     .onMatchEnd = 0,
 };
 // Event Struct
-static EventDesc EscapeSheik = {
+EventDesc EscapeSheik = {
     .eventName = "Escape Sheik Techchase\n",
     .eventDescription = "Practice escaping the tech chase with a\nframe perfect shine or jab SDI!\n",
     .eventTutorial = "TvLC",
@@ -952,7 +952,7 @@ static EventMatchData Eggs_MatchData = {
     .onMatchEnd = 0,
 };
 // Event Struct
-static EventDesc Eggs = {
+EventDesc Eggs = {
     .eventName = "Eggs-ercise\n",
     .eventDescription = "Break the eggs! Only strong hits will\nbreak them. DPad down = free practice.",
     .eventTutorial = "TvLC",
@@ -999,7 +999,7 @@ static EventMatchData Multishine_MatchData = {
     .onMatchEnd = 0,
 };
 // Event Struct
-static EventDesc Multishine = {
+EventDesc Multishine = {
     .eventName = "Shined Blind\n",
     .eventDescription = "How many shines can you\nperform in 10 seconds?",
     .eventTutorial = "TvLC",
@@ -1046,7 +1046,7 @@ static EventMatchData Reaction_MatchData = {
     .onMatchEnd = 0,
 };
 // Event Struct
-static EventDesc Reaction = {
+EventDesc Reaction = {
     .eventName = "Reaction Test\n",
     .eventDescription = "Test your reaction time by pressing\nany button when you see/hear Fox shine!",
     .eventTutorial = "TvLC",
@@ -1093,7 +1093,7 @@ static EventMatchData Ledgestall_MatchData = {
     .onMatchEnd = 0,
 };
 // Event Struct
-static EventDesc Ledgestall = {
+EventDesc Ledgestall = {
     .eventName = "Under Fire\n",
     .eventDescription = "Ledgestall to remain\ninvincible while the lava rises!\n",
     .eventTutorial = "TvLC",

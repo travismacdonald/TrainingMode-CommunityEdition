@@ -12,6 +12,8 @@ static _HSD_ImageDesc image_desc = {
 static GXColor text_white = {255, 255, 255, 255};
 static GXColor text_gold = {255, 211, 0, 255};
 
+static EventDesc *event_desc;
+
 // OnLoad
 void OnCSSLoad(ArchiveInfo *archive)
 {
@@ -19,8 +21,6 @@ void OnCSSLoad(ArchiveInfo *archive)
 
     // get assets from this file
     stc_import_assets = File_GetSymbol(archive, "importData");
-
-    Button_Create();
 
     // Create a cobj for the menu
     COBJ *cam_cobj = COBJ_LoadDesc(stc_import_assets->import_cam);
@@ -50,26 +50,30 @@ void OnCSSLoad(ArchiveInfo *archive)
 
     // HUGE HACK ALERT
     EventDesc *(*GetEventDesc)(int page, int event) = RTOC_PTR(TM_DATA + (24 * 4));
-    EventDesc *event_desc = GetEventDesc(1, 0);
+    event_desc = GetEventDesc(1, 0);
     event_desc->isSelectStage = 1;
     event_desc->matchData->stage = -1;
     *onload_fileno = -1;
+
+    Cam_Button_Create();
+    Hazards_Button_Create();
 
     return;
 }
 
 // Button Functions
-void Button_Create()
+void Cam_Button_Create()
 {
     // Create GOBJ
     GOBJ *button_gobj = GObj_Create(4, 5, 0);
     GObj_AddGXLink(button_gobj, GXLink_Common, 1, 128);
-    GObj_AddProc(button_gobj, Button_Think, 8);
+    GObj_AddProc(button_gobj, Cam_Button_Think, 8);
     JOBJ *button_jobj = JOBJ_LoadJoint(stc_import_assets->import_button);
     GObj_AddObject(button_gobj, R13_U8(-0x3E55), button_jobj);
 
     // scale message jobj
     Vec3 *scale = &button_jobj->scale;
+    button_jobj->trans.Y += 3.0;
 
     // Create text object
     Text *button_text = Text_CreateText(SIS_ID, 0);
@@ -80,11 +84,13 @@ void Button_Create()
     button_text->scale.Y = (scale->Y * 0.01) * 3;
     button_text->trans.X = button_jobj->trans.X + (0 * (scale->X / 4.0));
     button_text->trans.Y = (button_jobj->trans.Y * -1) + (-1.6 * (scale->Y / 4.0));
+
     Text_AddSubtext(button_text, 0, 0, "Import");
 
     return;
 }
-void Button_Think(GOBJ *button_gobj)
+
+void Cam_Button_Think(GOBJ *button_gobj)
 {
 
 #define BUTTON_WIDTH 5
@@ -111,6 +117,71 @@ void Button_Think(GOBJ *button_gobj)
     {
         import_data.menu_gobj = Menu_Create();
         SFX_PlayCommon(1);
+    }
+
+    return;
+}
+
+static char *hazard_button_text_options[] = {"Hazards: On", "Hazards: Off"};
+static Text *hazard_button_text;
+static int hazard_button_subtext;
+
+void Hazards_Button_Create()
+{
+    // Create GOBJ
+    GOBJ *button_gobj = GObj_Create(4, 5, 0);
+    GObj_AddGXLink(button_gobj, GXLink_Common, 1, 128);
+    GObj_AddProc(button_gobj, Hazards_Button_Think, 8);
+    JOBJ *button_jobj = JOBJ_LoadJoint(stc_import_assets->import_button);
+    GObj_AddObject(button_gobj, R13_U8(-0x3E55), button_jobj);
+
+    // scale message jobj
+    Vec3 *scale = &button_jobj->scale;
+    button_jobj->scale.X = 3.0;
+    button_jobj->trans.Y -= 3.0;
+
+    // Create text object
+    hazard_button_text = Text_CreateText(SIS_ID, 0);
+    hazard_button_text->kerning = 1;
+    hazard_button_text->align = 1;
+    hazard_button_text->use_aspect = 1;
+    hazard_button_text->scale.X = (scale->X * 0.01) * 2;
+    hazard_button_text->scale.Y = (scale->Y * 0.01) * 3;
+    hazard_button_text->trans.X = button_jobj->trans.X + (0 * (scale->X / 4.0));
+    hazard_button_text->trans.Y = (button_jobj->trans.Y * -1) + (-1.6 * (scale->Y / 4.0));
+
+    char *text = hazard_button_text_options[event_desc->disable_hazards];
+    hazard_button_subtext = Text_AddSubtext(hazard_button_text, 0, 0, text);
+
+    return;
+}
+
+void Hazards_Button_Think(GOBJ *button_gobj)
+{
+    // init
+    CSSCursor *this_cursor = stc_css_cursors[0]; // get the main player's hand cursor data
+    Vec2 cursor_pos = this_cursor->pos;
+    cursor_pos.X += 5;
+    cursor_pos.Y -= 1;
+    HSD_Pad *pads = stc_css_pad;
+    HSD_Pad *this_pad = &pads[*stc_css_hmnport];
+    int down = this_pad->down;                   // get this cursors inputs
+    JOBJ *button_jobj = button_gobj->hsd_object; // get jobj
+    Vec3 *button_pos = &button_jobj->trans;
+
+    // check if cursor is hovered over button
+    if ((import_data.menu_gobj == 0) &&
+        (cursor_pos.X < (button_pos->X + BUTTON_WIDTH)) &&
+        (cursor_pos.X > (button_pos->X - BUTTON_WIDTH)) &&
+        (cursor_pos.Y < (button_pos->Y + BUTTON_HEIGHT)) &&
+        (cursor_pos.Y > (button_pos->Y - BUTTON_HEIGHT)) &&
+        (down & HSD_BUTTON_A))
+    {
+        SFX_PlayCommon(1);
+        int new_hazard_state = !event_desc->disable_hazards;
+        event_desc->disable_hazards = new_hazard_state;
+        char *new_text = hazard_button_text_options[new_hazard_state];
+        Text_SetText(hazard_button_text, hazard_button_subtext, new_text);
     }
 
     return;
@@ -1358,8 +1429,6 @@ void Menu_Confirm_Think(GOBJ *menu_gobj)
                 *stc_css_exitkind = 1;
 
                 // HUGE HACK ALERT
-                EventDesc *(*GetEventDesc)(int page, int event) = RTOC_PTR(TM_DATA + (24 * 4));
-                EventDesc *event_desc = GetEventDesc(1, 0);
                 event_desc->isSelectStage = 0;
                 event_desc->matchData->stage = stage_kind;
                 *onload_fileno = this_file_index;

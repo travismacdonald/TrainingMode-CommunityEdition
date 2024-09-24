@@ -1,4 +1,4 @@
-.PHONY: clean iso all release
+.PHONY: clean iso all release release-old
 
 dats = root/codes.gct root/TM/EvLdsh.dat root/TM/EvWdsh.dat root/TM/EvLCl.dat root/TM/EvLabCSS.dat root/TM/EvLab.dat root/TM/TmDt.dat
 
@@ -62,7 +62,10 @@ TM-More.iso: root/&&systemdata/Start.dol $(dats)
 
 iso: TM-More.iso
 
-TM-More.zip: TM-More.iso Release\ Scripts/*
+TM-More.zip: TM-More.iso
+	zip TM-More.zip TM-More.iso
+
+release-old: TM-More.iso Release\ Scripts/*
 	rm -rf TM-More/
 	mkdir TM-More
 	cp -rf --parents "root/&&systemdata/Start.dol" "root/&&systemdata/ISO.hdr" $(dats) TM-More/

@@ -1,7 +1,7 @@
 #include "../../../MexTK/mex.h"
 
-#define TM_VERSSHORT "TM v3.0-a8.3"
-#define TM_VERSLONG "Training Mode v3.0 Alpha 8.3"
+#define TM_VERSSHORT "TM v3.0-a8.4"
+#define TM_VERSLONG "Training Mode v3.0 Alpha 8.4"
 #define TM_DEBUG 0 // 0 = release (no logging), 1 = OSReport logs, 2 = onscreen logs
 #define EVENT_DATASIZE 512
 #define TM_DATA -(50 * 4) - 4
@@ -693,6 +693,7 @@ JOBJ *IDToBone(FighterData *fighter_data, int id);
 void EventUpdate();
 void Event_IncTimer(GOBJ *gobj);
 void Test_Think(GOBJ *gobj);
+void Hazards_Disable();
 static EventDesc *static_eventInfo;
 static MenuData *static_menuData;
 static EventVars stc_event_vars;
@@ -700,6 +701,30 @@ static int *eventDataBackup;
 
 static EventVars **event_vars_ptr = 0x803d7054; //R13 + (-0x4730)
 static EventVars *event_vars;
+
+extern EventDesc Lab;
+extern EventDesc LCancel;
+extern EventDesc Ledgedash;
+extern EventDesc Wavedash;
+extern EventDesc Combo;
+extern EventDesc AttackOnShield;
+extern EventDesc Reversal;
+extern EventDesc SDI;
+extern EventDesc Powershield;
+extern EventDesc Ledgetech;
+extern EventDesc AmsahTech;
+extern EventDesc ShieldDrop;
+extern EventDesc WaveshineSDI;
+extern EventDesc SlideOff;
+extern EventDesc GrabMash;
+extern EventDesc TechCounter;
+extern EventDesc ArmadaShine;
+extern EventDesc SideBSweet;
+extern EventDesc EscapeSheik;
+extern EventDesc Eggs;
+extern EventDesc Multishine;
+extern EventDesc Reaction;
+extern EventDesc Ledgestall;
 
 // EventOption option_kind definitions
 #define OPTKIND_MENU 0

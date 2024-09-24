@@ -747,8 +747,10 @@ typedef struct ImportData
         u8 is_loaded[IMPORT_FILESPERPAGE];    // bools for which snap has been loaded
     } snap;
 } ImportData;
-void Button_Create();
-void Button_Think(GOBJ *button_gobj);
+void Cam_Button_Create();
+void Cam_Button_Think(GOBJ *button_gobj);
+void Hazards_Button_Create();
+void Hazards_Button_Think(GOBJ *button_gobj);
 void Menu_Confirm_Init(GOBJ *menu_gobj, int kind);
 void Menu_Confirm_Think(GOBJ *menu_gobj);
 void Menu_Confirm_Exit(GOBJ *menu_gobj);
