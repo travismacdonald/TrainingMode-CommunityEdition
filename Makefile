@@ -49,11 +49,9 @@ root/TM/wavedash.dat: root/ src/wavedash.c src/wavedash.h
 	$(MEX_BUILD) -i "src/wavedash.c" -s "evFunction" -dat "root/TM/wavedash.dat" -t "MexTK/evFunction.txt"
 	$(MEX_TRIM) "root/TM/wavedash.dat"
 
-root/codes.gct: root/ Additional\ ISO\ Files/opening.bnr Additional\ ISO\ Files/*.mth Additional\ ISO\ Files/audio/*
+root/codes.gct: root/ Additional\ ISO\ Files/opening.bnr
 	cd "Build TM Codeset" && ./gecko build
-	cp Additional\ ISO\ Files/codes.gct root/
-	cp -f Additional\ ISO\ Files/opening.bnr root/
-	cp Additional\ ISO\ Files/*.mth root/
+	cp Additional\ ISO\ Files/* root/
 
 root/&&systemdata/Start.dol: root/
 	mv "./root/&&systemdata/Start.dol" "Start.dol"
@@ -73,9 +71,7 @@ release-old: TM-More.iso Release\ Scripts/*
 	mkdir TM-More
 	cp -rf --parents "root/&&systemdata/Start.dol" "root/&&systemdata/ISO.hdr" root/codes.gct $(dats) TM-More/
 	mv TM-More/root/ TM-More/patch/
-	cp Additional\ ISO\ Files/codes.gct TM-More/patch/
-	cp -f Additional\ ISO\ Files/opening.bnr TM-More/patch/
-	cp Additional\ ISO\ Files/*.mth TM-More/patch/
+	cp -f Additional\ ISO\ Files/* TM-More/patch/
 	cp -r Release\ Scripts/* TM-More/
 	cp gc_fst TM-More/
 	cp gc_fst.exe TM-More/
