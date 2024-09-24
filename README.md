@@ -10,18 +10,22 @@ Feel free to file an issue to request a new feature!)
 
 To download the ISO, click 'Releases' on the right side, then download "TM-More.zip".
 
+To discuss changes and new features or ask for assistance, join [the discord](https://discord.gg/dHbzQG5V).
+
 ## Changes From the Original
 - New Training Lab Features:
     - Updated to UCF 0.84 (Allows practicing with dashback out of crouch).
     - New neutral jump option for CPUs, set as the default.
-    - Reworked recording UI. Now allows resaveing existing recordings with different percents or positioning.
-    - Jump actions no longer make the CPU self-destruct.
+    - Reworked recording UI. Allows resaveing existing recordings with different percents or positioning.
     - SDI and mashing are set to none by default.
     - Hazard toggle in training lab.
     - Much more planned in the near future!
+- Bugfixes:
+    - Jump actions no longer make the CPU self-destruct.
+    - Lightshield now works in recordings.
 - Work in progress:
-    - Edgeguard training event.
     - Fixing Export/Import replay crashes.
+    - Edgeguard training event.
 - Developer Features:
     - Simple and easily reproducible builds on Windows and Linux.
     - Fast recompilation on Linux using make.
@@ -50,10 +54,10 @@ Have some specific tech you want to train? Find a bug that's been annoying you? 
 
 ## How to make changes:  
 - If you want to alter an event (Easy):
-    - The training lab, lcancel, ledgedash, and wavedash events are written in c. This makes them much easier to modify than the other events. Poke around in their source in `patch/events/`.
+    - The training lab, lcancel, ledgedash, and wavedash events are written in c. This makes them much easier to modify than the other events. Poke around in their source in `src/`.
     - The other events are written in assembly. This will be harder to modify than the other events. Prefer making a new event.
 - If you want to make a new event (Hard):
-    - Add a directory to the `patch/events/` and follow the structure of the other events.
+    - Add a file and header to the `src/` and follow the structure of the other events.
     - The dat file is a little tricky to create. However, most events won't need many assets. You can get away without having a dat file. If you just want to use menu backgrounds, you can import the dat file from the ledgedash event. If you do want to create a new dat file, use [HSDRaw](https://github.com/Ploaj/HSDLib).
     - Add the required compilation steps in `Makefile` and `build_windows.bat`. Follow the same structure as the other events. Be sure to use the evFunction mode.
     - Implement the `Event_Init`, `Event_Update`, `Event_Think` methods and `Event_Menu` pointer. Poke around the other events to figure out how the data flows.
