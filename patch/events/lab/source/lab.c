@@ -1531,7 +1531,9 @@ static const EventOption Record_Load = {
 };
 
 static EventOption LabOptions_Record[] = {
+    // swapped between Record_Save and Record_Load
     Record_Save,
+
     {
         .option_kind = OPTKIND_STRING,                               // the type of option this is; menu, string list, integer list, etc
         .value_num = sizeof(LabValues_HMNRecordMode) / 4,            // number of values for this option
@@ -4896,7 +4898,7 @@ void Record_Update(int ply, RecInputData *input_data, int rec_mode)
                 pad->triggerLeft = 0;
 
                 // trigger float
-                pad->ftriggerRight = ((float)inputs->trigger / 255);
+                pad->ftriggerRight = ((float)inputs->trigger / 140);
                 pad->ftriggerLeft = 0;
             }
             break;
