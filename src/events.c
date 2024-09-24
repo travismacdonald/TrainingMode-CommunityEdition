@@ -60,7 +60,7 @@ EventDesc Lab = {
     .eventDescription = "Free practice with\ncomplete control.\n",
     .eventTutorial = "",
     .eventFile = "EvLab",
-    .eventCSSFile = "TM/EvLabCSS.dat",
+    .eventCSSFile = "TM/eventMenu.dat",
     .isChooseCPU = true,
     .isSelectStage = true,
     .use_savestates = false,
@@ -1525,7 +1525,7 @@ void TM_CreateConsole()
 void OnFileLoad(ArchiveInfo *archive) // this function is run right after TmDt is loaded into memory on boot
 {
     // init event menu assets
-    stc_event_vars.menu_assets = File_GetSymbol(archive, "evMenu");
+    stc_event_vars.menu_assets = File_GetSymbol(archive, "eventMenu");
 
     // store pointer to static variables
     *event_vars_ptr = &stc_event_vars;

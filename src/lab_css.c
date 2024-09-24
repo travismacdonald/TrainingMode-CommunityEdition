@@ -20,7 +20,7 @@ void OnCSSLoad(ArchiveInfo *archive)
     EventVars *event_vars = *event_vars_ptr;
 
     // get assets from this file
-    stc_import_assets = File_GetSymbol(archive, "importData");
+    stc_import_assets = File_GetSymbol(archive, "labCSS");
 
     // Create a cobj for the menu
     COBJ *cam_cobj = COBJ_LoadDesc(stc_import_assets->import_cam);

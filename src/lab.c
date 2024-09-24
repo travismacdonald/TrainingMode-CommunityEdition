@@ -1,7 +1,5 @@
 #include "lab_common.h"
-
-#include "cpu_actions.h"
-#include "menus.h"
+#include "lab.h"
 
 #include <stddef.h>
 
@@ -4894,7 +4892,7 @@ void Event_Init(GOBJ *gobj)
     event_vars = *event_vars_ptr;
 
     // get this events assets
-    stc_lab_data = File_GetSymbol(event_vars->event_archive, "labData");
+    stc_lab_data = File_GetSymbol(event_vars->event_archive, "lab");
 
     // Init Info Display
     InfoDisplay_Init();

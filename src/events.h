@@ -1,4 +1,4 @@
-#include "../../../MexTK/mex.h"
+#include "../MexTK/mex.h"
 
 #define TM_VERSSHORT "TM v3.0-a8.4"
 #define TM_VERSLONG "Training Mode v3.0 Alpha 8.4"

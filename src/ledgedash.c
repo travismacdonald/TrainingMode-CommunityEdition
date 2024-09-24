@@ -111,7 +111,7 @@ void Event_Init(GOBJ *gobj)
     event_vars = *event_vars_ptr;
 
     // get assets
-    event_data->assets = File_GetSymbol(event_vars->event_archive, "ldshData");
+    event_data->assets = File_GetSymbol(event_vars->event_archive, "ledgedash");
 
     // standardize camera
     Stage *stage = stc_stage;

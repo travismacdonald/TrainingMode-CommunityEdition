@@ -86,7 +86,7 @@ void Event_Init(GOBJ *gobj)
     event_vars = *event_vars_ptr;
 
     // get l-cancel assets
-    event_data->assets = File_GetSymbol(event_vars->event_archive, "wdshData");
+    event_data->assets = File_GetSymbol(event_vars->event_archive, "wavedash");
 
     // create HUD
     Wavedash_Init(event_data);

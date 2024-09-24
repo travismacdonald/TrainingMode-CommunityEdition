@@ -86,7 +86,7 @@ void Event_Init(GOBJ *gobj)
     event_vars = *event_vars_ptr;
 
     // get l-cancel assets
-    event_data->lcancel_assets = File_GetSymbol(event_vars->event_archive, "lclData");
+    event_data->lcancel_assets = File_GetSymbol(event_vars->event_archive, "lcancel");
 
     // create HUD
     LCancel_Init(event_data);
