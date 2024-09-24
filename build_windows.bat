@@ -39,34 +39,34 @@ echo BUILD C FILES --------------------------------------------------------
 
 mkdir "root\TM\"
 
-echo build patch\tmdata
+echo build event menu
 copy "dats\eventMenu.dat" "root\TM\eventMenu.dat"
-"MexTK/MexTK.exe" -ff -i "src/events.c" -b "build" -s tmFunction -dat "root/TM/eventMenu.dat" -t "MexTK/tmFunction.txt" -q -ow -l "MexTK/melee.link" -op 1 || ( echo ERROR: Failed to compile 'events.c' & goto cleanup )
+"MexTK/MexTK.exe" -ff -i "src/events.c" -b "build" -s tmFunction -dat "root/TM/eventMenu.dat" -t "MexTK/tmFunction.txt" -q -ow -l "MexTK/melee.link" -op 2 || ( echo ERROR: Failed to compile 'events.c' & goto cleanup )
 "MexTK/MexTK.exe" -trim "root/TM/eventMenu.dat" || ( echo ERROR: Dat file trimming failed & goto cleanup )
 
-echo build patch\events\lab
+echo build lab event
 copy "dats\lab.dat" "root\TM\lab.dat"
-"MexTK/MexTK.exe" -ff -i "src/lab.c" -b "build" -s evFunction -dat "root/TM/lab.dat" -t "MexTK/evFunction.txt" -q -ow -l "MexTK/melee.link" -op 1 || ( echo ERROR: Failed to compile 'lab.c' & goto cleanup)
+"MexTK/MexTK.exe" -ff -i "src/lab.c" -b "build" -s evFunction -dat "root/TM/lab.dat" -t "MexTK/evFunction.txt" -q -ow -l "MexTK/melee.link" -op 2 || ( echo ERROR: Failed to compile 'lab.c' & goto cleanup)
 "MexTK/MexTK.exe" -trim "root/TM/lab.dat" || ( echo ERROR: Dat file trimming failed & goto cleanup )
 
-echo build patch\events\lab_css
+echo build lab css
 copy "dats\labCSS.dat" "root\TM\labCSS.dat"
-"MexTK/MexTK.exe" -ff -i "src/lab_css.c" -b "build" -s cssFunction -dat "root/TM/labCSS.dat" -t "MexTK/cssFunction.txt" -q -ow -l "MexTK/melee.link" -op 1 || ( echo ERROR: Failed to compile 'lab_css.c' & goto cleanup)
+"MexTK/MexTK.exe" -ff -i "src/lab_css.c" -b "build" -s cssFunction -dat "root/TM/labCSS.dat" -t "MexTK/cssFunction.txt" -q -ow -l "MexTK/melee.link" -op 2 || ( echo ERROR: Failed to compile 'lab_css.c' & goto cleanup)
 "MexTK/MexTK.exe" -trim "root/TM/labCSS.dat" || ( echo ERROR: Dat file trimming failed & goto cleanup )
 
-echo build patch\events\lcancel
+echo build lcancel event
 copy "dats\lcancel.dat" "root\TM\lcancel.dat"
-"MexTK/MexTK.exe" -ff -i "src/lcancel.c" -b "build" -s evFunction -dat "root/TM/lcancel.dat" -t "MexTK/evFunction.txt" -q -ow -l "MexTK/melee.link" -op 1 || ( echo ERROR: Failed to compile 'lcancel.c' & goto cleanup)
+"MexTK/MexTK.exe" -ff -i "src/lcancel.c" -b "build" -s evFunction -dat "root/TM/lcancel.dat" -t "MexTK/evFunction.txt" -q -ow -l "MexTK/melee.link" -op 2 || ( echo ERROR: Failed to compile 'lcancel.c' & goto cleanup)
 "MexTK/MexTK.exe" -trim "root/TM/lcancel.dat" || ( echo ERROR: Dat file trimming failed & goto cleanup )
 
-echo build patch\events\ledgedash
+echo build ledgedash event
 copy "dats\ledgedash.dat" "root\TM\ledgedash.dat"
-"MexTK/MexTK.exe" -ff -i "src/ledgedash.c" -b "build" -s evFunction -dat "root/TM/ledgedash.dat" -t "MexTK/evFunction.txt" -q -ow -l "MexTK/melee.link" -op 1 || ( echo ERROR: Failed to compile 'ledgedash.c' & goto cleanup)
+"MexTK/MexTK.exe" -ff -i "src/ledgedash.c" -b "build" -s evFunction -dat "root/TM/ledgedash.dat" -t "MexTK/evFunction.txt" -q -ow -l "MexTK/melee.link" -op 2 || ( echo ERROR: Failed to compile 'ledgedash.c' & goto cleanup)
 "MexTK/MexTK.exe" -trim "root/TM/ledgedash.dat" || ( echo ERROR: Dat file trimming failed & goto cleanup )
 
-echo build patch\events\wavedash
+echo build wavedash event
 copy "dats\wavedash.dat" "root\TM\wavedash.dat"
-"MexTK/MexTK.exe" -ff -i "src/wavedash.c" -b "build" -s evFunction -dat "root/TM/wavedash.dat" -t "MexTK/evFunction.txt" -q -ow -l "MexTK/melee.link" -op 1 || ( echo ERROR: Failed to compile 'wavedash.c' & goto cleanup)
+"MexTK/MexTK.exe" -ff -i "src/wavedash.c" -b "build" -s evFunction -dat "root/TM/wavedash.dat" -t "MexTK/evFunction.txt" -q -ow -l "MexTK/melee.link" -op 2 || ( echo ERROR: Failed to compile 'wavedash.c' & goto cleanup)
 "MexTK/MexTK.exe" -trim "root/TM/wavedash.dat" || ( echo ERROR: Dat file trimming failed & goto cleanup )
 
 echo BUILD ASM FILES --------------------------------------------------------
