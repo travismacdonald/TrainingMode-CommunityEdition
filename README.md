@@ -22,10 +22,12 @@ To discuss changes and new features or ask for assistance, join [the discord](ht
     - Much more planned in the near future!
 - Bugfixes:
     - Jump actions no longer make the CPU self-destruct.
+    - Fixed cpu acting too late out of sakurai angle and other non-knockdown hits (such as fox drill).
     - Lightshield now works in recordings.
+    - CPUs now DI DK cargo throw.
 - Work in progress:
     - Fixing Export/Import replay crashes.
-    - Edgeguard training event.
+    - Fixing OSDs not showing.
 - Developer Features:
     - Simple and easily reproducible builds on Windows and Linux.
     - Fast recompilation on Linux using make.
