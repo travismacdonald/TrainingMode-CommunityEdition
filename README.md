@@ -58,14 +58,25 @@ Have some specific tech you want to train? Find a bug that's been annoying you? 
     - If the provided 'gc_fst' binary fails (likely due to libc issues), you can compile your own binary from [here](https://github.com/AlexanderHarrison/gc_fst).
 
 ## How to make changes:  
-- If you want to alter an event (Easy):
+- If you want to alter an event written in c (Easy):
     - The training lab, lcancel, ledgedash, and wavedash events are written in c. This makes them much easier to modify than the other events. Poke around in their source in `src/`.
-    - The other events are written in assembly. This will be harder to modify than the other events. Prefer making a new event.
-- If you want to make a new event (Hard):
-    - Add a file and header to the `src/` and follow the structure of the other events.
-    - The dat file is a little tricky to create. However, most events won't need many assets. You can get away without having a dat file. If you just want to use menu backgrounds, you can import the dat file from the ledgedash event. If you do want to create a new dat file, use [HSDRaw](https://github.com/Ploaj/HSDLib).
+    - The other events are written in assembly. 
+- If you want to alter an event written in asm (Big Knowledge Check):
+    - You will need to know a bit of Power PC asm.
+    - Read `ASM/Readme.md`
+    - Go to `ASM/training-mode/Custom Events/Custom Event Code - Rewrite.asm` and search for the event you want to modify.
+    - These will trickier to modify than the other events. Prefer making a new event or modifying the lab.
+    - There are a lot of random loads from random offsets there. If it's not listed in the ASM readme then I don't know what it is.
+- If you want to make a new event (A little tricky):
+    - Add a file and header to the `src/`.
+    - Create a dat file in `dats/`.
+        - This is a little annoying.
+        - If you don't want any fancy features, just a pause menu, copy `lcancel.dat` as your dat file.
+            - **You will need to use [HSDRaw](https://github.com/Ploaj/HSDLib) or a hex editor to modify the internal name.**
+            - If you use a hex editor, ensure you set the altered length of the renamed dat file as the first 4 bytes in the file.
+        - If you want other assets, you can use HSDRaw to add new objects to the dat file, or copy them from the other events.
     - Add the required compilation steps in `Makefile` and `build_windows.bat`. Follow the same structure as the other events. Be sure to use the evFunction mode.
-    - Implement the `Event_Init`, `Event_Update`, `Event_Think` methods and `Event_Menu` pointer. Poke around the other events to figure out how the data flows.
-- Other changes may be easy or difficult. Poke around the repo and/or file an issue.
+    - Implement the `Event_Init`, `Event_Update`, `Event_Think` methods and `Event_Menu` pointer in your c file. Poke around the other events to figure out how the data flows.
+- Other changes may be easy or difficult. Join [the discord](https://discord.gg/2Khb8CVP7A) if you want a nudge in the right direction.
 
 Feel free to DM me on discord (alex_aitch) or twitter (@rwing_aitch) for help!
