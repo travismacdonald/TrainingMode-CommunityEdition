@@ -58,7 +58,7 @@ Have some specific tech you want to train? Find a bug that's been annoying you? 
     - If the provided 'gc_fst' binary fails (likely due to libc issues), you can compile your own binary from [here](https://github.com/AlexanderHarrison/gc_fst).
 
 ## How to make changes:  
-- If you want to alter an event written in c (Easy):
+- If you want to alter an event written in C (Easy):
     - The training lab, lcancel, ledgedash, and wavedash events are written in c. This makes them much easier to modify than the other events. Poke around in their source in `src/`.
     - The other events are written in assembly. 
 - If you want to alter an event written in asm (Big Knowledge Check):
