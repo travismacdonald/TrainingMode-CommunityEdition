@@ -91,7 +91,6 @@ echo COPYING EXTRA FILES ----------------------------------------------------
 
 xcopy /s /e /y "Additional ISO Files\codes.gct" "root\"
 xcopy /s /e /y "Additional ISO Files\opening.bnr" "root\"
-xcopy /s /e /y "Additional ISO Files\*.mth" "root\"
 
 echo REBUILD ISO --------------------------------------------------------
 gc_fst rebuild root "TM-More.iso" || ( echo ERROR: ISO rebuild failed. & goto cleanup )
