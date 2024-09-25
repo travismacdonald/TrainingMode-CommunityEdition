@@ -13422,10 +13422,15 @@ backup
 	lbz r3,0x618(r3)
 	mulli r0,r3,68
 	add r5,r4,r0
-#Make Sure L Is Held
+#Ensure L is pressed (either digital or lightshield)
 	lwz r3,0x0(r5)		#get held inputs
 	rlwinm. r0,r3,0,25,25
-	beq	DPadCPUPercent_Exit
+	bne	DPadCPUPercent_Start
+	lbz r3,0x1c(r5)		#get trigger
+	cmpwi	r3,24
+	blt	DPadCPUPercent_Exit
+
+DPadCPUPercent_Start:
 #Check DPad
 	lwz r3,0xC(r5)		#get rapid inputs
 	rlwinm.	r0,r3,0,30,30
