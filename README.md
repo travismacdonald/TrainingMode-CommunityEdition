@@ -10,7 +10,7 @@ Feel free to file an issue to request a new feature!)
 
 To download the ISO, click 'Releases' on the right side, then download "TM-More.zip".
 
-To discuss changes and new features or ask for assistance, join [the discord](https://discord.gg/dHbzQG5V).
+To discuss changes and new features or ask for assistance, join [the discord](https://discord.gg/2Khb8CVP7A).
 
 ## Changes From the Original
 - New Training Lab Features:
