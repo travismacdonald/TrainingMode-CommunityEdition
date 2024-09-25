@@ -40,14 +40,14 @@ mr	playerdata,r6
 	beq	Moonwalk_Exit
 
 	#Check if Over 20 Frames
-		lhz	r3,0x23EC(playerdata)
+		lhz	r3,0x23f8(playerdata)
 		cmpwi r3,20
 		bgt Moonwalk_Exit
 
 		bl	CreateText
 
 		#Change Text Color
-		lhz	r3,0x23EC(playerdata)
+		lhz	r3,0x23f8(playerdata)
 		subi r3,r3,1
 		cmpwi	r3,0x1
 		bne	RedText
@@ -74,7 +74,7 @@ mr	playerdata,r6
 		bl	BottomText
 		mr 	r3,r29			#text pointer
 		mflr	r4
-		lhz	r5,0x23EC(playerdata)
+		lhz	r5,0x23f8(playerdata)
 		subi r5,r5,1
 		lfs	f1, -0x37B4 (rtoc)			#default text X/Y
 		lfs	f2, -0x37B0 (rtoc)			#shift down on Y axis
@@ -89,18 +89,9 @@ mr	playerdata,r6
 	stwu	sp, -0x0008 (sp)
 	mr	r3,playerdata			#backup playerdata pointer
 	li	r4,60			#display for 60 frames
-
-	#Display Up Top For Event
-	load	r5,SceneController
-	lbz	r5,0x0(r5)
-	cmpwi	r5,0x2B
-	bne	0xC
-	li	r5,1
-	b	0x8
 	li	r5,0			#Area to Display (0-2)
 	li	r6,13			#Window ID (Unique to This Display)
 	branchl	r12,TextCreateFunction			#create text custom function
-
 	mr	text,r3			#backup text pointer
 	lwz	r0, 0x000C (sp)
 	addi	sp, sp, 8

@@ -38,7 +38,7 @@ lwz	playerdata,0x2c(player)
 	beq	Moonwalk_Exit
 
 	#Check If Under 15 Frames
-	lwz	r3, 0x2408 (playerdata)
+	lhz	r3, 0x2416 (playerdata)
 	subi	r3,r3,1
 	cmpwi	r3,15
 	bgt	Moonwalk_Exit
@@ -46,7 +46,7 @@ lwz	playerdata,0x2c(player)
 		bl	CreateText
 
 		#Change Text Color
-		lwz	r3, 0x2408 (playerdata)
+		lhz	r3, 0x2416 (playerdata)
 		subi	r3,r3,1
 		cmpwi	r3,0
 		bgt	RedText
@@ -73,10 +73,9 @@ lwz	playerdata,0x2c(player)
 		bl	BottomText_FramesLate
 		mr 	r3,r29			#text pointer
 		mflr	r4
-		lwz	r5, 0x2408 (playerdata)
+		lhz	r5, 0x2416 (playerdata)
 		subi	r5,r5,1
-		cmpwi	r5,0x0
-		neg	r5,r5
+		cmpwi	r5,0
 		bgt	LateLedgestall
 
 		#Show Perfect Ledgestall Text
@@ -118,7 +117,7 @@ blrl
 
 BottomText_FramesLate:
 blrl
-.string "Frames Late: %d"
+.string "Vulnerable: %d"
 .align 2
 
 BottomText_PerfectStall:

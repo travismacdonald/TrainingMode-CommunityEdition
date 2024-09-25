@@ -7,6 +7,7 @@ Here are some things you should know before diving into here, and some questions
 - If you see a load with offset around 0x23ec-0x2424 in OSD related code,
 it's probably reading or writing to `struct MEX` or `struct TM` in `struct FighterData` in `MexTK/include/fighter.h`.
 - `Moonwalk_Exit` is not called that for any reason, it's just a generic exit.
+- **Don't be afraid of the dolphin debugger!**. Use the latest version of dolphin.
 
 ## Questions:
 - What is R13??
