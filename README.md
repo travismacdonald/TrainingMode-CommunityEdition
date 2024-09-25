@@ -18,12 +18,15 @@ To discuss changes and new features or ask for assistance, join [the discord](ht
     - New neutral jump option for CPUs, set as the default.
     - Reworked recording UI. Allows resaveing existing recordings with different percents or positioning.
     - SDI and mashing are set to none by default.
+    - Random custom DI option.
     - Hazard toggle in training lab.
     - Much more planned in the near future!
 - Bugfixes:
     - Jump actions no longer make the CPU self-destruct.
+    - Ledge and Act out of Jump OSDs are now back.
     - Fixed cpu acting too late out of sakurai angle and other non-knockdown hits (such as fox drill).
     - Lightshield now works in recordings.
+    - Can now use lightshield L with DPad to adjust percents.
     - CPUs now DI DK cargo throw.
 - Work in progress:
     - Fixing Export/Import replay crashes.
