@@ -158,8 +158,9 @@ enum cpu_mash
 #define CPUTDI_OUT 2
 #define CPUTDI_FLOORHUG 3
 #define CPUTDI_CUSTOM 4
-#define CPUTDI_NONE 5
-#define CPUTDI_NUM 6
+#define CPUTDI_RANDOM_CUSTOM 5
+#define CPUTDI_NONE 6
+#define CPUTDI_NUM 7
 
 // Tech Definitions
 #define CPUTECH_RANDOM 0
@@ -1505,7 +1506,7 @@ static EventMenu LabMenu_InfoDisplay = {
 // CPU
 static char **LabValues_Shield[] = {"Off", "On Until Hit", "On"};
 static char **LabValues_CPUBehave[] = {"Stand", "Shield", "Crouch", "Jump"};
-static char **LabValues_TDI[] = {"Random", "Inwards", "Outwards", "Floorhug", "Custom", "None"};
+static char **LabValues_TDI[] = {"Random", "Inwards", "Outwards", "Floorhug", "Custom", "Random Custom", "None"};
 static char **LabValues_SDIFreq[] = {"None", "Low", "Medium", "High"};
 static char **LabValues_SDIDir[] = {"Random", "Away", "Towards"};
 static char **LabValues_Tech[] = {"Random", "Neutral", "Away", "Towards", "None"};

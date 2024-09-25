@@ -1331,13 +1331,16 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         {
         case (CPUTDI_RANDOM):
         {
-            tdi_kind = HSD_Randi(CPUTDI_NUM - 1) + 1;
-            goto TDI_SWITCH;
+            switch (HSD_Randi(3)) {
+                case 0: goto TDI_IN;
+                case 1: goto TDI_OUT;
+                case 2: goto TDI_NONE;
+            }
         }
 
         case (CPUTDI_IN):
+        TDI_IN:
         {
-
             /*
             NOTE: im using 94 degrees here because some moves like marth
             uthrow use this angle, and drawing the line at 90 would make 
@@ -1364,7 +1367,6 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         case (CPUTDI_OUT):
         TDI_OUT:
         {
-
             /*
             NOTE: im using 94 degrees here because some moves like marth
             uthrow use a 93 degree angle, and drawing the line at 90 would make 
@@ -1426,7 +1428,25 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
             break;
         }
 
+        case (CPUTDI_RANDOM_CUSTOM):
+        {
+            int i = HSD_Randi(stc_tdi_val_num);
+
+            s8 lstickX = stc_tdi_vals[i][0][0];
+            s8 lstickY = stc_tdi_vals[i][0][1];
+            s8 cstickX = stc_tdi_vals[i][1][0];
+            s8 cstickY = stc_tdi_vals[i][1][1];
+            cpu_data->cpu.lstickX = ((float)lstickX / 80) * 127.0;
+            cpu_data->cpu.lstickY = ((float)lstickY / 80) * 127.0;
+            cpu_data->cpu.cstickX = ((float)cstickX / 80) * 127.0;
+            cpu_data->cpu.cstickY = ((float)cstickY / 80) * 127.0;
+
+            break;
+        }
+
+
         case (CPUTDI_NONE):
+        TDI_NONE:
         {
             Fighter_ZeroCPUInputs(cpu_data);
             break;
@@ -2536,7 +2556,7 @@ void CustomTDI_Update(GOBJ *gobj)
 
     // Update curr stick coordinates
     Text *text_curr = tdi_data->text_curr;
-    Text_SetText(text_curr, 0, "Hit: %d", stc_tdi_val_num + 1);
+    Text_SetText(text_curr, 0, "TDI: %d", stc_tdi_val_num + 1);
     Text_SetText(text_curr, 1, "X: %+.4f", pad->fstickX);
     Text_SetText(text_curr, 2, "Y: %+.4f", pad->fstickY);
     Text_SetText(text_curr, 3, "X: %+.4f", pad->fsubstickX);
@@ -2565,7 +2585,7 @@ void CustomTDI_Update(GOBJ *gobj)
             cstick_prev->rot.X = ((float)(stc_tdi_vals[this_hit][1][1]) * 1 / 80) * 0.75 * -1;
 
             // update text
-            Text_SetText(text_curr, i + 5, "Hit %d", this_hit + 1);
+            Text_SetText(text_curr, i + 5, "TDI %d", this_hit + 1);
         }
         // hide stick
         else
@@ -2591,10 +2611,11 @@ void CustomTDI_Destroy(GOBJ *gobj)
     LCancelData *event_data = event_vars->event_gobj->userdata;
 
     // set TDI to custom
-    if (stc_tdi_val_num > 0)
-        LabOptions_CPU[OPTCPU_TDI].option_val = CPUTDI_CUSTOM;
-    else
-        LabOptions_CPU[OPTCPU_TDI].option_val = CPUTDI_RANDOM;
+    if (stc_tdi_val_num > 0) {
+        int prev = LabOptions_CPU[OPTCPU_TDI].option_val;
+        if (prev != CPUTDI_CUSTOM && prev != CPUTDI_RANDOM_CUSTOM)
+            LabOptions_CPU[OPTCPU_TDI].option_val = CPUTDI_CUSTOM;
+    }
 
     // free text
     Text_Destroy(tdi_data->text_curr);
