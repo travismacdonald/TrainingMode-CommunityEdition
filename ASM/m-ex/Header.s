@@ -369,7 +369,6 @@
 .set TM_FighterDataStart, MEX_FighterDataStart + MEX_FighterDataSize
 
 # Fighter Data Vairables
-
 #MEX
 .set  MEX_AnimOwner,MEX_FighterDataStart + 0x0  #4 bytes
 .set  MEX_UCFCurrX, MEX_AnimOwner + 0x4   #1 byte

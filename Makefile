@@ -2,6 +2,9 @@
 
 dats = root/TM/ledgedash.dat root/TM/wavedash.dat root/TM/lcancel.dat root/TM/labCSS.dat root/TM/eventMenu.dat root/TM/lab.dat
 
+# find all asm files in ASM dir. We have the escape the spaces, so we pipe to sed
+ASM_FILES := $(shell find ASM -type f -name '*.asm' | sed 's/ /\\ /g')
+
 MEX_BUILD=mono MexTK/MexTK.exe -ff -b "build" -q -ow -l "MexTK/melee.link" -op 2
 MEX_TRIM=mono MexTK/MexTK.exe -trim
 
@@ -49,7 +52,7 @@ root/TM/wavedash.dat: root/ src/wavedash.c src/wavedash.h
 	$(MEX_BUILD) -i "src/wavedash.c" -s "evFunction" -dat "root/TM/wavedash.dat" -t "MexTK/evFunction.txt"
 	$(MEX_TRIM) "root/TM/wavedash.dat"
 
-root/codes.gct: root/ Additional\ ISO\ Files/opening.bnr ASM/*
+root/codes.gct: root/ Additional\ ISO\ Files/opening.bnr $(ASM_FILES)
 	cd "Build TM Codeset" && ./gecko build
 	cp Additional\ ISO\ Files/* root/
 

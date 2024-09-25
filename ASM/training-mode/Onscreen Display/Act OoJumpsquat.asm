@@ -71,7 +71,6 @@ fsubs    \reg2,\reg2,f16
 ##########################################################
 
 backup
-
 mr	player,r31
 lwz	playerdata,0x2c(player)
 
@@ -79,7 +78,6 @@ lwz	playerdata,0x2c(player)
 lwz	r3,0x10(playerdata)
 cmpwi	r3,0x18
 beq	Exit
-
 
 	#CHECK IF ENABLED
 	li	r0,0x13			#PowerShield ID
