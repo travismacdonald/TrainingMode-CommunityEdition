@@ -2613,22 +2613,23 @@ struct FighterData
     int x23e8;          // 0x23e8
     struct MEX
     {
-        int anim_owner;
-        GOBJ *kb_abilitysource;
-        u8 ucf_stickX[3];
+        int anim_owner;                 // 0x23ec
+        GOBJ *kb_abilitysource;         // 0x23f0
+        u8 ucf_stickX[3];               // 0x23f4
     } MEX;
     struct TM
     {
-        s16 state_frame;  // how many frames the player has been in this state
-        s16 shield_frame; // how many frames the player has been shielding
-        u16 state_prev[6];
-        u16 state_prev_frames[6];
-        u16 last_move_hurt;        // Previous Move Instance Hit By
-        u16 vuln_frames;           // how many frames the fighter has been vulnerable
-        u16 can_fastfall_frames;   // how many frames the fighter has been able to fast fall
-        int post_hitstun_frames;   // frames fighter has been out of hitstun
-        GOBJ *fighter_hurt_shield; // pointer to the fighter who's shield this fighter hit
-        void *cb_anim;             // additional animation callback
+        s16 state_frame;            // 0x23f8 how many frames the player has been in this state
+        s16 shield_frame;           // 0x23fa how many frames the player has been shielding
+        u16 state_prev[6];          // 0x23fc
+        u16 state_prev_frames[6];   // 0x2408
+        u16 last_move_hurt;         // 0x2414 Previous Move Instance Hit By
+        u16 vuln_frames;            // 0x2416 how many frames the fighter has been vulnerable
+        u16 can_fastfall_frames;    // 0x2418 how many frames the fighter has been able to fast fall
+                                    // 2 bytes padding
+        int post_hitstun_frames;    // 0x241c frames fighter has been out of hitstun
+        GOBJ *fighter_hurt_shield;  // 0x2420 pointer to the fighter who's shield this fighter hit
+        void *cb_anim;              // 0x2424 additional animation callback
     } TM;
 };
 
