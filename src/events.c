@@ -812,8 +812,8 @@ static EventMatchData ArmadaShine_MatchData = {
 };
 // Event Struct
 EventDesc ArmadaShine = {
-    .eventName = "Armada-Shine Training\n",
-    .eventDescription = "Finish the enemy Fox\nwith an Armada Shine!",
+    .eventName = "Edgeguard Firefox Training\n",
+    .eventDescription = "Finish off the enemy Fox\nafter he uses Firefox!",
     .eventTutorial = "TvLC",
     .eventFile = 0,
     .isChooseCPU = false,
