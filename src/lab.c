@@ -1835,7 +1835,7 @@ int Update_CheckAdvance()
     int advance_btn = stc_advance_btns[LabOptions_General[OPTGEN_FRAMEBTN].option_val];
 
     // check if holding L
-    if ((pad->held & advance_btn))
+    if ((pad->held & advance_btn) || (advance_btn == HSD_TRIGGER_L && pad->triggerLeft > 30))
     {
         timer++;
 
