@@ -3,6 +3,8 @@
 
 #include <stddef.h>
 
+#define LOW_ANALOG_TRIGGER_THRESHOLD 24
+
 static u32 lz77_compress(u8 *uncompressed_text, u32 uncompressed_size, u8 *compressed_text, u8 pointer_length_width);
 static u32 lz77_decompress(u8 *compressed_text, u8 *uncompressed_text);
 
@@ -1835,7 +1837,7 @@ int Update_CheckAdvance()
     int advance_btn = stc_advance_btns[LabOptions_General[OPTGEN_FRAMEBTN].option_val];
 
     // check if holding L
-    if ((pad->held & advance_btn))
+    if ((pad->held & advance_btn) || (advance_btn == HSD_TRIGGER_L && pad->triggerLeft >= LOW_ANALOG_TRIGGER_THRESHOLD))
     {
         timer++;
 
