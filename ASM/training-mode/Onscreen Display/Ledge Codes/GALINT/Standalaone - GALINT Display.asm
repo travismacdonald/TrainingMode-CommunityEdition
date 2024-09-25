@@ -87,9 +87,9 @@ mr	REG_isAerialInterrupt,r4
 		bgt	SkipShowingTangibleFrames
 
 		#Show Tangible Frames
-		lhz	r5, TM_TangibleFrameCount(playerdata)
-		subi r5,r5,1
-		neg r5,r5
+		lhz	r5,TM_TangibleFrameCount(playerdata)
+		addi	r5,r5,0x1
+		neg	r5,r5
 
 		SkipShowingTangibleFrames:
 		lfs	f1, -0x37B4 (rtoc)			#default text X/Y
