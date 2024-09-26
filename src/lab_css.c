@@ -563,29 +563,22 @@ void Menu_SelFile_Init(GOBJ *menu_gobj)
                     // search for files with name TMREC
                     for (int i = 0; i < CARD_MAX_FILE; i++)
                     {
-
                         CARDStat card_stat;
 
-                        if (CARDGetStatus(slot, i, &card_stat) == CARD_RESULT_READY)
-                        {
-                            // check company code
-                            if (strncmp(os_info->company, card_stat.company, sizeof(os_info->company)) == 0)
-                            {
-                                // check game name
-                                if (strncmp(os_info->gameName, card_stat.gameName, sizeof(os_info->gameName)) == 0)
-                                {
-                                    // check file name
-                                    if (strncmp("TMREC", card_stat.fileName, 5) == 0)
-                                    {
-                                        OSReport("found recording file %s with size %d\n", card_stat.fileName, card_stat.length);
-                                        import_data.file_info[import_data.file_num].file_size = card_stat.length;                                      // save file size
-                                        import_data.file_info[import_data.file_num].file_no = i;                                                       // save file no
-                                        memcpy(import_data.file_info[import_data.file_num].file_name, card_stat.fileName, sizeof(card_stat.fileName)); // save file name
-                                        import_data.file_num++;                                                                                        // increment file amount
-                                    }
-                                }
-                            }
-                        }
+                        if (CARDGetStatus(slot, i, &card_stat) != CARD_RESULT_READY)
+                            continue;
+
+                        // check file matches expectations
+                        if (strncmp(os_info->company, card_stat.company, sizeof(os_info->company)) != 0 ||
+                                strncmp(os_info->gameName, card_stat.gameName, sizeof(os_info->gameName)) != 0 ||
+                                strncmp("TMREC", card_stat.fileName, 5) != 0)
+                            continue;
+
+                        OSReport("found recording file %s with size %d\n", card_stat.fileName, card_stat.length);
+                        import_data.file_info[import_data.file_num].file_size = card_stat.length;                                      // save file size
+                        import_data.file_info[import_data.file_num].file_no = i;                                                       // save file no
+                        memcpy(import_data.file_info[import_data.file_num].file_name, card_stat.fileName, sizeof(card_stat.fileName)); // save file name
+                        import_data.file_num++;                                                                                        // increment file amount
                     }
                 }
             }
