@@ -535,7 +535,6 @@ typedef struct ImportData
     FileInfo *file_info;  // pointer to file info array
     ExportHeader *header; // pointer to header array for the files on the current page
     u8 page;              // file page
-    u8 files_on_page;     // number of files on the current page
     struct
     {
         GOBJ *gobj; // confirm gobj

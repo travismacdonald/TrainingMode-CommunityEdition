@@ -793,7 +793,6 @@ int Menu_SelFile_LoadPage(GOBJ *menu_gobj, int page)
     int files_on_page = IMPORT_FILESPERPAGE;
     if (page == page_total - 1)
         files_on_page = import_data.file_num % IMPORT_FILESPERPAGE;
-    import_data.files_on_page = files_on_page;
 
     // cancel card read if in progress
     int memcard_status = Memcard_CheckStatus();
@@ -971,8 +970,7 @@ void Menu_SelFile_LoadAsyncThink(GOBJ *menu_gobj)
     }
 
     // check if any pending files to load
-    if ((import_data.snap.load_inprogress == 0) && // checking inprogress again in case the code above set it to 0 this tick
-        (import_data.snap.loaded_num < import_data.files_on_page))
+    if (import_data.snap.load_inprogress == 0) // checking inprogress again in case the code above set it to 0 this tick
     {
 
         // find nearest unloaded file
