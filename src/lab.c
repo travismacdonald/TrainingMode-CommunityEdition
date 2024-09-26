@@ -1094,7 +1094,10 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         case (CPUBEHAVE_SHIELD):
         {
             // hold R
-            cpu_data->cpu.held = PAD_TRIGGER_R;
+            cpu_data->cpu.held |= PAD_TRIGGER_R;
+            cpu_data->input.held |= PAD_TRIGGER_R;
+            cpu_data->input.trigger = 1.0f;
+            cpu_data->cpu.ai = 15; // Ensure AI doesn't override this input
             break;
         }
 
@@ -1831,13 +1834,14 @@ int Update_CheckAdvance()
 
     // get their pad
     HSD_Pad *pad = PadGet(controller, PADGET_MASTER);
+    HSD_Pad *engine_pad = PadGet(controller, PADGET_ENGINE);
 
     // get their advance input
     static int stc_advance_btns[] = {HSD_TRIGGER_L, HSD_TRIGGER_Z, HSD_BUTTON_X, HSD_BUTTON_Y};
     int advance_btn = stc_advance_btns[LabOptions_General[OPTGEN_FRAMEBTN].option_val];
 
     // check if holding L
-    if ((pad->held & advance_btn) || (advance_btn == HSD_TRIGGER_L && pad->triggerLeft >= LOW_ANALOG_TRIGGER_THRESHOLD))
+    if (!LabOptions_General[OPTGEN_FRAMEBTN].disable && (pad->held & advance_btn) || (advance_btn == HSD_TRIGGER_L && pad->triggerLeft >= LOW_ANALOG_TRIGGER_THRESHOLD))
     {
         timer++;
 
@@ -1849,12 +1853,16 @@ int Update_CheckAdvance()
             // remove button input
             pad->down &= ~advance_btn;
             pad->held &= ~advance_btn;
+            engine_pad->down &= ~advance_btn;
+            engine_pad->held &= ~advance_btn;
 
             // if using L, remove analog press too
-            if (LabOptions_CPU[OPTGEN_FRAMEBTN].option_val == 0)
+            if (advance_btn == HSD_TRIGGER_L)
             {
                 pad->triggerLeft = 0;
                 pad->ftriggerLeft = 0;
+                engine_pad->triggerLeft = 0;
+                engine_pad->ftriggerLeft = 0;
             }
         }
     }
