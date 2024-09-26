@@ -3738,76 +3738,61 @@ void Savestates_Update()
     */
 
     // timer variables
-    static int save_timer = 0;
-    static int load_timer = 0;
+    static int save_timer[4] = {0}; // Array to track save timer for each fighter
     static int lockout_timer = 0;
     const int SAVE_THRESHOLD = 20;
-    const int LOAD_THRESHOLD = 20;
     const int LOCKOUT_DURATION = 30;
 
     // not when pause menu is showing
     if (Pause_CheckStatus(1) != 2)
     {
-        // check if fighter exists
-        GOBJ *fighter = Fighter_GetGObj(0);
-        if (fighter != 0)
+        if (lockout_timer > 0)
         {
-            // get fighter data
-            FighterData *fighter_data = fighter->userdata;
-            HSD_Pad *pad = PadGet(fighter_data->ply, PADGET_MASTER);
+            lockout_timer--;
+        }
+        else
+        {
+            // loop through all controller ports
+            for (int port = 0; port < 4; port++)
+            {
+                HSD_Pad *pad = PadGet(port, PADGET_MASTER);
+                if (pad == NULL) continue; // Skip if no controller in this port
 
-            // check for savestate
-            int blacklist = (HSD_BUTTON_DPAD_DOWN | HSD_BUTTON_DPAD_UP | HSD_TRIGGER_Z | HSD_TRIGGER_R | HSD_BUTTON_A | HSD_BUTTON_B | HSD_BUTTON_X | HSD_BUTTON_Y | HSD_BUTTON_START);
-            
-            if (lockout_timer > 0)
-            {
-                lockout_timer--;
-            }
-            else
-            {
+                // check for savestate
+                int blacklist = (HSD_BUTTON_DPAD_DOWN | HSD_BUTTON_DPAD_UP | HSD_TRIGGER_Z | HSD_TRIGGER_R | HSD_BUTTON_A | HSD_BUTTON_B | HSD_BUTTON_X | HSD_BUTTON_Y | HSD_BUTTON_START);
+                
                 // Save state (D-pad right)
                 if ((pad->held & HSD_BUTTON_DPAD_RIGHT) && !(pad->held & blacklist))
                 {
-                    save_timer++;
-                    if (save_timer == SAVE_THRESHOLD)
+                    save_timer[port]++;
+                    if (save_timer[port] == SAVE_THRESHOLD)
                     {
                         // save state
                         event_vars->Savestate_Save(event_vars->savestate);
-                        save_timer = 0; // Reset timer after saving
+                        save_timer[port] = 0; // Reset timer after saving
                         lockout_timer = LOCKOUT_DURATION;
                     }
                 }
                 else
                 {
-                    save_timer = 0; // Reset timer if button is released
+                    save_timer[port] = 0; // Reset timer if button is released
                 }
 
                 // Load state (D-pad left)
-                if ((pad->held & HSD_BUTTON_DPAD_LEFT) && !(pad->held & blacklist))
+                if ((pad->down & HSD_BUTTON_DPAD_LEFT) && !(pad->held & blacklist))
                 {
-                    load_timer++;
-                    if (load_timer == LOAD_THRESHOLD)
+                    // load state
+                    event_vars->Savestate_Load(event_vars->savestate);
+
+                    // re-roll random slot
+                    if (LabOptions_Record[OPTREC_HMNSLOT].option_val == 0)
                     {
-                        // load state
-                        event_vars->Savestate_Load(event_vars->savestate);
-
-                        // re-roll random slot
-                        if (LabOptions_Record[OPTREC_HMNSLOT].option_val == 0)
-                        {
-                            rec_data.hmn_rndm_slot = Record_GetRandomSlot(&rec_data.hmn_inputs);
-                        }
-                        if (LabOptions_Record[OPTREC_CPUSLOT].option_val == 0)
-                        {
-                            rec_data.cpu_rndm_slot = Record_GetRandomSlot(&rec_data.cpu_inputs);
-                        }
-
-                        load_timer = 0; // Reset timer after loading
-                        lockout_timer = LOCKOUT_DURATION;
+                        rec_data.hmn_rndm_slot = Record_GetRandomSlot(&rec_data.hmn_inputs);
                     }
-                }
-                else
-                {
-                    load_timer = 0; // Reset timer if button is released
+                    if (LabOptions_Record[OPTREC_CPUSLOT].option_val == 0)
+                    {
+                        rec_data.cpu_rndm_slot = Record_GetRandomSlot(&rec_data.cpu_inputs);
+                    }
                 }
             }
         }
