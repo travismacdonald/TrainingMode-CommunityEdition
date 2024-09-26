@@ -597,8 +597,8 @@ void Menu_SelFile_Init(GOBJ *menu_gobj)
     }
 
     // init scroll bar according to import_data.file_num
-    int page_total = import_data.file_num / (IMPORT_FILESPERPAGE + 1);
-    if (page_total == 0)
+    int page_total = (import_data.file_num + IMPORT_FILESPERPAGE - 1) / IMPORT_FILESPERPAGE;
+    if (page_total <= 1)
         JOBJ_SetFlagsAll(import_data.scroll_jobj, JOBJ_HIDDEN);
     else
         import_data.scroll_bot->trans.Y = (-16.2 / (page_total + 1));
@@ -619,7 +619,6 @@ void Menu_SelFile_Init(GOBJ *menu_gobj)
 }
 void Menu_SelFile_Think(GOBJ *menu_gobj)
 {
-
     // init
     int down = Pad_GetRapidHeld(*stc_css_hmnport);
 
@@ -634,199 +633,157 @@ void Menu_SelFile_Think(GOBJ *menu_gobj)
         // check for exit
         if (down & (HSD_BUTTON_B | HSD_BUTTON_A))
             goto EXIT;
+        return;
     }
 
-    // navigation think
-    else
+    // cursor movement
+    int curr_page = import_data.page;
+    int curr_cursor = import_data.cursor;
+    if (down & (HSD_BUTTON_UP | HSD_BUTTON_DPAD_UP)) // check for cursor up
     {
+        import_data.cursor--;
+    }
+    else if (down & (HSD_BUTTON_LEFT | HSD_BUTTON_DPAD_LEFT)) // check for cursor down
+    {
+        import_data.cursor = 0;
+        import_data.page--;
+    }
+    else if (down & (HSD_BUTTON_DOWN | HSD_BUTTON_DPAD_DOWN)) // check for cursor down
+    {
+        import_data.cursor++;
+    }
+    else if (down & (HSD_BUTTON_RIGHT | HSD_BUTTON_DPAD_RIGHT)) // check for cursor right
+    {
+        import_data.cursor = 0;
+        import_data.page++;
+    }
 
-        // cursor movement
-        if (down & (HSD_BUTTON_UP | HSD_BUTTON_DPAD_UP)) // check for cursor up
+    // handle cursor/page overflow and wrap pages
+    int total_pages = (import_data.file_num + IMPORT_FILESPERPAGE - 1) / IMPORT_FILESPERPAGE;
+    if (import_data.cursor == 255)
+    {
+        import_data.cursor = IMPORT_FILESPERPAGE - 1;
+        import_data.page--;
+    }
+    else if (import_data.cursor >= IMPORT_FILESPERPAGE ||
+        (import_data.page == total_pages - 1 &&
+        import_data.cursor >= import_data.file_num % IMPORT_FILESPERPAGE))
+    {
+        import_data.cursor = 0;
+        import_data.page++;
+    }
+    if (import_data.page == 255)
+    {
+        import_data.page = total_pages - 1;
+        if (import_data.cursor >= import_data.file_num % IMPORT_FILESPERPAGE)
         {
-            // if cursor is at the top of the page, try to advance to prev
-            if (import_data.cursor == 0)
-            {
-                // try to load prev page
-                int page_result = Menu_SelFile_LoadPage(menu_gobj, import_data.page - 1);
-                if (page_result == 1) // page loaded, update cursor
-                {
-                    SFX_PlayCommon(2);
-                    import_data.cursor = (IMPORT_FILESPERPAGE - 1);
-                    import_data.page--;
-                }
-                else if (page_result == -1)
-                {
-                    // create dialog
-                    Menu_Confirm_Init(menu_gobj, CFRM_ERR);
-                    SFX_PlayCommon(3);
-                    goto EXIT_FUNC; // gotos are weird but i couldnt think of another way
-                }
-            }
-            // if cursor can be advanced
-            else if (import_data.cursor > 0)
-            {
-                import_data.cursor--;
-                SFX_PlayCommon(2);
-            }
+            import_data.cursor = import_data.file_num % IMPORT_FILESPERPAGE - 1;
         }
-        else if (down & (HSD_BUTTON_LEFT | HSD_BUTTON_DPAD_LEFT)) // check for cursor down
-        {
-            // try to load prev page
-            int page_result = Menu_SelFile_LoadPage(menu_gobj, import_data.page - 1);
-            if (page_result == 1) // page loaded, update cursor
-            {
-                SFX_PlayCommon(2);
-                import_data.cursor = 0;
-                import_data.page--;
-            }
-            else if (page_result == -1)
-            {
-                // create dialog
-                Menu_Confirm_Init(menu_gobj, CFRM_ERR);
-                SFX_PlayCommon(3);
-                goto EXIT_FUNC; // gotos are weird but i couldnt think of another way
-            }
-        }
-        else if (down & (HSD_BUTTON_DOWN | HSD_BUTTON_DPAD_DOWN)) // check for cursor down
-        {
+    }
+    else if (import_data.page >= total_pages)
+    {
+        import_data.page = 0;
+    }
 
-            // if cursor is at the end of the page, try to advance to next
-            if (import_data.cursor == (IMPORT_FILESPERPAGE - 1))
-            {
-                // try to load next page
-                int page_result = Menu_SelFile_LoadPage(menu_gobj, import_data.page + 1);
-                if (page_result == 1) // page loaded, update cursor
-                {
-                    SFX_PlayCommon(2);
-                    import_data.cursor = 0;
-                    import_data.page++;
-                }
-                else if (page_result == -1)
-                {
-                    // create dialog
-                    Menu_Confirm_Init(menu_gobj, CFRM_ERR);
-                    SFX_PlayCommon(3);
-                    goto EXIT_FUNC; // gotos are weird but i couldnt think of another way
-                }
-            }
-
-            // if cursor can be advanced
-            else if ((import_data.cursor < import_data.files_on_page - 1))
-            {
-                import_data.cursor++;
-                SFX_PlayCommon(2);
-            }
-        }
-        else if (down & (HSD_BUTTON_RIGHT | HSD_BUTTON_DPAD_RIGHT)) // check for cursor right
+    // Load new page if necessary and play sound
+    if (import_data.page != curr_page)
+    {
+        // try to load page
+        int page_result = Menu_SelFile_LoadPage(menu_gobj, import_data.page);
+        if (page_result == -1)
         {
-            // try to load next page
-            int page_result = Menu_SelFile_LoadPage(menu_gobj, import_data.page + 1);
-            if (page_result == 1) // page loaded, update cursor
-            {
-                SFX_PlayCommon(2);
-                import_data.cursor = 0;
-                import_data.page++;
-            }
-            else if (page_result == -1)
-            {
-                // create dialog
-                Menu_Confirm_Init(menu_gobj, CFRM_ERR);
-                SFX_PlayCommon(3);
-                goto EXIT_FUNC; // gotos are weird but i couldnt think of another way
-            }
+            // create dialog
+            Menu_Confirm_Init(menu_gobj, CFRM_ERR);
+            SFX_PlayCommon(3);
+            return;
         }
+        SFX_PlayCommon(2);
+    }
+    else if (import_data.cursor != curr_cursor)
+    {
+        SFX_PlayCommon(2);
+    }
 
-        // highlight cursor
-        int cursor = import_data.cursor;
-        for (int i = 0; i < IMPORT_FILESPERPAGE; i++)
-        {
-            Text_SetColor(import_data.filename_text, i, &text_white);
-        }
-        Text_SetColor(import_data.filename_text, cursor, &text_gold);
+    // highlight cursor
+    int cursor = import_data.cursor;
+    for (int i = 0; i < IMPORT_FILESPERPAGE; i++)
+    {
+        Text_SetColor(import_data.filename_text, i, &text_white);
+    }
+    Text_SetColor(import_data.filename_text, cursor, &text_gold);
 
-        // update file info text
-        /*
-    u8 *transfer_buf = import_data.snap.file_data[cursor];
-    ExportHeader *header = transfer_buf;
-    u8 *compressed_recording = transfer_buf + header->lookup.ofst_recording;
+    // update file info text from header data
+    int this_file_index = (import_data.page * IMPORT_FILESPERPAGE) + cursor;
+    ExportHeader *header = &import_data.header[cursor];
+
+    // update file info text
     Text_SetText(import_data.fileinfo_text, 0, "Stage: %s", stage_names[header->metadata.stage_internal]);
     Text_SetText(import_data.fileinfo_text, 1, "HMN: %s", Fighter_GetName(header->metadata.hmn));
     Text_SetText(import_data.fileinfo_text, 2, "CPU: %s", Fighter_GetName(header->metadata.cpu));
-    Text_SetText(import_data.fileinfo_text, 3, "Created: %d/%d/%d", 10, 30, 1995);
-    */
+    Text_SetText(import_data.fileinfo_text, 3, "Date: %d/%d/%d", header->metadata.month, header->metadata.day, header->metadata.year);
+    Text_SetText(import_data.fileinfo_text, 4, "Time: %d:%02d:%02d", header->metadata.hour, header->metadata.minute, header->metadata.second);
 
-        // update file info text from header data
-        int this_file_index = (import_data.page * IMPORT_FILESPERPAGE) + cursor;
-        ExportHeader *header = &import_data.header[cursor];
+    // async load snapshots
+    Menu_SelFile_LoadAsyncThink(menu_gobj);
 
-        // update file info text
-        Text_SetText(import_data.fileinfo_text, 0, "Stage: %s", stage_names[header->metadata.stage_internal]);
-        Text_SetText(import_data.fileinfo_text, 1, "HMN: %s", Fighter_GetName(header->metadata.hmn));
-        Text_SetText(import_data.fileinfo_text, 2, "CPU: %s", Fighter_GetName(header->metadata.cpu));
-        Text_SetText(import_data.fileinfo_text, 3, "Date: %d/%d/%d", header->metadata.month, header->metadata.day, header->metadata.year);
-        Text_SetText(import_data.fileinfo_text, 4, "Time: %d:%02d:%02d", header->metadata.hour, header->metadata.minute, header->metadata.second);
+    // update file image
+    // if this file is loaded
+    if (import_data.snap.is_loaded[cursor] == 1)
+    {
+        // copy screenshot data to buffer
+        void *file_data = import_data.snap.file_data[cursor];
+        RGB565 *img = file_data + header->lookup.ofst_screenshot;
+        int img_size = GXGetTexBufferSize(header->metadata.image_width, header->metadata.image_height, 4, 0, 0);
+        memcpy(import_data.snap.image, img, img_size); // copu image to 32 byte aligned buffer
 
-        // async load snapshots
-        Menu_SelFile_LoadAsyncThink(menu_gobj);
+        // invalidate cache
+        DCFlushRange(import_data.snap.image, img_size);
 
-        // update file image
-        // if this file is loaded
-        if (import_data.snap.is_loaded[cursor] == 1)
-        {
-            // copy screenshot data to buffer
-            void *file_data = import_data.snap.file_data[cursor];
-            RGB565 *img = file_data + header->lookup.ofst_screenshot;
-            int img_size = GXGetTexBufferSize(header->metadata.image_width, header->metadata.image_height, 4, 0, 0);
-            memcpy(import_data.snap.image, img, img_size); // copu image to 32 byte aligned buffer
-
-            // invalidate cache
-            DCFlushRange(import_data.snap.image, img_size);
-
-            // display this texture
-            image_desc.img_ptr = import_data.snap.image;                            // store pointer to resized image
-            import_data.screenshot_jobj->dobj->mobj->tobj->imagedesc = &image_desc; // replace pointer to imagedesc
-        }
-        else
-        {
-            // display orig texture
-            import_data.screenshot_jobj->dobj->mobj->tobj->imagedesc = import_data.snap.orig_image;
-        }
-
-        // check for exit
-        if (down & HSD_BUTTON_B)
-        {
-        EXIT:
-            SFX_PlayCommon(0);
-            Menu_SelFile_Exit(menu_gobj);
-            Menu_SelCard_Init(menu_gobj);
-        }
-
-        // check to delete
-        else if (down & HSD_BUTTON_X)
-        {
-            Menu_Confirm_Init(menu_gobj, CFRM_DEL);
-            SFX_PlayCommon(1);
-        }
-
-        // check for select
-        else if (down & HSD_BUTTON_A)
-        {
-            int kind;                                               // init confirm kind
-            int vers = import_data.header[cursor].metadata.version; // get version number
-
-            // check if version is compatible with this release
-            if (vers == REC_VERS)
-                kind = CFRM_LOAD;
-            else if (vers > REC_VERS)
-                kind = CFRM_NEW;
-            else if (vers < REC_VERS)
-                kind = CFRM_OLD;
-
-            // open confirm dialog
-            Menu_Confirm_Init(menu_gobj, kind);
-            SFX_PlayCommon(1);
-        }
+        // display this texture
+        image_desc.img_ptr = import_data.snap.image;                            // store pointer to resized image
+        import_data.screenshot_jobj->dobj->mobj->tobj->imagedesc = &image_desc; // replace pointer to imagedesc
     }
+    else
+    {
+        // display orig texture
+        import_data.screenshot_jobj->dobj->mobj->tobj->imagedesc = import_data.snap.orig_image;
+    }
+
+    // check for exit
+    if (down & HSD_BUTTON_B)
+    {
+    EXIT:
+        SFX_PlayCommon(0);
+        Menu_SelFile_Exit(menu_gobj);
+        Menu_SelCard_Init(menu_gobj);
+    }
+
+    // check to delete
+    else if (down & HSD_BUTTON_X)
+    {
+        Menu_Confirm_Init(menu_gobj, CFRM_DEL);
+        SFX_PlayCommon(1);
+    }
+
+    // check for select
+    else if (down & HSD_BUTTON_A)
+    {
+        int kind;                                               // init confirm kind
+        int vers = import_data.header[cursor].metadata.version; // get version number
+
+        // check if version is compatible with this release
+        if (vers == REC_VERS)
+            kind = CFRM_LOAD;
+        else if (vers > REC_VERS)
+            kind = CFRM_NEW;
+        else if (vers < REC_VERS)
+            kind = CFRM_OLD;
+
+        // open confirm dialog
+        Menu_Confirm_Init(menu_gobj, kind);
+        SFX_PlayCommon(1);
+    }
+    
 EXIT_FUNC:
     return;
 }
