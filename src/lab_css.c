@@ -485,7 +485,6 @@ void Menu_SelFile_Init(GOBJ *menu_gobj)
     import_data.cursor = 0;
     import_data.page = 0;
 
-    // show memcards
     JOBJ_ClearFlagsAll(import_data.scroll_jobj, JOBJ_HIDDEN);
     JOBJ_ClearFlagsAll(import_data.screenshot_jobj, JOBJ_HIDDEN);
 
@@ -535,7 +534,7 @@ void Menu_SelFile_Init(GOBJ *menu_gobj)
     Text_SetText(import_data.title_text, 0, "Select Recording");
 
     // edit description
-    Text_SetText(import_data.desc_text, 0, "A = Select          B = Return          X = Delete");
+    Text_SetText(import_data.desc_text, 0, "A = Select   B = Return   X = Delete   Left/Right = Prev/Next Page");
 
     // search card for save files
     import_data.file_num = 0;
