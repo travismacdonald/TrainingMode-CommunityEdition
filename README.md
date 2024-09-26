@@ -79,4 +79,9 @@ Have some specific tech you want to train? Find a bug that's been annoying you? 
     - Implement the `Event_Init`, `Event_Update`, `Event_Think` methods and `Event_Menu` pointer in your c file. Poke around the other events to figure out how the data flows.
 - Other changes may be easy or difficult. Join [the discord](https://discord.gg/2Khb8CVP7A) if you want a nudge in the right direction.
 
+## Debugging tips
+- Set `TM_DEBUG` to 2 in events.h to get OSReport statements on the screen.
+- **Use the dolphin debugger!** Make sure you have the latest version of dolphin for debugging.
+    - Be sure to load GTME01.map with Symbols->Load Other Map File.
+
 Feel free to DM me on discord (alex_aitch) or twitter (@rwing_aitch) for help!
