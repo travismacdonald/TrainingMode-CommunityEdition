@@ -973,47 +973,18 @@ void Menu_SelFile_LoadAsyncThink(GOBJ *menu_gobj)
     if (import_data.snap.load_inprogress == 0) // checking inprogress again in case the code above set it to 0 this tick
     {
 
-        // find nearest unloaded file
         int file_to_load;
         int cursor = import_data.cursor;
 
         // check if cursor is loaded
         if (import_data.snap.is_loaded[cursor] == 0)
             file_to_load = cursor;
-        // find nearest unloaded file
+        else if (cursor < IMPORT_FILESPERPAGE - 1 && import_data.snap.is_loaded[cursor + 1] == 0)
+            file_to_load = cursor + 1;
+        else if (cursor > 0 && import_data.snap.is_loaded[cursor - 1] == 0)
+            file_to_load = cursor - 1;
         else
-        {
-            // search for unloaded snap nearest to the cursor
-            int search_up = cursor;
-            int search_down = cursor;
-            for (int i = 0; i < (IMPORT_FILESPERPAGE - 1); i++)
-            {
-                search_up--;
-                search_down++;
-
-                // if still on page
-                if (search_up >= 0)
-                {
-                    if (import_data.snap.is_loaded[search_up] == 0)
-                    {
-                        // load this next
-                        file_to_load = search_up;
-                        break;
-                    }
-                }
-
-                // if still on page
-                if (search_down < IMPORT_FILESPERPAGE)
-                {
-                    if (import_data.snap.is_loaded[search_down] == 0)
-                    {
-                        // load this next
-                        file_to_load = search_down;
-                        break;
-                    }
-                }
-            }
-        }
+            return;
 
         // get filename and size for this file
         int this_file_index = (import_data.page * IMPORT_FILESPERPAGE) + file_to_load; // page file index -> TMREC file index
