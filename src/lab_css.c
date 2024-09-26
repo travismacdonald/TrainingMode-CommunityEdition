@@ -345,66 +345,44 @@ void Menu_SelCard_Init(GOBJ *menu_gobj)
 }
 void Menu_SelCard_Think(GOBJ *menu_gobj)
 {
-
-    // init
-    int down = Pad_GetRapidHeld(*stc_css_hmnport);
-
     // update memcard info
-    for (int i = 1; i >= 0; i--)
+    for (int i = 0; i <= 1; i++)
     {
         // probe slot
-        u8 is_inserted;
-
         s32 memSize, sectorSize;
-        if (CARDProbeEx(i, &memSize, &sectorSize) == CARD_RESULT_READY)
+        if (CARDProbeEx(i, &memSize, &sectorSize) != CARD_RESULT_READY)
         {
-            // if it was just inserted, get info
-            if (import_data.memcard_inserted[i] == 0)
-            {
-
-                // mount card
-                stc_memcard_work->is_done = 0;
-                if (CARDMountAsync(i, stc_memcard_work->work_area, 0, Memcard_RemovedCallback) == CARD_RESULT_READY)
-                {
-                    // check card
-                    Memcard_Wait();
-                    stc_memcard_work->is_done = 0;
-                    if (CARDCheckAsync(i, Memcard_RemovedCallback) == CARD_RESULT_READY)
-                    {
-                        Memcard_Wait();
-
-                        // if we get this far, a valid memcard is inserted
-                        is_inserted = 1;
-                        SFX_PlayCommon(2);
-                        //import_data.cursor = i; // move cursor to this
-
-                        // get free blocks
-                        s32 byteNotUsed, filesNotUsed;
-                        if (CARDFreeBlocks(i, &byteNotUsed, &filesNotUsed) == CARD_RESULT_READY)
-                        {
-                            import_data.memcard_free_blocks[i] = (byteNotUsed / 8192);
-                            import_data.memcard_free_files[i] = filesNotUsed;
-                        }
-                    }
-                    else
-                        is_inserted = 0;
-
-                    CARDUnmount(i);
-                    stc_memcard_work->is_done = 0;
-                }
-                else
-                    is_inserted = 0;
-            }
-            else
-                is_inserted = 1;
+            import_data.memcard_inserted[i] = 0;
+            continue;
         }
-        else
-            is_inserted = 0;
 
-        import_data.memcard_inserted[i] = is_inserted;
+        // skip good memcards
+        if (import_data.memcard_inserted[i] == 1)
+            continue;
+
+        // mount card
+        stc_memcard_work->is_done = 0;
+        if (CARDMountAsync(i, stc_memcard_work->work_area, 0, Memcard_RemovedCallback) != CARD_RESULT_READY)
+            continue;
+
+        // check card
+        Memcard_Wait();
+        stc_memcard_work->is_done = 0;
+        if (CARDCheckAsync(i, Memcard_RemovedCallback) == CARD_RESULT_READY)
+        {
+            Memcard_Wait();
+
+            // if we get this far, a valid memcard is inserted
+            import_data.memcard_inserted[i] = 1;
+            SFX_PlayCommon(2);
+        }
+
+        CARDUnmount(i);
+        stc_memcard_work->is_done = 0;
     }
 
     // cursor movement
+    int down = Pad_GetRapidHeld(*stc_css_hmnport);
     Menu_Left_Right(down, &import_data.cursor);
 
     // highlight cursor
@@ -414,12 +392,10 @@ void Menu_SelCard_Think(GOBJ *menu_gobj)
     }
     Text_SetColor(import_data.option_text, import_data.cursor, &text_gold);
 
-    Text *desc_text = import_data.desc_text;
-    int cursor = import_data.cursor;
-    if (import_data.memcard_inserted[cursor] == 0)
-        Text_SetText(desc_text, 0, "No device is inserted in Slot %s.", slots_names[cursor]);
+    if (import_data.memcard_inserted[import_data.cursor] == 0)
+        Text_SetText(import_data.desc_text, 0, "No device is inserted in Slot %s.", slots_names[import_data.cursor]);
     else
-        Text_SetText(desc_text, 0, "Load recording from the memory card in Slot %s.", slots_names[cursor]);
+        Text_SetText(import_data.desc_text, 0, "Load recording from the memory card in Slot %s.", slots_names[import_data.cursor]);
 
     // check for exit
     if (down & HSD_BUTTON_B)
@@ -432,17 +408,15 @@ void Menu_SelCard_Think(GOBJ *menu_gobj)
     else if (down & HSD_BUTTON_A)
     {
         // check if valid memcard inserted
-        if (import_data.memcard_inserted[cursor] == 0)
-            SFX_PlayCommon(3);
-
-        // is inserted
-        else
+        if (import_data.memcard_inserted[import_data.cursor])
         {
-            import_data.memcard_slot = cursor;
+            import_data.memcard_slot = import_data.cursor;
             SFX_PlayCommon(1);
             Menu_SelCard_Exit(menu_gobj);
             Menu_SelFile_Init(menu_gobj);
         }
+        else
+            SFX_PlayCommon(3);
     }
 
     return;

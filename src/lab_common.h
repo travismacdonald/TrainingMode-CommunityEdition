@@ -520,8 +520,6 @@ typedef struct ImportData
     u8 menu_state;
     u8 cursor;
     u8 memcard_inserted[2];     // memcard inserted bools
-    u16 memcard_free_files[2];  // free files on this card
-    u16 memcard_free_blocks[2]; // free blocks on this card
     u16 memcard_slot;           // selected slot
     JOBJ *memcard_jobj[2];
     JOBJ *screenshot_jobj;
