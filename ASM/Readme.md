@@ -55,8 +55,13 @@ That is the entire purpose of all these imports and definitions and code.
 Yes, this code reads a branch instruction and extracts the offset XD.
 Absolutely bonkers.
 
+### `R13`
+`R13` is the small data area pointer. 
+This points to a small amount of static data contained inside the executable (Start.dol) itself, rather than the iso.
+There are some offsets under the `r13 Offsets` header in `ASM/training-mode/Globals.s`, as well as in `MexTK/include/offsets.h`.
+Look there for what is loaded if you see a load with negative offset into `R13`.
+
 ## Questions I Have
-- What is R13??
 - There seems to be two distict styles of asm: one that import mex.h and one that does not.
 I'm pretty sure the mex import asm files are newer. 
 Should I convert the old style asm files to new ones? 
