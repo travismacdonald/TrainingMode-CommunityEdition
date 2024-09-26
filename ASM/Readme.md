@@ -50,7 +50,8 @@ SkipPageList:
   mr  r3,EventID
   add	r4,r4,r5		#Gets ASCII Address in r4
 ```
-After this, the the address r4, will be the data for the event.
+After this, in the address r4, will be a pointer to the data for the event (event name, event allowed characters, etc.).
+That is the entire purpose of all these imports and definitions and code.
 Yes, this code reads a branch instruction and extracts the offset XD.
 Absolutely bonkers.
 
