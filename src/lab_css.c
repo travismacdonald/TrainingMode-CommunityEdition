@@ -882,21 +882,8 @@ int Menu_SelFile_LoadPage(GOBJ *menu_gobj, int page)
                         Memcard_Deobfuscate(buffer, CARD_READ_SIZE);
                         ExportHeader *header = buffer + 0x90; // get to header (need to find a less hardcoded way of doing this)
 
-                        // ensure header contains filename (REC_VERS 1+)
-                        if (header->metadata.version < 1)
-                        {
-                            result = -1;
-                            CARDClose(&card_file_info);
-                            break;
-                        }
-                        else
-                        {
-                            // save header
-                            memcpy(&import_data.header[i], header, sizeof(ExportHeader));
-
-                            // print user file name
-                            Text_SetText(import_data.filename_text, i, header->metadata.filename);
-                        }
+                        memcpy(&import_data.header[i], header, sizeof(ExportHeader));
+                        Text_SetText(import_data.filename_text, i, header->metadata.filename);
                     }
                     CARDClose(&card_file_info);
                 }
@@ -912,84 +899,7 @@ int Menu_SelFile_LoadPage(GOBJ *menu_gobj, int page)
 
     return result;
 }
-void Menu_SelFile_DeleteUnsupported(GOBJ *menu_gobj)
-{
 
-    void *buffer = calloc(CARD_READ_SIZE);
-    int slot = import_data.memcard_slot;
-
-    // mount card
-    s32 memSize, sectorSize;
-    if (CARDProbeEx(slot, &memSize, &sectorSize) == CARD_RESULT_READY)
-    {
-        // mount card
-        stc_memcard_work->is_done = 0;
-        if (CARDMountAsync(slot, stc_memcard_work->work_area, 0, Memcard_RemovedCallback) == CARD_RESULT_READY)
-        {
-            Memcard_Wait();
-
-            // check card
-            stc_memcard_work->is_done = 0;
-            if (CARDCheckAsync(slot, Memcard_RemovedCallback) == CARD_RESULT_READY)
-            {
-                Memcard_Wait();
-
-                // loop through all detected TMREC files
-                for (int i = 0; i < import_data.file_num; i++)
-                {
-
-                    // get file info
-                    char *file_name = import_data.file_info[i].file_name;
-                    int file_size = import_data.file_info[i].file_size;
-                    CARDFileInfo card_file_info;
-
-                    /*
-                    so at this point, i have filenames for every TMREC file
-                    present on the memcard. all i have to do is:
-                    - cardopen each file
-                    - cardread the header
-                    - deobfuscate
-                    - check version
-                    - delete file using filename if its a bad file
-                    */
-
-                    // open card (get file info)
-                    if (CARDOpen(slot, file_name, &card_file_info) == CARD_RESULT_READY)
-                    {
-                        // read header
-                        if (CARDRead(&card_file_info, buffer, CARD_READ_SIZE, 0x1E00) == CARD_RESULT_READY)
-                        {
-                            // deobfuscate stupid melee bullshit
-                            Memcard_Deobfuscate(buffer, CARD_READ_SIZE);
-                            ExportHeader *header = buffer + 0x90; // get to header (need to find a less hardcoded way of doing this)
-
-                            // check if unsupported version
-                            if (header->metadata.version < 1)
-                            {
-                                // delete this file
-                                stc_memcard_work->is_done = 0;
-                                if (CARDDeleteAsync(slot, file_name, Memcard_RemovedCallback) == CARD_RESULT_READY)
-                                {
-                                    Memcard_Wait();
-                                }
-                            }
-                        }
-
-                        CARDClose(&card_file_info);
-                    }
-                }
-            }
-            // unmount
-            CARDUnmount(slot);
-            stc_memcard_work->is_done = 0;
-        }
-    }
-
-    // free temp read buffer
-    HSD_Free(buffer);
-
-    return;
-}
 int Menu_SelFile_DeleteFile(GOBJ *menu_gobj, int file_index)
 {
 
@@ -1421,9 +1331,6 @@ void Menu_Confirm_Think(GOBJ *menu_gobj)
             if (cursor == 0)
             {
                 SFX_PlayCommon(1);
-
-                // delete bad recordings
-                Menu_SelFile_DeleteUnsupported(menu_gobj);
 
                 // close dialog
                 Menu_Confirm_Exit(menu_gobj);
