@@ -37,6 +37,7 @@ enum cpu_option
     OPTCPU_CTRFRAMES,
     OPTCPU_CTRHITS,
     OPTCPU_SHIELDHITS,
+    OPTCPU_INVISIBLE,
 };
 
 // SDI Freq
@@ -1700,6 +1701,16 @@ static EventOption LabOptions_CPU[] = {
         .option_name = "Counter After Shield Hits",                                           // pointer to a string
         .desc = "Adjust the amount of hits the CPU's shield\nwill take before they counter.", // string describing what this option does
         .option_values = "%d Hits",                                                           // pointer to an array of strings
+        .onOptionChange = 0,
+    },
+    {
+        .option_kind = OPTKIND_STRING,                              // the type of option this is; menu, string list, integer list, etc
+        .value_num = 2,                                             // number of values for this option
+        .option_val = 0,                                            // value of this option
+        .menu = 0,                                                  // pointer to the menu that pressing A opens
+        .option_name = {"Invisibility"},                            // pointer to a string
+        .desc = "Toggle the CPU turning invisible during techs",    // string describing what this option does
+        .option_values = LabOptions_OffOn,                          // pointer to an array of strings
         .onOptionChange = 0,
     },
 };
