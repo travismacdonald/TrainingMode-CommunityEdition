@@ -160,9 +160,6 @@ invincible while the lava rises!"
     .endm
 
     .macro Event_Ledgestall_PlayableCharacters
-      .byte #Event_Ledgestall
-      .long #Falco_CSSID | Fox_CSSID | Zelda_CSSID | Mewtwo_CSSID | Pikachu_CSSID | CaptainFalcon_CSSID | Ganondorf_CSSID | Link_CSSID | Roy_CSSID | Bowser_CSSID | Marth_CSSID | Yoshi_CSSID
-      .long #-1
     .endm
 
     .macro Event_Ledgestall_AvailableCPUs
@@ -183,7 +180,7 @@ invincible while the lava rises!"
 
 #Event List
 #region LCancel
-  .set Event_LCancel,0
+  .set Event_LCancel,1
   #Event Name
     .macro Event_LCancel_Name
       .string "L-Cancel Training"
@@ -218,7 +215,7 @@ a stationary CPU."
 
 #endregion
 #region Ledgedash
-  .set Event_Ledgedash,1
+  .set Event_Ledgedash,2
   #Event Name
     .macro Event_Ledgedash_Name
       .string "Ledgedash Training"
@@ -252,7 +249,7 @@ Use D-Pad to change ledge."
 
 #endregion
 #region Combo
-  .set Event_Combo,2
+  .set Event_Combo,4
   #Event Name
     .macro Event_Combo_Name
       .string "Combo Training"
@@ -287,7 +284,7 @@ DPad right/left saves and loads positions."
 
 #endregion
 #region AttackOnShield
-  .set Event_AttackOnShield,3
+  .set Event_AttackOnShield,5
   #Event Name
     .macro Event_AttackOnShield_Name
       .string "Attack On Shield"
@@ -322,7 +319,7 @@ Pause to change their OoS option."
 
 #endregion
 #region Reversal
-  .set Event_Reversal,4
+  .set Event_Reversal,6
   #Event Name
     .macro Event_Reversal_Name
       .string "Reversal Training"
@@ -357,7 +354,7 @@ moves characters closer and further apart."
 
 #endregion
 #region SDI
-  .set Event_SDI,5
+  .set Event_SDI,7
   #Event Name
     .macro Event_SDI_Name
       .string "SDI Training"
@@ -391,7 +388,7 @@ Fox's up-air!"
 
 #endregion
 #region Powershield
-  .set Event_Powershield,6
+  .set Event_Powershield,8
   #Event Name
     .macro Event_Powershield_Name
       .string "Powershield Training"
@@ -425,7 +422,7 @@ Pause to change fire-rate."
 
 #endregion
 #region LedgeTech
-  .set Event_LedgeTech,7
+  .set Event_LedgeTech,9
   #Event Name
     .macro Event_LedgeTech_Name
       .string "Ledge-Tech Training"
@@ -461,7 +458,7 @@ Falco's down-smash!"
 
 #endregion
 #region AmsahTech
-  .set Event_AmsahTech,8
+  .set Event_AmsahTech,10
   #Event Name
     .macro Event_AmsahTech_Name
       .string "Amsah-Tech Training"
@@ -496,7 +493,7 @@ then ASDI down and tech!"
 
 #endregion
 #region ShieldDrop
-  .set Event_ShieldDrop,9
+  .set Event_ShieldDrop,11
   #Event Name
     .macro Event_ShieldDrop_Name
       .string "Shield Drop Training"
@@ -531,7 +528,7 @@ DPad left/right moves players apart."
 
 #endregion
 #region WaveshineSDI
-  .set Event_WaveshineSDI,10
+  .set Event_WaveshineSDI,12
   #Event Name
     .macro Event_WaveshineSDI_Name
       .string "Waveshine SDI"
@@ -573,7 +570,7 @@ of Fox's waveshine!"
 
 #endregion
 #region SlideOff
-  .set Event_SlideOff,11
+  .set Event_SlideOff,13
   #Event Name
     .macro Event_SlideOff_Name
       .string "Slide-Off Training"
@@ -608,7 +605,7 @@ the platform and counter attack!"
 
 #endregion
 #region GrabMashOut
-  .set Event_GrabMashOut,12
+  .set Event_GrabMashOut,14
   #Event Name
     .macro Event_GrabMashOut_Name
       .string "Grab Mash Training"
