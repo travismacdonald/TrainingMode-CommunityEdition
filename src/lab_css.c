@@ -823,168 +823,133 @@ int Menu_SelFile_LoadPage(GOBJ *menu_gobj, int page)
 {
 
     int result = 0;
-    int files_on_page;
     int cursor = import_data.cursor; // start at cursor
-    int page_total = import_data.file_num / IMPORT_FILESPERPAGE;
+    int page_total = (import_data.file_num + IMPORT_FILESPERPAGE - 1) / IMPORT_FILESPERPAGE;
 
     // ensure page exists
-    if ((page >= 0) && (page <= page_total))
+    if (page < 0 || page >= page_total)
+        assert("page index out of bounds");
+
+    // determine files on page
+    int files_on_page = IMPORT_FILESPERPAGE;
+    if (page == page_total - 1)
+        files_on_page = import_data.file_num % IMPORT_FILESPERPAGE;
+    import_data.files_on_page = files_on_page;
+
+    // cancel card read if in progress
+    int memcard_status = Memcard_CheckStatus();
+    if (memcard_status == 11)
     {
-        // determine files on page
-        if (((page + 1) * IMPORT_FILESPERPAGE) < import_data.file_num)
-            files_on_page = IMPORT_FILESPERPAGE; // page is filled with files
-        else
-            files_on_page = import_data.file_num - (page * IMPORT_FILESPERPAGE); // remaining files
+        // cancel read
+        stc_memcard_work->card_file_info.length = -1;
 
-        // ensure page has at least one recording
-        if (files_on_page > 0)
+        // wait for callback to fire
+        while (memcard_status == 11)
         {
-
-            // cancel card read if in progress
-            int memcard_status = Memcard_CheckStatus();
-            if (memcard_status == 11)
-            {
-                // cancel read
-                stc_memcard_work->card_file_info.length = -1;
-
-                // wait for callback to fire
-                while (memcard_status == 11)
-                {
-                    memcard_status = Memcard_CheckStatus();
-                }
-            }
-
-            void *buffer = calloc(CARD_READ_SIZE);
-            import_data.files_on_page = files_on_page; // update amount of files on page
-            import_data.snap.loaded_num = 0;
-            import_data.snap.load_inprogress = 0;
-            for (int i = 0; i < IMPORT_FILESPERPAGE; i++)
-            {
-                import_data.snap.is_loaded[i] = 0; // init files as unloaded
-            }
-            result = 1; // set page as toggled
-            int slot = import_data.memcard_slot;
-
-            // update scroll bar position
-            import_data.scroll_top->trans.Y = ((float)page / (float)(page_total)) * (import_data.scroll_bot->trans.Y);
-            JOBJ_SetMtxDirtySub(menu_gobj->hsd_object);
-
-            // free prev buffers
-            for (int i = 0; i < IMPORT_FILESPERPAGE; i++)
-            {
-                // if exists
-                if (import_data.snap.file_data[i] != 0)
-                {
-                    HSD_Free(import_data.snap.file_data[i]);
-                    import_data.snap.file_data[i] = 0;
-                }
-            }
-
-            // blank out all text
-            for (int i = 0; i < IMPORT_FILESPERPAGE; i++)
-            {
-                Text_SetText(import_data.filename_text, i, "");
-            }
-
-            // mount card
-            s32 memSize, sectorSize;
-            if (CARDProbeEx(slot, &memSize, &sectorSize) == CARD_RESULT_READY)
-            {
-                // mount card
-                stc_memcard_work->is_done = 0;
-                if (CARDMountAsync(slot, stc_memcard_work->work_area, 0, Memcard_RemovedCallback) == CARD_RESULT_READY)
-                {
-                    Memcard_Wait();
-
-                    // check card
-                    stc_memcard_work->is_done = 0;
-                    if (CARDCheckAsync(slot, Memcard_RemovedCallback) == CARD_RESULT_READY)
-                    {
-                        Memcard_Wait();
-
-                        // begin loading this page's files
-                        for (int i = 0; i < files_on_page; i++)
-                        {
-
-                            // get file info
-                            int this_file_index = (page * IMPORT_FILESPERPAGE) + i;
-                            char *file_name = import_data.file_info[this_file_index].file_name;
-                            int file_size = import_data.file_info[this_file_index].file_size;
-                            int file_no = import_data.file_info[this_file_index].file_no;
-
-                            // get comment from card
-                            CARDFileInfo card_file_info;
-                            CARDStat card_stat;
-
-                            // get status
-                            if (CARDGetStatus(slot, file_no, &card_stat) == CARD_RESULT_READY)
-                            {
-                                // open card (get file info)
-                                if (CARDOpen(slot, file_name, &card_file_info) == CARD_RESULT_READY)
-                                {
-                                    // try to get header
-                                    if (CARDRead(&card_file_info, buffer, CARD_READ_SIZE, 0x1E00) == CARD_RESULT_READY)
-                                    {
-                                        // deobfuscate stupid melee bullshit
-                                        Memcard_Deobfuscate(buffer, CARD_READ_SIZE);
-                                        ExportHeader *header = buffer + 0x90; // get to header (need to find a less hardcoded way of doing this)
-
-                                        // ensure header contains filename (REC_VERS 1+)
-                                        if (header->metadata.version < 1)
-                                        {
-                                            result = -1;
-                                            CARDClose(&card_file_info);
-                                            break;
-                                        }
-
-                                        else
-                                        {
-                                            // save header
-                                            memcpy(&import_data.header[i], header, sizeof(ExportHeader));
-
-                                            // print user file name
-                                            Text_SetText(import_data.filename_text, i, header->metadata.filename);
-                                        }
-                                    }
-
-                                    CARDClose(&card_file_info);
-                                }
-                            }
-
-                            /*
-                // setup load
-                MemcardSave stc_memcard_save;
-                void *buffer = HSD_MemAlloc(file_size); // alloc buffer for this save
-                import_data.snap.file_data[i] = buffer;      // save buffer pointer
-                stc_memcard_save.data = buffer;             // store pointer to buffer for memcard load operation
-                stc_memcard_save.x4 = 3;
-                stc_memcard_save.size = file_size;
-                stc_memcard_save.xc = -1;
-                Memcard_LoadSnapshot(import_data.memcard_slot, file_name, &stc_memcard_save, &stc_memcard_info->file_name, 0, 0, 0);
-
-                // wait to load
-                int memcard_status = Memcard_CheckStatus();
-                while (memcard_status == 11)
-                {
-                    memcard_status = Memcard_CheckStatus();
-                }
-
-                // if file loaded successfully
-                if (memcard_status == 0)
-                    Text_SetText(import_data.filename_text, i, &stc_memcard_info->file_name[32]);
-                */
-                        }
-                    }
-                    // unmount
-                    CARDUnmount(slot);
-                    stc_memcard_work->is_done = 0;
-                }
-            }
-
-            // free temp read buffer
-            HSD_Free(buffer);
+            memcard_status = Memcard_CheckStatus();
         }
     }
+
+    void *buffer = calloc(CARD_READ_SIZE);
+    import_data.snap.loaded_num = 0;
+    import_data.snap.load_inprogress = 0;
+    for (int i = 0; i < IMPORT_FILESPERPAGE; i++)
+    {
+        import_data.snap.is_loaded[i] = 0; // init files as unloaded
+    }
+    result = 1; // set page as toggled
+    int slot = import_data.memcard_slot;
+
+    // update scroll bar position
+    import_data.scroll_top->trans.Y = ((float)page / (page_total)) * (import_data.scroll_bot->trans.Y);
+    JOBJ_SetMtxDirtySub(menu_gobj->hsd_object);
+
+    // free prev buffers
+    for (int i = 0; i < IMPORT_FILESPERPAGE; i++)
+    {
+        // if exists
+        if (import_data.snap.file_data[i] != 0)
+        {
+            HSD_Free(import_data.snap.file_data[i]);
+            import_data.snap.file_data[i] = 0;
+        }
+    }
+
+    // blank out all text
+    for (int i = 0; i < IMPORT_FILESPERPAGE; i++)
+    {
+        Text_SetText(import_data.filename_text, i, "");
+    }
+
+    // mount card
+    s32 memSize, sectorSize;
+    if (CARDProbeEx(slot, &memSize, &sectorSize) == CARD_RESULT_READY)
+    {
+        // mount card
+        stc_memcard_work->is_done = 0;
+        if (CARDMountAsync(slot, stc_memcard_work->work_area, 0, Memcard_RemovedCallback) == CARD_RESULT_READY)
+        {
+            Memcard_Wait();
+
+            // check card
+            stc_memcard_work->is_done = 0;
+            if (CARDCheckAsync(slot, Memcard_RemovedCallback) == CARD_RESULT_READY)
+            {
+                Memcard_Wait();
+
+                // begin loading this page's files
+                for (int i = 0; i < files_on_page; i++)
+                {
+                    // get file info
+                    int this_file_index = (page * IMPORT_FILESPERPAGE) + i;
+                    char *file_name = import_data.file_info[this_file_index].file_name;
+                    int file_size = import_data.file_info[this_file_index].file_size;
+                    int file_no = import_data.file_info[this_file_index].file_no;
+
+                    // get comment from card
+                    CARDFileInfo card_file_info;
+                    CARDStat card_stat;
+
+                    // get status
+                    if (CARDGetStatus(slot, file_no, &card_stat) != CARD_RESULT_READY)
+                        continue;
+                    // open card (get file info)
+                    if (CARDOpen(slot, file_name, &card_file_info) != CARD_RESULT_READY)
+                        continue;
+                    // try to get header
+                    if (CARDRead(&card_file_info, buffer, CARD_READ_SIZE, 0x1E00) == CARD_RESULT_READY)
+                    {
+                        // deobfuscate stupid melee bullshit
+                        Memcard_Deobfuscate(buffer, CARD_READ_SIZE);
+                        ExportHeader *header = buffer + 0x90; // get to header (need to find a less hardcoded way of doing this)
+
+                        // ensure header contains filename (REC_VERS 1+)
+                        if (header->metadata.version < 1)
+                        {
+                            result = -1;
+                            CARDClose(&card_file_info);
+                            break;
+                        }
+                        else
+                        {
+                            // save header
+                            memcpy(&import_data.header[i], header, sizeof(ExportHeader));
+
+                            // print user file name
+                            Text_SetText(import_data.filename_text, i, header->metadata.filename);
+                        }
+                    }
+                    CARDClose(&card_file_info);
+                }
+            }
+            // unmount
+            CARDUnmount(slot);
+            stc_memcard_work->is_done = 0;
+        }
+    }
+
+    // free temp read buffer
+    HSD_Free(buffer);
 
     return result;
 }
