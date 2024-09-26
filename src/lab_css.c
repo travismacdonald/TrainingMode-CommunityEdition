@@ -405,22 +405,7 @@ void Menu_SelCard_Think(GOBJ *menu_gobj)
     }
 
     // cursor movement
-    if (down & (HSD_BUTTON_LEFT | HSD_BUTTON_DPAD_LEFT)) // check for cursor left
-    {
-        if (import_data.cursor > 0)
-        {
-            import_data.cursor--;
-            SFX_PlayCommon(2);
-        }
-    }
-    else if (down & (HSD_BUTTON_RIGHT | HSD_BUTTON_DPAD_RIGHT)) // check for cursor right
-    {
-        if (import_data.cursor < 1)
-        {
-            import_data.cursor++;
-            SFX_PlayCommon(2);
-        }
-    }
+    Menu_Left_Right(down, &import_data.cursor);
 
     // highlight cursor
     for (int i = 0; i < 2; i++)
@@ -1239,6 +1224,31 @@ void Menu_Confirm_Init(GOBJ *menu_gobj, int kind)
 
     return;
 }
+
+void Menu_Left_Right(int down, u8* cursor)
+{
+    if (*cursor < 0 || import_data.confirm.cursor > 1)
+        assert("cursor out of bounds");
+
+    // cursor movement
+    if (down & (HSD_BUTTON_RIGHT | HSD_BUTTON_DPAD_RIGHT)) // check for cursor right
+    {
+        if (*cursor == 0)
+        {
+            *cursor = 1;
+            SFX_PlayCommon(2);
+        }
+    }
+    else if (down & (HSD_BUTTON_LEFT | HSD_BUTTON_DPAD_LEFT)) // check for cursor down
+    {
+        if (*cursor == 1)
+        {
+            *cursor = 0;
+            SFX_PlayCommon(2);
+        }
+    }
+}
+
 void Menu_Confirm_Think(GOBJ *menu_gobj)
 {
 
@@ -1254,23 +1264,7 @@ void Menu_Confirm_Think(GOBJ *menu_gobj)
     {
     case (CFRM_LOAD):
     {
-        // cursor movement
-        if (down & (HSD_BUTTON_RIGHT | HSD_BUTTON_DPAD_RIGHT)) // check for cursor right
-        {
-            if (import_data.confirm.cursor < 1)
-            {
-                import_data.confirm.cursor++;
-                SFX_PlayCommon(2);
-            }
-        }
-        else if (down & (HSD_BUTTON_LEFT | HSD_BUTTON_DPAD_LEFT)) // check for cursor down
-        {
-            if (import_data.confirm.cursor > 0)
-            {
-                import_data.confirm.cursor--;
-                SFX_PlayCommon(2);
-            }
-        }
+        Menu_Left_Right(down, &import_data.confirm.cursor);
 
         // highlight cursor
         int cursor = import_data.confirm.cursor;
@@ -1380,24 +1374,7 @@ void Menu_Confirm_Think(GOBJ *menu_gobj)
     }
     case (CFRM_DEL):
     {
-
-        // cursor movement
-        if (down & (HSD_BUTTON_RIGHT | HSD_BUTTON_DPAD_RIGHT)) // check for cursor right
-        {
-            if (import_data.confirm.cursor < 1)
-            {
-                import_data.confirm.cursor++;
-                SFX_PlayCommon(2);
-            }
-        }
-        else if (down & (HSD_BUTTON_LEFT | HSD_BUTTON_DPAD_LEFT)) // check for cursor down
-        {
-            if (import_data.confirm.cursor > 0)
-            {
-                import_data.confirm.cursor--;
-                SFX_PlayCommon(2);
-            }
-        }
+        Menu_Left_Right(down, &import_data.confirm.cursor);
 
         // highlight cursor
         int cursor = import_data.confirm.cursor;
@@ -1442,24 +1419,7 @@ void Menu_Confirm_Think(GOBJ *menu_gobj)
     }
     case (CFRM_ERR):
     {
-
-        // cursor movement
-        if (down & (HSD_BUTTON_RIGHT | HSD_BUTTON_DPAD_RIGHT)) // check for cursor right
-        {
-            if (import_data.confirm.cursor < 1)
-            {
-                import_data.confirm.cursor++;
-                SFX_PlayCommon(2);
-            }
-        }
-        else if (down & (HSD_BUTTON_LEFT | HSD_BUTTON_DPAD_LEFT)) // check for cursor down
-        {
-            if (import_data.confirm.cursor > 0)
-            {
-                import_data.confirm.cursor--;
-                SFX_PlayCommon(2);
-            }
-        }
+        Menu_Left_Right(down, &import_data.confirm.cursor);
 
         // highlight cursor
         int cursor = import_data.confirm.cursor;
