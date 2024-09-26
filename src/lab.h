@@ -1704,13 +1704,13 @@ static EventOption LabOptions_CPU[] = {
         .onOptionChange = 0,
     },
     {
-        .option_kind = OPTKIND_STRING,                              // the type of option this is; menu, string list, integer list, etc
-        .value_num = 2,                                             // number of values for this option
-        .option_val = 0,                                            // value of this option
-        .menu = 0,                                                  // pointer to the menu that pressing A opens
-        .option_name = {"Invisibility"},                            // pointer to a string
-        .desc = "Toggle the CPU turning invisible during techs",    // string describing what this option does
-        .option_values = LabOptions_OffOn,                          // pointer to an array of strings
+        .option_kind = OPTKIND_STRING,                                          // the type of option this is; menu, string list, integer list, etc
+        .value_num = 2,                                                         // number of values for this option
+        .option_val = 0,                                                        // value of this option
+        .menu = 0,                                                              // pointer to the menu that pressing A opens
+        .option_name = "Tech Invisibility",                                     // pointer to a string
+        .desc = "Toggle the CPU turning invisible during tech\nanimations.",    // string describing what this option does
+        .option_values = LabOptions_OffOn,                                      // pointer to an array of strings
         .onOptionChange = 0,
     },
 };
