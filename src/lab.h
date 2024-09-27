@@ -89,6 +89,7 @@ enum sdi_freq
     SDIFREQ_LOW,
     SDIFREQ_MED,
     SDIFREQ_HIGH,
+    SDIFREQ_VERYHIGH,
 };
 
 // SDI Freq
@@ -97,6 +98,10 @@ enum sdi_dir
     SDIDIR_RANDOM,
     SDIDIR_AWAY,
     SDIDIR_TOWARD,
+    SDIDIR_UP,
+    SDIDIR_DOWN,
+    SDIDIR_LEFT,
+    SDIDIR_RIGHT,
 };
 
 // Recording Options
@@ -1636,8 +1641,8 @@ static char **LabValues_Shield[] = {"Off", "On Until Hit", "On"};
 static char **LabValues_CPUBehave[] = {"Stand", "Shield", "Crouch", "Jump"};
 static char **LabValues_TDI[] = {"Random", "Inwards", "Outwards", "Floorhug", "Custom", "Random Custom", "None"};
 static char **LabValues_ASDI[] = {"None", "Away", "Towards", "Left", "Right", "Up", "Down"};
-static char **LabValues_SDIFreq[] = {"None", "Low", "Medium", "High"};
-static char **LabValues_SDIDir[] = {"Random", "Away", "Towards"};
+static char **LabValues_SDIFreq[] = {"None", "Low", "Medium", "High","Very High"};
+static char **LabValues_SDIDir[] = {"Random", "Away", "Towards", "Up", "Down", "Left", "Right"};
 static char **LabValues_Tech[] = {"Random", "Neutral", "Away", "Towards", "None"};
 static char **LabValues_Getup[] = {"Random", "Stand", "Away", "Towards", "Attack"};
 static char **LabValues_CounterGround[] = {"None", "Spotdodge", "Shield", "Grab", "Up B", "Down B", "Up Smash", "Down Smash", "Forward Smash", "Roll Away", "Roll Towards", "Roll Random", "Neutral Air", "Forward Air", "Down Air", "Back Air", "Up Air", "Jab", "Forward Tilt", "Up Tilt", "Down Tilt", "Short Hop", "Full Hop"};

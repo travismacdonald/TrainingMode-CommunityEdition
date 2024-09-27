@@ -30,7 +30,7 @@ static u8 stc_hmn_controller;             // making this static so importing rec
 static u8 stc_cpu_controller;             // making this static so importing recording doesnt overwrite
 static u8 stc_tdi_val_num;                // number of custom tdi values set
 static s8 stc_tdi_vals[TDI_HITNUM][2][2]; // contains the custom tdi values
-static u8 stc_sdifreqs[] = {6, 4, 2};
+static u8 stc_sdifreqs[] = {6, 4, 2, 1};
 
 // Static Export Variables
 static RecordingSave *stc_rec_save;
@@ -58,6 +58,18 @@ void Lab_ChangePlayerPercent(GOBJ *menu_gobj, int value)
     return;
 }
 void Lab_ChangeFrameAdvance(GOBJ *menu_gobj, int value)
+{
+
+    // remove colanim if toggling off
+    if (value == 0)
+        LabOptions_General[OPTGEN_FRAMEBTN].disable = 1;
+    // apply colanim
+    else
+        LabOptions_General[OPTGEN_FRAMEBTN].disable = 0;
+
+    return;
+}
+void Lab_ChangeRandom(GOBJ *menu_gobj, int value)
 {
 
     // remove colanim if toggling off
@@ -1230,7 +1242,7 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
     case (CPUSTATE_SDI):
     CPULOGIC_SDI:
     {
-
+        static int lastSDIWasCardinal = 0;
         // if no more hitlag, enter tech state
         if (cpu_data->flags.hitlag == 0)
         {
@@ -1329,7 +1341,34 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
 
                     break;
                 }
+                case SDIDIR_UP:
+                {
+                    angle = lastSDIWasCardinal ? M_1DEGREE * 110 : M_1DEGREE * 90;
+                    magnitude = 1;
+                    break;
                 }
+                case SDIDIR_DOWN:
+                {
+                    angle = lastSDIWasCardinal ? M_1DEGREE * 290 : M_1DEGREE * 270;
+                    magnitude = 1;
+                    break;
+                }
+                case SDIDIR_LEFT:
+                {
+                    angle = lastSDIWasCardinal ? M_1DEGREE * 200 : M_1DEGREE * 180;
+                    magnitude = 1;
+                    break;
+                }
+                case SDIDIR_RIGHT:
+                {
+                    angle = lastSDIWasCardinal ? M_1DEGREE * 20 : M_1DEGREE * 0;
+                    magnitude = 1;
+                    break;
+                }
+                }
+
+                // flip if the last sdi was cardinal
+                lastSDIWasCardinal = lastSDIWasCardinal ? 0 : 1;
 
                 // store
                 cpu_data->cpu.lstickX = cos(angle) * 127 * magnitude;
