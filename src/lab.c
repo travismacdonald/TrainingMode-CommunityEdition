@@ -5304,9 +5304,6 @@ void Event_Think(GOBJ *event)
                                 eventData->cpu_hitkind = -1;
                                 eventData->cpu_hitshieldnum = 0;
                                 eventData->cpu_isactionable = 0;
-
-                                // savestate
-                                event_vars->Savestate_Save(event_vars->savestate);
                             }
                         }
                     }
