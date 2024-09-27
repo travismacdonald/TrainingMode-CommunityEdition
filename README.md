@@ -15,11 +15,13 @@ To discuss changes and new features or ask for assistance, join [the discord](ht
 ## Changes From the Original
 - New Training Lab Features:
     - Updated to UCF 0.84 (Allows practicing with dashback out of crouch).
-    - New neutral jump option for CPUs, set as the default.
+    - Savestates now require holding DPad right, preventing accidental savestates.
     - Reworked recording UI. Allows resaveing existing recordings with different percents or positioning.
-    - SDI and mashing are set to none by default.
     - Random custom DI option.
+    - Press DPad left/right when browsing savestates to quickly change pages.
     - Hazard toggle in training lab.
+    - SDI and mashing are set to none by default.
+    - New neutral jump option for CPUs, set as the default.
     - Much more planned in the near future!
 - Bugfixes:
     - Jump actions no longer make the CPU self-destruct.
@@ -30,7 +32,8 @@ To discuss changes and new features or ask for assistance, join [the discord](ht
     - CPUs now DI DK cargo throw.
 - Work in progress:
     - Fixing Export/Import replay crashes.
-    - Fixing OSDs not showing.
+    - Reaction Tech Chase Event
+    - Fixing Sheik/Zelda savestate glitches
 - Developer Features:
     - Simple and easily reproducible builds on Windows and Linux.
     - Fast recompilation on Linux using make.
