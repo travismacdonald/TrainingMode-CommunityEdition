@@ -1302,9 +1302,9 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
 
                         // decide left or right
                         if (eventData->cpu_sdidir == 0)
-                            angle = 0; // right
+                            angle = lastSDIWasCardinal ? M_1DEGREE * 20 : M_1DEGREE * 0; // right
                         else
-                            angle = M_PI; // left
+                            angle = lastSDIWasCardinal ? M_1DEGREE * 200 : M_1DEGREE * 180; // left
                     }
                     // when airborne, any direction
                     else
