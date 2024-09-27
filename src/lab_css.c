@@ -17,7 +17,7 @@ static EventDesc *event_desc;
 // OnLoad
 void OnCSSLoad(ArchiveInfo *archive)
 {
-    EventVars *event_vars = *event_vars_ptr;
+    event_vars = *event_vars_ptr;
 
     // get assets from this file
     stc_import_assets = File_GetSymbol(archive, "labCSS");
