@@ -75,8 +75,7 @@ Have some specific tech you want to train? Find a bug that's been annoying you? 
     - Create a dat file in `dats/`.
         - This is a little annoying.
         - If you don't want any fancy features, just a pause menu, copy `lcancel.dat` as your dat file.
-            - **You will need to use [HSDRaw](https://github.com/Ploaj/HSDLib) or a hex editor to modify the internal name.**
-            - If you use a hex editor, ensure you set the altered length of the renamed dat file as the first 4 bytes in the file.
+            - **You will need to use [HSDRaw](https://github.com/Ploaj/HSDLib) to modify the internal name.**
         - If you want other assets, you can use HSDRaw to add new objects to the dat file, or copy them from the other events.
     - Add the required compilation steps in `Makefile` and `build_windows.bat`. Follow the same structure as the other events. Be sure to use the evFunction mode.
     - Implement the `Event_Init`, `Event_Update`, `Event_Think` methods and `Event_Menu` pointer in your c file. Poke around the other events to figure out how the data flows.
