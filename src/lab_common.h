@@ -520,8 +520,6 @@ typedef struct ImportData
     u8 menu_state;
     u8 cursor;
     u8 memcard_inserted[2];     // memcard inserted bools
-    u16 memcard_free_files[2];  // free files on this card
-    u16 memcard_free_blocks[2]; // free blocks on this card
     u16 memcard_slot;           // selected slot
     JOBJ *memcard_jobj[2];
     JOBJ *screenshot_jobj;
@@ -537,7 +535,6 @@ typedef struct ImportData
     FileInfo *file_info;  // pointer to file info array
     ExportHeader *header; // pointer to header array for the files on the current page
     u8 page;              // file page
-    u8 files_on_page;     // number of files on the current page
     struct
     {
         GOBJ *gobj; // confirm gobj

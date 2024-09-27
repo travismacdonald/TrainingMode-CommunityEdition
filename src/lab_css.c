@@ -345,82 +345,45 @@ void Menu_SelCard_Init(GOBJ *menu_gobj)
 }
 void Menu_SelCard_Think(GOBJ *menu_gobj)
 {
-
-    // init
-    int down = Pad_GetRapidHeld(*stc_css_hmnport);
-
     // update memcard info
-    for (int i = 1; i >= 0; i--)
+    for (int i = 0; i <= 1; i++)
     {
         // probe slot
-        u8 is_inserted;
-
         s32 memSize, sectorSize;
-        if (CARDProbeEx(i, &memSize, &sectorSize) == CARD_RESULT_READY)
+        if (CARDProbeEx(i, &memSize, &sectorSize) != CARD_RESULT_READY)
         {
-            // if it was just inserted, get info
-            if (import_data.memcard_inserted[i] == 0)
-            {
-
-                // mount card
-                stc_memcard_work->is_done = 0;
-                if (CARDMountAsync(i, stc_memcard_work->work_area, 0, Memcard_RemovedCallback) == CARD_RESULT_READY)
-                {
-                    // check card
-                    Memcard_Wait();
-                    stc_memcard_work->is_done = 0;
-                    if (CARDCheckAsync(i, Memcard_RemovedCallback) == CARD_RESULT_READY)
-                    {
-                        Memcard_Wait();
-
-                        // if we get this far, a valid memcard is inserted
-                        is_inserted = 1;
-                        SFX_PlayCommon(2);
-                        //import_data.cursor = i; // move cursor to this
-
-                        // get free blocks
-                        s32 byteNotUsed, filesNotUsed;
-                        if (CARDFreeBlocks(i, &byteNotUsed, &filesNotUsed) == CARD_RESULT_READY)
-                        {
-                            import_data.memcard_free_blocks[i] = (byteNotUsed / 8192);
-                            import_data.memcard_free_files[i] = filesNotUsed;
-                        }
-                    }
-                    else
-                        is_inserted = 0;
-
-                    CARDUnmount(i);
-                    stc_memcard_work->is_done = 0;
-                }
-                else
-                    is_inserted = 0;
-            }
-            else
-                is_inserted = 1;
+            import_data.memcard_inserted[i] = 0;
+            continue;
         }
-        else
-            is_inserted = 0;
 
-        import_data.memcard_inserted[i] = is_inserted;
+        // skip good memcards
+        if (import_data.memcard_inserted[i] == 1)
+            continue;
+
+        // mount card
+        stc_memcard_work->is_done = 0;
+        if (CARDMountAsync(i, stc_memcard_work->work_area, 0, Memcard_RemovedCallback) != CARD_RESULT_READY)
+            continue;
+
+        // check card
+        Memcard_Wait();
+        stc_memcard_work->is_done = 0;
+        if (CARDCheckAsync(i, Memcard_RemovedCallback) == CARD_RESULT_READY)
+        {
+            Memcard_Wait();
+
+            // if we get this far, a valid memcard is inserted
+            import_data.memcard_inserted[i] = 1;
+            SFX_PlayCommon(2);
+        }
+
+        CARDUnmount(i);
+        stc_memcard_work->is_done = 0;
     }
 
     // cursor movement
-    if (down & (HSD_BUTTON_LEFT | HSD_BUTTON_DPAD_LEFT)) // check for cursor left
-    {
-        if (import_data.cursor > 0)
-        {
-            import_data.cursor--;
-            SFX_PlayCommon(2);
-        }
-    }
-    else if (down & (HSD_BUTTON_RIGHT | HSD_BUTTON_DPAD_RIGHT)) // check for cursor right
-    {
-        if (import_data.cursor < 1)
-        {
-            import_data.cursor++;
-            SFX_PlayCommon(2);
-        }
-    }
+    int down = Pad_GetRapidHeld(*stc_css_hmnport);
+    Menu_Left_Right(down, &import_data.cursor);
 
     // highlight cursor
     for (int i = 0; i < 2; i++)
@@ -429,12 +392,10 @@ void Menu_SelCard_Think(GOBJ *menu_gobj)
     }
     Text_SetColor(import_data.option_text, import_data.cursor, &text_gold);
 
-    Text *desc_text = import_data.desc_text;
-    int cursor = import_data.cursor;
-    if (import_data.memcard_inserted[cursor] == 0)
-        Text_SetText(desc_text, 0, "No device is inserted in Slot %s.", slots_names[cursor]);
+    if (import_data.memcard_inserted[import_data.cursor] == 0)
+        Text_SetText(import_data.desc_text, 0, "No device is inserted in Slot %s.", slots_names[import_data.cursor]);
     else
-        Text_SetText(desc_text, 0, "Load recording from the memory card in Slot %s.", slots_names[cursor]);
+        Text_SetText(import_data.desc_text, 0, "Load recording from the memory card in Slot %s.", slots_names[import_data.cursor]);
 
     // check for exit
     if (down & HSD_BUTTON_B)
@@ -447,17 +408,15 @@ void Menu_SelCard_Think(GOBJ *menu_gobj)
     else if (down & HSD_BUTTON_A)
     {
         // check if valid memcard inserted
-        if (import_data.memcard_inserted[cursor] == 0)
-            SFX_PlayCommon(3);
-
-        // is inserted
-        else
+        if (import_data.memcard_inserted[import_data.cursor])
         {
-            import_data.memcard_slot = cursor;
+            import_data.memcard_slot = import_data.cursor;
             SFX_PlayCommon(1);
             Menu_SelCard_Exit(menu_gobj);
             Menu_SelFile_Init(menu_gobj);
         }
+        else
+            SFX_PlayCommon(3);
     }
 
     return;
@@ -485,7 +444,6 @@ void Menu_SelFile_Init(GOBJ *menu_gobj)
     import_data.cursor = 0;
     import_data.page = 0;
 
-    // show memcards
     JOBJ_ClearFlagsAll(import_data.scroll_jobj, JOBJ_HIDDEN);
     JOBJ_ClearFlagsAll(import_data.screenshot_jobj, JOBJ_HIDDEN);
 
@@ -535,7 +493,7 @@ void Menu_SelFile_Init(GOBJ *menu_gobj)
     Text_SetText(import_data.title_text, 0, "Select Recording");
 
     // edit description
-    Text_SetText(import_data.desc_text, 0, "A = Select          B = Return          X = Delete");
+    Text_SetText(import_data.desc_text, 0, "A = Select   B = Return   X = Delete   Left/Right = Prev/Next Page");
 
     // search card for save files
     import_data.file_num = 0;
@@ -564,29 +522,22 @@ void Menu_SelFile_Init(GOBJ *menu_gobj)
                     // search for files with name TMREC
                     for (int i = 0; i < CARD_MAX_FILE; i++)
                     {
-
                         CARDStat card_stat;
 
-                        if (CARDGetStatus(slot, i, &card_stat) == CARD_RESULT_READY)
-                        {
-                            // check company code
-                            if (strncmp(os_info->company, card_stat.company, sizeof(os_info->company)) == 0)
-                            {
-                                // check game name
-                                if (strncmp(os_info->gameName, card_stat.gameName, sizeof(os_info->gameName)) == 0)
-                                {
-                                    // check file name
-                                    if (strncmp("TMREC", card_stat.fileName, 5) == 0)
-                                    {
-                                        OSReport("found recording file %s with size %d\n", card_stat.fileName, card_stat.length);
-                                        import_data.file_info[import_data.file_num].file_size = card_stat.length;                                      // save file size
-                                        import_data.file_info[import_data.file_num].file_no = i;                                                       // save file no
-                                        memcpy(import_data.file_info[import_data.file_num].file_name, card_stat.fileName, sizeof(card_stat.fileName)); // save file name
-                                        import_data.file_num++;                                                                                        // increment file amount
-                                    }
-                                }
-                            }
-                        }
+                        if (CARDGetStatus(slot, i, &card_stat) != CARD_RESULT_READY)
+                            continue;
+
+                        // check file matches expectations
+                        if (strncmp(os_info->company, card_stat.company, sizeof(os_info->company)) != 0 ||
+                                strncmp(os_info->gameName, card_stat.gameName, sizeof(os_info->gameName)) != 0 ||
+                                strncmp("TMREC", card_stat.fileName, 5) != 0)
+                            continue;
+
+                        OSReport("found recording file %s with size %d\n", card_stat.fileName, card_stat.length);
+                        import_data.file_info[import_data.file_num].file_size = card_stat.length;                                      // save file size
+                        import_data.file_info[import_data.file_num].file_no = i;                                                       // save file no
+                        memcpy(import_data.file_info[import_data.file_num].file_name, card_stat.fileName, sizeof(card_stat.fileName)); // save file name
+                        import_data.file_num++;                                                                                        // increment file amount
                     }
                 }
             }
@@ -597,8 +548,8 @@ void Menu_SelFile_Init(GOBJ *menu_gobj)
     }
 
     // init scroll bar according to import_data.file_num
-    int page_total = import_data.file_num / (IMPORT_FILESPERPAGE + 1);
-    if (page_total == 0)
+    int page_total = (import_data.file_num + IMPORT_FILESPERPAGE - 1) / IMPORT_FILESPERPAGE;
+    if (page_total <= 1)
         JOBJ_SetFlagsAll(import_data.scroll_jobj, JOBJ_HIDDEN);
     else
         import_data.scroll_bot->trans.Y = (-16.2 / (page_total + 1));
@@ -619,7 +570,6 @@ void Menu_SelFile_Init(GOBJ *menu_gobj)
 }
 void Menu_SelFile_Think(GOBJ *menu_gobj)
 {
-
     // init
     int down = Pad_GetRapidHeld(*stc_css_hmnport);
 
@@ -634,199 +584,157 @@ void Menu_SelFile_Think(GOBJ *menu_gobj)
         // check for exit
         if (down & (HSD_BUTTON_B | HSD_BUTTON_A))
             goto EXIT;
+        return;
     }
 
-    // navigation think
-    else
+    // cursor movement
+    int curr_page = import_data.page;
+    int curr_cursor = import_data.cursor;
+    if (down & (HSD_BUTTON_UP | HSD_BUTTON_DPAD_UP)) // check for cursor up
     {
+        import_data.cursor--;
+    }
+    else if (down & (HSD_BUTTON_LEFT | HSD_BUTTON_DPAD_LEFT)) // check for cursor down
+    {
+        import_data.cursor = 0;
+        import_data.page--;
+    }
+    else if (down & (HSD_BUTTON_DOWN | HSD_BUTTON_DPAD_DOWN)) // check for cursor down
+    {
+        import_data.cursor++;
+    }
+    else if (down & (HSD_BUTTON_RIGHT | HSD_BUTTON_DPAD_RIGHT)) // check for cursor right
+    {
+        import_data.cursor = 0;
+        import_data.page++;
+    }
 
-        // cursor movement
-        if (down & (HSD_BUTTON_UP | HSD_BUTTON_DPAD_UP)) // check for cursor up
+    // handle cursor/page overflow and wrap pages
+    int total_pages = (import_data.file_num + IMPORT_FILESPERPAGE - 1) / IMPORT_FILESPERPAGE;
+    if (import_data.cursor == 255)
+    {
+        import_data.cursor = IMPORT_FILESPERPAGE - 1;
+        import_data.page--;
+    }
+    else if (import_data.cursor >= IMPORT_FILESPERPAGE ||
+        (import_data.page == total_pages - 1 &&
+        import_data.cursor >= import_data.file_num % IMPORT_FILESPERPAGE))
+    {
+        import_data.cursor = 0;
+        import_data.page++;
+    }
+    if (import_data.page == 255)
+    {
+        import_data.page = total_pages - 1;
+        if (import_data.cursor >= import_data.file_num % IMPORT_FILESPERPAGE)
         {
-            // if cursor is at the top of the page, try to advance to prev
-            if (import_data.cursor == 0)
-            {
-                // try to load prev page
-                int page_result = Menu_SelFile_LoadPage(menu_gobj, import_data.page - 1);
-                if (page_result == 1) // page loaded, update cursor
-                {
-                    SFX_PlayCommon(2);
-                    import_data.cursor = (IMPORT_FILESPERPAGE - 1);
-                    import_data.page--;
-                }
-                else if (page_result == -1)
-                {
-                    // create dialog
-                    Menu_Confirm_Init(menu_gobj, CFRM_ERR);
-                    SFX_PlayCommon(3);
-                    goto EXIT_FUNC; // gotos are weird but i couldnt think of another way
-                }
-            }
-            // if cursor can be advanced
-            else if (import_data.cursor > 0)
-            {
-                import_data.cursor--;
-                SFX_PlayCommon(2);
-            }
+            import_data.cursor = import_data.file_num % IMPORT_FILESPERPAGE - 1;
         }
-        else if (down & (HSD_BUTTON_LEFT | HSD_BUTTON_DPAD_LEFT)) // check for cursor down
-        {
-            // try to load prev page
-            int page_result = Menu_SelFile_LoadPage(menu_gobj, import_data.page - 1);
-            if (page_result == 1) // page loaded, update cursor
-            {
-                SFX_PlayCommon(2);
-                import_data.cursor = 0;
-                import_data.page--;
-            }
-            else if (page_result == -1)
-            {
-                // create dialog
-                Menu_Confirm_Init(menu_gobj, CFRM_ERR);
-                SFX_PlayCommon(3);
-                goto EXIT_FUNC; // gotos are weird but i couldnt think of another way
-            }
-        }
-        else if (down & (HSD_BUTTON_DOWN | HSD_BUTTON_DPAD_DOWN)) // check for cursor down
-        {
+    }
+    else if (import_data.page >= total_pages)
+    {
+        import_data.page = 0;
+    }
 
-            // if cursor is at the end of the page, try to advance to next
-            if (import_data.cursor == (IMPORT_FILESPERPAGE - 1))
-            {
-                // try to load next page
-                int page_result = Menu_SelFile_LoadPage(menu_gobj, import_data.page + 1);
-                if (page_result == 1) // page loaded, update cursor
-                {
-                    SFX_PlayCommon(2);
-                    import_data.cursor = 0;
-                    import_data.page++;
-                }
-                else if (page_result == -1)
-                {
-                    // create dialog
-                    Menu_Confirm_Init(menu_gobj, CFRM_ERR);
-                    SFX_PlayCommon(3);
-                    goto EXIT_FUNC; // gotos are weird but i couldnt think of another way
-                }
-            }
-
-            // if cursor can be advanced
-            else if ((import_data.cursor < import_data.files_on_page - 1))
-            {
-                import_data.cursor++;
-                SFX_PlayCommon(2);
-            }
-        }
-        else if (down & (HSD_BUTTON_RIGHT | HSD_BUTTON_DPAD_RIGHT)) // check for cursor right
+    // Load new page if necessary and play sound
+    if (import_data.page != curr_page)
+    {
+        // try to load page
+        int page_result = Menu_SelFile_LoadPage(menu_gobj, import_data.page);
+        if (page_result == -1)
         {
-            // try to load next page
-            int page_result = Menu_SelFile_LoadPage(menu_gobj, import_data.page + 1);
-            if (page_result == 1) // page loaded, update cursor
-            {
-                SFX_PlayCommon(2);
-                import_data.cursor = 0;
-                import_data.page++;
-            }
-            else if (page_result == -1)
-            {
-                // create dialog
-                Menu_Confirm_Init(menu_gobj, CFRM_ERR);
-                SFX_PlayCommon(3);
-                goto EXIT_FUNC; // gotos are weird but i couldnt think of another way
-            }
+            // create dialog
+            Menu_Confirm_Init(menu_gobj, CFRM_ERR);
+            SFX_PlayCommon(3);
+            return;
         }
+        SFX_PlayCommon(2);
+    }
+    else if (import_data.cursor != curr_cursor)
+    {
+        SFX_PlayCommon(2);
+    }
 
-        // highlight cursor
-        int cursor = import_data.cursor;
-        for (int i = 0; i < IMPORT_FILESPERPAGE; i++)
-        {
-            Text_SetColor(import_data.filename_text, i, &text_white);
-        }
-        Text_SetColor(import_data.filename_text, cursor, &text_gold);
+    // highlight cursor
+    int cursor = import_data.cursor;
+    for (int i = 0; i < IMPORT_FILESPERPAGE; i++)
+    {
+        Text_SetColor(import_data.filename_text, i, &text_white);
+    }
+    Text_SetColor(import_data.filename_text, cursor, &text_gold);
 
-        // update file info text
-        /*
-    u8 *transfer_buf = import_data.snap.file_data[cursor];
-    ExportHeader *header = transfer_buf;
-    u8 *compressed_recording = transfer_buf + header->lookup.ofst_recording;
+    // update file info text from header data
+    int this_file_index = (import_data.page * IMPORT_FILESPERPAGE) + cursor;
+    ExportHeader *header = &import_data.header[cursor];
+
+    // update file info text
     Text_SetText(import_data.fileinfo_text, 0, "Stage: %s", stage_names[header->metadata.stage_internal]);
     Text_SetText(import_data.fileinfo_text, 1, "HMN: %s", Fighter_GetName(header->metadata.hmn));
     Text_SetText(import_data.fileinfo_text, 2, "CPU: %s", Fighter_GetName(header->metadata.cpu));
-    Text_SetText(import_data.fileinfo_text, 3, "Created: %d/%d/%d", 10, 30, 1995);
-    */
+    Text_SetText(import_data.fileinfo_text, 3, "Date: %d/%d/%d", header->metadata.month, header->metadata.day, header->metadata.year);
+    Text_SetText(import_data.fileinfo_text, 4, "Time: %d:%02d:%02d", header->metadata.hour, header->metadata.minute, header->metadata.second);
 
-        // update file info text from header data
-        int this_file_index = (import_data.page * IMPORT_FILESPERPAGE) + cursor;
-        ExportHeader *header = &import_data.header[cursor];
+    // async load snapshots
+    Menu_SelFile_LoadAsyncThink(menu_gobj);
 
-        // update file info text
-        Text_SetText(import_data.fileinfo_text, 0, "Stage: %s", stage_names[header->metadata.stage_internal]);
-        Text_SetText(import_data.fileinfo_text, 1, "HMN: %s", Fighter_GetName(header->metadata.hmn));
-        Text_SetText(import_data.fileinfo_text, 2, "CPU: %s", Fighter_GetName(header->metadata.cpu));
-        Text_SetText(import_data.fileinfo_text, 3, "Date: %d/%d/%d", header->metadata.month, header->metadata.day, header->metadata.year);
-        Text_SetText(import_data.fileinfo_text, 4, "Time: %d:%02d:%02d", header->metadata.hour, header->metadata.minute, header->metadata.second);
+    // update file image
+    // if this file is loaded
+    if (import_data.snap.is_loaded[cursor] == 1)
+    {
+        // copy screenshot data to buffer
+        void *file_data = import_data.snap.file_data[cursor];
+        RGB565 *img = file_data + header->lookup.ofst_screenshot;
+        int img_size = GXGetTexBufferSize(header->metadata.image_width, header->metadata.image_height, 4, 0, 0);
+        memcpy(import_data.snap.image, img, img_size); // copu image to 32 byte aligned buffer
 
-        // async load snapshots
-        Menu_SelFile_LoadAsyncThink(menu_gobj);
+        // invalidate cache
+        DCFlushRange(import_data.snap.image, img_size);
 
-        // update file image
-        // if this file is loaded
-        if (import_data.snap.is_loaded[cursor] == 1)
-        {
-            // copy screenshot data to buffer
-            void *file_data = import_data.snap.file_data[cursor];
-            RGB565 *img = file_data + header->lookup.ofst_screenshot;
-            int img_size = GXGetTexBufferSize(header->metadata.image_width, header->metadata.image_height, 4, 0, 0);
-            memcpy(import_data.snap.image, img, img_size); // copu image to 32 byte aligned buffer
-
-            // invalidate cache
-            DCFlushRange(import_data.snap.image, img_size);
-
-            // display this texture
-            image_desc.img_ptr = import_data.snap.image;                            // store pointer to resized image
-            import_data.screenshot_jobj->dobj->mobj->tobj->imagedesc = &image_desc; // replace pointer to imagedesc
-        }
-        else
-        {
-            // display orig texture
-            import_data.screenshot_jobj->dobj->mobj->tobj->imagedesc = import_data.snap.orig_image;
-        }
-
-        // check for exit
-        if (down & HSD_BUTTON_B)
-        {
-        EXIT:
-            SFX_PlayCommon(0);
-            Menu_SelFile_Exit(menu_gobj);
-            Menu_SelCard_Init(menu_gobj);
-        }
-
-        // check to delete
-        else if (down & HSD_BUTTON_X)
-        {
-            Menu_Confirm_Init(menu_gobj, CFRM_DEL);
-            SFX_PlayCommon(1);
-        }
-
-        // check for select
-        else if (down & HSD_BUTTON_A)
-        {
-            int kind;                                               // init confirm kind
-            int vers = import_data.header[cursor].metadata.version; // get version number
-
-            // check if version is compatible with this release
-            if (vers == REC_VERS)
-                kind = CFRM_LOAD;
-            else if (vers > REC_VERS)
-                kind = CFRM_NEW;
-            else if (vers < REC_VERS)
-                kind = CFRM_OLD;
-
-            // open confirm dialog
-            Menu_Confirm_Init(menu_gobj, kind);
-            SFX_PlayCommon(1);
-        }
+        // display this texture
+        image_desc.img_ptr = import_data.snap.image;                            // store pointer to resized image
+        import_data.screenshot_jobj->dobj->mobj->tobj->imagedesc = &image_desc; // replace pointer to imagedesc
     }
+    else
+    {
+        // display orig texture
+        import_data.screenshot_jobj->dobj->mobj->tobj->imagedesc = import_data.snap.orig_image;
+    }
+
+    // check for exit
+    if (down & HSD_BUTTON_B)
+    {
+    EXIT:
+        SFX_PlayCommon(0);
+        Menu_SelFile_Exit(menu_gobj);
+        Menu_SelCard_Init(menu_gobj);
+    }
+
+    // check to delete
+    else if (down & HSD_BUTTON_X)
+    {
+        Menu_Confirm_Init(menu_gobj, CFRM_DEL);
+        SFX_PlayCommon(1);
+    }
+
+    // check for select
+    else if (down & HSD_BUTTON_A)
+    {
+        int kind;                                               // init confirm kind
+        int vers = import_data.header[cursor].metadata.version; // get version number
+
+        // check if version is compatible with this release
+        if (vers == REC_VERS)
+            kind = CFRM_LOAD;
+        else if (vers > REC_VERS)
+            kind = CFRM_NEW;
+        else if (vers < REC_VERS)
+            kind = CFRM_OLD;
+
+        // open confirm dialog
+        Menu_Confirm_Init(menu_gobj, kind);
+        SFX_PlayCommon(1);
+    }
+    
 EXIT_FUNC:
     return;
 }
@@ -874,176 +782,62 @@ int Menu_SelFile_LoadPage(GOBJ *menu_gobj, int page)
 {
 
     int result = 0;
-    int files_on_page;
     int cursor = import_data.cursor; // start at cursor
-    int page_total = import_data.file_num / IMPORT_FILESPERPAGE;
+    int page_total = (import_data.file_num + IMPORT_FILESPERPAGE - 1) / IMPORT_FILESPERPAGE;
 
     // ensure page exists
-    if ((page >= 0) && (page <= page_total))
+    if (page < 0 || page >= page_total)
+        assert("page index out of bounds");
+
+    // determine files on page
+    int files_on_page = IMPORT_FILESPERPAGE;
+    if (page == page_total - 1)
+        files_on_page = import_data.file_num % IMPORT_FILESPERPAGE;
+
+    // cancel card read if in progress
+    int memcard_status = Memcard_CheckStatus();
+    if (memcard_status == 11)
     {
-        // determine files on page
-        if (((page + 1) * IMPORT_FILESPERPAGE) < import_data.file_num)
-            files_on_page = IMPORT_FILESPERPAGE; // page is filled with files
-        else
-            files_on_page = import_data.file_num - (page * IMPORT_FILESPERPAGE); // remaining files
+        // cancel read
+        stc_memcard_work->card_file_info.length = -1;
 
-        // ensure page has at least one recording
-        if (files_on_page > 0)
+        // wait for callback to fire
+        while (memcard_status == 11)
         {
-
-            // cancel card read if in progress
-            int memcard_status = Memcard_CheckStatus();
-            if (memcard_status == 11)
-            {
-                // cancel read
-                stc_memcard_work->card_file_info.length = -1;
-
-                // wait for callback to fire
-                while (memcard_status == 11)
-                {
-                    memcard_status = Memcard_CheckStatus();
-                }
-            }
-
-            void *buffer = calloc(CARD_READ_SIZE);
-            import_data.files_on_page = files_on_page; // update amount of files on page
-            import_data.snap.loaded_num = 0;
-            import_data.snap.load_inprogress = 0;
-            for (int i = 0; i < IMPORT_FILESPERPAGE; i++)
-            {
-                import_data.snap.is_loaded[i] = 0; // init files as unloaded
-            }
-            result = 1; // set page as toggled
-            int slot = import_data.memcard_slot;
-
-            // update scroll bar position
-            import_data.scroll_top->trans.Y = ((float)page / (float)(page_total)) * (import_data.scroll_bot->trans.Y);
-            JOBJ_SetMtxDirtySub(menu_gobj->hsd_object);
-
-            // free prev buffers
-            for (int i = 0; i < IMPORT_FILESPERPAGE; i++)
-            {
-                // if exists
-                if (import_data.snap.file_data[i] != 0)
-                {
-                    HSD_Free(import_data.snap.file_data[i]);
-                    import_data.snap.file_data[i] = 0;
-                }
-            }
-
-            // blank out all text
-            for (int i = 0; i < IMPORT_FILESPERPAGE; i++)
-            {
-                Text_SetText(import_data.filename_text, i, "");
-            }
-
-            // mount card
-            s32 memSize, sectorSize;
-            if (CARDProbeEx(slot, &memSize, &sectorSize) == CARD_RESULT_READY)
-            {
-                // mount card
-                stc_memcard_work->is_done = 0;
-                if (CARDMountAsync(slot, stc_memcard_work->work_area, 0, Memcard_RemovedCallback) == CARD_RESULT_READY)
-                {
-                    Memcard_Wait();
-
-                    // check card
-                    stc_memcard_work->is_done = 0;
-                    if (CARDCheckAsync(slot, Memcard_RemovedCallback) == CARD_RESULT_READY)
-                    {
-                        Memcard_Wait();
-
-                        // begin loading this page's files
-                        for (int i = 0; i < files_on_page; i++)
-                        {
-
-                            // get file info
-                            int this_file_index = (page * IMPORT_FILESPERPAGE) + i;
-                            char *file_name = import_data.file_info[this_file_index].file_name;
-                            int file_size = import_data.file_info[this_file_index].file_size;
-                            int file_no = import_data.file_info[this_file_index].file_no;
-
-                            // get comment from card
-                            CARDFileInfo card_file_info;
-                            CARDStat card_stat;
-
-                            // get status
-                            if (CARDGetStatus(slot, file_no, &card_stat) == CARD_RESULT_READY)
-                            {
-                                // open card (get file info)
-                                if (CARDOpen(slot, file_name, &card_file_info) == CARD_RESULT_READY)
-                                {
-                                    // try to get header
-                                    if (CARDRead(&card_file_info, buffer, CARD_READ_SIZE, 0x1E00) == CARD_RESULT_READY)
-                                    {
-                                        // deobfuscate stupid melee bullshit
-                                        Memcard_Deobfuscate(buffer, CARD_READ_SIZE);
-                                        ExportHeader *header = buffer + 0x90; // get to header (need to find a less hardcoded way of doing this)
-
-                                        // ensure header contains filename (REC_VERS 1+)
-                                        if (header->metadata.version < 1)
-                                        {
-                                            result = -1;
-                                            CARDClose(&card_file_info);
-                                            break;
-                                        }
-
-                                        else
-                                        {
-                                            // save header
-                                            memcpy(&import_data.header[i], header, sizeof(ExportHeader));
-
-                                            // print user file name
-                                            Text_SetText(import_data.filename_text, i, header->metadata.filename);
-                                        }
-                                    }
-
-                                    CARDClose(&card_file_info);
-                                }
-                            }
-
-                            /*
-                // setup load
-                MemcardSave stc_memcard_save;
-                void *buffer = HSD_MemAlloc(file_size); // alloc buffer for this save
-                import_data.snap.file_data[i] = buffer;      // save buffer pointer
-                stc_memcard_save.data = buffer;             // store pointer to buffer for memcard load operation
-                stc_memcard_save.x4 = 3;
-                stc_memcard_save.size = file_size;
-                stc_memcard_save.xc = -1;
-                Memcard_LoadSnapshot(import_data.memcard_slot, file_name, &stc_memcard_save, &stc_memcard_info->file_name, 0, 0, 0);
-
-                // wait to load
-                int memcard_status = Memcard_CheckStatus();
-                while (memcard_status == 11)
-                {
-                    memcard_status = Memcard_CheckStatus();
-                }
-
-                // if file loaded successfully
-                if (memcard_status == 0)
-                    Text_SetText(import_data.filename_text, i, &stc_memcard_info->file_name[32]);
-                */
-                        }
-                    }
-                    // unmount
-                    CARDUnmount(slot);
-                    stc_memcard_work->is_done = 0;
-                }
-            }
-
-            // free temp read buffer
-            HSD_Free(buffer);
+            memcard_status = Memcard_CheckStatus();
         }
     }
 
-    return result;
-}
-void Menu_SelFile_DeleteUnsupported(GOBJ *menu_gobj)
-{
-
     void *buffer = calloc(CARD_READ_SIZE);
+    import_data.snap.loaded_num = 0;
+    import_data.snap.load_inprogress = 0;
+    for (int i = 0; i < IMPORT_FILESPERPAGE; i++)
+    {
+        import_data.snap.is_loaded[i] = 0; // init files as unloaded
+    }
+    result = 1; // set page as toggled
     int slot = import_data.memcard_slot;
+
+    // update scroll bar position
+    import_data.scroll_top->trans.Y = ((float)page / (page_total)) * (import_data.scroll_bot->trans.Y);
+    JOBJ_SetMtxDirtySub(menu_gobj->hsd_object);
+
+    // free prev buffers
+    for (int i = 0; i < IMPORT_FILESPERPAGE; i++)
+    {
+        // if exists
+        if (import_data.snap.file_data[i] != 0)
+        {
+            HSD_Free(import_data.snap.file_data[i]);
+            import_data.snap.file_data[i] = 0;
+        }
+    }
+
+    // blank out all text
+    for (int i = 0; i < IMPORT_FILESPERPAGE; i++)
+    {
+        Text_SetText(import_data.filename_text, i, "");
+    }
 
     // mount card
     s32 memSize, sectorSize;
@@ -1061,49 +855,36 @@ void Menu_SelFile_DeleteUnsupported(GOBJ *menu_gobj)
             {
                 Memcard_Wait();
 
-                // loop through all detected TMREC files
-                for (int i = 0; i < import_data.file_num; i++)
+                // begin loading this page's files
+                for (int i = 0; i < files_on_page; i++)
                 {
-
                     // get file info
-                    char *file_name = import_data.file_info[i].file_name;
-                    int file_size = import_data.file_info[i].file_size;
+                    int this_file_index = (page * IMPORT_FILESPERPAGE) + i;
+                    char *file_name = import_data.file_info[this_file_index].file_name;
+                    int file_size = import_data.file_info[this_file_index].file_size;
+                    int file_no = import_data.file_info[this_file_index].file_no;
+
+                    // get comment from card
                     CARDFileInfo card_file_info;
+                    CARDStat card_stat;
 
-                    /*
-                    so at this point, i have filenames for every TMREC file
-                    present on the memcard. all i have to do is:
-                    - cardopen each file
-                    - cardread the header
-                    - deobfuscate
-                    - check version
-                    - delete file using filename if its a bad file
-                    */
-
+                    // get status
+                    if (CARDGetStatus(slot, file_no, &card_stat) != CARD_RESULT_READY)
+                        continue;
                     // open card (get file info)
-                    if (CARDOpen(slot, file_name, &card_file_info) == CARD_RESULT_READY)
+                    if (CARDOpen(slot, file_name, &card_file_info) != CARD_RESULT_READY)
+                        continue;
+                    // try to get header
+                    if (CARDRead(&card_file_info, buffer, CARD_READ_SIZE, 0x1E00) == CARD_RESULT_READY)
                     {
-                        // read header
-                        if (CARDRead(&card_file_info, buffer, CARD_READ_SIZE, 0x1E00) == CARD_RESULT_READY)
-                        {
-                            // deobfuscate stupid melee bullshit
-                            Memcard_Deobfuscate(buffer, CARD_READ_SIZE);
-                            ExportHeader *header = buffer + 0x90; // get to header (need to find a less hardcoded way of doing this)
+                        // deobfuscate stupid melee bullshit
+                        Memcard_Deobfuscate(buffer, CARD_READ_SIZE);
+                        ExportHeader *header = buffer + 0x90; // get to header (need to find a less hardcoded way of doing this)
 
-                            // check if unsupported version
-                            if (header->metadata.version < 1)
-                            {
-                                // delete this file
-                                stc_memcard_work->is_done = 0;
-                                if (CARDDeleteAsync(slot, file_name, Memcard_RemovedCallback) == CARD_RESULT_READY)
-                                {
-                                    Memcard_Wait();
-                                }
-                            }
-                        }
-
-                        CARDClose(&card_file_info);
+                        memcpy(&import_data.header[i], header, sizeof(ExportHeader));
+                        Text_SetText(import_data.filename_text, i, header->metadata.filename);
                     }
+                    CARDClose(&card_file_info);
                 }
             }
             // unmount
@@ -1115,8 +896,9 @@ void Menu_SelFile_DeleteUnsupported(GOBJ *menu_gobj)
     // free temp read buffer
     HSD_Free(buffer);
 
-    return;
+    return result;
 }
+
 int Menu_SelFile_DeleteFile(GOBJ *menu_gobj, int file_index)
 {
 
@@ -1188,51 +970,21 @@ void Menu_SelFile_LoadAsyncThink(GOBJ *menu_gobj)
     }
 
     // check if any pending files to load
-    if ((import_data.snap.load_inprogress == 0) && // checking inprogress again in case the code above set it to 0 this tick
-        (import_data.snap.loaded_num < import_data.files_on_page))
+    if (import_data.snap.load_inprogress == 0) // checking inprogress again in case the code above set it to 0 this tick
     {
 
-        // find nearest unloaded file
         int file_to_load;
         int cursor = import_data.cursor;
 
         // check if cursor is loaded
         if (import_data.snap.is_loaded[cursor] == 0)
             file_to_load = cursor;
-        // find nearest unloaded file
+        else if (cursor < IMPORT_FILESPERPAGE - 1 && import_data.snap.is_loaded[cursor + 1] == 0)
+            file_to_load = cursor + 1;
+        else if (cursor > 0 && import_data.snap.is_loaded[cursor - 1] == 0)
+            file_to_load = cursor - 1;
         else
-        {
-            // search for unloaded snap nearest to the cursor
-            int search_up = cursor;
-            int search_down = cursor;
-            for (int i = 0; i < (IMPORT_FILESPERPAGE - 1); i++)
-            {
-                search_up--;
-                search_down++;
-
-                // if still on page
-                if (search_up >= 0)
-                {
-                    if (import_data.snap.is_loaded[search_up] == 0)
-                    {
-                        // load this next
-                        file_to_load = search_up;
-                        break;
-                    }
-                }
-
-                // if still on page
-                if (search_down < IMPORT_FILESPERPAGE)
-                {
-                    if (import_data.snap.is_loaded[search_down] == 0)
-                    {
-                        // load this next
-                        file_to_load = search_down;
-                        break;
-                    }
-                }
-            }
-        }
+            return;
 
         // get filename and size for this file
         int this_file_index = (import_data.page * IMPORT_FILESPERPAGE) + file_to_load; // page file index -> TMREC file index
@@ -1325,6 +1077,31 @@ void Menu_Confirm_Init(GOBJ *menu_gobj, int kind)
 
     return;
 }
+
+void Menu_Left_Right(int down, u8* cursor)
+{
+    if (*cursor < 0 || import_data.confirm.cursor > 1)
+        assert("cursor out of bounds");
+
+    // cursor movement
+    if (down & (HSD_BUTTON_RIGHT | HSD_BUTTON_DPAD_RIGHT)) // check for cursor right
+    {
+        if (*cursor == 0)
+        {
+            *cursor = 1;
+            SFX_PlayCommon(2);
+        }
+    }
+    else if (down & (HSD_BUTTON_LEFT | HSD_BUTTON_DPAD_LEFT)) // check for cursor down
+    {
+        if (*cursor == 1)
+        {
+            *cursor = 0;
+            SFX_PlayCommon(2);
+        }
+    }
+}
+
 void Menu_Confirm_Think(GOBJ *menu_gobj)
 {
 
@@ -1340,23 +1117,7 @@ void Menu_Confirm_Think(GOBJ *menu_gobj)
     {
     case (CFRM_LOAD):
     {
-        // cursor movement
-        if (down & (HSD_BUTTON_RIGHT | HSD_BUTTON_DPAD_RIGHT)) // check for cursor right
-        {
-            if (import_data.confirm.cursor < 1)
-            {
-                import_data.confirm.cursor++;
-                SFX_PlayCommon(2);
-            }
-        }
-        else if (down & (HSD_BUTTON_LEFT | HSD_BUTTON_DPAD_LEFT)) // check for cursor down
-        {
-            if (import_data.confirm.cursor > 0)
-            {
-                import_data.confirm.cursor--;
-                SFX_PlayCommon(2);
-            }
-        }
+        Menu_Left_Right(down, &import_data.confirm.cursor);
 
         // highlight cursor
         int cursor = import_data.confirm.cursor;
@@ -1466,24 +1227,7 @@ void Menu_Confirm_Think(GOBJ *menu_gobj)
     }
     case (CFRM_DEL):
     {
-
-        // cursor movement
-        if (down & (HSD_BUTTON_RIGHT | HSD_BUTTON_DPAD_RIGHT)) // check for cursor right
-        {
-            if (import_data.confirm.cursor < 1)
-            {
-                import_data.confirm.cursor++;
-                SFX_PlayCommon(2);
-            }
-        }
-        else if (down & (HSD_BUTTON_LEFT | HSD_BUTTON_DPAD_LEFT)) // check for cursor down
-        {
-            if (import_data.confirm.cursor > 0)
-            {
-                import_data.confirm.cursor--;
-                SFX_PlayCommon(2);
-            }
-        }
+        Menu_Left_Right(down, &import_data.confirm.cursor);
 
         // highlight cursor
         int cursor = import_data.confirm.cursor;
@@ -1528,24 +1272,7 @@ void Menu_Confirm_Think(GOBJ *menu_gobj)
     }
     case (CFRM_ERR):
     {
-
-        // cursor movement
-        if (down & (HSD_BUTTON_RIGHT | HSD_BUTTON_DPAD_RIGHT)) // check for cursor right
-        {
-            if (import_data.confirm.cursor < 1)
-            {
-                import_data.confirm.cursor++;
-                SFX_PlayCommon(2);
-            }
-        }
-        else if (down & (HSD_BUTTON_LEFT | HSD_BUTTON_DPAD_LEFT)) // check for cursor down
-        {
-            if (import_data.confirm.cursor > 0)
-            {
-                import_data.confirm.cursor--;
-                SFX_PlayCommon(2);
-            }
-        }
+        Menu_Left_Right(down, &import_data.confirm.cursor);
 
         // highlight cursor
         int cursor = import_data.confirm.cursor;
@@ -1573,9 +1300,6 @@ void Menu_Confirm_Think(GOBJ *menu_gobj)
             if (cursor == 0)
             {
                 SFX_PlayCommon(1);
-
-                // delete bad recordings
-                Menu_SelFile_DeleteUnsupported(menu_gobj);
 
                 // close dialog
                 Menu_Confirm_Exit(menu_gobj);
