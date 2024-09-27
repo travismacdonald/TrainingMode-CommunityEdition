@@ -5015,6 +5015,7 @@ void Event_Init(GOBJ *gobj)
     if (*onload_fileno != -1)
     {
         Record_MemcardLoad(*onload_slot, *onload_fileno);
+        LabOptions_Record[OPTREC_SAVE_LOAD] = Record_Load;
     }
 
     return;
