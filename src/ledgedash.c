@@ -988,6 +988,9 @@ void Fighter_PlaceOnLedge(LedgedashData *event_data, GOBJ *hmn, int line_index, 
 
     Ledgedash_InitVariables(event_data);
 
+    // avoid double reset in case user manually resets
+    event_data->reset_timer = 0;
+
     // update camera box
     CameraBox *cam = event_data->cam;
     cam->cam_pos.X = ledge_pos.X + (ledge_dir * 20);
