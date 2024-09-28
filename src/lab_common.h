@@ -436,6 +436,10 @@ static EventMenu LabMenu_CPU;
 static EventMenu LabMenu_Record;
 static EventMenu LabMenu_Tech;
 
+// helpers
+void act_on_frame_distinguishable(
+    FighterData *cpu_data, int frame_distinguishable,int invisible, int sound);
+
 // info display
 #define GXPRI_INFDISP GXPRI_MENUMODEL - 2
 #define GXLINK_INFDISP 12

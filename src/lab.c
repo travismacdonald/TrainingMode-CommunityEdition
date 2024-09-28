@@ -5419,106 +5419,100 @@ void Event_Think(GOBJ *event)
     }
 
     // apply invisibility
-    if (LabOptions_Tech[OPTTECH_INVISIBLE].option_val == 1)
+    int invisible = LabOptions_Tech[OPTTECH_INVISIBLE].option_val;
+    int sound = LabOptions_Tech[OPTTECH_SOUND].option_val;
+    if (cpu_data->state == ASID_PASSIVE || cpu_data->state == ASID_PASSIVESTANDF || cpu_data->state == ASID_PASSIVESTANDB)
     {
-        if (cpu_data->state == ASID_PASSIVE || cpu_data->state == ASID_PASSIVESTANDF || cpu_data->state == ASID_PASSIVESTANDB)
-        {
-            switch (cpu_data->kind) {
-                // case 0x00: // Mario
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                case 0x01: // Fox
-                    cpu_data->flags.invisible = (cpu_data->TM.state_frame >= 4) ? 1 : 0;
-                    break;
-                case 0x02: // Captain Falcon
-                    cpu_data->flags.invisible = (cpu_data->TM.state_frame >= 6) ? 1 : 0;
-                    break;
-                // case 0x03: // Donkey Kong
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                // case 0x04: // Kirby
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                // case 0x05: // Bowser
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                // case 0x06: // Link
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                // case 0x07: // Sheik
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                // case 0x08: // Ness
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                case 0x09: // Peach
-                    cpu_data->flags.invisible = (cpu_data->TM.state_frame >= 3) ? 1 : 0;
-                    break;
-                case 0x0A: // Popo (Ice Climbers)
-                    cpu_data->flags.invisible = (cpu_data->TM.state_frame >= 6) ? 1 : 0;
-                    break;
-                case 0x0B: // Nana (Ice Climbers)
-                    cpu_data->flags.invisible = (cpu_data->TM.state_frame >= 6) ? 1 : 0;
-                    break;
-                case 0x0C: // Pikachu
-                    cpu_data->flags.invisible = (cpu_data->TM.state_frame >= 7) ? 1 : 0;
-                    break;
-                // case 0x0D: // Samus
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                // case 0x0E: // Yoshi
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                // case 0x0F: // Jigglypuff
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                // case 0x10: // Mewtwo
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                // case 0x11: // Luigi
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                case 0x12: // Marth
-                    cpu_data->flags.invisible = (cpu_data->TM.state_frame >= 6) ? 1 : 0;
-                    break;
-                // case 0x13: // Zelda
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                // case 0x14: // Young Link
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                // case 0x15: // Dr. Mario
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                case 0x16: // Falco
-                    cpu_data->flags.invisible = (cpu_data->TM.state_frame >= 4) ? 1 : 0;
-                    break;
-                // case 0x17: // Pichu
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                // case 0x18: // Game & Watch
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                // case 0x19: // Ganondorf
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                // case 0x1A: // Roy
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                default:
-                    // Handle unknown character or error case
-                    cpu_data->flags.invisible = 0;
-            }
-        }
-        else
-        {
-            // Make visible when not teching
-            cpu_data->flags.invisible = 0;
+        switch (cpu_data->kind) {
+            // case 0x00: // Mario
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            case 0x01: // Fox
+                act_on_frame_distinguishable(cpu_data, 4, invisible, sound);
+                break;
+            case 0x02: // Captain Falcon
+                act_on_frame_distinguishable(cpu_data, 6, invisible, sound);
+                break;
+            // case 0x03: // Donkey Kong
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            // case 0x04: // Kirby
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            // case 0x05: // Bowser
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            // case 0x06: // Link
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            // case 0x07: // Sheik
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            // case 0x08: // Ness
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            case 0x09: // Peach
+                act_on_frame_distinguishable(cpu_data, 3, invisible, sound);
+                break;
+            case 0x0A: // Popo (Ice Climbers)
+                act_on_frame_distinguishable(cpu_data, 6, invisible, sound);
+                break;
+            case 0x0B: // Nana (Ice Climbers)
+                act_on_frame_distinguishable(cpu_data, 6, invisible, sound);
+                break;
+            case 0x0C: // Pikachu
+                act_on_frame_distinguishable(cpu_data, 7, invisible, sound);
+                break;
+            // case 0x0D: // Samus
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            // case 0x0E: // Yoshi
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            // case 0x0F: // Jigglypuff
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            // case 0x10: // Mewtwo
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            // case 0x11: // Luigi
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            case 0x12: // Marth
+                act_on_frame_distinguishable(cpu_data, 6, invisible, sound);
+                break;
+            // case 0x13: // Zelda
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            // case 0x14: // Young Link
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            // case 0x15: // Dr. Mario
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            case 0x16: // Falco
+                act_on_frame_distinguishable(cpu_data, 4, invisible, sound);
+                break;
+            // case 0x17: // Pichu
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            // case 0x18: // Game & Watch
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            // case 0x19: // Ganondorf
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            // case 0x1A: // Roy
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            default:
+                // Handle unknown character or error case
+                cpu_data->flags.invisible = 0;
         }
     }
     else
     {
-        // Make visible
+        // Make visible when not teching
         cpu_data->flags.invisible = 0;
     }
 
@@ -5687,6 +5681,19 @@ void Event_Think(GOBJ *event)
 EventMenu *Event_Menu = &LabMenu_Main;
 
 // helper fns ######################################################
+
+void act_on_frame_distinguishable(FighterData *cpu_data, int frame_distinguishable, int invisible, int sound)
+{
+    if (cpu_data->TM.state_frame == frame_distinguishable)
+    {
+        cpu_data->flags.invisible = invisible ? 1 : 0;
+        
+        if (sound)
+        {
+            SFX_PlayCommon(1);
+        }
+    }
+}
 
 // lz77 functions credited to https://github.com/andyherbert/lz1
 int x_to_the_n(int x, int n)

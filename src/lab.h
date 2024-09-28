@@ -40,6 +40,7 @@ enum cpu_option
 enum tech_option 
 {
     OPTTECH_INVISIBLE,
+    OPTTECH_SOUND,
     OPTTECH_TECH,
     OPTTECH_TECHINPLACECHANCE,
     OPTTECH_TECHAWAYCHANCE,
@@ -1725,6 +1726,16 @@ static EventOption LabOptions_Tech[] = {
         .option_name = "Tech Invisibility",                                     // pointer to a string
         .desc = "Toggle the CPU turning invisible during tech\nanimations.",    // string describing what this option does
         .option_values = LabOptions_OffOn,                                      // pointer to an array of strings
+        .onOptionChange = 0,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = 2,
+        .option_val = 0,
+        .menu = 0,
+        .option_name = "Tech Sound",
+        .desc = "Toggle playing a sound when tech is\ndistinguishable.",
+        .option_values = LabOptions_OffOn,
         .onOptionChange = 0,
     },
     {
