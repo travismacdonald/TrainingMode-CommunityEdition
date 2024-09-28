@@ -20,7 +20,7 @@ static GXColor *tmgbar_colors[] = {
 };
 
 // Main Menu
-static char **LdshOptions_Start[] = {"Ledge", "Respawn Platform"};
+static char **LdshOptions_Start[] = {"Ledge", "Falling", "Respawn Platform"};
 static char **LdshOptions_Reset[] = {"On", "Off"};
 static char **LdshOptions_HUD[] = {"On", "Off"};
 static EventOption LdshOptions_Main[] = {
@@ -907,18 +907,18 @@ void Fighter_PlaceOnLedge(LedgedashData *event_data, GOBJ *hmn, int line_index, 
     // restore tether
     hmn_data->flags.used_tether = 0;
 
-    // check if starting on ledge
-    if (LdshMenu_Main.options[0].option_val == 0)
+
+    // Sleep first
+    Fighter_EnterSleep(hmn, 0);
+    Fighter_EnterRebirth(hmn);
+
+    // check starting position
+    switch  (LdshMenu_Main.options[0].option_val)
     {
-
-        // init refresh num
-        event_data->tip.refresh_num = -1; // setting this to -1 because the per frame code will add 1 and make it 0
-
-        // Sleep first
-        Fighter_EnterSleep(hmn, 0);
-        Fighter_EnterRebirth(hmn);
-
+    case 0:
+    {
         // place player on this ledge
+        event_data->tip.refresh_num = -1; // setting this to -1 because the per frame code will add 1 and make it 0
         FtCliffCatch *ft_state = &hmn_data->state_var;
         hmn_data->facing_direction = ledge_dir;
         ft_state->ledge_index = line_index; // store line index
@@ -929,20 +929,24 @@ void Fighter_PlaceOnLedge(LedgedashData *event_data, GOBJ *hmn, int line_index, 
         Coll_CheckLedge(&hmn_data->coll_data);
         Fighter_MoveToCliff(hmn);
         Fighter_UpdatePosition(hmn);
-        hmn_data->phys.self_vel.X = 0;
-        hmn_data->phys.self_vel.Y = 0;
         ftCommonData *ftcommon = *stc_ftcommon;
         Fighter_ApplyIntang(hmn, ftcommon->cliff_invuln_time);
+        break;
     }
-    else
+    case 1:
     {
-
-        // init refresh num
-        event_data->tip.refresh_num = 0; // setting this to -1 because the per frame code will add 1 and make it 0
-
+        // place player falling above the ledge
+        event_data->tip.refresh_num = 0;
+        hmn_data->facing_direction = ledge_dir;
+        hmn_data->phys.pos.X = ledge_pos.X + -5 * ledge_dir; // slight nudge to prevent accidentally landing on stage
+        hmn_data->phys.pos.Y = ledge_pos.Y + 20;
+        Fighter_EnterFall(hmn);
+        break;
+    }
+    case 2:
+    {
         // place player in a random position in respawn wait
-        Fighter_EnterSleep(hmn, 0);
-        Fighter_EnterRebirth(hmn);
+        event_data->tip.refresh_num = 0;
         hmn_data->facing_direction = ledge_dir;
 
         // get random position
@@ -960,8 +964,11 @@ void Fighter_PlaceOnLedge(LedgedashData *event_data, GOBJ *hmn, int line_index, 
 
         Fighter_UpdateRebirthPlatformPos(hmn);
 
-        Ledgedash_InitVariables(event_data);
+        break;
     }
+    }
+
+    Ledgedash_InitVariables(event_data);
 
     // update camera box
     CameraBox *cam = event_data->cam;
