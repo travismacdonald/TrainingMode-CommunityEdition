@@ -745,7 +745,6 @@ void Menu_SelFile_Think(GOBJ *menu_gobj)
         SFX_PlayCommon(1);
     }
     
-EXIT_FUNC:
     return;
 }
 void Menu_SelFile_Exit(GOBJ *menu_gobj)
@@ -1128,7 +1127,12 @@ void Menu_Confirm_Think(GOBJ *menu_gobj)
     // first ensure memcard is still inserted
     s32 memSize, sectorSize;
     if (CARDProbeEx(import_data.memcard_slot, &memSize, &sectorSize) != CARD_RESULT_READY)
-        goto EXIT;
+    {
+        Menu_Confirm_Exit(menu_gobj);
+        SFX_PlayCommon(0);
+        import_data.menu_state = IMP_SELFILE;
+        return;
+    }
 
     switch (import_data.confirm.kind)
     {
@@ -1145,77 +1149,67 @@ void Menu_Confirm_Think(GOBJ *menu_gobj)
         Text_SetColor(import_data.confirm.text, cursor + 1, &text_gold);
 
         // check for exit
-        if (down & HSD_BUTTON_B)
+        if (down & HSD_BUTTON_B || (down & HSD_BUTTON_A && cursor == 1))
         {
-        EXIT:
             Menu_Confirm_Exit(menu_gobj);
             SFX_PlayCommon(0);
             import_data.menu_state = IMP_SELFILE;
         }
-
-        // check for select
         else if (down & HSD_BUTTON_A)
         {
-            // check which option is selected
-            if (cursor == 0)
+            // get variables and junk
+            VSMinorData *css_minorscene = *stc_css_minorscene;
+            int this_file_index = (import_data.page * IMPORT_FILESPERPAGE) + import_data.cursor;
+            ExportHeader *header = &import_data.header[import_data.cursor];
+            Preload *preload = Preload_GetTable();
+
+            // get match data
+            u8 hmn_kind = header->metadata.hmn;
+            u8 hmn_costume = header->metadata.hmn_costume;
+            u8 cpu_kind = header->metadata.cpu;
+            u8 cpu_costume = header->metadata.cpu_costume;
+            u16 stage_kind = header->metadata.stage_external;
+
+            // determine which player index for hmn and cpu
+            u8 hmn_index, cpu_index;
+            if (*stc_css_hmnport > 0)
             {
-
-                // get variables and junk
-                VSMinorData *css_minorscene = *stc_css_minorscene;
-                int this_file_index = (import_data.page * IMPORT_FILESPERPAGE) + import_data.cursor;
-                ExportHeader *header = &import_data.header[import_data.cursor];
-                Preload *preload = Preload_GetTable();
-
-                // get match data
-                u8 hmn_kind = header->metadata.hmn;
-                u8 hmn_costume = header->metadata.hmn_costume;
-                u8 cpu_kind = header->metadata.cpu;
-                u8 cpu_costume = header->metadata.cpu_costume;
-                u16 stage_kind = header->metadata.stage_external;
-
-                // determine which player index for hmn and cpu
-                u8 hmn_index, cpu_index;
-                if (*stc_css_hmnport > 0)
-                {
-                    cpu_index = 0;
-                    hmn_index = 1;
-                }
-                else
-                {
-                    hmn_index = 0;
-                    cpu_index = 1;
-                }
-
-                // set fighters
-                css_minorscene->vs_data.match_init.playerData[hmn_index].kind = hmn_kind;
-                css_minorscene->vs_data.match_init.playerData[hmn_index].costume = hmn_costume; // header->metadata.hmn_costume;
-                preload->fighters[hmn_index].kind = hmn_kind;
-                preload->fighters[hmn_index].costume = hmn_costume;
-                css_minorscene->vs_data.match_init.playerData[cpu_index].kind = cpu_kind;
-                css_minorscene->vs_data.match_init.playerData[cpu_index].costume = cpu_costume; // header->metadata.cpu_costume;
-                preload->fighters[cpu_index].kind = cpu_kind;
-                preload->fighters[cpu_index].costume = cpu_costume;
-
-                // set stage
-                css_minorscene->vs_data.match_init.stage = stage_kind;
-                preload->stage = stage_kind;
-
-                // load files
-                Preload_Update();
-
-                // advance scene
-                *stc_css_exitkind = 1;
-
-                // HUGE HACK ALERT
-                event_desc->isSelectStage = 0;
-                event_desc->matchData->stage = stage_kind;
-                *onload_fileno = this_file_index;
-                *onload_slot = import_data.memcard_slot;
-
-                SFX_PlayCommon(1);
+                cpu_index = 0;
+                hmn_index = 1;
             }
             else
-                goto EXIT;
+            {
+                hmn_index = 0;
+                cpu_index = 1;
+            }
+
+            // set fighters
+            css_minorscene->vs_data.match_init.playerData[hmn_index].kind = hmn_kind;
+            css_minorscene->vs_data.match_init.playerData[hmn_index].costume = hmn_costume; // header->metadata.hmn_costume;
+            preload->fighters[hmn_index].kind = hmn_kind;
+            preload->fighters[hmn_index].costume = hmn_costume;
+            css_minorscene->vs_data.match_init.playerData[cpu_index].kind = cpu_kind;
+            css_minorscene->vs_data.match_init.playerData[cpu_index].costume = cpu_costume; // header->metadata.cpu_costume;
+            preload->fighters[cpu_index].kind = cpu_kind;
+            preload->fighters[cpu_index].costume = cpu_costume;
+
+            // set stage
+            css_minorscene->vs_data.match_init.stage = stage_kind;
+            preload->stage = stage_kind;
+
+            // load files
+            Preload_Update();
+
+            // advance scene
+            *stc_css_exitkind = 1;
+
+            // HUGE HACK ALERT
+            event_desc->isSelectStage = 0;
+            event_desc->matchData->stage = stage_kind;
+            *onload_fileno = this_file_index;
+            *onload_slot = import_data.memcard_slot;
+
+            SFX_PlayCommon(1);
         }
 
         break;
@@ -1265,36 +1259,27 @@ void Menu_Confirm_Think(GOBJ *menu_gobj)
         }
         Text_SetColor(import_data.confirm.text, cursor + 1, &text_gold);
 
-        // check for back
-        if (down & HSD_BUTTON_B)
+        if (down & HSD_BUTTON_B || (down & HSD_BUTTON_A && cursor == 1))
         {
-        RETURN_TO_FILESEL:
+            // go back
             Menu_Confirm_Exit(menu_gobj);
             SFX_PlayCommon(0);
             import_data.menu_state = IMP_SELFILE;
         }
-
-        // check for confirm
         else if (down & HSD_BUTTON_A)
         {
+            SFX_PlayCommon(1);
 
-            if (cursor == 0)
-            {
-                SFX_PlayCommon(1);
+            // delete selected recording
+            int this_file_index = (import_data.page * IMPORT_FILESPERPAGE) + import_data.cursor;
+            Menu_SelFile_DeleteFile(menu_gobj, this_file_index);
 
-                // delete selected recording
-                int this_file_index = (import_data.page * IMPORT_FILESPERPAGE) + import_data.cursor;
-                Menu_SelFile_DeleteFile(menu_gobj, this_file_index);
+            // close dialog
+            Menu_Confirm_Exit(menu_gobj);
 
-                // close dialog
-                Menu_Confirm_Exit(menu_gobj);
-
-                // reload selfile
-                Menu_SelFile_Exit(menu_gobj); // close select file
-                Menu_SelFile_Init(menu_gobj); // open select file
-            }
-            else
-                goto RETURN_TO_FILESEL;
+            // reload selfile
+            Menu_SelFile_Exit(menu_gobj); // close select file
+            Menu_SelFile_Init(menu_gobj); // open select file
         }
         break;
     }
@@ -1311,33 +1296,24 @@ void Menu_Confirm_Think(GOBJ *menu_gobj)
         Text_SetColor(import_data.confirm.text, cursor + 2, &text_gold);
 
         // check for back
-        if (down & HSD_BUTTON_B)
+        if (down & HSD_BUTTON_B || (down & HSD_BUTTON_A && cursor == 1))
         {
-        NO_DELETE_CORRUPT:
             Menu_Confirm_Exit(menu_gobj); // close dialog
             Menu_SelFile_Exit(menu_gobj); // close select file
             Menu_SelCard_Init(menu_gobj); // open select card
             SFX_PlayCommon(0);
             //import_data.menu_state = IMP_SELCARD;
         }
-
-        // check for confirm
         else if (down & HSD_BUTTON_A)
         {
+            SFX_PlayCommon(1);
 
-            if (cursor == 0)
-            {
-                SFX_PlayCommon(1);
+            // close dialog
+            Menu_Confirm_Exit(menu_gobj);
 
-                // close dialog
-                Menu_Confirm_Exit(menu_gobj);
-
-                // reload selfile
-                Menu_SelFile_Exit(menu_gobj); // close select file
-                Menu_SelFile_Init(menu_gobj); // open select file
-            }
-            else
-                goto NO_DELETE_CORRUPT;
+            // reload selfile
+            Menu_SelFile_Exit(menu_gobj); // close select file
+            Menu_SelFile_Init(menu_gobj); // open select file
         }
         break;
     }
