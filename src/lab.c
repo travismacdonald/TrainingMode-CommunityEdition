@@ -74,6 +74,278 @@ void Lab_ChangeCPUPercent(GOBJ *menu_gobj, int value)
 
     return;
 }
+void Lab_ChangeTechInPlaceChance(GOBJ *menu_gobj, int value)
+{
+    if (LabOptions_CPU[OPTCPU_TECHAWAYCHANCE].option_val + LabOptions_CPU[OPTCPU_TECHTOWARDCHANCE].option_val + LabOptions_CPU[OPTCPU_MISSTECHCHANCE].option_val + value > 100)
+    {
+        if (LabOptions_CPU[OPTCPU_TECHAWAYCHANCE].option_val > 0)
+        { 
+            LabOptions_CPU[OPTCPU_TECHAWAYCHANCE].option_val--;
+        }
+        else if (LabOptions_CPU[OPTCPU_TECHTOWARDCHANCE].option_val > 0)
+        { 
+            LabOptions_CPU[OPTCPU_TECHTOWARDCHANCE].option_val--;
+        }
+        else if (LabOptions_CPU[OPTCPU_MISSTECHCHANCE].option_val > 0)
+        { 
+            LabOptions_CPU[OPTCPU_MISSTECHCHANCE].option_val--;
+        }
+    }
+    else if (LabOptions_CPU[OPTCPU_TECHAWAYCHANCE].option_val + LabOptions_CPU[OPTCPU_TECHTOWARDCHANCE].option_val + LabOptions_CPU[OPTCPU_MISSTECHCHANCE].option_val + value < 100)
+    {
+        if (LabOptions_CPU[OPTCPU_TECHAWAYCHANCE].option_val < 100)
+        { 
+            LabOptions_CPU[OPTCPU_TECHAWAYCHANCE].option_val++;
+        }
+        else if (LabOptions_CPU[OPTCPU_TECHTOWARDCHANCE].option_val < 100)
+        { 
+            LabOptions_CPU[OPTCPU_TECHTOWARDCHANCE].option_val++;
+        }
+        else if (LabOptions_CPU[OPTCPU_MISSTECHCHANCE].option_val < 100)
+        { 
+            LabOptions_CPU[OPTCPU_MISSTECHCHANCE].option_val++;
+        }
+    }
+    return;
+}
+void Lab_ChangeTechAwayChance(GOBJ *menu_gobj, int value)
+{
+    if (LabOptions_CPU[OPTCPU_TECHINPLACECHANCE].option_val + LabOptions_CPU[OPTCPU_TECHTOWARDCHANCE].option_val + LabOptions_CPU[OPTCPU_MISSTECHCHANCE].option_val + value > 100)
+    {
+        if (LabOptions_CPU[OPTCPU_TECHINPLACECHANCE].option_val > 0)
+        { 
+            LabOptions_CPU[OPTCPU_TECHINPLACECHANCE].option_val--;
+        }
+        else if (LabOptions_CPU[OPTCPU_TECHTOWARDCHANCE].option_val > 0)
+        { 
+            LabOptions_CPU[OPTCPU_TECHTOWARDCHANCE].option_val--;
+        }
+        else if (LabOptions_CPU[OPTCPU_MISSTECHCHANCE].option_val > 0)
+        { 
+            LabOptions_CPU[OPTCPU_MISSTECHCHANCE].option_val--;
+        }
+    }
+    else if (LabOptions_CPU[OPTCPU_TECHINPLACECHANCE].option_val + LabOptions_CPU[OPTCPU_TECHTOWARDCHANCE].option_val + LabOptions_CPU[OPTCPU_MISSTECHCHANCE].option_val + value < 100)
+    {
+        if (LabOptions_CPU[OPTCPU_TECHINPLACECHANCE].option_val < 100)
+        { 
+            LabOptions_CPU[OPTCPU_TECHINPLACECHANCE].option_val++;
+        }
+        else if (LabOptions_CPU[OPTCPU_TECHTOWARDCHANCE].option_val < 100)
+        { 
+            LabOptions_CPU[OPTCPU_TECHTOWARDCHANCE].option_val++;
+        }
+        else if (LabOptions_CPU[OPTCPU_MISSTECHCHANCE].option_val < 100)
+        { 
+            LabOptions_CPU[OPTCPU_MISSTECHCHANCE].option_val++;
+        }
+    }
+    return;
+}
+void Lab_ChangeTechTowardChance(GOBJ *menu_gobj, int value)
+{
+    if (LabOptions_CPU[OPTCPU_TECHAWAYCHANCE].option_val + LabOptions_CPU[OPTCPU_TECHINPLACECHANCE].option_val + LabOptions_CPU[OPTCPU_MISSTECHCHANCE].option_val + value > 100)
+    {
+        if (LabOptions_CPU[OPTCPU_TECHINPLACECHANCE].option_val > 0)
+        { 
+            LabOptions_CPU[OPTCPU_TECHINPLACECHANCE].option_val--;
+        }
+        else if (LabOptions_CPU[OPTCPU_TECHTOWARDCHANCE].option_val > 0)
+        { 
+            LabOptions_CPU[OPTCPU_TECHTOWARDCHANCE].option_val--;
+        }
+        else if (LabOptions_CPU[OPTCPU_MISSTECHCHANCE].option_val > 0)
+        { 
+            LabOptions_CPU[OPTCPU_MISSTECHCHANCE].option_val--;
+        }
+    }
+    else if (LabOptions_CPU[OPTCPU_TECHAWAYCHANCE].option_val + LabOptions_CPU[OPTCPU_TECHINPLACECHANCE].option_val + LabOptions_CPU[OPTCPU_MISSTECHCHANCE].option_val + value < 100)
+    {
+        if (LabOptions_CPU[OPTCPU_TECHINPLACECHANCE].option_val < 100)
+        { 
+            LabOptions_CPU[OPTCPU_TECHINPLACECHANCE].option_val++;
+        }
+        else if (LabOptions_CPU[OPTCPU_TECHTOWARDCHANCE].option_val < 100)
+        { 
+            LabOptions_CPU[OPTCPU_TECHTOWARDCHANCE].option_val++;
+        }
+        else if (LabOptions_CPU[OPTCPU_MISSTECHCHANCE].option_val < 100)
+        { 
+            LabOptions_CPU[OPTCPU_MISSTECHCHANCE].option_val++;
+        }
+    }
+    return;
+}
+void Lab_ChangeMissTechChance(GOBJ *menu_gobj, int value)
+{
+    if (LabOptions_CPU[OPTCPU_TECHAWAYCHANCE].option_val + LabOptions_CPU[OPTCPU_TECHTOWARDCHANCE].option_val + LabOptions_CPU[OPTCPU_TECHINPLACECHANCE].option_val + value > 100)
+    {
+        if (LabOptions_CPU[OPTCPU_TECHINPLACECHANCE].option_val > 0)
+        { 
+            LabOptions_CPU[OPTCPU_TECHINPLACECHANCE].option_val--;
+        }
+        else if (LabOptions_CPU[OPTCPU_TECHAWAYCHANCE].option_val > 0)
+        { 
+            LabOptions_CPU[OPTCPU_TECHAWAYCHANCE].option_val--;
+        }
+        else if (LabOptions_CPU[OPTCPU_TECHTOWARDCHANCE].option_val > 0)
+        { 
+            LabOptions_CPU[OPTCPU_TECHTOWARDCHANCE].option_val--;
+        }
+    }
+    else if (LabOptions_CPU[OPTCPU_TECHAWAYCHANCE].option_val + LabOptions_CPU[OPTCPU_TECHTOWARDCHANCE].option_val + LabOptions_CPU[OPTCPU_TECHINPLACECHANCE].option_val + value < 100)
+    {
+        if (LabOptions_CPU[OPTCPU_TECHINPLACECHANCE].option_val < 100)
+        { 
+            LabOptions_CPU[OPTCPU_TECHINPLACECHANCE].option_val++;
+        }
+        else if (LabOptions_CPU[OPTCPU_TECHAWAYCHANCE].option_val < 100)
+        { 
+            LabOptions_CPU[OPTCPU_TECHAWAYCHANCE].option_val++;
+        }
+        else if (LabOptions_CPU[OPTCPU_TECHTOWARDCHANCE].option_val < 100)
+        { 
+            LabOptions_CPU[OPTCPU_TECHTOWARDCHANCE].option_val++;
+        }
+    }
+    return;
+}
+void Lab_ChangeStandChance(GOBJ *menu_gobj, int value)
+{
+    if (LabOptions_CPU[OPTCPU_GETUPAWAYCHANCE].option_val + LabOptions_CPU[OPTCPU_GETUPTOWARDCHANCE].option_val + LabOptions_CPU[OPTCPU_GETUPATTACKCHANCE].option_val + value > 100)
+    {
+        if (LabOptions_CPU[OPTCPU_GETUPAWAYCHANCE].option_val > 0)
+        { 
+            LabOptions_CPU[OPTCPU_GETUPAWAYCHANCE].option_val--;
+        }
+        else if (LabOptions_CPU[OPTCPU_GETUPTOWARDCHANCE].option_val > 0)
+        { 
+            LabOptions_CPU[OPTCPU_GETUPTOWARDCHANCE].option_val--;
+        }
+        else if (LabOptions_CPU[OPTCPU_GETUPATTACKCHANCE].option_val > 0)
+        { 
+            LabOptions_CPU[OPTCPU_GETUPATTACKCHANCE].option_val--;
+        }
+    }
+    else if (LabOptions_CPU[OPTCPU_GETUPAWAYCHANCE].option_val + LabOptions_CPU[OPTCPU_GETUPTOWARDCHANCE].option_val + LabOptions_CPU[OPTCPU_GETUPATTACKCHANCE].option_val + value < 100)
+    {
+        if (LabOptions_CPU[OPTCPU_GETUPAWAYCHANCE].option_val < 100)
+        { 
+            LabOptions_CPU[OPTCPU_GETUPAWAYCHANCE].option_val++;
+        }
+        else if (LabOptions_CPU[OPTCPU_GETUPTOWARDCHANCE].option_val < 100)
+        { 
+            LabOptions_CPU[OPTCPU_GETUPTOWARDCHANCE].option_val++;
+        }
+        else if (LabOptions_CPU[OPTCPU_GETUPATTACKCHANCE].option_val < 100)
+        { 
+            LabOptions_CPU[OPTCPU_GETUPATTACKCHANCE].option_val++;
+        }
+    }
+    return;
+}
+void Lab_ChangeRollAwayChance(GOBJ *menu_gobj, int value)
+{
+    if (LabOptions_CPU[OPTCPU_GETUPSTANDCHANCE].option_val + LabOptions_CPU[OPTCPU_GETUPTOWARDCHANCE].option_val + LabOptions_CPU[OPTCPU_GETUPATTACKCHANCE].option_val + value > 100)
+    {
+        if (LabOptions_CPU[OPTCPU_GETUPSTANDCHANCE].option_val > 0)
+        { 
+            LabOptions_CPU[OPTCPU_GETUPSTANDCHANCE].option_val--;
+        }
+        else if (LabOptions_CPU[OPTCPU_GETUPTOWARDCHANCE].option_val > 0)
+        { 
+            LabOptions_CPU[OPTCPU_GETUPTOWARDCHANCE].option_val--;
+        }
+        else if (LabOptions_CPU[OPTCPU_GETUPATTACKCHANCE].option_val > 0)
+        { 
+            LabOptions_CPU[OPTCPU_GETUPATTACKCHANCE].option_val--;
+        }
+    }
+    else if (LabOptions_CPU[OPTCPU_GETUPSTANDCHANCE].option_val + LabOptions_CPU[OPTCPU_GETUPTOWARDCHANCE].option_val + LabOptions_CPU[OPTCPU_GETUPATTACKCHANCE].option_val + value < 100)
+    {
+        if (LabOptions_CPU[OPTCPU_GETUPSTANDCHANCE].option_val < 100)
+        { 
+            LabOptions_CPU[OPTCPU_GETUPSTANDCHANCE].option_val++;
+        }
+        else if (LabOptions_CPU[OPTCPU_GETUPTOWARDCHANCE].option_val < 100)
+        { 
+            LabOptions_CPU[OPTCPU_GETUPTOWARDCHANCE].option_val++;
+        }
+        else if (LabOptions_CPU[OPTCPU_GETUPATTACKCHANCE].option_val < 100)
+        { 
+            LabOptions_CPU[OPTCPU_GETUPATTACKCHANCE].option_val++;
+        }
+    }
+    return;
+}
+void Lab_ChangeRollTowardChance(GOBJ *menu_gobj, int value)
+{
+    if (LabOptions_CPU[OPTCPU_GETUPAWAYCHANCE].option_val + LabOptions_CPU[OPTCPU_GETUPSTANDCHANCE].option_val + LabOptions_CPU[OPTCPU_GETUPATTACKCHANCE].option_val + value > 100)
+    {
+        if (LabOptions_CPU[OPTCPU_GETUPSTANDCHANCE].option_val > 0)
+        { 
+            LabOptions_CPU[OPTCPU_GETUPSTANDCHANCE].option_val--;
+        }
+        else if (LabOptions_CPU[OPTCPU_GETUPAWAYCHANCE].option_val > 0)
+        { 
+            LabOptions_CPU[OPTCPU_GETUPAWAYCHANCE].option_val--;
+        }
+        else if (LabOptions_CPU[OPTCPU_GETUPATTACKCHANCE].option_val > 0)
+        { 
+            LabOptions_CPU[OPTCPU_GETUPATTACKCHANCE].option_val--;
+        }
+    }
+    else if (LabOptions_CPU[OPTCPU_GETUPAWAYCHANCE].option_val + LabOptions_CPU[OPTCPU_GETUPSTANDCHANCE].option_val + LabOptions_CPU[OPTCPU_GETUPATTACKCHANCE].option_val + value < 100)
+    {
+        if (LabOptions_CPU[OPTCPU_GETUPSTANDCHANCE].option_val < 100)
+        { 
+            LabOptions_CPU[OPTCPU_GETUPSTANDCHANCE].option_val++;
+        }
+        else if (LabOptions_CPU[OPTCPU_GETUPAWAYCHANCE].option_val < 100)
+        { 
+            LabOptions_CPU[OPTCPU_GETUPAWAYCHANCE].option_val++;
+        }
+        else if (LabOptions_CPU[OPTCPU_GETUPATTACKCHANCE].option_val < 100)
+        { 
+            LabOptions_CPU[OPTCPU_GETUPATTACKCHANCE].option_val++;
+        }
+    }
+    return;
+}
+void Lab_ChangeGetupAttackChance(GOBJ *menu_gobj, int value)
+{
+    if (LabOptions_CPU[OPTCPU_GETUPAWAYCHANCE].option_val + LabOptions_CPU[OPTCPU_GETUPTOWARDCHANCE].option_val + LabOptions_CPU[OPTCPU_GETUPSTANDCHANCE].option_val + value > 100)
+    {
+        if (LabOptions_CPU[OPTCPU_GETUPSTANDCHANCE].option_val > 0)
+        { 
+            LabOptions_CPU[OPTCPU_GETUPSTANDCHANCE].option_val--;
+        }
+        else if (LabOptions_CPU[OPTCPU_GETUPAWAYCHANCE].option_val > 0)
+        { 
+            LabOptions_CPU[OPTCPU_GETUPAWAYCHANCE].option_val--;
+        }
+        else if (LabOptions_CPU[OPTCPU_GETUPTOWARDCHANCE].option_val > 0)
+        { 
+            LabOptions_CPU[OPTCPU_GETUPTOWARDCHANCE].option_val--;
+        }
+    }
+    else if (LabOptions_CPU[OPTCPU_GETUPAWAYCHANCE].option_val + LabOptions_CPU[OPTCPU_GETUPTOWARDCHANCE].option_val + LabOptions_CPU[OPTCPU_GETUPSTANDCHANCE].option_val + value < 100)
+    {
+        if (LabOptions_CPU[OPTCPU_GETUPSTANDCHANCE].option_val < 100)
+        { 
+            LabOptions_CPU[OPTCPU_GETUPSTANDCHANCE].option_val++;
+        }
+        else if (LabOptions_CPU[OPTCPU_GETUPAWAYCHANCE].option_val < 100)
+        { 
+            LabOptions_CPU[OPTCPU_GETUPAWAYCHANCE].option_val++;
+        }
+        else if (LabOptions_CPU[OPTCPU_GETUPTOWARDCHANCE].option_val < 100)
+        { 
+            LabOptions_CPU[OPTCPU_GETUPTOWARDCHANCE].option_val++;
+        }
+    }
+    return;
+}
 void Lab_ChangeCPUIntang(GOBJ *menu_gobj, int value)
 {
 
@@ -1495,7 +1767,29 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         {
         case (CPUTECH_RANDOM):
         {
-            tech_kind = (HSD_Randi((sizeof(LabValues_Tech) / 4) - 1) + 1);
+            int roll = HSD_Randi(100);
+            int sum = LabOptions_CPU[OPTCPU_TECHINPLACECHANCE].option_val;
+            if (roll < sum)
+            {
+                tech_kind = 1;
+                goto TECH_SWITCH;
+                break;
+            }
+            sum += LabOptions_CPU[OPTCPU_TECHAWAYCHANCE].option_val;
+            if (roll < sum)
+            {
+                tech_kind = 2;
+                goto TECH_SWITCH;
+                break;
+            }
+            sum += LabOptions_CPU[OPTCPU_TECHTOWARDCHANCE].option_val;
+            if (roll < sum)
+            {
+                tech_kind = 3;
+                goto TECH_SWITCH;
+                break;
+            }
+            tech_kind = 4;
             goto TECH_SWITCH;
             break;
         }
@@ -1550,7 +1844,29 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
             {
             case (CPUGETUP_RANDOM):
             {
-                getup = (HSD_Randi((sizeof(LabValues_Tech) / 4) - 1) + 1);
+                int roll = HSD_Randi(100);
+                int sum = LabOptions_CPU[OPTCPU_GETUPSTANDCHANCE].option_val;
+                if (roll < sum)
+                {
+                    getup = 1;
+                    goto GETUP_SWITCH;
+                    break;
+                }
+                sum += LabOptions_CPU[OPTCPU_GETUPAWAYCHANCE].option_val;
+                if (roll < sum)
+                {
+                    getup = 2;
+                    goto GETUP_SWITCH;
+                    break;
+                }
+                sum += LabOptions_CPU[OPTCPU_GETUPTOWARDCHANCE].option_val;
+                if (roll < sum)
+                {
+                    getup = 3;
+                    goto GETUP_SWITCH;
+                    break;
+                }
+                getup = 4;
                 goto GETUP_SWITCH;
                 break;
             }
