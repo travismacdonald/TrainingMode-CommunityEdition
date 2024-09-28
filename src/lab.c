@@ -1330,8 +1330,48 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
 
         // perform TDI behavior
         int tdi_kind = LabOptions_CPU[OPTCPU_TDI].option_val;
+        int asdi_kind = LabOptions_CPU[OPTCPU_ASDI].option_val;
 
     TDI_SWITCH:
+        TMLOG("asdi_kind: %d", asdi_kind);
+        switch (asdi_kind)
+        {
+        case (ASDI_NONE):
+        {
+            TMLOG("ASDI NONE");
+            cpu_data->cpu.cstickX = 0;
+            cpu_data->cpu.cstickY = 0;
+            break;
+        }
+        case (ASDI_LEFT):
+        {
+            TMLOG("ASDI LEFT");
+            cpu_data->cpu.cstickX = -127;
+            cpu_data->cpu.cstickY = 0;
+            break;
+        }
+        case (ASDI_RIGHT):
+        {
+            TMLOG("ASDI RIGHT");
+            cpu_data->cpu.cstickX = 127;
+            cpu_data->cpu.cstickY = 0;
+            break;
+        }
+        case (ASDI_UP):
+        {
+            TMLOG("ASDI UP");
+            cpu_data->cpu.cstickX = 0;
+            cpu_data->cpu.cstickY = 127;
+            break;
+        }
+        case (ASDI_DOWN):
+        {
+            TMLOG("ASDI DOWN");
+            cpu_data->cpu.cstickX = 0;
+            cpu_data->cpu.cstickY = -127;
+            break;
+        }
+        }
         switch (tdi_kind)
         {
         case (CPUTDI_RANDOM):
@@ -1399,6 +1439,7 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         {
 
             // floothug = full ASDI down + outward DI
+            cpu_data->cpu.cstickX = 0;
             cpu_data->cpu.cstickY = -127;
             goto TDI_OUT;
 
