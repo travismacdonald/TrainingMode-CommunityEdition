@@ -61,6 +61,61 @@ void OnCSSLoad(ArchiveInfo *archive)
     return;
 }
 
+void Read_Recordings()
+{
+    // search card for save files
+    import_data.file_num = 0;
+    int slot = import_data.memcard_slot;
+    char *filename[32];
+    int file_size;
+    s32 memSize, sectorSize;
+    if (CARDProbeEx(slot, &memSize, &sectorSize) == CARD_RESULT_READY)
+    {
+        // mount card
+        stc_memcard_work->is_done = 0;
+        if (CARDMountAsync(slot, stc_memcard_work->work_area, 0, Memcard_RemovedCallback) == CARD_RESULT_READY)
+        {
+            // check card
+            Memcard_Wait();
+            stc_memcard_work->is_done = 0;
+            if (CARDCheckAsync(slot, Memcard_RemovedCallback) == CARD_RESULT_READY)
+            {
+                Memcard_Wait();
+
+                // get free blocks
+                s32 byteNotUsed, filesNotUsed;
+                if (CARDFreeBlocks(slot, &byteNotUsed, &filesNotUsed) == CARD_RESULT_READY)
+                {
+
+                    // search for files with name TMREC
+                    for (int i = 0; i < CARD_MAX_FILE; i++)
+                    {
+                        CARDStat card_stat;
+
+                        if (CARDGetStatus(slot, i, &card_stat) != CARD_RESULT_READY)
+                            continue;
+
+                        // check file matches expectations
+                        if (strncmp(os_info->company, card_stat.company, sizeof(os_info->company)) != 0 ||
+                                strncmp(os_info->gameName, card_stat.gameName, sizeof(os_info->gameName)) != 0 ||
+                                strncmp("TMREC", card_stat.fileName, 5) != 0)
+                            continue;
+
+                        OSReport("found recording file %s with size %d\n", card_stat.fileName, card_stat.length);
+                        import_data.file_info[import_data.file_num].file_size = card_stat.length;                                      // save file size
+                        import_data.file_info[import_data.file_num].file_no = i;                                                       // save file no
+                        memcpy(import_data.file_info[import_data.file_num].file_name, card_stat.fileName, sizeof(card_stat.fileName)); // save file name
+                        import_data.file_num++;                                                                                        // increment file amount
+                    }
+                }
+            }
+
+            CARDUnmount(slot);
+            stc_memcard_work->is_done = 0;
+        }
+    }
+}
+
 // Button Functions
 void Cam_Button_Create()
 {
@@ -411,6 +466,13 @@ void Menu_SelCard_Think(GOBJ *menu_gobj)
         if (import_data.memcard_inserted[import_data.cursor])
         {
             import_data.memcard_slot = import_data.cursor;
+            Read_Recordings();
+            if (import_data.file_num == 0)
+            {
+                Menu_Confirm_Init(menu_gobj, CFRM_NONE);
+                SFX_PlayCommon(3);
+                return;
+            }
             SFX_PlayCommon(1);
             Menu_SelCard_Exit(menu_gobj);
             Menu_SelFile_Init(menu_gobj);
@@ -494,58 +556,6 @@ void Menu_SelFile_Init(GOBJ *menu_gobj)
 
     // edit description
     Text_SetText(import_data.desc_text, 0, "A = Select   B = Return   X = Delete   Left/Right = Prev/Next Page");
-
-    // search card for save files
-    import_data.file_num = 0;
-    int slot = import_data.memcard_slot;
-    char *filename[32];
-    int file_size;
-    s32 memSize, sectorSize;
-    if (CARDProbeEx(slot, &memSize, &sectorSize) == CARD_RESULT_READY)
-    {
-        // mount card
-        stc_memcard_work->is_done = 0;
-        if (CARDMountAsync(slot, stc_memcard_work->work_area, 0, Memcard_RemovedCallback) == CARD_RESULT_READY)
-        {
-            // check card
-            Memcard_Wait();
-            stc_memcard_work->is_done = 0;
-            if (CARDCheckAsync(slot, Memcard_RemovedCallback) == CARD_RESULT_READY)
-            {
-                Memcard_Wait();
-
-                // get free blocks
-                s32 byteNotUsed, filesNotUsed;
-                if (CARDFreeBlocks(slot, &byteNotUsed, &filesNotUsed) == CARD_RESULT_READY)
-                {
-
-                    // search for files with name TMREC
-                    for (int i = 0; i < CARD_MAX_FILE; i++)
-                    {
-                        CARDStat card_stat;
-
-                        if (CARDGetStatus(slot, i, &card_stat) != CARD_RESULT_READY)
-                            continue;
-
-                        // check file matches expectations
-                        if (strncmp(os_info->company, card_stat.company, sizeof(os_info->company)) != 0 ||
-                                strncmp(os_info->gameName, card_stat.gameName, sizeof(os_info->gameName)) != 0 ||
-                                strncmp("TMREC", card_stat.fileName, 5) != 0)
-                            continue;
-
-                        OSReport("found recording file %s with size %d\n", card_stat.fileName, card_stat.length);
-                        import_data.file_info[import_data.file_num].file_size = card_stat.length;                                      // save file size
-                        import_data.file_info[import_data.file_num].file_no = i;                                                       // save file no
-                        memcpy(import_data.file_info[import_data.file_num].file_name, card_stat.fileName, sizeof(card_stat.fileName)); // save file name
-                        import_data.file_num++;                                                                                        // increment file amount
-                    }
-                }
-            }
-
-            CARDUnmount(slot);
-            stc_memcard_work->is_done = 0;
-        }
-    }
 
     // init scroll bar according to import_data.file_num
     int page_total = (import_data.file_num + IMPORT_FILESPERPAGE - 1) / IMPORT_FILESPERPAGE;
@@ -1058,6 +1068,13 @@ void Menu_Confirm_Init(GOBJ *menu_gobj, int kind)
         Text_SetColor(import_data.confirm.text, 1, &text_gold);
         break;
     }
+    case(CFRM_NONE):
+    {
+        Text_AddSubtext(text, 0, -50, "No recordings found");
+        Text_AddSubtext(text, 0, 20, "OK");
+        Text_SetColor(import_data.confirm.text, 1, &text_gold);
+        break;
+    }
     case (CFRM_DEL):
     {
         Text_AddSubtext(text, 0, -50, "Delete this recording?");
@@ -1222,6 +1239,17 @@ void Menu_Confirm_Think(GOBJ *menu_gobj)
             Menu_Confirm_Exit(menu_gobj);
             SFX_PlayCommon(0);
             import_data.menu_state = IMP_SELFILE;
+        }
+        break;
+    }
+    case(CFRM_NONE):
+    {
+        // check for select
+        if (down & (HSD_BUTTON_A | HSD_BUTTON_B))
+        {
+            Menu_Confirm_Exit(menu_gobj);
+            SFX_PlayCommon(0);
+            import_data.menu_state = IMP_SELCARD;
         }
         break;
     }
