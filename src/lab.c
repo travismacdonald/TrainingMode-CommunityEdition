@@ -1302,9 +1302,9 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
 
                         // decide left or right
                         if (eventData->cpu_sdidir == 0)
-                            angle = lastSDIWasCardinal ? M_1DEGREE * 20 : M_1DEGREE * 0; // right
+                            angle = lastSDIWasCardinal ? M_1DEGREE * 17 : M_1DEGREE * 0; // right
                         else
-                            angle = lastSDIWasCardinal ? M_1DEGREE * 200 : M_1DEGREE * 180; // left
+                            angle = lastSDIWasCardinal ? M_1DEGREE * 197 : M_1DEGREE * 180; // left
                     }
                     // when airborne, any direction
                     else
@@ -1312,6 +1312,8 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
                         // random input
                         angle = HSD_Randi(360) * M_1DEGREE;
                         magnitude = 0.49 + (HSD_Randf() * 0.51);
+
+                        angle = get_angle_out_of_deadzone(angle, lastSDIWasCardinal);
                     }
 
                     break;
@@ -1328,6 +1330,7 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
                         angle -= (M_PI * 2);
                     }
 
+                    angle = get_angle_out_of_deadzone(angle, lastSDIWasCardinal);
                     magnitude = 1;
 
                     break;
@@ -1337,31 +1340,32 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
                     // get angle from center bubble to hit collision
                     angle = atan2(hmn_data->unk_hitbox.pos.Y - cpu_data->unk_hitbox.pos.Y, hmn_data->unk_hitbox.pos.X - cpu_data->unk_hitbox.pos.X);
 
+                    angle = get_angle_out_of_deadzone(angle, lastSDIWasCardinal);
                     magnitude = 1;
 
                     break;
                 }
                 case SDIDIR_UP:
                 {
-                    angle = lastSDIWasCardinal ? M_1DEGREE * 110 : M_1DEGREE * 90;
+                    angle = lastSDIWasCardinal ? M_1DEGREE * 107 : M_1DEGREE * 90;
                     magnitude = 1;
                     break;
                 }
                 case SDIDIR_DOWN:
                 {
-                    angle = lastSDIWasCardinal ? M_1DEGREE * 290 : M_1DEGREE * 270;
+                    angle = lastSDIWasCardinal ? M_1DEGREE * 287 : M_1DEGREE * 270;
                     magnitude = 1;
                     break;
                 }
                 case SDIDIR_LEFT:
                 {
-                    angle = lastSDIWasCardinal ? M_1DEGREE * 200 : M_1DEGREE * 180;
+                    angle = lastSDIWasCardinal ? M_1DEGREE * 197 : M_1DEGREE * 180;
                     magnitude = 1;
                     break;
                 }
                 case SDIDIR_RIGHT:
                 {
-                    angle = lastSDIWasCardinal ? M_1DEGREE * 20 : M_1DEGREE * 0;
+                    angle = lastSDIWasCardinal ? M_1DEGREE * 17 : M_1DEGREE * 0;
                     magnitude = 1;
                     break;
                 }
@@ -1373,6 +1377,11 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
                 // store
                 cpu_data->cpu.lstickX = cos(angle) * 127 * magnitude;
                 cpu_data->cpu.lstickY = sin(angle) * 127 * magnitude;
+            }
+            else
+            {
+                // if we don't do an SDI, we can do a cardinal on the next frame
+                lastSDIWasCardinal = 0;
             }
         }
 
@@ -5592,6 +5601,28 @@ void act_on_frame_distinguishable(FighterData *cpu_data, int frame_distinguishab
             SFX_PlayCommon(1);
         }
     }
+}
+
+float get_angle_out_of_deadzone(float angle, int lastSDIWasCardinal)
+{
+    // get out of deadzone if last sdi was cardinal
+    if (angle > M_1DEGREE * 73.5 || angle < M_1DEGREE * 106.5 && lastSDIWasCardinal)
+    {
+        angle = M_1DEGREE * 73;
+    }
+    else if (angle > M_1DEGREE * 163.5 || angle < M_1DEGREE * 196.5 && lastSDIWasCardinal)
+    {
+        angle = M_1DEGREE * 163;
+    }
+    else if (angle > M_1DEGREE * 253.5 || angle < M_1DEGREE * 296.5 && lastSDIWasCardinal)
+    {
+        angle = M_1DEGREE * 253;
+    }
+    else if (angle > M_1DEGREE * 343.5 || angle < M_1DEGREE * 16.5 && lastSDIWasCardinal)
+    {
+        angle = M_1DEGREE * 343;
+    }
+    return angle;
 }
 
 // lz77 functions credited to https://github.com/andyherbert/lz1

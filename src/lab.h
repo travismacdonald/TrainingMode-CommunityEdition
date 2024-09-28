@@ -2117,3 +2117,5 @@ static EventMenu LabMenu_Record = {
     .options = &LabOptions_Record,                                 // pointer to all of this menu's options
     .prev = 0,                                                     // pointer to previous menu, used at runtime
 };
+
+float get_angle_out_of_deadzone(float angle, int lastSDIWasCardinal);
