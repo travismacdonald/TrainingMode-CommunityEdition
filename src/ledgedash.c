@@ -490,7 +490,7 @@ void Ledgedash_ResetThink(LedgedashData *event_data, GOBJ *hmn)
                 ((((state >= ASID_CLIFFCLIMBSLOW) && (state <= ASID_CLIFFJUMPQUICK2)) ||    // reset if any other ledge action
                   ((state >= ASID_ATTACKAIRN) && (state <= ASID_ATTACKAIRLW)) ||
                   ((hmn_data->phys.air_state == 0) && event_data->hud.is_release && ((state != ASID_LANDING) && (state != ASID_LANDINGFALLSPECIAL) && (state != ASID_REBIRTHWAIT)))) && // reset if grounded non landing
-                 (hmn_data->TM.state_frame >= 7)))
+                 (hmn_data->TM.state_frame >= 12)))
             {
                 // reset and play sfx
                 Fighter_PlaceOnLedge(event_data, hmn, event_data->ledge_line, (float)event_data->ledge_dir);
