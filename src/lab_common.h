@@ -365,6 +365,16 @@ void Button_Think(GOBJ *button_gobj);
 void Lab_ChangePlayerPercent(GOBJ *menu_gobj, int value);
 void Lab_ChangeFrameAdvance(GOBJ *menu_gobj, int value);
 void Lab_ChangeCPUPercent(GOBJ *menu_gobj, int value);
+void Lab_ChangeTech(GOBJ *menu_gobj, int value);
+void Lab_ChangeGetup(GOBJ *menu_gobj, int value);
+void Lab_ChangeTechInPlaceChance(GOBJ *menu_gobj, int value);
+void Lab_ChangeTechAwayChance(GOBJ *menu_gobj, int value);
+void Lab_ChangeTechTowardChance(GOBJ *menu_gobj, int value);
+void Lab_ChangeMissTechChance(GOBJ *menu_gobj, int value);
+void Lab_ChangeStandChance(GOBJ *menu_gobj, int value);
+void Lab_ChangeRollAwayChance(GOBJ *menu_gobj, int value);
+void Lab_ChangeRollTowardChance(GOBJ *menu_gobj, int value);
+void Lab_ChangeGetupAttackChance(GOBJ *menu_gobj, int value);
 void Lab_ChangeCPUIntang(GOBJ *menu_gobj, int value);
 void Lab_ChangeModelDisplay(GOBJ *menu_gobj, int value);
 void Lab_ChangeHitDisplay(GOBJ *menu_gobj, int value);
@@ -416,13 +426,9 @@ void Lab_Exit(int value);
 void InfoDisplay_Think(GOBJ *gobj);
 void InfoDisplay_GX(GOBJ *gobj, int pass);
 
-static EventOption LabOptions_Main[];
-static EventOption LabOptions_General[];
-static EventOption LabOptions_InfoDisplay[];
-static EventMenu LabMenu_General;
-static EventMenu LabMenu_InfoDisplay;
-static EventMenu LabMenu_CPU;
-static EventMenu LabMenu_Record;
+// helpers
+void act_on_frame_distinguishable(
+    FighterData *cpu_data, int frame_distinguishable,int invisible, int sound);
 
 // info display
 #define GXPRI_INFDISP GXPRI_MENUMODEL - 2

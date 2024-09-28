@@ -79,6 +79,45 @@ void Lab_ChangeCPUPercent(GOBJ *menu_gobj, int value)
 
     return;
 }
+void Lab_ChangeTech(GOBJ *menu_gobj, int value)
+{
+    LabOptions_Tech[OPTTECH_TECHINPLACECHANCE].disable = value == 0 ? 0 : 1;
+    LabOptions_Tech[OPTTECH_TECHAWAYCHANCE].disable = value == 0 ? 0 : 1;
+    LabOptions_Tech[OPTTECH_TECHTOWARDCHANCE].disable = value == 0 ? 0 : 1;
+    LabOptions_Tech[OPTTECH_MISSTECHCHANCE].disable = value == 0 ? 0 : 1;
+}
+void Lab_ChangeGetup(GOBJ *menu_gobj, int value)
+{
+    LabOptions_Tech[OPTTECH_GETUPSTANDCHANCE].disable = value == 0 ? 0 : 1;
+    LabOptions_Tech[OPTTECH_GETUPAWAYCHANCE].disable = value == 0 ? 0 : 1;
+    LabOptions_Tech[OPTTECH_GETUPTOWARDCHANCE].disable = value == 0 ? 0 : 1;
+    LabOptions_Tech[OPTTECH_GETUPATTACKCHANCE].disable = value == 0 ? 0 : 1;
+}
+
+static int tech_option_menu_lookup[4] = {
+    OPTTECH_TECHINPLACECHANCE,
+    OPTTECH_TECHAWAYCHANCE,
+    OPTTECH_TECHTOWARDCHANCE,
+    OPTTECH_MISSTECHCHANCE,
+};
+
+static int getup_option_menu_lookup[4] = {
+    OPTTECH_GETUPSTANDCHANCE,
+    OPTTECH_GETUPAWAYCHANCE,
+    OPTTECH_GETUPTOWARDCHANCE,
+    OPTTECH_GETUPATTACKCHANCE,
+};
+
+void Lab_ChangeTechInPlaceChance (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(tech_option_menu_lookup, 0); }
+void Lab_ChangeTechAwayChance    (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(tech_option_menu_lookup, 1); }
+void Lab_ChangeTechTowardChance  (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(tech_option_menu_lookup, 2); }
+void Lab_ChangeMissTechChance    (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(tech_option_menu_lookup, 3); }
+
+void Lab_ChangeStandChance       (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(getup_option_menu_lookup, 0); }
+void Lab_ChangeRollAwayChance    (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(getup_option_menu_lookup, 1); }
+void Lab_ChangeRollTowardChance  (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(getup_option_menu_lookup, 2); }
+void Lab_ChangeGetupAttackChance (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(getup_option_menu_lookup, 3); }
+
 void Lab_ChangeCPUIntang(GOBJ *menu_gobj, int value)
 {
 
@@ -1489,7 +1528,7 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         }
 
         // perform tech behavior
-        int tech_kind = LabOptions_CPU[OPTCPU_TECH].option_val;
+        int tech_kind = LabOptions_Tech[OPTTECH_TECH].option_val;
         s8 dir;
         s8 stickX = 0;
         s8 sincePress = 0;
@@ -1500,7 +1539,29 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         {
         case (CPUTECH_RANDOM):
         {
-            tech_kind = (HSD_Randi((sizeof(LabValues_Tech) / 4) - 1) + 1);
+            int roll = HSD_Randi(100);
+            int sum = LabOptions_Tech[OPTTECH_TECHINPLACECHANCE].option_val;
+            if (roll < sum)
+            {
+                tech_kind = 1;
+                goto TECH_SWITCH;
+                break;
+            }
+            sum += LabOptions_Tech[OPTTECH_TECHAWAYCHANCE].option_val;
+            if (roll < sum)
+            {
+                tech_kind = 2;
+                goto TECH_SWITCH;
+                break;
+            }
+            sum += LabOptions_Tech[OPTTECH_TECHTOWARDCHANCE].option_val;
+            if (roll < sum)
+            {
+                tech_kind = 3;
+                goto TECH_SWITCH;
+                break;
+            }
+            tech_kind = 4;
             goto TECH_SWITCH;
             break;
         }
@@ -1544,7 +1605,7 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         if ((cpu_data->state == ASID_DOWNWAITD) || (cpu_data->state == ASID_DOWNWAITU))
         {
             // perform getup behavior
-            int getup = LabOptions_CPU[OPTCPU_GETUP].option_val;
+            int getup = LabOptions_Tech[OPTTECH_GETUP].option_val;
             s8 dir;
             int inputs = 0;
             s8 stickX = 0;
@@ -1555,7 +1616,29 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
             {
             case (CPUGETUP_RANDOM):
             {
-                getup = (HSD_Randi((sizeof(LabValues_Tech) / 4) - 1) + 1);
+                int roll = HSD_Randi(100);
+                int sum = LabOptions_Tech[OPTTECH_GETUPSTANDCHANCE].option_val;
+                if (roll < sum)
+                {
+                    getup = 1;
+                    goto GETUP_SWITCH;
+                    break;
+                }
+                sum += LabOptions_Tech[OPTTECH_GETUPAWAYCHANCE].option_val;
+                if (roll < sum)
+                {
+                    getup = 2;
+                    goto GETUP_SWITCH;
+                    break;
+                }
+                sum += LabOptions_Tech[OPTTECH_GETUPTOWARDCHANCE].option_val;
+                if (roll < sum)
+                {
+                    getup = 3;
+                    goto GETUP_SWITCH;
+                    break;
+                }
+                getup = 4;
                 goto GETUP_SWITCH;
                 break;
             }
@@ -5081,106 +5164,100 @@ void Event_Think(GOBJ *event)
     }
 
     // apply invisibility
-    if (LabOptions_CPU[OPTCPU_INVISIBLE].option_val == 1)
+    int invisible = LabOptions_Tech[OPTTECH_INVISIBLE].option_val;
+    int sound = LabOptions_Tech[OPTTECH_SOUND].option_val;
+    if (cpu_data->state == ASID_PASSIVE || cpu_data->state == ASID_PASSIVESTANDF || cpu_data->state == ASID_PASSIVESTANDB)
     {
-        if (cpu_data->state == ASID_PASSIVE || cpu_data->state == ASID_PASSIVESTANDF || cpu_data->state == ASID_PASSIVESTANDB)
-        {
-            switch (cpu_data->kind) {
-                // case 0x00: // Mario
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                case 0x01: // Fox
-                    cpu_data->flags.invisible = (cpu_data->TM.state_frame >= 4) ? 1 : 0;
-                    break;
-                case 0x02: // Captain Falcon
-                    cpu_data->flags.invisible = (cpu_data->TM.state_frame >= 6) ? 1 : 0;
-                    break;
-                // case 0x03: // Donkey Kong
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                // case 0x04: // Kirby
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                // case 0x05: // Bowser
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                // case 0x06: // Link
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                // case 0x07: // Sheik
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                // case 0x08: // Ness
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                case 0x09: // Peach
-                    cpu_data->flags.invisible = (cpu_data->TM.state_frame >= 3) ? 1 : 0;
-                    break;
-                case 0x0A: // Popo (Ice Climbers)
-                    cpu_data->flags.invisible = (cpu_data->TM.state_frame >= 6) ? 1 : 0;
-                    break;
-                case 0x0B: // Nana (Ice Climbers)
-                    cpu_data->flags.invisible = (cpu_data->TM.state_frame >= 6) ? 1 : 0;
-                    break;
-                case 0x0C: // Pikachu
-                    cpu_data->flags.invisible = (cpu_data->TM.state_frame >= 7) ? 1 : 0;
-                    break;
-                // case 0x0D: // Samus
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                // case 0x0E: // Yoshi
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                // case 0x0F: // Jigglypuff
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                // case 0x10: // Mewtwo
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                // case 0x11: // Luigi
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                case 0x12: // Marth
-                    cpu_data->flags.invisible = (cpu_data->TM.state_frame >= 6) ? 1 : 0;
-                    break;
-                // case 0x13: // Zelda
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                // case 0x14: // Young Link
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                // case 0x15: // Dr. Mario
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                case 0x16: // Falco
-                    cpu_data->flags.invisible = (cpu_data->TM.state_frame >= 4) ? 1 : 0;
-                    break;
-                // case 0x17: // Pichu
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                // case 0x18: // Game & Watch
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                // case 0x19: // Ganondorf
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                // case 0x1A: // Roy
-                //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
-                //     break;
-                default:
-                    // Handle unknown character or error case
-                    cpu_data->flags.invisible = 0;
-            }
-        }
-        else
-        {
-            // Make visible when not teching
-            cpu_data->flags.invisible = 0;
+        switch (cpu_data->kind) {
+            // case 0x00: // Mario
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            case 0x01: // Fox
+                act_on_frame_distinguishable(cpu_data, 4, invisible, sound);
+                break;
+            case 0x02: // Captain Falcon
+                act_on_frame_distinguishable(cpu_data, 6, invisible, sound);
+                break;
+            // case 0x03: // Donkey Kong
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            // case 0x04: // Kirby
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            // case 0x05: // Bowser
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            // case 0x06: // Link
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            // case 0x07: // Sheik
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            // case 0x08: // Ness
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            case 0x09: // Peach
+                act_on_frame_distinguishable(cpu_data, 3, invisible, sound);
+                break;
+            case 0x0A: // Popo (Ice Climbers)
+                act_on_frame_distinguishable(cpu_data, 6, invisible, sound);
+                break;
+            case 0x0B: // Nana (Ice Climbers)
+                act_on_frame_distinguishable(cpu_data, 6, invisible, sound);
+                break;
+            case 0x0C: // Pikachu
+                act_on_frame_distinguishable(cpu_data, 7, invisible, sound);
+                break;
+            // case 0x0D: // Samus
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            // case 0x0E: // Yoshi
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            // case 0x0F: // Jigglypuff
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            // case 0x10: // Mewtwo
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            // case 0x11: // Luigi
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            case 0x12: // Marth
+                act_on_frame_distinguishable(cpu_data, 6, invisible, sound);
+                break;
+            // case 0x13: // Zelda
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            // case 0x14: // Young Link
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            // case 0x15: // Dr. Mario
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            case 0x16: // Falco
+                act_on_frame_distinguishable(cpu_data, 4, invisible, sound);
+                break;
+            // case 0x17: // Pichu
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            // case 0x18: // Game & Watch
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            // case 0x19: // Ganondorf
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            // case 0x1A: // Roy
+            //     cpu_data->flags.invisible = cpu_data->TM.state_frame >= 4 ? 1 : 0;
+            //     break;
+            default:
+                // Handle unknown character or error case
+                cpu_data->flags.invisible = 0;
         }
     }
     else
     {
-        // Make visible
+        // Make visible when not teching
         cpu_data->flags.invisible = 0;
     }
 
@@ -5367,6 +5444,50 @@ void Event_Think(GOBJ *event)
 EventMenu *Event_Menu = &LabMenu_Main;
 
 // helper fns ######################################################
+
+// Clean up percentages so the total is always 100
+static void rebound_tech_chances(int menu_lookup[4], int just_changed_option) {
+    int sum = 0;
+    for (int t = 0; t < 4; ++t)
+        sum += LabOptions_Tech[menu_lookup[t]].option_val;
+
+    int delta = 100 - sum;
+    // keep adding/removing from next option chance until all needed change to revert to 100% is applied
+    while (delta)
+    {
+        int rebound_option = (just_changed_option + 1) % 4;
+
+        u16 *opt_val = &LabOptions_Tech[menu_lookup[rebound_option]].option_val;
+        int prev_chance = (int)*opt_val;
+
+        int new_chance = prev_chance + delta;
+        if (new_chance < 0) {
+            *opt_val = 0;
+            delta = new_chance;
+        } else if (new_chance > 100) {
+            *opt_val = 100;
+            delta = new_chance - 100;
+        } else {
+            *opt_val = (u16)new_chance;
+            delta = 0;
+        }
+
+        just_changed_option = rebound_option;
+    }
+}
+
+void act_on_frame_distinguishable(FighterData *cpu_data, int frame_distinguishable, int invisible, int sound)
+{
+    if (cpu_data->TM.state_frame == frame_distinguishable)
+    {
+        cpu_data->flags.invisible = invisible ? 1 : 0;
+        
+        if (sound)
+        {
+            SFX_PlayCommon(1);
+        }
+    }
+}
 
 // lz77 functions credited to https://github.com/andyherbert/lz1
 int x_to_the_n(int x, int n)
