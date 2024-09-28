@@ -88,278 +88,31 @@ void Lab_ChangeGetup(GOBJ *menu_gobj, int value)
     LabOptions_Tech[OPTTECH_GETUPTOWARDCHANCE].disable = value == 0 ? 0 : 1;
     LabOptions_Tech[OPTTECH_GETUPATTACKCHANCE].disable = value == 0 ? 0 : 1;
 }
-void Lab_ChangeTechInPlaceChance(GOBJ *menu_gobj, int value)
-{
-    if (LabOptions_Tech[OPTTECH_TECHAWAYCHANCE].option_val + LabOptions_Tech[OPTTECH_TECHTOWARDCHANCE].option_val + LabOptions_Tech[OPTTECH_MISSTECHCHANCE].option_val + value > 100)
-    {
-        if (LabOptions_Tech[OPTTECH_TECHAWAYCHANCE].option_val > 0)
-        { 
-            LabOptions_Tech[OPTTECH_TECHAWAYCHANCE].option_val--;
-        }
-        else if (LabOptions_Tech[OPTTECH_TECHTOWARDCHANCE].option_val > 0)
-        { 
-            LabOptions_Tech[OPTTECH_TECHTOWARDCHANCE].option_val--;
-        }
-        else if (LabOptions_Tech[OPTTECH_MISSTECHCHANCE].option_val > 0)
-        { 
-            LabOptions_Tech[OPTTECH_MISSTECHCHANCE].option_val--;
-        }
-    }
-    else if (LabOptions_Tech[OPTTECH_TECHAWAYCHANCE].option_val + LabOptions_Tech[OPTTECH_TECHTOWARDCHANCE].option_val + LabOptions_Tech[OPTTECH_MISSTECHCHANCE].option_val + value < 100)
-    {
-        if (LabOptions_Tech[OPTTECH_TECHAWAYCHANCE].option_val < 100)
-        { 
-            LabOptions_Tech[OPTTECH_TECHAWAYCHANCE].option_val++;
-        }
-        else if (LabOptions_Tech[OPTTECH_TECHTOWARDCHANCE].option_val < 100)
-        { 
-            LabOptions_Tech[OPTTECH_TECHTOWARDCHANCE].option_val++;
-        }
-        else if (LabOptions_Tech[OPTTECH_MISSTECHCHANCE].option_val < 100)
-        { 
-            LabOptions_Tech[OPTTECH_MISSTECHCHANCE].option_val++;
-        }
-    }
-    return;
-}
-void Lab_ChangeTechAwayChance(GOBJ *menu_gobj, int value)
-{
-    if (LabOptions_Tech[OPTTECH_TECHINPLACECHANCE].option_val + LabOptions_Tech[OPTTECH_TECHTOWARDCHANCE].option_val + LabOptions_Tech[OPTTECH_MISSTECHCHANCE].option_val + value > 100)
-    {
-        if (LabOptions_Tech[OPTTECH_TECHTOWARDCHANCE].option_val > 0)
-        { 
-            LabOptions_Tech[OPTTECH_TECHTOWARDCHANCE].option_val--;
-        }
-        else if (LabOptions_Tech[OPTTECH_MISSTECHCHANCE].option_val > 0)
-        { 
-            LabOptions_Tech[OPTTECH_MISSTECHCHANCE].option_val--;
-        }
-        else if (LabOptions_Tech[OPTTECH_TECHINPLACECHANCE].option_val > 0)
-        { 
-            LabOptions_Tech[OPTTECH_TECHINPLACECHANCE].option_val--;
-        }
-    }
-    else if (LabOptions_Tech[OPTTECH_TECHINPLACECHANCE].option_val + LabOptions_Tech[OPTTECH_TECHTOWARDCHANCE].option_val + LabOptions_Tech[OPTTECH_MISSTECHCHANCE].option_val + value < 100)
-    {
-        if (LabOptions_Tech[OPTTECH_TECHTOWARDCHANCE].option_val < 100)
-        { 
-            LabOptions_Tech[OPTTECH_TECHTOWARDCHANCE].option_val++;
-        }
-        else if (LabOptions_Tech[OPTTECH_TECHTOWARDCHANCE].option_val < 100)
-        { 
-            LabOptions_Tech[OPTTECH_TECHTOWARDCHANCE].option_val++;
-        }
-        else if (LabOptions_Tech[OPTTECH_TECHINPLACECHANCE].option_val < 100)
-        { 
-            LabOptions_Tech[OPTTECH_TECHINPLACECHANCE].option_val++;
-        }
-    }
-    return;
-}
-void Lab_ChangeTechTowardChance(GOBJ *menu_gobj, int value)
-{
-    if (LabOptions_Tech[OPTTECH_TECHAWAYCHANCE].option_val + LabOptions_Tech[OPTTECH_TECHINPLACECHANCE].option_val + LabOptions_Tech[OPTTECH_MISSTECHCHANCE].option_val + value > 100)
-    {
-        if (LabOptions_Tech[OPTTECH_MISSTECHCHANCE].option_val > 0)
-        { 
-            LabOptions_Tech[OPTTECH_MISSTECHCHANCE].option_val--;
-        }
-        else if (LabOptions_Tech[OPTTECH_TECHINPLACECHANCE].option_val > 0)
-        { 
-            LabOptions_Tech[OPTTECH_TECHINPLACECHANCE].option_val--;
-        }
-        else if (LabOptions_Tech[OPTTECH_TECHAWAYCHANCE].option_val > 0)
-        { 
-            LabOptions_Tech[OPTTECH_TECHAWAYCHANCE].option_val--;
-        }
-    }
-    else if (LabOptions_Tech[OPTTECH_TECHAWAYCHANCE].option_val + LabOptions_Tech[OPTTECH_TECHINPLACECHANCE].option_val + LabOptions_Tech[OPTTECH_MISSTECHCHANCE].option_val + value < 100)
-    {
-        if (LabOptions_Tech[OPTTECH_MISSTECHCHANCE].option_val < 100)
-        { 
-            LabOptions_Tech[OPTTECH_MISSTECHCHANCE].option_val++;
-        }
-        else if (LabOptions_Tech[OPTTECH_TECHINPLACECHANCE].option_val < 100)
-        { 
-            LabOptions_Tech[OPTTECH_TECHINPLACECHANCE].option_val++;
-        }
-        else if (LabOptions_Tech[OPTTECH_TECHAWAYCHANCE].option_val < 100)
-        { 
-            LabOptions_Tech[OPTTECH_TECHAWAYCHANCE].option_val++;
-        }
-    }
-    return;
-}
-void Lab_ChangeMissTechChance(GOBJ *menu_gobj, int value)
-{
-    if (LabOptions_Tech[OPTTECH_TECHAWAYCHANCE].option_val + LabOptions_Tech[OPTTECH_TECHTOWARDCHANCE].option_val + LabOptions_Tech[OPTTECH_TECHINPLACECHANCE].option_val + value > 100)
-    {
-        if (LabOptions_Tech[OPTTECH_TECHINPLACECHANCE].option_val > 0)
-        { 
-            LabOptions_Tech[OPTTECH_TECHINPLACECHANCE].option_val--;
-        }
-        else if (LabOptions_Tech[OPTTECH_TECHAWAYCHANCE].option_val > 0)
-        { 
-            LabOptions_Tech[OPTTECH_TECHAWAYCHANCE].option_val--;
-        }
-        else if (LabOptions_Tech[OPTTECH_TECHTOWARDCHANCE].option_val > 0)
-        { 
-            LabOptions_Tech[OPTTECH_TECHTOWARDCHANCE].option_val--;
-        }
-    }
-    else if (LabOptions_Tech[OPTTECH_TECHAWAYCHANCE].option_val + LabOptions_Tech[OPTTECH_TECHTOWARDCHANCE].option_val + LabOptions_Tech[OPTTECH_TECHINPLACECHANCE].option_val + value < 100)
-    {
-        if (LabOptions_Tech[OPTTECH_TECHINPLACECHANCE].option_val < 100)
-        { 
-            LabOptions_Tech[OPTTECH_TECHINPLACECHANCE].option_val++;
-        }
-        else if (LabOptions_Tech[OPTTECH_TECHAWAYCHANCE].option_val < 100)
-        { 
-            LabOptions_Tech[OPTTECH_TECHAWAYCHANCE].option_val++;
-        }
-        else if (LabOptions_Tech[OPTTECH_TECHTOWARDCHANCE].option_val < 100)
-        { 
-            LabOptions_Tech[OPTTECH_TECHTOWARDCHANCE].option_val++;
-        }
-    }
-    return;
-}
-void Lab_ChangeStandChance(GOBJ *menu_gobj, int value)
-{
-    if (LabOptions_Tech[OPTTECH_GETUPAWAYCHANCE].option_val + LabOptions_Tech[OPTTECH_GETUPTOWARDCHANCE].option_val + LabOptions_Tech[OPTTECH_GETUPATTACKCHANCE].option_val + value > 100)
-    {
-        if (LabOptions_Tech[OPTTECH_GETUPAWAYCHANCE].option_val > 0)
-        { 
-            LabOptions_Tech[OPTTECH_GETUPAWAYCHANCE].option_val--;
-        }
-        else if (LabOptions_Tech[OPTTECH_GETUPTOWARDCHANCE].option_val > 0)
-        { 
-            LabOptions_Tech[OPTTECH_GETUPTOWARDCHANCE].option_val--;
-        }
-        else if (LabOptions_Tech[OPTTECH_GETUPATTACKCHANCE].option_val > 0)
-        { 
-            LabOptions_Tech[OPTTECH_GETUPATTACKCHANCE].option_val--;
-        }
-    }
-    else if (LabOptions_Tech[OPTTECH_GETUPAWAYCHANCE].option_val + LabOptions_Tech[OPTTECH_GETUPTOWARDCHANCE].option_val + LabOptions_Tech[OPTTECH_GETUPATTACKCHANCE].option_val + value < 100)
-    {
-        if (LabOptions_Tech[OPTTECH_GETUPAWAYCHANCE].option_val < 100)
-        { 
-            LabOptions_Tech[OPTTECH_GETUPAWAYCHANCE].option_val++;
-        }
-        else if (LabOptions_Tech[OPTTECH_GETUPTOWARDCHANCE].option_val < 100)
-        { 
-            LabOptions_Tech[OPTTECH_GETUPTOWARDCHANCE].option_val++;
-        }
-        else if (LabOptions_Tech[OPTTECH_GETUPATTACKCHANCE].option_val < 100)
-        { 
-            LabOptions_Tech[OPTTECH_GETUPATTACKCHANCE].option_val++;
-        }
-    }
-    return;
-}
-void Lab_ChangeRollAwayChance(GOBJ *menu_gobj, int value)
-{
-    if (LabOptions_Tech[OPTTECH_GETUPSTANDCHANCE].option_val + LabOptions_Tech[OPTTECH_GETUPTOWARDCHANCE].option_val + LabOptions_Tech[OPTTECH_GETUPATTACKCHANCE].option_val + value > 100)
-    {
-        if (LabOptions_Tech[OPTTECH_GETUPTOWARDCHANCE].option_val > 0)
-        { 
-            LabOptions_Tech[OPTTECH_GETUPTOWARDCHANCE].option_val--;
-        }
-        else if (LabOptions_Tech[OPTTECH_GETUPATTACKCHANCE].option_val > 0)
-        { 
-            LabOptions_Tech[OPTTECH_GETUPATTACKCHANCE].option_val--;
-        }
-        else if (LabOptions_Tech[OPTTECH_GETUPSTANDCHANCE].option_val > 0)
-        { 
-            LabOptions_Tech[OPTTECH_GETUPSTANDCHANCE].option_val--;
-        }
-    }
-    else if (LabOptions_Tech[OPTTECH_GETUPSTANDCHANCE].option_val + LabOptions_Tech[OPTTECH_GETUPTOWARDCHANCE].option_val + LabOptions_Tech[OPTTECH_GETUPATTACKCHANCE].option_val + value < 100)
-    {
-        if (LabOptions_Tech[OPTTECH_GETUPTOWARDCHANCE].option_val < 100)
-        { 
-            LabOptions_Tech[OPTTECH_GETUPTOWARDCHANCE].option_val++;
-        }
-        else if (LabOptions_Tech[OPTTECH_GETUPTOWARDCHANCE].option_val < 100)
-        { 
-            LabOptions_Tech[OPTTECH_GETUPTOWARDCHANCE].option_val++;
-        }
-        else if (LabOptions_Tech[OPTTECH_GETUPSTANDCHANCE].option_val < 100)
-        { 
-            LabOptions_Tech[OPTTECH_GETUPSTANDCHANCE].option_val++;
-        }
-    }
-    return;
-}
-void Lab_ChangeRollTowardChance(GOBJ *menu_gobj, int value)
-{
-    if (LabOptions_Tech[OPTTECH_GETUPAWAYCHANCE].option_val + LabOptions_Tech[OPTTECH_GETUPSTANDCHANCE].option_val + LabOptions_Tech[OPTTECH_GETUPATTACKCHANCE].option_val + value > 100)
-    {
-        if (LabOptions_Tech[OPTTECH_GETUPATTACKCHANCE].option_val > 0)
-        { 
-            LabOptions_Tech[OPTTECH_GETUPATTACKCHANCE].option_val--;
-        }
-        else if (LabOptions_Tech[OPTTECH_GETUPSTANDCHANCE].option_val > 0)
-        { 
-            LabOptions_Tech[OPTTECH_GETUPSTANDCHANCE].option_val--;
-        }
-        else if (LabOptions_Tech[OPTTECH_GETUPAWAYCHANCE].option_val > 0)
-        { 
-            LabOptions_Tech[OPTTECH_GETUPAWAYCHANCE].option_val--;
-        }
-    }
-    else if (LabOptions_Tech[OPTTECH_GETUPAWAYCHANCE].option_val + LabOptions_Tech[OPTTECH_GETUPSTANDCHANCE].option_val + LabOptions_Tech[OPTTECH_GETUPATTACKCHANCE].option_val + value < 100)
-    {
-        if (LabOptions_Tech[OPTTECH_GETUPATTACKCHANCE].option_val < 100)
-        { 
-            LabOptions_Tech[OPTTECH_GETUPATTACKCHANCE].option_val++;
-        }
-        else if (LabOptions_Tech[OPTTECH_GETUPSTANDCHANCE].option_val < 100)
-        { 
-            LabOptions_Tech[OPTTECH_GETUPSTANDCHANCE].option_val++;
-        }
-        else if (LabOptions_Tech[OPTTECH_GETUPAWAYCHANCE].option_val < 100)
-        { 
-            LabOptions_Tech[OPTTECH_GETUPAWAYCHANCE].option_val++;
-        }
-    }
-    return;
-}
-void Lab_ChangeGetupAttackChance(GOBJ *menu_gobj, int value)
-{
-    if (LabOptions_Tech[OPTTECH_GETUPAWAYCHANCE].option_val + LabOptions_Tech[OPTTECH_GETUPTOWARDCHANCE].option_val + LabOptions_Tech[OPTTECH_GETUPSTANDCHANCE].option_val + value > 100)
-    {
-        if (LabOptions_Tech[OPTTECH_GETUPSTANDCHANCE].option_val > 0)
-        { 
-            LabOptions_Tech[OPTTECH_GETUPSTANDCHANCE].option_val--;
-        }
-        else if (LabOptions_Tech[OPTTECH_GETUPAWAYCHANCE].option_val > 0)
-        { 
-            LabOptions_Tech[OPTTECH_GETUPAWAYCHANCE].option_val--;
-        }
-        else if (LabOptions_Tech[OPTTECH_GETUPTOWARDCHANCE].option_val > 0)
-        { 
-            LabOptions_Tech[OPTTECH_GETUPTOWARDCHANCE].option_val--;
-        }
-    }
-    else if (LabOptions_Tech[OPTTECH_GETUPAWAYCHANCE].option_val + LabOptions_Tech[OPTTECH_GETUPTOWARDCHANCE].option_val + LabOptions_Tech[OPTTECH_GETUPSTANDCHANCE].option_val + value < 100)
-    {
-        if (LabOptions_Tech[OPTTECH_GETUPSTANDCHANCE].option_val < 100)
-        { 
-            LabOptions_Tech[OPTTECH_GETUPSTANDCHANCE].option_val++;
-        }
-        else if (LabOptions_Tech[OPTTECH_GETUPAWAYCHANCE].option_val < 100)
-        { 
-            LabOptions_Tech[OPTTECH_GETUPAWAYCHANCE].option_val++;
-        }
-        else if (LabOptions_Tech[OPTTECH_GETUPTOWARDCHANCE].option_val < 100)
-        { 
-            LabOptions_Tech[OPTTECH_GETUPTOWARDCHANCE].option_val++;
-        }
-    }
-    return;
-}
+
+static int tech_option_menu_lookup[4] = {
+    OPTTECH_TECHINPLACECHANCE,
+    OPTTECH_TECHAWAYCHANCE,
+    OPTTECH_TECHTOWARDCHANCE,
+    OPTTECH_MISSTECHCHANCE,
+};
+
+static int getup_option_menu_lookup[4] = {
+    OPTTECH_GETUPSTANDCHANCE,
+    OPTTECH_GETUPAWAYCHANCE,
+    OPTTECH_GETUPTOWARDCHANCE,
+    OPTTECH_GETUPATTACKCHANCE,
+};
+
+void Lab_ChangeTechInPlaceChance (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(tech_option_menu_lookup, 0); }
+void Lab_ChangeTechAwayChance    (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(tech_option_menu_lookup, 1); }
+void Lab_ChangeTechTowardChance  (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(tech_option_menu_lookup, 2); }
+void Lab_ChangeMissTechChance    (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(tech_option_menu_lookup, 3); }
+
+void Lab_ChangeStandChance       (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(getup_option_menu_lookup, 0); }
+void Lab_ChangeRollAwayChance    (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(getup_option_menu_lookup, 1); }
+void Lab_ChangeRollTowardChance  (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(getup_option_menu_lookup, 2); }
+void Lab_ChangeGetupAttackChance (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(getup_option_menu_lookup, 3); }
+
 void Lab_ChangeCPUIntang(GOBJ *menu_gobj, int value)
 {
 
@@ -5681,6 +5434,37 @@ void Event_Think(GOBJ *event)
 EventMenu *Event_Menu = &LabMenu_Main;
 
 // helper fns ######################################################
+
+// Clean up percentages so the total is always 100
+static void rebound_tech_chances(int menu_lookup[4], int just_changed_option) {
+    int sum = 0;
+    for (int t = 0; t < 4; ++t)
+        sum += LabOptions_Tech[menu_lookup[t]].option_val;
+
+    int delta = 100 - sum;
+    // keep adding/removing from next option chance until all needed change to revert to 100% is applied
+    while (delta)
+    {
+        int rebound_option = (just_changed_option + 1) % 4;
+
+        u16 *opt_val = &LabOptions_Tech[menu_lookup[rebound_option]].option_val;
+        int prev_chance = (int)*opt_val;
+
+        int new_chance = prev_chance + delta;
+        if (new_chance < 0) {
+            *opt_val = 0;
+            delta = new_chance;
+        } else if (new_chance > 100) {
+            *opt_val = 100;
+            delta = new_chance - 100;
+        } else {
+            *opt_val = (u16)new_chance;
+            delta = 0;
+        }
+
+        just_changed_option = rebound_option;
+    }
+}
 
 void act_on_frame_distinguishable(FighterData *cpu_data, int frame_distinguishable, int invisible, int sound)
 {

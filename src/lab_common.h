@@ -426,16 +426,6 @@ void Lab_Exit(int value);
 void InfoDisplay_Think(GOBJ *gobj);
 void InfoDisplay_GX(GOBJ *gobj, int pass);
 
-static EventOption LabOptions_Main[];
-static EventOption LabOptions_General[];
-static EventOption LabOptions_InfoDisplay[];
-static EventOption LabOptions_Tech[];
-static EventMenu LabMenu_General;
-static EventMenu LabMenu_InfoDisplay;
-static EventMenu LabMenu_CPU;
-static EventMenu LabMenu_Record;
-static EventMenu LabMenu_Tech;
-
 // helpers
 void act_on_frame_distinguishable(
     FighterData *cpu_data, int frame_distinguishable,int invisible, int sound);

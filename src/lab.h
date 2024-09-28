@@ -1,3 +1,18 @@
+// DECLARATIONS #############################################
+
+static EventOption LabOptions_Main[];
+static EventOption LabOptions_General[];
+static EventOption LabOptions_InfoDisplay[];
+static EventOption LabOptions_Tech[];
+
+static EventMenu LabMenu_General;
+static EventMenu LabMenu_InfoDisplay;
+static EventMenu LabMenu_CPU;
+static EventMenu LabMenu_Record;
+static EventMenu LabMenu_Tech;
+
+static void rebound_tech_chances(int menu_lookup[4], int just_changed_option);
+
 // VARS ####################################################
 
 // General Options
@@ -1203,16 +1218,6 @@ static EventOption LabOptions_Main[] = {
         .onOptionChange = 0,
     },
     {
-        .option_kind = OPTKIND_MENU,
-        .value_num = 0,
-        .option_val = 0,
-        .menu = &LabMenu_Tech,
-        .option_name = {"Tech Options"},
-        .desc = "Configure CPU Tech Behavior",
-        .option_values = 0,
-        .onOptionChange = 0,
-    },
-    {
         .option_kind = OPTKIND_MENU,           // the type of option this is; menu, string list, integers list, etc
         .value_num = 0,                        // number of values for this option
         .option_val = 0,                       // value of this option
@@ -1550,6 +1555,16 @@ static EventOption LabOptions_CPU[] = {
         .desc = "Adjust the CPU's percent.", // string describing what this option does
         .option_values = "%d%%",             // pointer to an array of strings
         .onOptionChange = Lab_ChangeCPUPercent,
+    },
+    {
+        .option_kind = OPTKIND_MENU,
+        .value_num = 0,
+        .option_val = 0,
+        .menu = &LabMenu_Tech,
+        .option_name = {"Tech Options"},
+        .desc = "Configure CPU Tech Behavior.",
+        .option_values = 0,
+        .onOptionChange = 0,
     },
     {
         .option_kind = OPTKIND_STRING,                // the type of option this is; menu, string list, integer list, etc
