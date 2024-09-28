@@ -466,13 +466,6 @@ void Menu_SelCard_Think(GOBJ *menu_gobj)
         if (import_data.memcard_inserted[import_data.cursor])
         {
             import_data.memcard_slot = import_data.cursor;
-            Read_Recordings();
-            if (import_data.file_num == 0)
-            {
-                Menu_Confirm_Init(menu_gobj, CFRM_NONE);
-                SFX_PlayCommon(3);
-                return;
-            }
             SFX_PlayCommon(1);
             Menu_SelCard_Exit(menu_gobj);
             Menu_SelFile_Init(menu_gobj);
@@ -497,6 +490,14 @@ void Menu_SelCard_Exit(GOBJ *menu_gobj)
 // Select File
 void Menu_SelFile_Init(GOBJ *menu_gobj)
 {
+
+    Read_Recordings();
+    if (import_data.file_num == 0)
+    {
+        Menu_Confirm_Init(menu_gobj, CFRM_NONE);
+        SFX_PlayCommon(3);
+        return;
+    }
 
     // get jobj
     JOBJ *menu_jobj = menu_gobj->hsd_object;
@@ -1244,6 +1245,7 @@ void Menu_Confirm_Think(GOBJ *menu_gobj)
             Menu_Confirm_Exit(menu_gobj);
             SFX_PlayCommon(0);
             import_data.menu_state = IMP_SELCARD;
+            Menu_SelCard_Init(menu_gobj);
         }
         break;
     }
