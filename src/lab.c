@@ -3716,22 +3716,13 @@ void Record_StartExport(GOBJ *menu_gobj)
 }
 void Snap_CObjThink(GOBJ *gobj)
 {
-
-    // logic based on state
-    switch (snap_status)
-    {
-    case (1):
+    if (snap_status == 1)
     {
         // take snap
         HSD_ImageDescCopyFromEFB(&snap_image, 0, 0, 0);
-        snap_status = 0;
         OSReport("got snap!\n");
-
-        break;
+        snap_status = 0;
     }
-    }
-
-    return;
 }
 void Savestates_Update()
 {
