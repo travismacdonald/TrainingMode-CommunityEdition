@@ -27,16 +27,6 @@ enum cpu_option
     OPTCPU_SDIDIR,
     OPTCPU_TDI,
     OPTCPU_CUSTOMTDI,
-    OPTCPU_TECH,
-    OPTCPU_TECHINPLACECHANCE,
-    OPTCPU_TECHAWAYCHANCE,
-    OPTCPU_TECHTOWARDCHANCE,
-    OPTCPU_MISSTECHCHANCE,
-    OPTCPU_GETUP,
-    OPTCPU_GETUPSTANDCHANCE,
-    OPTCPU_GETUPAWAYCHANCE,
-    OPTCPU_GETUPTOWARDCHANCE,
-    OPTCPU_GETUPATTACKCHANCE,
     OPTCPU_MASH,
     //OPTCPU_RESET,
     OPTCPU_CTRGRND,
@@ -45,7 +35,21 @@ enum cpu_option
     OPTCPU_CTRFRAMES,
     OPTCPU_CTRHITS,
     OPTCPU_SHIELDHITS,
-    OPTCPU_INVISIBLE,
+};
+
+enum tech_option 
+{
+    OPTTECH_INVISIBLE,
+    OPTTECH_TECH,
+    OPTTECH_TECHINPLACECHANCE,
+    OPTTECH_TECHAWAYCHANCE,
+    OPTTECH_TECHTOWARDCHANCE,
+    OPTTECH_MISSTECHCHANCE,
+    OPTTECH_GETUP,
+    OPTTECH_GETUPSTANDCHANCE,
+    OPTTECH_GETUPAWAYCHANCE,
+    OPTTECH_GETUPTOWARDCHANCE,
+    OPTTECH_GETUPATTACKCHANCE,
 };
 
 // SDI Freq
@@ -1198,6 +1202,16 @@ static EventOption LabOptions_Main[] = {
         .onOptionChange = 0,
     },
     {
+        .option_kind = OPTKIND_MENU,
+        .value_num = 0,
+        .option_val = 0,
+        .menu = &LabMenu_Tech,
+        .option_name = {"Tech Options"},
+        .desc = "Configure CPU Tech Behavior",
+        .option_values = 0,
+        .onOptionChange = 0,
+    },
+    {
         .option_kind = OPTKIND_MENU,           // the type of option this is; menu, string list, integers list, etc
         .value_num = 0,                        // number of values for this option
         .option_val = 0,                       // value of this option
@@ -1610,106 +1624,6 @@ static EventOption LabOptions_CPU[] = {
         .onOptionSelect = Lab_SelectCustomTDI,
     },
     {
-        .option_kind = OPTKIND_STRING,                                         // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_Tech) / 4,                               // number of values for this option
-        .option_val = 0,                                                       // value of this option
-        .menu = 0,                                                             // pointer to the menu that pressing A opens
-        .option_name = "Tech Option",                                          // pointer to a string
-        .desc = "Adjust what the CPU will do upon colliding\nwith the stage.", // string describing what this option does
-        .option_values = LabValues_Tech,                                       // pointer to an array of strings
-        .onOptionChange = 0,
-    },
-    {
-        .option_kind = OPTKIND_INT,                                 // the type of option this is; menu, string list, integer list, etc
-        .value_num = 101,                                           // number of values for this option
-        .option_val = 25,                                           // value of this option
-        .menu = 0,                                                  // pointer to the menu that pressing A opens
-        .option_name = "Tech in Place Chance",                      // pointer to a string
-        .desc = "Adjust the chance the CPU will tech in place.",    // string describing what this option does
-        .option_values = "%d%%",                                    // pointer to an array of strings
-        .onOptionChange = Lab_ChangeTechInPlaceChance,
-    },
-    {
-        .option_kind = OPTKIND_INT,                                 // the type of option this is; menu, string list, integer list, etc
-        .value_num = 101,                                           // number of values for this option
-        .option_val = 25,                                           // value of this option
-        .menu = 0,                                                  // pointer to the menu that pressing A opens
-        .option_name = "Tech Away Chance",                          // pointer to a string
-        .desc = "Adjust the chance the CPU will tech away.",        // string describing what this option does
-        .option_values = "%d%%",                                    // pointer to an array of strings
-        .onOptionChange = Lab_ChangeTechAwayChance,
-    },
-    {
-        .option_kind = OPTKIND_INT,                             // the type of option this is; menu, string list, integer list, etc
-        .value_num = 101,                                       // number of values for this option
-        .option_val = 25,                                       // value of this option
-        .menu = 0,                                              // pointer to the menu that pressing A opens
-        .option_name = "Tech Toward Chance",                    // pointer to a string
-        .desc = "Adjust the chance the CPU will tech toward.",  // string describing what this option does
-        .option_values = "%d%%",                                // pointer to an array of strings
-        .onOptionChange = Lab_ChangeTechTowardChance,
-    },
-    {
-        .option_kind = OPTKIND_INT,                             // the type of option this is; menu, string list, integer list, etc
-        .value_num = 101,                                       // number of values for this option
-        .option_val = 25,                                       // value of this option
-        .menu = 0,                                              // pointer to the menu that pressing A opens
-        .option_name = "Miss Tech Chance",                      // pointer to a string
-        .desc = "Adjust the chance the CPU will miss tech.",    // string describing what this option does
-        .option_values = "%d%%",                                // pointer to an array of strings
-        .onOptionChange = Lab_ChangeMissTechChance,
-    },
-    {
-        .option_kind = OPTKIND_STRING,                                      // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_Getup) / 4,                           // number of values for this option
-        .option_val = 0,                                                    // value of this option
-        .menu = 0,                                                          // pointer to the menu that pressing A opens
-        .option_name = "Get Up Option",                                     // pointer to a string
-        .desc = "Adjust what the CPU will do after missing\na tech input.", // string describing what this option does
-        .option_values = LabValues_Getup,                                   // pointer to an array of strings
-        .onOptionChange = 0,
-    },
-    {
-        .option_kind = OPTKIND_INT,                         // the type of option this is; menu, string list, integer list, etc
-        .value_num = 101,                                   // number of values for this option
-        .option_val = 25,                                   // value of this option
-        .menu = 0,                                          // pointer to the menu that pressing A opens
-        .option_name = "Stand Chance",                      // pointer to a string
-        .desc = "Adjust the chance the CPU will stand.",    // string describing what this option does
-        .option_values = "%d%%",                            // pointer to an array of strings
-        .onOptionChange = Lab_ChangeStandChance,
-    },
-    {
-        .option_kind = OPTKIND_INT,                             // the type of option this is; menu, string list, integer list, etc
-        .value_num = 101,                                       // number of values for this option
-        .option_val = 25,                                       // value of this option
-        .menu = 0,                                              // pointer to the menu that pressing A opens
-        .option_name = "Roll Away Chance",                      // pointer to a string
-        .desc = "Adjust the chance the CPU will roll away.",    // string describing what this option does
-        .option_values = "%d%%",                                // pointer to an array of strings
-        .onOptionChange = Lab_ChangeRollAwayChance,
-    },
-    {
-        .option_kind = OPTKIND_INT,                             // the type of option this is; menu, string list, integer list, etc
-        .value_num = 101,                                       // number of values for this option
-        .option_val = 25,                                       // value of this option
-        .menu = 0,                                              // pointer to the menu that pressing A opens
-        .option_name = "Roll Toward Chance",                    // pointer to a string
-        .desc = "Adjust the chance the CPU will roll toward.",  // string describing what this option does
-        .option_values = "%d%%",                                // pointer to an array of strings
-        .onOptionChange = Lab_ChangeRollTowardChance,
-    },
-    {
-        .option_kind = OPTKIND_INT,                             // the type of option this is; menu, string list, integer list, etc
-        .value_num = 101,                                       // number of values for this option
-        .option_val = 25,                                       // value of this option
-        .menu = 0,                                              // pointer to the menu that pressing A opens
-        .option_name = "Getup Attack Chance",                   // pointer to a string
-        .desc = "Adjust the chance the CPU will getup attack.", // string describing what this option does
-        .option_values = "%d%%",                                // pointer to an array of strings
-        .onOptionChange = Lab_ChangeGetupAttackChance,
-    },
-    {
         .option_kind = OPTKIND_STRING,                               // the type of option this is; menu, string list, integer list, etc
         .value_num = sizeof(LabValues_GrabEscape) / 4,               // number of values for this option
         .option_val = CPUMASH_NONE,                                  // value of this option
@@ -1791,6 +1705,18 @@ static EventOption LabOptions_CPU[] = {
         .option_values = "%d Hits",                                                           // pointer to an array of strings
         .onOptionChange = 0,
     },
+};
+static EventMenu LabMenu_CPU = {
+    .name = "CPU Options",                                      // the name of this menu
+    .option_num = sizeof(LabOptions_CPU) / sizeof(EventOption), // number of options this menu contains
+    .scroll = 0,                                                // runtime variable used for how far down in the menu to start
+    .state = 0,                                                 // bool used to know if this menu is focused, used at runtime
+    .cursor = 0,                                                // index of the option currently selected, used at runtime
+    .options = &LabOptions_CPU,                                 // pointer to all of this menu's options
+    .prev = 0,                                                  // pointer to previous menu, used at runtime
+};
+// Tech Options
+static EventOption LabOptions_Tech[] = {
     {
         .option_kind = OPTKIND_STRING,                                          // the type of option this is; menu, string list, integer list, etc
         .value_num = 2,                                                         // number of values for this option
@@ -1801,15 +1727,123 @@ static EventOption LabOptions_CPU[] = {
         .option_values = LabOptions_OffOn,                                      // pointer to an array of strings
         .onOptionChange = 0,
     },
+    {
+        .option_kind = OPTKIND_STRING,                                         // the type of option this is; menu, string list, integer list, etc
+        .value_num = sizeof(LabValues_Tech) / 4,                               // number of values for this option
+        .option_val = 0,                                                       // value of this option
+        .menu = 0,                                                             // pointer to the menu that pressing A opens
+        .option_name = "Tech Option",                                          // pointer to a string
+        .desc = "Adjust what the CPU will do upon colliding\nwith the stage.", // string describing what this option does
+        .option_values = LabValues_Tech,                                       // pointer to an array of strings
+        .onOptionChange = Lab_ChangeTech,
+    },
+    {
+        .option_kind = OPTKIND_INT,                                 // the type of option this is; menu, string list, integer list, etc
+        .value_num = 101,                                           // number of values for this option
+        .option_val = 25,                                           // value of this option
+        .menu = 0,                                                  // pointer to the menu that pressing A opens
+        .option_name = "Tech in Place Chance",                      // pointer to a string
+        .desc = "Adjust the chance the CPU will tech in place.",    // string describing what this option does
+        .option_values = "%d%%",                                    // pointer to an array of strings
+        .onOptionChange = Lab_ChangeTechInPlaceChance,
+        .disable = 0,
+    },
+    {
+        .option_kind = OPTKIND_INT,                                 // the type of option this is; menu, string list, integer list, etc
+        .value_num = 101,                                           // number of values for this option
+        .option_val = 25,                                           // value of this option
+        .menu = 0,                                                  // pointer to the menu that pressing A opens
+        .option_name = "Tech Away Chance",                          // pointer to a string
+        .desc = "Adjust the chance the CPU will tech away.",        // string describing what this option does
+        .option_values = "%d%%",                                    // pointer to an array of strings
+        .onOptionChange = Lab_ChangeTechAwayChance,
+        .disable = 0,
+    },
+    {
+        .option_kind = OPTKIND_INT,                             // the type of option this is; menu, string list, integer list, etc
+        .value_num = 101,                                       // number of values for this option
+        .option_val = 25,                                       // value of this option
+        .menu = 0,                                              // pointer to the menu that pressing A opens
+        .option_name = "Tech Toward Chance",                    // pointer to a string
+        .desc = "Adjust the chance the CPU will tech toward.",  // string describing what this option does
+        .option_values = "%d%%",                                // pointer to an array of strings
+        .onOptionChange = Lab_ChangeTechTowardChance,
+        .disable = 0,
+    },
+    {
+        .option_kind = OPTKIND_INT,                             // the type of option this is; menu, string list, integer list, etc
+        .value_num = 101,                                       // number of values for this option
+        .option_val = 25,                                       // value of this option
+        .menu = 0,                                              // pointer to the menu that pressing A opens
+        .option_name = "Miss Tech Chance",                      // pointer to a string
+        .desc = "Adjust the chance the CPU will miss tech.",    // string describing what this option does
+        .option_values = "%d%%",                                // pointer to an array of strings
+        .onOptionChange = Lab_ChangeMissTechChance,
+        .disable = 0,
+    },
+    {
+        .option_kind = OPTKIND_STRING,                                      // the type of option this is; menu, string list, integer list, etc
+        .value_num = sizeof(LabValues_Getup) / 4,                           // number of values for this option
+        .option_val = 0,                                                    // value of this option
+        .menu = 0,                                                          // pointer to the menu that pressing A opens
+        .option_name = "Get Up Option",                                     // pointer to a string
+        .desc = "Adjust what the CPU will do after missing\na tech input.", // string describing what this option does
+        .option_values = LabValues_Getup,                                   // pointer to an array of strings
+        .onOptionChange = Lab_ChangeGetup,
+    },
+    {
+        .option_kind = OPTKIND_INT,                         // the type of option this is; menu, string list, integer list, etc
+        .value_num = 101,                                   // number of values for this option
+        .option_val = 25,                                   // value of this option
+        .menu = 0,                                          // pointer to the menu that pressing A opens
+        .option_name = "Stand Chance",                      // pointer to a string
+        .desc = "Adjust the chance the CPU will stand.",    // string describing what this option does
+        .option_values = "%d%%",                            // pointer to an array of strings
+        .onOptionChange = Lab_ChangeStandChance,
+        .disable = 0,
+    },
+    {
+        .option_kind = OPTKIND_INT,                             // the type of option this is; menu, string list, integer list, etc
+        .value_num = 101,                                       // number of values for this option
+        .option_val = 25,                                       // value of this option
+        .menu = 0,                                              // pointer to the menu that pressing A opens
+        .option_name = "Roll Away Chance",                      // pointer to a string
+        .desc = "Adjust the chance the CPU will roll away.",    // string describing what this option does
+        .option_values = "%d%%",                                // pointer to an array of strings
+        .onOptionChange = Lab_ChangeRollAwayChance,
+        .disable = 0,
+    },
+    {
+        .option_kind = OPTKIND_INT,                             // the type of option this is; menu, string list, integer list, etc
+        .value_num = 101,                                       // number of values for this option
+        .option_val = 25,                                       // value of this option
+        .menu = 0,                                              // pointer to the menu that pressing A opens
+        .option_name = "Roll Toward Chance",                    // pointer to a string
+        .desc = "Adjust the chance the CPU will roll toward.",  // string describing what this option does
+        .option_values = "%d%%",                                // pointer to an array of strings
+        .onOptionChange = Lab_ChangeRollTowardChance,
+        .disable = 0,
+    },
+    {
+        .option_kind = OPTKIND_INT,                             // the type of option this is; menu, string list, integer list, etc
+        .value_num = 101,                                       // number of values for this option
+        .option_val = 25,                                       // value of this option
+        .menu = 0,                                              // pointer to the menu that pressing A opens
+        .option_name = "Getup Attack Chance",                   // pointer to a string
+        .desc = "Adjust the chance the CPU will getup attack.", // string describing what this option does
+        .option_values = "%d%%",                                // pointer to an array of strings
+        .onOptionChange = Lab_ChangeGetupAttackChance,
+        .disable = 0,
+    },
 };
-static EventMenu LabMenu_CPU = {
-    .name = "CPU Options",                                      // the name of this menu
-    .option_num = sizeof(LabOptions_CPU) / sizeof(EventOption), // number of options this menu contains
-    .scroll = 0,                                                // runtime variable used for how far down in the menu to start
-    .state = 0,                                                 // bool used to know if this menu is focused, used at runtime
-    .cursor = 0,                                                // index of the option currently selected, used at runtime
-    .options = &LabOptions_CPU,                                 // pointer to all of this menu's options
-    .prev = 0,                                                  // pointer to previous menu, used at runtime
+static EventMenu LabMenu_Tech = {
+    .name = "Tech Options",
+    .option_num = sizeof(LabOptions_Tech) / sizeof(EventOption),
+    .scroll = 0,
+    .state = 0,
+    .cursor = 0,
+    .options = &LabOptions_Tech,
+    .prev = 0,
 };
 // Recording
 static char **LabValues_RecordSlot[] = {"Random", "Slot 1", "Slot 2", "Slot 3", "Slot 4", "Slot 5", "Slot 6"};
