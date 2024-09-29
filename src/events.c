@@ -1580,28 +1580,40 @@ int Savestate_Save(Savestate *savestate)
 
     // ensure no players are in problematic states
     int canSave = 1;
-    GOBJ **gobj_list = R13_PTR(GOBJLIST);
-    GOBJ *fighter = gobj_list[8];
-    while (fighter != 0)
-    {
 
-        FighterData *fighter_data = fighter->userdata;
+    // Aitch: intentionally remove checks for unsafe savestates.
+    // I much prefer people to be able to make buggy savestates.
+    // They can only report issues if they can encounter them.
+    //
+    // These incredibly conservative checks are not helpful to the people using training mode, 
+    // nor are they to the people fixing the bugs.
+    // To solve the issues, we should not be preventing savestates, but instead saving the necessary state.
+    //
+    // I am keeping this code here commented so we have a good starting point to look towards when
+    // figuring out the new data we need to save, when the users report issues.
+    //
+    //GOBJ **gobj_list = R13_PTR(GOBJLIST);
+    //GOBJ *fighter = gobj_list[8];
+    //while (fighter != 0)
+    //{
 
-        if ((fighter_data->cb.OnDeath != 0) ||
-           (fighter_data->cb.OnDeath2 != 0) ||
-           (fighter_data->cb.OnDeath3 != 0) ||
-           (fighter_data->heldItem != 0) ||
-           (fighter_data->x1978 != 0) ||
-           (fighter_data->accessory != 0) ||
-           ((fighter_data->kind == 8) && ((fighter_data->state >= 342) && (fighter_data->state <= 344)))) // hardcode ness' usmash because it doesnt destroy the yoyo via onhit callback...
-        {
-           // cannot save
-           canSave = 0;
-           break;
-        }
+    //    FighterData *fighter_data = fighter->userdata;
 
-        fighter = fighter->next;
-    }
+    //    if ((fighter_data->cb.OnDeath != 0) ||
+    //       (fighter_data->cb.OnDeath2 != 0) ||
+    //       (fighter_data->cb.OnDeath3 != 0) ||
+    //       (fighter_data->heldItem != 0) ||
+    //       (fighter_data->x1978 != 0) ||
+    //       (fighter_data->accessory != 0) ||
+    //       ((fighter_data->kind == 8) && ((fighter_data->state >= 342) && (fighter_data->state <= 344)))) // hardcode ness' usmash because it doesnt destroy the yoyo via onhit callback...
+    //    {
+    //       // cannot save
+    //       canSave = 0;
+    //       break;
+    //    }
+
+    //    fighter = fighter->next;
+    //}
 
     // loop through all players
     int isSaved = 0;
