@@ -1960,25 +1960,7 @@ int Savestate_Load(Savestate *savestate)
                     Fighter_ColorRemove(fighter_data, 9);
 
                     // restore color
-                    for (int k = 0; k < (sizeof(fighter_data->color) / sizeof(ColorOverlay)); k++)
-                    {
-
-                        ColorOverlay *thiscolor = &fighter_data->color[k];
-                        ColorOverlay *savedcolor = &ft_data->color[k];
-
-                        // backup nono pointers
-                        int *ptr1 = thiscolor->ptr1;
-                        int *ptr2 = thiscolor->ptr2;
-                        int *alloc = thiscolor->alloc;
-
-                        // mempcy entire
-                        memcpy(thiscolor, savedcolor, sizeof(ColorOverlay));
-
-                        // restore nono pointers
-                        thiscolor->ptr1 = ptr1;
-                        thiscolor->ptr2 = ptr2;
-                        thiscolor->alloc = alloc;
-                    }
+                    memcpy(fighter_data->color, ft_data->color, sizeof(fighter_data->color));
 
                     // restore smash variables
                     memcpy(&fighter_data->smash, &ft_data->smash, sizeof(fighter_data->smash)); // copy hitbox
@@ -2071,8 +2053,6 @@ int Savestate_Load(Savestate *savestate)
                     }
                 }
             }
-
-            sizeof(FtStateData);
 
             // check to recreate HUD
             MatchHUD *hud = &stc_matchhud[i];
