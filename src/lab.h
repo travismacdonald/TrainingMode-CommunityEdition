@@ -1212,9 +1212,19 @@ static EventOption LabOptions_Main[] = {
         .value_num = 0,                    // number of values for this option
         .option_val = 0,                   // value of this option
         .menu = &LabMenu_CPU,              // pointer to the menu that pressing A opens
-        .option_name = {"CPU Options"},    // pointer to a string
+        .option_name = {"CPU General Options"},    // pointer to a string
         .desc = "Configure CPU behavior.", // string describing what this option does
         .option_values = 0,                // pointer to an array of strings
+        .onOptionChange = 0,
+    },
+    {
+        .option_kind = OPTKIND_MENU,
+        .value_num = 0,
+        .option_val = 0,
+        .menu = &LabMenu_Tech,
+        .option_name = {"CPU Tech Options"},
+        .desc = "Configure CPU Tech Behavior.",
+        .option_values = 0,
         .onOptionChange = 0,
     },
     {
@@ -1555,16 +1565,6 @@ static EventOption LabOptions_CPU[] = {
         .desc = "Adjust the CPU's percent.", // string describing what this option does
         .option_values = "%d%%",             // pointer to an array of strings
         .onOptionChange = Lab_ChangeCPUPercent,
-    },
-    {
-        .option_kind = OPTKIND_MENU,
-        .value_num = 0,
-        .option_val = 0,
-        .menu = &LabMenu_Tech,
-        .option_name = {"Tech Options"},
-        .desc = "Configure CPU Tech Behavior.",
-        .option_values = 0,
-        .onOptionChange = 0,
     },
     {
         .option_kind = OPTKIND_STRING,                // the type of option this is; menu, string list, integer list, etc
