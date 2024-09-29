@@ -3817,7 +3817,7 @@ void Savestates_Update()
     */
 
     static int save_timer[4] = {0}; // Array to track save timer for each fighter
-    const int SAVE_THRESHOLD = 20;
+    const int SAVE_THRESHOLD = 10;
     // not when pause menu is showing
     if (Pause_CheckStatus(1) != 2)
     {
@@ -5262,7 +5262,7 @@ void Event_Think(GOBJ *event)
     }
 
     static int move_timer = 0;
-    const int MOVE_THRESHOLD = 20;
+    const int MOVE_THRESHOLD = 10;
     // Move CPU
     if (lockout_timer > 0)
     {
