@@ -1320,27 +1320,32 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
                 }
                 case SDIDIR_AWAY:
                 {
-                    // get angle from center bubble to hit collision
-                    angle = atan2(hmn_data->unk_hitbox.pos.Y - cpu_data->unk_hitbox.pos.Y, hmn_data->unk_hitbox.pos.X - cpu_data->unk_hitbox.pos.X);
-
-                    // flip
-                    angle += M_PI;
-                    while (angle > (M_PI * 2))
+                    int dir = Fighter_GetOpponentDir(cpu_data, hmn_data) * -1;
+                    if (dir == 1)
                     {
-                        angle -= (M_PI * 2);
+                        angle = 0;
                     }
-
-                    angle = get_angle_out_of_deadzone(angle, lastSDIWasCardinal);
+                    else
+                    {
+                        angle = 180;
+                    }
+                    angle = lastSDIWasCardinal ? (angle + 17) * M_1DEGREE : angle * M_1DEGREE;
                     magnitude = 1;
 
                     break;
                 }
                 case SDIDIR_TOWARD:
                 {
-                    // get angle from center bubble to hit collision
-                    angle = atan2(hmn_data->unk_hitbox.pos.Y - cpu_data->unk_hitbox.pos.Y, hmn_data->unk_hitbox.pos.X - cpu_data->unk_hitbox.pos.X);
-
-                    angle = get_angle_out_of_deadzone(angle, lastSDIWasCardinal);
+                    int dir = Fighter_GetOpponentDir(cpu_data, hmn_data);
+                    if (dir == 1)
+                    {
+                        angle = 0;
+                    }
+                    else
+                    {
+                        angle = 180;
+                    }
+                    angle = lastSDIWasCardinal ? (angle + 17) * M_1DEGREE : angle * M_1DEGREE;
                     magnitude = 1;
 
                     break;
