@@ -1338,35 +1338,60 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         {
         case (ASDI_NONE):
         {
-            TMLOG("ASDI NONE");
             cpu_data->cpu.cstickX = 0;
             cpu_data->cpu.cstickY = 0;
             break;
         }
+        case (ASDI_AWAY):
+        {
+            int dir = Fighter_GetOpponentDir(cpu_data, hmn_data) * -1;
+            if (dir == 1)
+            {
+                cpu_data->cpu.cstickX = 127;
+                cpu_data->cpu.cstickY = 0;
+            }
+            else
+            {
+                cpu_data->cpu.cstickX = -127;
+                cpu_data->cpu.cstickY = 0;
+            }
+            break;
+        }
+        case (ASDI_TOWARD):
+        {
+            int dir = Fighter_GetOpponentDir(cpu_data, hmn_data);
+            if (dir == 1)
+            {
+                cpu_data->cpu.cstickX = 127;
+                cpu_data->cpu.cstickY = 0;
+            }
+            else
+            {
+                cpu_data->cpu.cstickX = -127;
+                cpu_data->cpu.cstickY = 0;
+            }
+            break;
+        }
         case (ASDI_LEFT):
         {
-            TMLOG("ASDI LEFT");
             cpu_data->cpu.cstickX = -127;
             cpu_data->cpu.cstickY = 0;
             break;
         }
         case (ASDI_RIGHT):
         {
-            TMLOG("ASDI RIGHT");
             cpu_data->cpu.cstickX = 127;
             cpu_data->cpu.cstickY = 0;
             break;
         }
         case (ASDI_UP):
         {
-            TMLOG("ASDI UP");
             cpu_data->cpu.cstickX = 0;
             cpu_data->cpu.cstickY = 127;
             break;
         }
         case (ASDI_DOWN):
         {
-            TMLOG("ASDI DOWN");
             cpu_data->cpu.cstickX = 0;
             cpu_data->cpu.cstickY = -127;
             break;

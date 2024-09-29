@@ -45,6 +45,8 @@ enum cpu_option
 enum asdi
 {
     ASDI_NONE,
+    ASDI_AWAY,
+    ASDI_TOWARD,
     ASDI_LEFT,
     ASDI_RIGHT,
     ASDI_UP,
@@ -1519,7 +1521,7 @@ static EventMenu LabMenu_InfoDisplay = {
 static char **LabValues_Shield[] = {"Off", "On Until Hit", "On"};
 static char **LabValues_CPUBehave[] = {"Stand", "Shield", "Crouch", "Jump"};
 static char **LabValues_TDI[] = {"Random", "Inwards", "Outwards", "Floorhug", "Custom", "Random Custom", "None"};
-static char **LabValues_ASDI[] = {"None", "Left", "Right", "Up", "Down"};
+static char **LabValues_ASDI[] = {"None", "Away", "Towards", "Left", "Right", "Up", "Down"};
 static char **LabValues_SDIFreq[] = {"None", "Low", "Medium", "High"};
 static char **LabValues_SDIDir[] = {"Random", "Away", "Towards"};
 static char **LabValues_Tech[] = {"Random", "Neutral", "Away", "Towards", "None"};
