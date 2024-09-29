@@ -35,6 +35,7 @@ enum gen_option
 enum cpu_option
 {
     OPTCPU_PCNT,
+    OPTCPU_TECHOPTIONS,
     OPTCPU_BEHAVE,
     OPTCPU_SHIELD,
     OPTCPU_INTANG,
