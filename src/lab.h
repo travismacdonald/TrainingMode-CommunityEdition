@@ -42,6 +42,7 @@ enum cpu_option
     OPTCPU_SDIFREQ,
     OPTCPU_SDIDIR,
     OPTCPU_TDI,
+    OPTCPU_ASDI,
     OPTCPU_CUSTOMTDI,
     OPTCPU_MASH,
     //OPTCPU_RESET,
@@ -67,6 +68,18 @@ enum tech_option
     OPTTECH_GETUPAWAYCHANCE,
     OPTTECH_GETUPTOWARDCHANCE,
     OPTTECH_GETUPATTACKCHANCE,
+};
+
+// ASDI 
+enum asdi
+{
+    ASDI_NONE,
+    ASDI_AWAY,
+    ASDI_TOWARD,
+    ASDI_LEFT,
+    ASDI_RIGHT,
+    ASDI_UP,
+    ASDI_DOWN,
 };
 
 // SDI Freq
@@ -1622,6 +1635,7 @@ static EventMenu LabMenu_InfoDisplay = {
 static char **LabValues_Shield[] = {"Off", "On Until Hit", "On"};
 static char **LabValues_CPUBehave[] = {"Stand", "Shield", "Crouch", "Jump"};
 static char **LabValues_TDI[] = {"Random", "Inwards", "Outwards", "Floorhug", "Custom", "Random Custom", "None"};
+static char **LabValues_ASDI[] = {"None", "Away", "Towards", "Left", "Right", "Up", "Down"};
 static char **LabValues_SDIFreq[] = {"None", "Low", "Medium", "High"};
 static char **LabValues_SDIDir[] = {"Random", "Away", "Towards"};
 static char **LabValues_Tech[] = {"Random", "Neutral", "Away", "Towards", "None"};
@@ -1712,6 +1726,16 @@ static EventOption LabOptions_CPU[] = {
         .option_name = "Trajectory DI",                                       // pointer to a string
         .desc = "Adjust how the CPU will alter their knockback\ntrajectory.", // string describing what this option does
         .option_values = LabValues_TDI,                                       // pointer to an array of strings
+        .onOptionChange = 0,
+    },
+    {
+        .option_kind = OPTKIND_STRING,                                         // the type of option this is; menu, string list, integer list, etc
+        .value_num = sizeof(LabValues_ASDI) / 4,                               // number of values for this option
+        .option_val = 0,                                                       // value of this option
+        .menu = 0,                                                             // pointer to the menu that pressing A opens
+        .option_name = "ASDI",                                                 // pointer to a string
+        .desc = "Set CPU c-stick ASDI direction",                              // string describing what this option does
+        .option_values = LabValues_ASDI,                                       // pointer to an array of strings
         .onOptionChange = 0,
     },
     {
