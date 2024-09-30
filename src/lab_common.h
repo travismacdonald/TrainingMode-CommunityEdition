@@ -426,10 +426,6 @@ void Lab_Exit(int value);
 void InfoDisplay_Think(GOBJ *gobj);
 void InfoDisplay_GX(GOBJ *gobj, int pass);
 
-// helpers
-void act_on_frame_distinguishable(
-    FighterData *cpu_data, int frame_distinguishable,int invisible, int sound);
-
 // info display
 #define GXPRI_INFDISP GXPRI_MENUMODEL - 2
 #define GXLINK_INFDISP 12

@@ -12,6 +12,37 @@ static EventMenu LabMenu_Record;
 static EventMenu LabMenu_Tech;
 
 static void rebound_tech_chances(int menu_lookup[4], int just_changed_option);
+static int is_tech_anim(int state);
+
+static int tech_frame_distinguishable[27] = {
+    -1, // Mario
+     4, // Fox
+     6, // Captain Falcon
+    -1, // Donkey Kong
+    -1, // Kirby
+    -1, // Bowser
+    -1, // Link
+    -1, // Sheik
+    -1, // Ness
+     3, // Peach
+     6, // Popo (Ice Climbers)
+     6, // Nana (Ice Climbers)
+     7, // Pikachu
+    -1, // Samus
+    -1, // Yoshi
+    -1, // Jigglypuff
+    -1, // Mewtwo
+    -1, // Luigi
+     6, // Marth
+    -1, // Zelda
+    -1, // Young Link
+    -1, // Dr. Mario
+     4, // Falco
+    -1, // Pichu
+    -1, // Game & Watch
+    -1, // Ganondorf
+    -1, // Roy
+};
 
 // VARS ####################################################
 
@@ -36,16 +67,16 @@ enum cpu_option
 {
     OPTCPU_PCNT,
     OPTCPU_TECHOPTIONS,
-    OPTCPU_BEHAVE,
-    OPTCPU_SHIELD,
-    OPTCPU_INTANG,
+    OPTCPU_TDI,
+    OPTCPU_CUSTOMTDI,
     OPTCPU_SDIFREQ,
     OPTCPU_SDIDIR,
-    OPTCPU_TDI,
     OPTCPU_ASDI,
-    OPTCPU_CUSTOMTDI,
+    OPTCPU_SHIELD,
+    OPTCPU_INTANG,
     OPTCPU_MASH,
     //OPTCPU_RESET,
+    OPTCPU_BEHAVE,
     OPTCPU_CTRGRND,
     OPTCPU_CTRAIR,
     OPTCPU_CTRSHIELD,
@@ -1672,34 +1703,25 @@ static EventOption LabOptions_CPU[] = {
         .onOptionChange = 0,
     },
     {
-        .option_kind = OPTKIND_STRING,                // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_CPUBehave) / 4, // number of values for this option
-        .option_val = 0,                              // value of this option
-        .menu = 0,                                    // pointer to the menu that pressing A opens
-        .option_name = "Behavior",                    // pointer to a string
-        .desc = "Adjust the CPU's default action.",   // string describing what this option does
-        .option_values = LabValues_CPUBehave,         // pointer to an array of strings
+        .option_kind = OPTKIND_STRING,                                        // the type of option this is; menu, string list, integer list, etc
+        .value_num = sizeof(LabValues_TDI) / 4,                               // number of values for this option
+        .option_val = 0,                                                      // value of this option
+        .menu = 0,                                                            // pointer to the menu that pressing A opens
+        .option_name = "Trajectory DI",                                       // pointer to a string
+        .desc = "Adjust how the CPU will alter their knockback\ntrajectory.", // string describing what this option does
+        .option_values = LabValues_TDI,                                       // pointer to an array of strings
         .onOptionChange = 0,
     },
     {
-        .option_kind = OPTKIND_STRING,                    // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_Shield) / 4,        // number of values for this option
-        .option_val = 1,                                  // value of this option
-        .menu = 0,                                        // pointer to the menu that pressing A opens
-        .option_name = {"Infinite Shields"},              // pointer to a string
-        .desc = "Adjust how shield health deteriorates.", // string describing what this option does
-        .option_values = LabValues_Shield,                // pointer to an array of strings
+        .option_kind = OPTKIND_FUNC,                                           // the type of option this is; menu, string list, integer list, etc
+        .value_num = 0,                                                        // number of values for this option
+        .option_val = 0,                                                       // value of this option
+        .menu = 0,                                                             // pointer to the menu that pressing A opens
+        .option_name = "Custom TDI",                                           // pointer to a string
+        .desc = "Create custom trajectory DI values for the\nCPU to perform.", // string describing what this option does
+        .option_values = 0,                                                    // pointer to an array of strings
         .onOptionChange = 0,
-    },
-    {
-        .option_kind = OPTKIND_STRING,                      // the type of option this is; menu, string list, integer list, etc
-        .value_num = 2,                                     // number of values for this option
-        .option_val = 0,                                    // value of this option
-        .menu = 0,                                          // pointer to the menu that pressing A opens
-        .option_name = {"Intangibility"},                   // pointer to a string
-        .desc = "Toggle the CPU's ability to take damage.", // string describing what this option does
-        .option_values = LabOptions_OffOn,                  // pointer to an array of strings
-        .onOptionChange = Lab_ChangeCPUIntang,
+        .onOptionSelect = Lab_SelectCustomTDI,
     },
     // SDI Freq
     {
@@ -1724,16 +1746,6 @@ static EventOption LabOptions_CPU[] = {
         .onOptionChange = 0,
     },
     {
-        .option_kind = OPTKIND_STRING,                                        // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_TDI) / 4,                               // number of values for this option
-        .option_val = 0,                                                      // value of this option
-        .menu = 0,                                                            // pointer to the menu that pressing A opens
-        .option_name = "Trajectory DI",                                       // pointer to a string
-        .desc = "Adjust how the CPU will alter their knockback\ntrajectory.", // string describing what this option does
-        .option_values = LabValues_TDI,                                       // pointer to an array of strings
-        .onOptionChange = 0,
-    },
-    {
         .option_kind = OPTKIND_STRING,                                         // the type of option this is; menu, string list, integer list, etc
         .value_num = sizeof(LabValues_ASDI) / 4,                               // number of values for this option
         .option_val = 0,                                                       // value of this option
@@ -1744,15 +1756,24 @@ static EventOption LabOptions_CPU[] = {
         .onOptionChange = 0,
     },
     {
-        .option_kind = OPTKIND_FUNC,                                           // the type of option this is; menu, string list, integer list, etc
-        .value_num = 0,                                                        // number of values for this option
-        .option_val = 0,                                                       // value of this option
-        .menu = 0,                                                             // pointer to the menu that pressing A opens
-        .option_name = "Custom TDI",                                           // pointer to a string
-        .desc = "Create custom trajectory DI values for the\nCPU to perform.", // string describing what this option does
-        .option_values = 0,                                                    // pointer to an array of strings
+        .option_kind = OPTKIND_STRING,                    // the type of option this is; menu, string list, integer list, etc
+        .value_num = sizeof(LabValues_Shield) / 4,        // number of values for this option
+        .option_val = 1,                                  // value of this option
+        .menu = 0,                                        // pointer to the menu that pressing A opens
+        .option_name = {"Infinite Shields"},              // pointer to a string
+        .desc = "Adjust how shield health deteriorates.", // string describing what this option does
+        .option_values = LabValues_Shield,                // pointer to an array of strings
         .onOptionChange = 0,
-        .onOptionSelect = Lab_SelectCustomTDI,
+    },
+    {
+        .option_kind = OPTKIND_STRING,                      // the type of option this is; menu, string list, integer list, etc
+        .value_num = 2,                                     // number of values for this option
+        .option_val = 0,                                    // value of this option
+        .menu = 0,                                          // pointer to the menu that pressing A opens
+        .option_name = {"Intangibility"},                   // pointer to a string
+        .desc = "Toggle the CPU's ability to take damage.", // string describing what this option does
+        .option_values = LabOptions_OffOn,                  // pointer to an array of strings
+        .onOptionChange = Lab_ChangeCPUIntang,
     },
     {
         .option_kind = OPTKIND_STRING,                               // the type of option this is; menu, string list, integer list, etc
@@ -1776,6 +1797,16 @@ static EventOption LabOptions_CPU[] = {
         .onOptionChange = 0,
     },
 */
+    {
+        .option_kind = OPTKIND_STRING,                // the type of option this is; menu, string list, integer list, etc
+        .value_num = sizeof(LabValues_CPUBehave) / 4, // number of values for this option
+        .option_val = 0,                              // value of this option
+        .menu = 0,                                    // pointer to the menu that pressing A opens
+        .option_name = "Behavior",                    // pointer to a string
+        .desc = "Adjust the CPU's default action.",   // string describing what this option does
+        .option_values = LabValues_CPUBehave,         // pointer to an array of strings
+        .onOptionChange = 0,
+    },
     {
         .option_kind = OPTKIND_STRING,                                                     // the type of option this is; menu, string list, integer list, etc
         .value_num = sizeof(LabValues_CounterGround) / 4,                                  // number of values for this option
