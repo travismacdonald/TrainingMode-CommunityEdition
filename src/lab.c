@@ -775,104 +775,80 @@ float Fighter_GetOpponentDir(FighterData *from, FighterData *to)
 
     return dir;
 }
-int CPUAction_CheckMultipleState(GOBJ *cpu, int group_kind)
-{
-    static u8 grActionable[] = {ASID_WAIT, ASID_WALKSLOW, ASID_WALKMIDDLE, ASID_WALKFAST, ASID_RUN, ASID_SQUATWAIT, ASID_OTTOTTOWAIT, ASID_GUARD};
-    static u8 airActionable[] = {ASID_JUMPF, ASID_JUMPB, ASID_JUMPAERIALF, ASID_JUMPAERIALB, ASID_FALL, ASID_FALLAERIALF, ASID_FALLAERIALB, ASID_DAMAGEFALL, ASID_DAMAGEFLYROLL, ASID_DAMAGEFLYTOP};
-    static u8 airDamage[] = {ASID_DAMAGEFLYHI, ASID_DAMAGEFLYN, ASID_DAMAGEFLYLW, ASID_DAMAGEFLYTOP, ASID_DAMAGEFLYROLL, ASID_DAMAGEFALL};
-    static u8 jumpStates[] = {ASID_JUMPF, ASID_JUMPB, ASID_JUMPAERIALF, ASID_JUMPAERIALB};
-    static u8 fallStates[] = {ASID_FALL, ASID_FALLAERIAL, ASID_FALLAERIALF, ASID_FALLAERIALB};
 
+static int check_hitstun_ended(GOBJ *cpu) {
     FighterData *cpu_data = cpu->userdata;
-    int isActionable = 0;
     int cpu_state = cpu_data->state;
 
-    // if 0, check the one that corresponds with ground state
-    if (group_kind == 0)
-    {
-        group_kind = cpu_data->phys.air_state + 1;
+    if (ASID_DAMAGEHI1 <= cpu_state && cpu_state <= ASID_DAMAGEFLYROLL) {
+        float hitstun = *((float*)&cpu_data->state_var.stateVar1);
+        return hitstun == 0.0;
     }
 
-    // ground
-    if (group_kind == 1)
+    return false;
+}
+
+// returns true if the cpu is in this asid state
+int CPUAction_CheckASID(GOBJ *cpu, int asid_kind)
+{
+    FighterData *cpu_data = cpu->userdata;
+    int cpu_state = cpu_data->state;
+    int in_air = cpu_data->phys.air_state;
+
+    switch (asid_kind)
     {
-        // check ground actionable
-        //
-        // Aitch: we may not need this anymore because of the hitstun check below.
-        // But there's no harm to keeping it around, just in case.
-        for (int i = 0; i < sizeof(grActionable); i++)
+        // check custom ASID groups
+        case (ASID_ANY): return true;
+        case (ASID_DAMAGEAIR): return in_air && check_hitstun_ended(cpu);
+
+        case (ASID_ACTIONABLE):
         {
-            if (cpu_state == grActionable[i])
-            {
-                isActionable = 1;
-                break;
-            }
+            if (in_air)
+                goto ACTIONABLEAIR;
+            else
+                goto ACTIONABLEGROUND;
         }
 
-        // Aitch: Hardcode all non-knockdown knockback.
-        // Opponent is actionable when hitstun runs out, even though animation hasn't ended.
-        if (ASID_DAMAGEHI1 <= cpu_state && cpu_state <= ASID_DAMAGEAIR3) {
-            float hitstun = *((float*)&cpu_data->state_var.stateVar1);
-            if (hitstun == 0.0)
-                isActionable = 1;
+        case (ASID_ACTIONABLEAIR):
+        ACTIONABLEAIR:
+        {
+            if (in_air && check_hitstun_ended(cpu))
+                return true;
+
+            return cpu_state == ASID_JUMPF 
+                || cpu_state == ASID_JUMPB
+                || cpu_state == ASID_JUMPAERIALF
+                || cpu_state == ASID_JUMPAERIALB
+                || cpu_state == ASID_FALL
+                || cpu_state == ASID_FALLAERIALF
+                || cpu_state == ASID_FALLAERIALB
+                || cpu_state == ASID_DAMAGEFALL
+                || cpu_state == ASID_DAMAGEFLYROLL
+                || cpu_state == ASID_DAMAGEFLYTOP;
         }
 
-        // landing
-        if (cpu_state == ASID_LANDING && cpu_data->stateFrame >= cpu_data->attr.normal_landing_lag)
-            isActionable = 1;
-    }
-    // air
-    else if (group_kind == 2)
-    {
-        // check air actionable
-        for (int i = 0; i < sizeof(airActionable); i++)
+        case (ASID_ACTIONABLEGROUND):
+        ACTIONABLEGROUND:
         {
-            if (cpu_state == airActionable[i])
-            {
-                isActionable = 1;
-                break;
-            }
-        }
-    }
-    // damage state that requires wiggling
-    else if (group_kind == 3)
-    {
-        // check air actionable
-        for (int i = 0; i < sizeof(airDamage); i++)
-        {
-            if (cpu_state == airDamage[i])
-            {
-                isActionable = 1;
-                break;
-            }
-        }
-    }
-    // jump states
-    else if (group_kind == 4)
-    {
-        for (int i = 0; i < sizeof(jumpStates); i++)
-        {
-            if (cpu_state == jumpStates[i])
-            {
-                isActionable = 1;
-                break;
-            }
-        }
-    }
-    // fall states
-    else if (group_kind == 5)
-    {
-        for (int i = 0; i < sizeof(fallStates); i++)
-        {
-            if (cpu_state == fallStates[i])
-            {
-                isActionable = 1;
-                break;
-            }
-        }
-    }
+            if (!in_air && check_hitstun_ended(cpu))
+                return true;
 
-    return isActionable;
+            if (cpu_state == ASID_LANDING && cpu_data->stateFrame >= cpu_data->attr.normal_landing_lag)
+                return true;
+
+            return cpu_state == ASID_WAIT
+                || cpu_state == ASID_WALKSLOW
+                || cpu_state == ASID_WALKMIDDLE
+                || cpu_state == ASID_WALKFAST
+                || cpu_state == ASID_RUN
+                || cpu_state == ASID_SQUATWAIT
+                || cpu_state == ASID_OTTOTTOWAIT
+                || cpu_state == ASID_GUARD;
+        }
+
+        // check normal action states
+        default: return cpu_state == asid_kind;
+    }
 }
 
 int CPU_IsThrown(GOBJ *cpu, GOBJ *hmn) {
@@ -954,22 +930,12 @@ int LCancel_CPUPerformAction(GOBJ *cpu, int action_id, GOBJ *hmn)
         CPUAction *action_input = &action_list[action_parse];
         while ((action_input != 0) && (action_input->state != 0xFFFF))
         {
-
-            int isState = 0;
-            if ((action_input->state >= ASID_ACTIONABLE) && (action_input->state <= ASID_FALLS))
-                isState = CPUAction_CheckMultipleState(cpu, (action_input->state - ASID_ACTIONABLE));
-            else if (action_input->state == cpu_state)
-                isState = 1;
-            else if (action_input->state == ASID_ANY)
-                isState = 1;
-
             // check if this is the current state
-            if (isState == 1)
+            if (CPUAction_CheckASID(cpu, action_input->state))
             {
                 // check if im on the right frame
                 if (cpu_frame >= action_input->frameLow)
                 {
-
                     OSReport("exec input %d of %s\n", action_parse, CPU_ACTIONS_NAMES[action_id]);
 
                     // perform this action
@@ -1804,27 +1770,19 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
     case (CPUSTATE_COUNTER):
     CPULOGIC_COUNTER:
     {
-
         // check if the CPU has been actionable yet
         if (eventData->cpu_isactionable == 0)
         {
-            // check if actionable
-            if (CPUAction_CheckMultipleState(cpu, 0) == 0)
-            {
+            if (!CPUAction_CheckASID(cpu, ASID_ACTIONABLE))
                 break;
-            }
-            else
-            {
-                eventData->cpu_isactionable = 1;                       // set actionable flag to begin running code
-                eventData->cpu_groundstate = cpu_data->phys.air_state; // remember initial ground state
-            }
+
+            eventData->cpu_isactionable = 1;                       // set actionable flag to begin running code
+            eventData->cpu_groundstate = cpu_data->phys.air_state; // remember initial ground state
         }
 
         // if started in the air, didnt finish action, but now grounded, perform ground action
         if ((eventData->cpu_groundstate == 1) && (cpu_data->phys.air_state == 0))
-        {
             eventData->cpu_groundstate = 0;
-        }
 
         // increment frames since actionable
         eventData->cpu_sincehit++;

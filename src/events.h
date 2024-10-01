@@ -10,6 +10,8 @@
 
 #define TMLOG(...) DevelopText_AddString(event_vars->db_console_text, __VA_ARGS__)
 
+#define ARRAY_LEN(arr) (sizeof(arr) / sizeof(*arr))
+
 // disable all logs in release mode
 #if TM_DEBUG == 0
 #define OSReport (void)sizeof

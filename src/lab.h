@@ -270,6 +270,13 @@ enum STICKDIR
 #define HITKIND_DAMAGE 0
 #define HITKIND_SHIELD 1
 
+// Custom ASID animation checks
+#define ASID_ACTIONABLE 1000
+#define ASID_ACTIONABLEGROUND 1001
+#define ASID_ACTIONABLEAIR 1002
+#define ASID_DAMAGEAIR 1003
+#define ASID_ANY 1004
+
 // ACTIONS #################################################
 
 // CPU Action Definitions
@@ -943,18 +950,6 @@ static CPUAction Lab_CPUActionJumpFull[] = {
 };
 static CPUAction Lab_CPUActionJumpAway[] = {
     {
-        ASID_JUMPS, // state to perform this action. -1 for last
-        0,          // first possible frame to perform this action
-        0,          // last possible frame to perfrom this action
-        127,        // left stick X value
-        0,          // left stick Y value
-        0,          // c stick X value
-        0,          // c stick Y value
-        0,          // button to input
-        0,          // is the last input
-        2,          // specify stick direction
-    },
-    {
         ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
         0,                  // first possible frame to perform this action
         0,                  // last possible frame to perfrom this action
@@ -970,18 +965,6 @@ static CPUAction Lab_CPUActionJumpAway[] = {
     -1,
 };
 static CPUAction Lab_CPUActionJumpTowards[] = {
-    {
-        ASID_JUMPS, // state to perform this action. -1 for last
-        0,          // first possible frame to perform this action
-        0,          // last possible frame to perfrom this action
-        127,        // left stick X value
-        0,          // left stick Y value
-        0,          // c stick X value
-        0,          // c stick Y value
-        0,          // button to input
-        0,          // is the last input
-        1,          // specify stick direction
-    },
     {
         ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
         0,                  // first possible frame to perform this action
@@ -999,18 +982,6 @@ static CPUAction Lab_CPUActionJumpTowards[] = {
 };
 static CPUAction Lab_CPUActionJumpNeutral[] = {
     {
-        ASID_JUMPS, // state to perform this action. -1 for last
-        0,          // first possible frame to perform this action
-        0,          // last possible frame to perfrom this action
-        0,          // left stick X value
-        0,          // left stick Y value
-        0,          // c stick X value
-        0,          // c stick Y value
-        0,          // button to input
-        0,          // is the last input
-        0,          // specify stick direction
-    },
-    {
         ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
         0,               // first possible frame to perform this action
         0,               // last possible frame to perfrom this action
@@ -1026,6 +997,7 @@ static CPUAction Lab_CPUActionJumpNeutral[] = {
     -1,
 };
 static CPUAction Lab_CPUActionAirdodge[] = {
+    // wiggle out if we are in tumble
     {
         ASID_DAMAGEAIR, // state to perform this action. -1 for last
         0,              // first possible frame to perform this action
