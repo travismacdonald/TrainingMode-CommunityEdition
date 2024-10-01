@@ -918,6 +918,8 @@ int LCancel_CPUPerformAction(GOBJ *cpu, int action_id, GOBJ *hmn)
     // clear inputs
     Fighter_ZeroCPUInputs(cpu_data);
 
+    if (action_list == 0) return 1;
+
     // perform command
     // loop through all inputs
     int action_parse = 0;
@@ -1584,10 +1586,19 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         break;
     }
 
+    case (CPUSTATE_NONE):
+    CPULOGIC_NONE:
+    {
+        int state = cpu_data->state;
+        if (ASID_DAMAGEFLYHI <= state && state <= ASID_DAMAGEFLYROLL || state == ASID_DAMAGEFALL)
+            goto CPULOGIC_FORCE_TECH;
+        else
+            goto CPUSTATE_ENTERSTART;
+    }
+
     case (CPUSTATE_TECH):
     CPULOGIC_TECH:
     {
-
         // if no more hitstun, go to counter
         if (cpu_data->flags.hitstun == 0)
         {
@@ -1597,6 +1608,8 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
             eventData->cpu_state = CPUSTATE_COUNTER;
             goto CPULOGIC_COUNTER;
         }
+
+        CPULOGIC_FORCE_TECH:
 
         // perform tech behavior
         int tech_kind = LabOptions_Tech[OPTTECH_TECH].option_val;
@@ -1642,13 +1655,13 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         case (CPUTECH_AWAY):
         {
             dir = Fighter_GetOpponentDir(cpu_data, hmn_data);
-            stickX = 127 * (dir * -1);
+            stickX = 40 * (dir * -1);
             break;
         }
         case (CPUTECH_TOWARDS):
         {
             dir = Fighter_GetOpponentDir(cpu_data, hmn_data);
-            stickX = 127 * (dir);
+            stickX = 40 * (dir);
             break;
         }
         case (CPUTECH_NONE):
@@ -1828,9 +1841,14 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
             goto CPUSTATE_ENTERSTART;
         }
 
+        if (action_id == 0) {
+            eventData->cpu_state = CPUSTATE_NONE;
+            goto CPULOGIC_NONE;
+        }
+
         // perform counter behavior
         //OSReport("executing input");
-        if (LCancel_CPUPerformAction(cpu, action_id, hmn) == 1)
+        else if (LCancel_CPUPerformAction(cpu, action_id, hmn) == 1)
         {
             eventData->cpu_state = CPUSTATE_RECOVER;
             //goto CPULOGIC_RECOVER;
