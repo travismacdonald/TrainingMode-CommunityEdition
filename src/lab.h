@@ -1039,6 +1039,36 @@ static CPUAction Lab_CPUActionFFTumble[] = {
     },
     -1,
 };
+static CPUAction Lab_CPUActionNone[] = {
+    // if in tumble, wiggle out
+    {
+        ASID_DAMAGEAIR, // state to perform this action. -1 for last
+        0,              // first possible frame to perform this action
+        0,              // last possible frame to perfrom this action
+        -127,           // left stick X value
+        0,              // left stick Y value
+        0,              // c stick X value
+        0,              // c stick Y value
+        0,              // button to input
+        1,              // is the last input
+        0,              // specify stick direction
+    },
+
+    // otherwise, do nothing
+    {
+        ASID_ACTIONABLE, // state to perform this action. -1 for last
+        0,              // first possible frame to perform this action
+        0,              // last possible frame to perfrom this action
+        0,              // left stick X value
+        0,              // left stick Y value
+        0,              // c stick X value
+        0,              // c stick Y value
+        0,              // button to input
+        1,              // is the last input
+        0,              // specify stick direction
+    },
+    -1
+};
 static CPUAction Lab_CPUActionFFWiggle[] = {
     {
         ASID_DAMAGEAIR, // state to perform this action. -1 for last
@@ -1174,7 +1204,7 @@ static CPUAction Lab_CPUActionFSmash[] = {
 
 static CPUAction *Lab_CPUActions[] = {
     // none 0
-    0,
+    &Lab_CPUActionNone,
     // shield 1
     &Lab_CPUActionShield,
     // grab 2

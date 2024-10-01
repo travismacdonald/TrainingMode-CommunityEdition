@@ -918,102 +918,95 @@ int LCancel_CPUPerformAction(GOBJ *cpu, int action_id, GOBJ *hmn)
     // clear inputs
     Fighter_ZeroCPUInputs(cpu_data);
 
-    // if no action, report command as done
-    if (action_id == 0)
-        action_done = 1;
-
     // perform command
-    else
+    // loop through all inputs
+    int action_parse = 0;
+    CPUAction *action_input = &action_list[action_parse];
+    while ((action_input != 0) && (action_input->state != 0xFFFF))
     {
-        // loop through all inputs
-        int action_parse = 0;
-        CPUAction *action_input = &action_list[action_parse];
-        while ((action_input != 0) && (action_input->state != 0xFFFF))
+        // check if this is the current state
+        if (CPUAction_CheckASID(cpu, action_input->state))
         {
-            // check if this is the current state
-            if (CPUAction_CheckASID(cpu, action_input->state))
+            // check if im on the right frame
+            if (cpu_frame >= action_input->frameLow)
             {
-                // check if im on the right frame
-                if (cpu_frame >= action_input->frameLow)
+                OSReport("exec input %d of %s\n", action_parse, CPU_ACTIONS_NAMES[action_id]);
+
+                // perform this action
+                s8 dir;
+                int held = action_input->input;
+                s8 lstickX = action_input->stickX;
+                s8 lstickY = action_input->stickY;
+                s8 cstickX = action_input->cstickX;
+                s8 cstickY = action_input->cstickY;
+
+                // stick direction
+                switch (action_input->stickDir)
                 {
-                    OSReport("exec input %d of %s\n", action_parse, CPU_ACTIONS_NAMES[action_id]);
-
-                    // perform this action
-                    s8 dir;
-                    int held = action_input->input;
-                    s8 lstickX = action_input->stickX;
-                    s8 lstickY = action_input->stickY;
-                    s8 cstickX = action_input->cstickX;
-                    s8 cstickY = action_input->cstickY;
-
-                    // stick direction
-                    switch (action_input->stickDir)
-                    {
-                    case (STCKDIR_NONE):
-                    {
-                        break;
-                    }
-                    case (STCKDIR_TOWARD):
-                    {
-                        dir = Fighter_GetOpponentDir(cpu_data, hmn_data);
-                        lstickX *= dir;
-                        cstickX *= dir;
-                        break;
-                    }
-                    case (STCKDIR_AWAY):
-                    {
-                        dir = Fighter_GetOpponentDir(cpu_data, hmn_data) * -1;
-                        lstickX *= dir;
-                        cstickX *= dir;
-                        break;
-                    }
-                    case (STCKDIR_FRONT):
-                    {
-                        dir = cpu_data->facing_direction;
-                        lstickX *= dir;
-                        cstickX *= dir;
-                        break;
-                    }
-                    case (STCKDIR_BACK):
-                    {
-                        dir = cpu_data->facing_direction;
-                        lstickX *= (dir * -1);
-                        cstickX *= (dir * -1);
-                        break;
-                    }
-                    case (STICKDIR_RDM):
-                    {
-                        // random direction
-                        if (HSD_Randi(2) == 0)
-                            dir = 1;
-                        else
-                            dir = -1;
-
-                        lstickX *= dir;
-                        cstickX *= dir;
-                        break;
-                    }
-                    }
-
-                    // perform this action
-                    cpu_data->cpu.held = held;
-                    cpu_data->cpu.lstickX = lstickX;
-                    cpu_data->cpu.lstickY = lstickY;
-                    cpu_data->cpu.cstickX = cstickX;
-                    cpu_data->cpu.cstickY = cstickY;
-
-                    // check if this was the last action
-                    if (action_input->isLast == 1)
-                        action_done = 1;
-
+                case (STCKDIR_NONE):
+                {
                     break;
                 }
-            }
+                case (STCKDIR_TOWARD):
+                {
+                    dir = Fighter_GetOpponentDir(cpu_data, hmn_data);
+                    lstickX *= dir;
+                    cstickX *= dir;
+                    break;
+                }
+                case (STCKDIR_AWAY):
+                {
+                    dir = Fighter_GetOpponentDir(cpu_data, hmn_data) * -1;
+                    lstickX *= dir;
+                    cstickX *= dir;
+                    break;
+                }
+                case (STCKDIR_FRONT):
+                {
+                    dir = cpu_data->facing_direction;
+                    lstickX *= dir;
+                    cstickX *= dir;
+                    break;
+                }
+                case (STCKDIR_BACK):
+                {
+                    dir = cpu_data->facing_direction;
+                    lstickX *= (dir * -1);
+                    cstickX *= (dir * -1);
+                    break;
+                }
+                case (STICKDIR_RDM):
+                {
+                    // random direction
+                    if (HSD_Randi(2) == 0)
+                        dir = 1;
+                    else
+                        dir = -1;
 
-            // get next input
-            action_parse++;
-            action_input = &action_list[action_parse];
+                    lstickX *= dir;
+                    cstickX *= dir;
+                    break;
+                }
+                }
+
+                // perform this action
+                cpu_data->cpu.held = held;
+                cpu_data->cpu.lstickX = lstickX;
+                cpu_data->cpu.lstickY = lstickY;
+                cpu_data->cpu.cstickX = cstickX;
+                cpu_data->cpu.cstickY = cstickY;
+
+                // check if this was the last action
+                if (action_input->isLast == 1)
+                    action_done = 1;
+
+                break;
+            }
         }
+
+        // get next input
+        action_parse++;
+        action_input = &action_list[action_parse];
     }
 
     return action_done;
@@ -1068,7 +1061,7 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
             eventData->cpu_hitshieldnum++;
         }
 
-        // Aitch: Keep holding shield. Prevents nana from dropping shield.
+        // Keep holding shield during hitstop/hitlag. Prevents nana from dropping shield.
         cpu_data->cpu.held |= PAD_TRIGGER_R;
         cpu_data->input.held |= PAD_TRIGGER_R;
         cpu_data->input.trigger = 1.0f;
@@ -1641,7 +1634,6 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
             }
             tech_kind = 4;
             goto TECH_SWITCH;
-            break;
         }
         case (CPUTECH_NEUTRAL):
         {
@@ -1834,13 +1826,6 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         {
             // wasnt hit, fell or something idk. enter start again
             goto CPUSTATE_ENTERSTART;
-        }
-
-        // if none, enter recover
-        if (action_id == 0)
-        {
-            eventData->cpu_state = CPUSTATE_RECOVER;
-            goto CPULOGIC_RECOVER;
         }
 
         // perform counter behavior
