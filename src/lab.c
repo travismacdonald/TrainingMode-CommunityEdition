@@ -5159,6 +5159,10 @@ void Event_Init(GOBJ *gobj)
     // set CPU AI to no_act 15
     cpu_data->cpu.ai = 0;
 
+    // change team - homing missiles don't move towards characters on same team
+    hmn_data->team = 0;
+    cpu_data->team = 1;
+
     // check to immediately load recording
     if (*onload_fileno != -1)
     {
