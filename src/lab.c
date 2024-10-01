@@ -1102,10 +1102,14 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
             eventData->cpu_hitshieldnum++;
         }
 
+        // Aitch: Keep holding shield. Prevents nana from dropping shield.
+        cpu_data->cpu.held |= PAD_TRIGGER_R;
+        cpu_data->input.held |= PAD_TRIGGER_R;
+        cpu_data->input.trigger = 1.0f;
+        cpu_data->cpu.ai = 15; // Ensure AI doesn't override this input
+
         eventData->cpu_hitkind = HITKIND_SHIELD;
-        eventData->cpu_state = CPUSTATE_SDI;
-        // go to Shield state
-        //eventData->cpu_state = CPUSTATE_SHIELD;
+        eventData->cpu_state = CPUSTATE_COUNTER;
     }
     // check for missed tech
     if ((cpu_state == ASID_DOWNBOUNDD) || (cpu_state == ASID_DOWNBOUNDU) || (cpu_state == ASID_DOWNWAITU) || (cpu_state == ASID_DOWNWAITD) || (cpu_state == ASID_PASSIVE) || (cpu_state == ASID_PASSIVESTANDB) || (cpu_state == ASID_PASSIVESTANDF))
@@ -1269,16 +1273,9 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
             }
         }
 
-        // to-do: shield SDI
-        if ((cpu_data->state >= ASID_GUARDON) && (cpu_data->state <= ASID_GUARDREFLECT))
-        {
-            ;
-        }
-
         // perform SDI behavior
-        else if (LabOptions_CPU[OPTCPU_SDIFREQ].option_val != SDIFREQ_NONE)
+        if (LabOptions_CPU[OPTCPU_SDIFREQ].option_val != SDIFREQ_NONE)
         {
-
             int chance = stc_sdifreqs[LabOptions_CPU[OPTCPU_SDIFREQ].option_val - 1];
 
             // chance to SDI
