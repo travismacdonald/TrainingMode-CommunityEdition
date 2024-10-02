@@ -17,12 +17,14 @@ To discuss changes and new features or ask for assistance, join [the discord](ht
     - Updated to UCF 0.84 (Allows practicing with dashback out of crouch).
     - Savestates now require holding DPad right, preventing accidental savestates.
     - Reworked recording UI. Allows resaveing existing recordings with different percents or positioning.
+    - Tech animations can be set invisible after they are distinguishable.
     - Random custom DI option.
+    - All special moves can be used as counter actions.
     - Press DPad left/right when browsing savestates to quickly change pages.
     - Hazard toggle in training lab.
+    - New SDI and ASDI options.
     - SDI and mashing are set to none by default.
     - New neutral jump option for CPUs, set as the default.
-    - Much more planned in the near future!
 - Bugfixes:
     - Jump actions no longer make the CPU self-destruct.
     - Ledge and Act out of Jump OSDs are now back.
@@ -30,6 +32,11 @@ To discuss changes and new features or ask for assistance, join [the discord](ht
     - Lightshield now works in recordings.
     - Can now use lightshield L with DPad to adjust percents.
     - CPUs now DI DK cargo throw.
+    - Samus homing missiles will target the CPU.
+    - Nana will not drop shield when Popo's shield is hit.
+    - Added the polling drift fix.
+    - Deleting replays too fast will no longer crash.
+    - Every character can be used in Amsah Tech training.
 - Work in progress:
     - Fixing Export/Import replay crashes.
     - Reaction Tech Chase Event
