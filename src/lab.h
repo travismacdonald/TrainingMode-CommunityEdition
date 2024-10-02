@@ -14,6 +14,8 @@ static EventMenu LabMenu_Tech;
 static void rebound_tech_chances(int menu_lookup[4], int just_changed_option);
 static int is_tech_anim(int state);
 
+#define AUTORESTORE_DELAY 20
+
 static int tech_frame_distinguishable[27] = {
     -1, // Mario
      4, // Fox
@@ -135,6 +137,28 @@ enum sdi_dir
     SDIDIR_RIGHT,
 };
 
+enum autorestore
+{
+    AUTORESTORE_NONE = 0,
+    AUTORESTORE_PLAYBACK_END,
+    AUTORESTORE_COUNTER,
+};
+
+enum rec_mode_hmn
+{
+    RECMODE_HMN_OFF = 0,
+    RECMODE_HMN_RECORD,
+    RECMODE_HMN_PLAYBACK,
+};
+
+enum rec_mode_cpu
+{
+    RECMODE_CPU_OFF = 0,
+    RECMODE_CPU_CONTROL,
+    RECMODE_CPU_RECORD,
+    RECMODE_CPU_PLAYBACK,
+};
+
 // Recording Options
 #define OPTREC_SAVE_LOAD 0
 #define OPTREC_HMNMODE 1
@@ -142,16 +166,10 @@ enum sdi_dir
 #define OPTREC_CPUMODE 3
 #define OPTREC_CPUSLOT 4
 #define OPTREC_LOOP 5
-#define OPTREC_AUTOLOAD 6
+#define OPTREC_AUTORESTORE 6
 #define OPTREC_RESAVE 7
 #define OPTREC_EXPORT 8
 #define OPTREC_DELETE 9
-
-// Recording Modes
-#define RECMODE_OFF 0
-#define RECMODE_CTRL 1
-#define RECMODE_REC 2
-#define RECMODE_PLAY 3
 
 // Info Display Options
 //#define OPTINF_TOGGLE 0
@@ -2034,9 +2052,13 @@ static EventMenu LabMenu_Tech = {
     .prev = 0,
 };
 // Recording
+//
+// Aitch: Please be aware that the order of these options is important.
+// The option idx will be serialized when exported, so loading older replays could load the wrong option if we reorder/remove options.
 static char **LabValues_RecordSlot[] = {"Random", "Slot 1", "Slot 2", "Slot 3", "Slot 4", "Slot 5", "Slot 6"};
 static char **LabValues_HMNRecordMode[] = {"Off", "Record", "Playback"};
 static char **LabValues_CPURecordMode[] = {"Off", "Control", "Record", "Playback"};
+static char **LabValues_AutoRestore[] = {"Off", "Playback Ends", "CPU Counters"};
 
 static const EventOption Record_Save = {
     .option_kind = OPTKIND_FUNC,                                             // the type of option this is; menu, string list, integer list, etc
@@ -2116,12 +2138,12 @@ static EventOption LabOptions_Record[] = {
     },
     {
         .option_kind = OPTKIND_STRING,                                              // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabOptions_OffOn) / 4,                                  // number of values for this option
+        .value_num = sizeof(LabValues_AutoRestore) / 4,                             // number of values for this option
         .option_val = 0,                                                            // value of this option
         .menu = 0,                                                                  // pointer to the menu that pressing A opens
         .option_name = "Auto Restore",                                              // pointer to a string
-        .desc = "Automatically restore saved positions \nafter the playback ends.", // string describing what this option does
-        .option_values = LabOptions_OffOn,                                          // pointer to an array of strings
+        .desc = "Automatically restore saved positions.",                           // string describing what this option does
+        .option_values = LabValues_AutoRestore,                                     // pointer to an array of strings
         .onOptionChange = 0,
     },
     {

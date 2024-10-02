@@ -1021,6 +1021,7 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
     FighterData *cpu_data = cpu->userdata;
     GOBJ **gobjlist = R13_PTR(GOBJLIST);
     int cpu_state = cpu_data->state;
+    eventData->cpu_countering = false;
 
     // noact
     cpu_data->cpu.ai = 15;
@@ -1089,7 +1090,6 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
     case (CPUSTATE_START):
     CPULOGIC_START:
     {
-
         // if in the air somehow, enter recovery
         if (cpu_data->phys.air_state == 1)
         {
@@ -1845,13 +1845,11 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
             eventData->cpu_state = CPUSTATE_NONE;
             goto CPULOGIC_NONE;
         }
-
-        // perform counter behavior
-        //OSReport("executing input");
-        else if (LCancel_CPUPerformAction(cpu, action_id, hmn) == 1)
+        else 
         {
-            eventData->cpu_state = CPUSTATE_RECOVER;
-            //goto CPULOGIC_RECOVER;
+            eventData->cpu_countering = true;
+            if (LCancel_CPUPerformAction(cpu, action_id, hmn))
+                eventData->cpu_state = CPUSTATE_RECOVER;
         }
 
         break;
@@ -3002,6 +3000,8 @@ GOBJ *Record_Init()
     JOBJ_GetChild(playback, &seek, REC_SEEKJOINT, -1);
     rec_data.seek_jobj = seek;
 
+    rec_data.restore_timer = 0;
+
     // save left and right seek bounds
     JOBJ *seek_bound[2];
     JOBJ_GetChild(playback, &seek_bound, REC_LEFTBOUNDJOINT, REC_RIGHTBOUNDJOINT, -1);
@@ -3207,6 +3207,8 @@ void Record_GX(GOBJ *gobj, int pass)
 }
 void Record_Think(GOBJ *rec_gobj)
 {
+    if (rec_state->is_exist != 1) return;
+
     // get current hmn recording slot
     int hmn_slot = LabOptions_Record[OPTREC_HMNSLOT].option_val;
     if (hmn_slot == 0) // use random slot
@@ -3223,82 +3225,83 @@ void Record_Think(GOBJ *rec_gobj)
 
     RecInputData *hmn_inputs = rec_data.hmn_inputs[hmn_slot];
     RecInputData *cpu_inputs = rec_data.cpu_inputs[cpu_slot];
+    int hmn_mode = LabOptions_Record[OPTREC_HMNMODE].option_val;
+    int cpu_mode = LabOptions_Record[OPTREC_CPUMODE].option_val;
 
-    // ensure the state exists
-    if (rec_state->is_exist == 1)
+    // get longest recording
+    int input_num = hmn_inputs->num;
+    if (cpu_inputs->num > hmn_inputs->num)
+        input_num = cpu_inputs->num;
+
+    // get curr frame (the current position in the recording)
+    int curr_frame = Record_GetCurrFrame();
+    int end_frame = Record_GetEndFrame();
+
+    // loop inputs check ------------------------------
+
+    int loop_mode = LabOptions_Record[OPTREC_LOOP].option_val;
+    int modes_allow_loop = hmn_mode != RECMODE_HMN_RECORD && cpu_mode != RECMODE_CPU_CONTROL && cpu_mode != RECMODE_CPU_RECORD;
+    int past_last_input = input_num != 0 && curr_frame >= end_frame;
+    if (loop_mode & modes_allow_loop & past_last_input)
     {
-        // get longest recording
-        int input_num = hmn_inputs->num;
-        if (cpu_inputs->num > hmn_inputs->num)
-            input_num = cpu_inputs->num;
+        event_vars->game_timer = rec_state->frame + 1;
 
-        // get curr frame (the current position in the recording)
-        int curr_frame = Record_GetCurrFrame();
-        int end_frame = Record_GetEndFrame();
+        // reroll
+        if (LabOptions_Record[OPTREC_HMNSLOT].option_val == 0)
+            rec_data.hmn_rndm_slot = Record_GetRandomSlot(&rec_data.hmn_inputs);
+        if (LabOptions_Record[OPTREC_CPUSLOT].option_val == 0)
+            rec_data.cpu_rndm_slot = Record_GetRandomSlot(&rec_data.cpu_inputs);
+    }
 
-        // if at the end of the recording
-        if ((input_num != 0) && (curr_frame >= end_frame))
+    // autorestore check -----------------------------------
+
+    if (modes_allow_loop) {
+        int autorestore_mode = LabOptions_Record[OPTREC_AUTORESTORE].option_val;
+        int restore = false;
+        LCancelData *event_data = event_vars->event_gobj->userdata;
+        switch (autorestore_mode)
         {
-
-            // but not during a recording/control
-            if ((LabOptions_Record[OPTREC_HMNMODE].option_val != 1) && (LabOptions_Record[OPTREC_CPUMODE].option_val != 1) && (LabOptions_Record[OPTREC_CPUMODE].option_val != 2))
+            case (AUTORESTORE_NONE):
+                break;
+            case (AUTORESTORE_PLAYBACK_END):
             {
-
-                // init flag
-                int is_loop = 0;
-
-                // check to auto reset
-                if ((LabOptions_Record[OPTREC_AUTOLOAD].option_val == 1))
-                {
-                    event_vars->Savestate_Load(rec_state);
-                    event_vars->game_timer = rec_state->frame + 1;
-                    is_loop = 1;
-                }
-
-                // check to loop inputs
-                else if ((LabOptions_Record[OPTREC_LOOP].option_val == 1))
-                {
-                    event_vars->game_timer = rec_state->frame + 1;
-                    is_loop = 1;
-                }
-
-                // if recording looped, check to re-roll random slot
-                if (is_loop == 1)
-                {
-                    // re-roll random slot
-                    if (LabOptions_Record[OPTREC_HMNSLOT].option_val == 0)
-                    {
-                        rec_data.hmn_rndm_slot = Record_GetRandomSlot(&rec_data.hmn_inputs);
-                    }
-                    if (LabOptions_Record[OPTREC_CPUSLOT].option_val == 0)
-                    {
-                        rec_data.cpu_rndm_slot = Record_GetRandomSlot(&rec_data.cpu_inputs);
-                    }
-                }
+                restore = past_last_input;
+                break;
+            }
+            case (AUTORESTORE_COUNTER):
+            {
+                if (cpu_mode == RECMODE_CPU_OFF)
+                    restore = event_data->cpu_countering;
+                break;
             }
         }
 
-        // check record mode for HMN
-        int hmn_mode = LabOptions_Record[OPTREC_HMNMODE].option_val;
-        if (hmn_mode > 0) // adjust mode
-            hmn_mode++;
-        Record_Update(0, hmn_inputs, hmn_mode);
-        // check record mode for CPU
-        int cpu_mode = LabOptions_Record[OPTREC_CPUMODE].option_val;
-        Record_Update(1, cpu_inputs, cpu_mode);
-    }
-    /*
-    GOBJ *cpu = Fighter_GetGObj(1);
-    FighterData *cpu_data = cpu->userdata;
+        // start restore timer on restore, and increment it if it has already started
+        if (restore || rec_data.restore_timer > 0)
+            rec_data.restore_timer++;
 
-    DevText *dev_text = stc_devtext;
-    // clear text
-    DevelopText_EraseAllText(dev_text);
-    DevelopMode_ResetCursorXY(dev_text, 0, 0);
-    DevelopText_AddString(dev_text, "isthrown: %d\n", cpu_data->flags.is_thrown);
-    */
-    return;
+        if (rec_data.restore_timer >= AUTORESTORE_DELAY) {
+            event_vars->Savestate_Load(rec_state);
+            event_vars->game_timer = rec_state->frame + 1;
+            rec_data.restore_timer = 0;
+
+            // reroll
+            if (LabOptions_Record[OPTREC_HMNSLOT].option_val == 0)
+                rec_data.hmn_rndm_slot = Record_GetRandomSlot(&rec_data.hmn_inputs);
+            if (LabOptions_Record[OPTREC_CPUSLOT].option_val == 0)
+                rec_data.cpu_rndm_slot = Record_GetRandomSlot(&rec_data.cpu_inputs);
+        }
+    }
+
+    // update inputs ---------------------------------------
+
+    if (hmn_mode > 0) // adjust hmn_mode to match cpu_mode
+        hmn_mode++;
+    Record_Update(0, hmn_inputs, hmn_mode);
+    Record_Update(1, cpu_inputs, cpu_mode);
 }
+
+// assumes rec_mode_cpu
 void Record_Update(int ply, RecInputData *input_data, int rec_mode)
 {
     GOBJ *fighter = Fighter_GetGObj(ply);
@@ -3325,20 +3328,13 @@ void Record_Update(int ply, RecInputData *input_data, int rec_mode)
     // if the current frame before the recording ends
     if ((curr_frame) < (rec_start + REC_LENGTH))
     {
-
         switch (rec_mode)
         {
-        case RECMODE_OFF:
-        {
+        case (RECMODE_CPU_OFF):
+        case (RECMODE_CPU_CONTROL):
             break;
-        }
-        case RECMODE_CTRL:
+        case (RECMODE_CPU_RECORD):
         {
-            break;
-        }
-        case RECMODE_REC:
-        {
-
             // recording has started BUT the player has jumped back behind it, move the start frame back
             if ((input_data->start_frame == -1) || (curr_frame < rec_start))
             {
@@ -3377,7 +3373,7 @@ void Record_Update(int ply, RecInputData *input_data, int rec_mode)
 
             break;
         }
-        case RECMODE_PLAY:
+        case (RECMODE_CPU_PLAYBACK):
         {
             // ensure we have an input for this frame
             if ((curr_frame >= rec_start) && ((curr_frame - rec_start) <= (input_data->num)))
@@ -3526,12 +3522,12 @@ void Record_ChangeHMNMode(GOBJ *menu_gobj, int value)
     if ((LabOptions_Record[OPTREC_HMNMODE].option_val != 1) && (LabOptions_Record[OPTREC_CPUMODE].option_val != 2))
     {
         LabOptions_Record[OPTREC_LOOP].disable = 0;
-        LabOptions_Record[OPTREC_AUTOLOAD].disable = 0;
+        LabOptions_Record[OPTREC_AUTORESTORE].disable = 0;
     }
     else
     {
         LabOptions_Record[OPTREC_LOOP].disable = 1;
-        LabOptions_Record[OPTREC_AUTOLOAD].disable = 1;
+        LabOptions_Record[OPTREC_AUTORESTORE].disable = 1;
     }
 
     return;
@@ -3559,12 +3555,12 @@ void Record_ChangeCPUMode(GOBJ *menu_gobj, int value)
     if ((LabOptions_Record[OPTREC_HMNMODE].option_val != 1) && (LabOptions_Record[OPTREC_CPUMODE].option_val != 2))
     {
         LabOptions_Record[OPTREC_LOOP].disable = 0;
-        LabOptions_Record[OPTREC_AUTOLOAD].disable = 0;
+        LabOptions_Record[OPTREC_AUTORESTORE].disable = 0;
     }
     else
     {
         LabOptions_Record[OPTREC_LOOP].disable = 1;
-        LabOptions_Record[OPTREC_AUTOLOAD].disable = 1;
+        LabOptions_Record[OPTREC_AUTORESTORE].disable = 1;
     }
 
     return;
@@ -3599,7 +3595,6 @@ int Record_GetCurrFrame()
 }
 int Record_GetEndFrame()
 {
-
     // get hmn slot
     int hmn_slot = LabOptions_Record[OPTREC_HMNSLOT].option_val;
     if (hmn_slot == 0) // use random slot
@@ -3824,7 +3819,7 @@ void Record_MemcardLoad(int slot, int file_no)
             LabOptions_Record[OPTREC_CPUMODE].option_val = menu_settings->cpu_mode;
             LabOptions_Record[OPTREC_CPUSLOT].option_val = menu_settings->cpu_slot;
             LabOptions_Record[OPTREC_LOOP].option_val = menu_settings->loop_inputs;
-            LabOptions_Record[OPTREC_AUTOLOAD].option_val = menu_settings->auto_restore;
+            LabOptions_Record[OPTREC_AUTORESTORE].option_val = menu_settings->auto_restore;
 
             // enter recording menu
             MenuData *menu_data = event_vars->menu_gobj->userdata;
@@ -4093,7 +4088,7 @@ void Export_Init(GOBJ *menu_gobj)
     menu_settings->cpu_mode = LabOptions_Record[OPTREC_CPUMODE].option_val;
     menu_settings->cpu_slot = LabOptions_Record[OPTREC_CPUSLOT].option_val;
     menu_settings->loop_inputs = LabOptions_Record[OPTREC_LOOP].option_val;
-    menu_settings->auto_restore = LabOptions_Record[OPTREC_AUTOLOAD].option_val;
+    menu_settings->auto_restore = LabOptions_Record[OPTREC_AUTORESTORE].option_val;
     // recording data
     memcpy(stc_transfer_buf + header->lookup.ofst_recording, recording_buffer, compress_size); // compressed recording
 
@@ -5405,7 +5400,7 @@ void Event_Think(GOBJ *event)
     // Adjust control of fighters
     switch (LabOptions_Record[OPTREC_CPUMODE].option_val)
     {
-    case RECMODE_OFF:
+    case (RECMODE_CPU_OFF):
     {
         // human is human
         hmn_data->player_controller_number = stc_hmn_controller;
@@ -5416,7 +5411,7 @@ void Event_Think(GOBJ *event)
 
         break;
     }
-    case RECMODE_PLAY:
+    case (RECMODE_CPU_PLAYBACK):
     {
 
         // human is human
@@ -5428,8 +5423,8 @@ void Event_Think(GOBJ *event)
 
         break;
     }
-    case RECMODE_CTRL:
-    case RECMODE_REC:
+    case (RECMODE_CPU_CONTROL):
+    case (RECMODE_CPU_RECORD):
     {
         // human is human
         hmn_data->player_controller_number = stc_cpu_controller;

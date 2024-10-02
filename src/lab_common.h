@@ -186,6 +186,13 @@ typedef struct LCancelData
     u8 cpu_hitnum;
     u8 cpu_sdidir;
     u8 cpu_sincehit;
+
+    // We set this flag if the CPU performs a counter action on this frame.
+    // Aitch: Occasionally we need to determine if the CPU is countering (such as AUTORESTORE_COUNTER).
+    // However, the counter action immediately completes and the cpu state is never set to CPUSTATE_COUNTER.
+    // And even, then, sometimes the CPU is in the CPUSTATE_COUNTER state but does not act.
+    u8 cpu_countering;
+
     s16 cpu_lasthit;
     s16 cpu_lastshieldstun; // last move instance of the opponent in shield stun. used to tell how many times the shield was hit
     s8 cpu_hitkind;         // how the CPU was hit, damage or shield
@@ -263,11 +270,11 @@ typedef struct RecInputData
 } RecInputData;
 typedef struct RecData
 {
-    int timer; // this is updated at runtime to know which frames inputs to use.
     int hmn_rndm_slot;
     RecInputData *hmn_inputs[REC_SLOTS];
     int cpu_rndm_slot;
     RecInputData *cpu_inputs[REC_SLOTS];
+    int restore_timer;
     JOBJ *seek_jobj;
     Text *text;
     float seek_left;
