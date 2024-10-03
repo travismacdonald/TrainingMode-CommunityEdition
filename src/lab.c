@@ -1116,6 +1116,27 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
             cpu_data->input.held |= PAD_TRIGGER_R;
             cpu_data->input.trigger = 1.0f;
             cpu_data->cpu.ai = 15; // Ensure AI doesn't override this input
+            // input shield angle if appropriate
+            u16 shield_ang = LabOptions_CPU[OPTCPU_SHIELDDIR].option_val;
+            if (shield_ang != CPUSHIELDANG_NONE) {
+                // cpu_data->input.timer_lstick_tilt_x = 5;
+                // cpu_data->input.timer_lstick_tilt_y = 5;
+                s8 stickX = 0;
+                s8 stickY = 0;
+                if (shield_ang == CPUSHIELDANG_TOWARD || shield_ang == CPUSHIELDANG_AWAY) {
+                    int dir = (int)Fighter_GetOpponentDir(cpu_data, hmn_data);
+                    stickX = 127 * (dir * (shield_ang == CPUSHIELDANG_AWAY ? -1 : 1));
+                }
+                else {
+                    stickY = 127 * (shield_ang == CPUSHIELDANG_DOWN ? -1 : 1);
+                }
+                // overwrite the last-frame stick inputs, so 
+                // rolls/jumps/spotdodges arent triggered by the shield tilt input.
+                cpu_data->input.lstick_x = stickX;
+                cpu_data->input.lstick_y = stickY;
+                cpu_data->cpu.lstickX = stickX;
+                cpu_data->cpu.lstickY = stickY;
+            }
             break;
         }
 
@@ -1654,6 +1675,7 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         }
         case (CPUTECH_AWAY):
         {
+            // example of towards/away
             dir = Fighter_GetOpponentDir(cpu_data, hmn_data);
             stickX = 40 * (dir * -1);
             break;
@@ -1806,6 +1828,7 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
             {
                 int grndCtr = LabOptions_CPU[OPTCPU_CTRGRND].option_val;
                 action_id = GrAcLookup[grndCtr];
+                // possible to shield here
             }
             else if (cpu_data->phys.air_state == 1) // only if in the air at the time of hitstun ending
             {
@@ -1848,6 +1871,7 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         else 
         {
             eventData->cpu_countering = true;
+            // shield action potentially performed here
             if (LCancel_CPUPerformAction(cpu, action_id, hmn))
                 eventData->cpu_state = CPUSTATE_RECOVER;
         }
