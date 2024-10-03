@@ -941,6 +941,7 @@ void Fighter_PlaceOnLedge(LedgedashData *event_data, GOBJ *hmn, int line_index, 
         event_data->tip.refresh_num = 0;
         hmn_data->phys.pos.X = ledge_pos.X + -5 * ledge_dir; // slight nudge to prevent accidentally landing on stage
         hmn_data->phys.pos.Y = ledge_pos.Y + 20;
+        Fighter_UpdatePosition(hmn);
         Fighter_EnterFall(hmn);
         break;
     }
