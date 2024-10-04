@@ -1774,7 +1774,7 @@ static EventOption LabOptions_CPU[] = {
         .option_val = 0,                                                       // value of this option
         .menu = 0,                                                             // pointer to the menu that pressing A opens
         .option_name = "ASDI",                                                 // pointer to a string
-        .desc = "Set CPU c-stick ASDI direction",                              // string describing what this option does
+        .desc = "Set CPU C-stick ASDI direction",                              // string describing what this option does
         .option_values = LabValues_ASDI,                                       // pointer to an array of strings
         .onOptionChange = 0,
     },
