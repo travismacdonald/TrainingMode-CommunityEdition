@@ -187,10 +187,11 @@ typedef struct LCancelData
     u8 cpu_sdidir;
     u8 cpu_sincehit;
 
-    // We set this flag if the CPU performs a counter action on this frame.
-    // Aitch: Occasionally we need to determine if the CPU is countering (such as AUTORESTORE_COUNTER).
-    // However, the counter action immediately completes and the cpu state is never set to CPUSTATE_COUNTER.
-    // And even, then, sometimes the CPU is in the CPUSTATE_COUNTER state but does not act.
+    // Aitch: We set this flag if the CPU performs a counter action on this frame.
+    // Occasionally we need to determine if the CPU is countering (such as AUTORESTORE_COUNTER).
+    // However, if the counter action immediately completes, the cpu state is never set to CPUSTATE_COUNTER.
+    // And sometimes the CPU is in the CPUSTATE_COUNTER state but does not act.
+    // This flag is only set if the CPU has counter acted this frame.
     u8 cpu_countering;
 
     s16 cpu_lasthit;
