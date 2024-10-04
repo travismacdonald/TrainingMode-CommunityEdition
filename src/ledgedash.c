@@ -1229,7 +1229,6 @@ void Tips_Think(LedgedashData *event_data, FighterData *hmn_data)
         event_vars->Tip_Display(LSDH_TIPDURATION, "Misinput:\nFell 1 frame early.");
     }
 
-    // check for late fall input
     if (!event_data->tip.is_input_release && hmn_data->state == ASID_CLIFFJUMPQUICK1)
     {
         if (Fighter_IsFallInput(hmn_data))
@@ -1237,13 +1236,8 @@ void Tips_Think(LedgedashData *event_data, FighterData *hmn_data)
             event_data->tip.is_input_release = 1;
             event_vars->Tip_Destroy();
 
-            // jumped and fell on same frame
-            if (hmn_data->TM.state_frame == 0)
-                event_vars->Tip_Display(LSDH_TIPDURATION, "Misinput:\nInputted jump and fall \non the same frame.");
-
-            // fell late
-            else
-                event_vars->Tip_Display(LSDH_TIPDURATION, "Misinput:\nJumped %d frame(s) early.", hmn_data->TM.state_frame);
+            // jumped before fall
+            event_vars->Tip_Display(LSDH_TIPDURATION, "Misinput:\nJumped %d frame(s) early.", hmn_data->TM.state_frame + 1);
         }
         else if (Fighter_IsFallBlocked(hmn_data))
         {
