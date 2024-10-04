@@ -1118,7 +1118,9 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
             cpu_data->cpu.ai = 15; // Ensure AI doesn't override this input
             // input shield angle if appropriate
             u16 shield_ang = LabOptions_CPU[OPTCPU_SHIELDDIR].option_val;
-            if (shield_ang != CPUSHIELDANG_NONE) {
+            // if you do not check action state before inputting a shield angle, it can cause slight
+            // bugs with OOS options, like trying to input shield angle while doing a grounded up-b OOS.
+            if (shield_ang != CPUSHIELDANG_NONE && (CPUAction_CheckASID(cpu, ASID_ACTIONABLEGROUND) || CPUAction_CheckASID(cpu, ASID_GUARD))) {
                 s8 stickX = 0;
                 s8 stickY = 0;
                 if (shield_ang == CPUSHIELDANG_TOWARD || shield_ang == CPUSHIELDANG_AWAY) {
