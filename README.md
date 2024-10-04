@@ -19,6 +19,8 @@ To discuss changes and new features or ask for assistance, join [the discord](ht
     - Reworked recording UI. Allows resaveing existing recordings with different percents or positioning.
     - Tech animations can be set invisible after they are distinguishable.
     - Random custom DI option.
+    - CPU Shield angling options.
+    - Auto-restore state when the CPU performs a counter action.
     - All special moves can be used as counter actions.
     - Press DPad left/right when browsing savestates to quickly change pages.
     - Hazard toggle in training lab.
