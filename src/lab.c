@@ -30,7 +30,6 @@ static u8 stc_hmn_controller;             // making this static so importing rec
 static u8 stc_cpu_controller;             // making this static so importing recording doesnt overwrite
 static u8 stc_tdi_val_num;                // number of custom tdi values set
 static s8 stc_tdi_vals[TDI_HITNUM][2][2]; // contains the custom tdi values
-static u8 stc_sdifreqs[] = {6, 4, 2, 1};
 
 // Static Export Variables
 static RecordingSave *stc_rec_save;
@@ -1208,6 +1207,7 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         // if no more hitlag, enter tech state
         if (cpu_data->flags.hitlag == 0)
         {
+            eventData->cpu_sdinum = 0; // Done SDIing, reset
             eventData->cpu_state = CPUSTATE_TECH;
             goto CPULOGIC_TECH;
         }
@@ -1215,6 +1215,7 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         // if final frame of hitlag, enter TDI state
         else if (cpu_data->dmg.hitlag_frames == 1)
         {
+            eventData->cpu_sdinum = 0; // Done SDIing, reset
             eventData->cpu_state = CPUSTATE_TDI;
             goto CPULOGIC_TDI;
         }
@@ -1228,121 +1229,112 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
             //OSReport("hit count %d/%d", eventData->cpu_hitnum, LabOptions_CPU[OPTCPU_CTRHITS].option_val);
 
             // decide random SDI direction for grounded cpu
-            if ((LabOptions_CPU[OPTCPU_SDIFREQ].option_val != SDIFREQ_NONE) && (LabOptions_CPU[OPTCPU_SDIDIR].option_val == SDIDIR_RANDOM))
+            if ((LabOptions_CPU[OPTCPU_SDINUM].option_val > 0) && (LabOptions_CPU[OPTCPU_SDIDIR].option_val == SDIDIR_RANDOM))
             {
                 eventData->cpu_sdidir = HSD_Randi(2);
             }
         }
 
         // perform SDI behavior
-        if (LabOptions_CPU[OPTCPU_SDIFREQ].option_val != SDIFREQ_NONE)
+        if (eventData->cpu_sdinum < LabOptions_CPU[OPTCPU_SDINUM].option_val)
         {
-            int chance = stc_sdifreqs[LabOptions_CPU[OPTCPU_SDIFREQ].option_val - 1];
+            eventData->cpu_sdinum++;
+            TMLOG("DO AN SDI\n");
+            TMLOG("%d\n", eventData->cpu_sdinum);
+            float angle, magnitude;
 
-            // chance to SDI
-            if (HSD_Randi(chance) == 0)
+            switch (LabOptions_CPU[OPTCPU_SDIDIR].option_val)
             {
-
-                float angle, magnitude;
-
-                switch (LabOptions_CPU[OPTCPU_SDIDIR].option_val)
-                {
-                case SDIDIR_RANDOM:
-                {
-                    // when grounded, only left right
-                    if (cpu_data->phys.air_state == 0)
-                    {
-
-                        magnitude = 1;
-
-                        // decide left or right
-                        if (eventData->cpu_sdidir == 0)
-                            angle = lastSDIWasCardinal ? M_1DEGREE * 17 : M_1DEGREE * 0; // right
-                        else
-                            angle = lastSDIWasCardinal ? M_1DEGREE * 197 : M_1DEGREE * 180; // left
-                    }
-                    // when airborne, any direction
-                    else
-                    {
-                        // random input
-                        angle = HSD_Randi(360) * M_1DEGREE;
-                        magnitude = 0.49 + (HSD_Randf() * 0.51);
-
-                        angle = get_angle_out_of_deadzone(angle, lastSDIWasCardinal);
-                    }
-
-                    break;
-                }
-                case SDIDIR_AWAY:
-                {
-                    int dir = Fighter_GetOpponentDir(cpu_data, hmn_data) * -1;
-                    if (dir == 1)
-                    {
-                        angle = 0;
-                    }
-                    else
-                    {
-                        angle = 180;
-                    }
-                    angle = lastSDIWasCardinal ? (angle + 17) * M_1DEGREE : angle * M_1DEGREE;
-                    magnitude = 1;
-
-                    break;
-                }
-                case SDIDIR_TOWARD:
-                {
-                    int dir = Fighter_GetOpponentDir(cpu_data, hmn_data);
-                    if (dir == 1)
-                    {
-                        angle = 0;
-                    }
-                    else
-                    {
-                        angle = 180;
-                    }
-                    angle = lastSDIWasCardinal ? (angle + 17) * M_1DEGREE : angle * M_1DEGREE;
-                    magnitude = 1;
-
-                    break;
-                }
-                case SDIDIR_UP:
-                {
-                    angle = lastSDIWasCardinal ? M_1DEGREE * 107 : M_1DEGREE * 90;
-                    magnitude = 1;
-                    break;
-                }
-                case SDIDIR_DOWN:
-                {
-                    angle = lastSDIWasCardinal ? M_1DEGREE * 287 : M_1DEGREE * 270;
-                    magnitude = 1;
-                    break;
-                }
-                case SDIDIR_LEFT:
-                {
-                    angle = lastSDIWasCardinal ? M_1DEGREE * 197 : M_1DEGREE * 180;
-                    magnitude = 1;
-                    break;
-                }
-                case SDIDIR_RIGHT:
-                {
-                    angle = lastSDIWasCardinal ? M_1DEGREE * 17 : M_1DEGREE * 0;
-                    magnitude = 1;
-                    break;
-                }
-                }
-
-                // flip if the last sdi was cardinal
-                lastSDIWasCardinal = lastSDIWasCardinal ? 0 : 1;
-
-                // store
-                cpu_data->cpu.lstickX = cos(angle) * 127 * magnitude;
-                cpu_data->cpu.lstickY = sin(angle) * 127 * magnitude;
-            }
-            else
+            case SDIDIR_RANDOM:
             {
-                // if we don't do an SDI, we can do a cardinal on the next frame
-                lastSDIWasCardinal = 0;
+                // when grounded, only left right
+                if (cpu_data->phys.air_state == 0)
+                {
+
+                    magnitude = 1;
+
+                    // decide left or right
+                    if (eventData->cpu_sdidir == 0)
+                        angle = lastSDIWasCardinal ? M_1DEGREE * 17 : M_1DEGREE * 0; // right
+                    else
+                        angle = lastSDIWasCardinal ? M_1DEGREE * 197 : M_1DEGREE * 180; // left
+                }
+                // when airborne, any direction
+                else
+                {
+                    // random input
+                    angle = HSD_Randi(360) * M_1DEGREE;
+                    magnitude = 0.49 + (HSD_Randf() * 0.51);
+
+                    angle = get_angle_out_of_deadzone(angle, lastSDIWasCardinal);
+                }
+
+                break;
             }
+            case SDIDIR_AWAY:
+            {
+                int dir = Fighter_GetOpponentDir(cpu_data, hmn_data) * -1;
+                if (dir == 1)
+                {
+                    angle = 0;
+                }
+                else
+                {
+                    angle = 180;
+                }
+                angle = lastSDIWasCardinal ? (angle + 17) * M_1DEGREE : angle * M_1DEGREE;
+                magnitude = 1;
+
+                break;
+            }
+            case SDIDIR_TOWARD:
+            {
+                int dir = Fighter_GetOpponentDir(cpu_data, hmn_data);
+                if (dir == 1)
+                {
+                    angle = 0;
+                }
+                else
+                {
+                    angle = 180;
+                }
+                angle = lastSDIWasCardinal ? (angle + 17) * M_1DEGREE : angle * M_1DEGREE;
+                magnitude = 1;
+
+                break;
+            }
+            case SDIDIR_UP:
+            {
+                angle = lastSDIWasCardinal ? M_1DEGREE * 107 : M_1DEGREE * 90;
+                magnitude = 1;
+                break;
+            }
+            case SDIDIR_DOWN:
+            {
+                angle = lastSDIWasCardinal ? M_1DEGREE * 287 : M_1DEGREE * 270;
+                magnitude = 1;
+                break;
+            }
+            case SDIDIR_LEFT:
+            {
+                angle = lastSDIWasCardinal ? M_1DEGREE * 197 : M_1DEGREE * 180;
+                magnitude = 1;
+                break;
+            }
+            case SDIDIR_RIGHT:
+            {
+                angle = lastSDIWasCardinal ? M_1DEGREE * 17 : M_1DEGREE * 0;
+                magnitude = 1;
+                break;
+            }
+            }
+
+            // flip if the last sdi was cardinal
+            lastSDIWasCardinal = lastSDIWasCardinal ? 0 : 1;
+
+            // store
+            cpu_data->cpu.lstickX = cos(angle) * 127 * magnitude;
+            cpu_data->cpu.lstickY = sin(angle) * 127 * magnitude;
         }
 
         break;
@@ -1877,6 +1869,7 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
             eventData->cpu_hitkind = -1;
             eventData->cpu_hitshieldnum = 0;
             eventData->cpu_isactionable = 0;
+            eventData->cpu_sdinum = 0;
             goto CPULOGIC_START;
         }
 
@@ -5375,6 +5368,7 @@ void Event_Think(GOBJ *event)
                                 eventData->cpu_hitkind = -1;
                                 eventData->cpu_hitshieldnum = 0;
                                 eventData->cpu_isactionable = 0;
+                                eventData->cpu_sdinum = 0;
                             }
                         }
                     }

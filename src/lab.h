@@ -71,7 +71,7 @@ enum cpu_option
     OPTCPU_TECHOPTIONS,
     OPTCPU_TDI,
     OPTCPU_CUSTOMTDI,
-    OPTCPU_SDIFREQ,
+    OPTCPU_SDINUM,
     OPTCPU_SDIDIR,
     OPTCPU_ASDI,
     OPTCPU_SHIELD,
@@ -113,16 +113,6 @@ enum asdi
     ASDI_RIGHT,
     ASDI_UP,
     ASDI_DOWN,
-};
-
-// SDI Freq
-enum sdi_freq
-{
-    SDIFREQ_NONE,
-    SDIFREQ_LOW,
-    SDIFREQ_MED,
-    SDIFREQ_HIGH,
-    SDIFREQ_VERYHIGH,
 };
 
 // SDI Freq
@@ -1706,7 +1696,6 @@ static char **LabValues_Shield[] = {"Off", "On Until Hit", "On"};
 static char **LabValues_CPUBehave[] = {"Stand", "Shield", "Crouch", "Jump"};
 static char **LabValues_TDI[] = {"Random", "Inwards", "Outwards", "Floorhug", "Custom", "Random Custom", "None"};
 static char **LabValues_ASDI[] = {"None", "Away", "Towards", "Left", "Right", "Up", "Down"};
-static char **LabValues_SDIFreq[] = {"None", "Low", "Medium", "High","Very High"};
 static char **LabValues_SDIDir[] = {"Random", "Away", "Towards", "Up", "Down", "Left", "Right"};
 static char **LabValues_Tech[] = {"Random", "Neutral", "Away", "Towards", "None"};
 static char **LabValues_Getup[] = {"Random", "Stand", "Away", "Towards", "Attack"};
@@ -1757,15 +1746,15 @@ static EventOption LabOptions_CPU[] = {
         .onOptionChange = 0,
         .onOptionSelect = Lab_SelectCustomTDI,
     },
-    // SDI Freq
+    // SDI amount
     {
-        .option_kind = OPTKIND_STRING,                                                 // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_SDIFreq) / 4,                                    // number of values for this option
-        .option_val = 0,                                                               // value of this option
-        .menu = 0,                                                                     // pointer to the menu that pressing A opens
-        .option_name = "Smash DI Frequency",                                           // pointer to a string
-        .desc = "Adjust how often the CPU will alter their position\nduring hitstop.", // string describing what this option does
-        .option_values = LabValues_SDIFreq,                                            // pointer to an array of strings
+        .option_kind = OPTKIND_INT,
+        .value_num = 8,
+        .option_val = 0,
+        .menu = 0,
+        .option_name = "Smash DI Amount",
+        .desc = "Adjust how often the CPU will alter their position\nduring hitstop.",
+        .option_values = "%d Frames",
         .onOptionChange = 0,
     },
     // SDI Direction

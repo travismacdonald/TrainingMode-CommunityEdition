@@ -184,6 +184,7 @@ typedef struct LCancelData
     u8 cpu_state;
     u8 cpu_hitshield;
     u8 cpu_hitnum;
+    u8 cpu_sdinum;
     u8 cpu_sdidir;
     u8 cpu_sincehit;
 
