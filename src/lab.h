@@ -75,6 +75,7 @@ enum cpu_option
     OPTCPU_SDIDIR,
     OPTCPU_ASDI,
     OPTCPU_SHIELD,
+    OPTCPU_SHIELDDIR,
     OPTCPU_INTANG,
     OPTCPU_MASH,
     //OPTCPU_RESET,
@@ -259,6 +260,13 @@ enum cpu_mash
 #define CPUTDI_RANDOM_CUSTOM 5
 #define CPUTDI_NONE 6
 #define CPUTDI_NUM 7
+
+// Shield Angle Definitions
+#define CPUSHIELDANG_NONE 0
+#define CPUSHIELDANG_UP 1
+#define CPUSHIELDANG_TOWARD 2
+#define CPUSHIELDANG_DOWN 3
+#define CPUSHIELDANG_AWAY 4
 
 // Tech Definitions
 #define CPUTECH_RANDOM 0
@@ -1703,6 +1711,7 @@ static EventMenu LabMenu_InfoDisplay = {
 };
 // CPU
 static char **LabValues_Shield[] = {"Off", "On Until Hit", "On"};
+static char **LabValues_ShieldDir[] = {"Neutral", "Up", "Towards", "Down", "Away"};
 static char **LabValues_CPUBehave[] = {"Stand", "Shield", "Crouch", "Jump"};
 static char **LabValues_TDI[] = {"Random", "Inwards", "Outwards", "Floorhug", "Custom", "Random Custom", "None"};
 static char **LabValues_ASDI[] = {"None", "Away", "Towards", "Left", "Right", "Up", "Down"};
@@ -1797,6 +1806,16 @@ static EventOption LabOptions_CPU[] = {
         .option_name = {"Infinite Shields"},              // pointer to a string
         .desc = "Adjust how shield health deteriorates.", // string describing what this option does
         .option_values = LabValues_Shield,                // pointer to an array of strings
+        .onOptionChange = 0,
+    },
+    {
+        .option_kind = OPTKIND_STRING,                    // the type of option this is; menu, string list, integer list, etc
+        .value_num = sizeof(LabValues_ShieldDir) / 4,     // number of values for this option
+        .option_val = 0,                                  // value of this option
+        .menu = 0,                                        // pointer to the menu that pressing A opens
+        .option_name = {"Shield Angle"},              // pointer to a string
+        .desc = "Adjust how CPU angles their shield.",    // string describing what this option does
+        .option_values = LabValues_ShieldDir,             // pointer to an array of strings
         .onOptionChange = 0,
     },
     {
