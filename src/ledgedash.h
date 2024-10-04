@@ -26,29 +26,25 @@ struct LedgedashData
         Text *text_angle;
         Text *text_galint;
         int canvas;
-        int timer;
         float airdodge_angle;
+    } hud;
+    struct
+    {
+        int timer;
         u8 is_release : 1;
         u8 is_jump : 1;
         u8 is_airdodge : 1;
         u8 is_aerial : 1;
         u8 is_land : 1;
         u8 is_actionable : 1;
-        u16 release_frame;
-        u16 jump_frame;
-        u16 airdodge_frame;
-        u16 aerial_frame;
-        u16 land_frame;
-        u16 actionable_frame;
         u8 action_log[30];
-    } hud;
+    } action_state;
     struct
     {
         s16 refresh_num;     // number of times refreshed
         u8 refresh_cond_num; // number of times tip condition has been met
         u8 refresh_displayed : 1;
         u8 is_input_release : 1;
-        u8 is_input_jump : 1;
     } tip;
 };
 
