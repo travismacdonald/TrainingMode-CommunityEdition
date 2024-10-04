@@ -1157,7 +1157,7 @@ struct ftCommonData
     float x14;                    // 0x14
     float x18;                    // 0x18
     float x1c;                    // 0x1c
-    float lstick_tilt;            // 0x20
+    float x20;                    // 0x20
     float x24;                    // 0x24
     float x28;                    // 0x28
     float x2c;                    // 0x2c
@@ -1442,7 +1442,7 @@ struct ftCommonData
     float x488;                   // 0x488
     float x48c;                   // 0x48c
     float x490;                   // 0x490
-    float x494;                   // 0x494
+    float ledge_drop_thresh;      // 0x494
     float x498;                   // 0x498
     int cliff_invuln_time;        // 0x49c
     float x4a0;                   // 0x4a0
@@ -1913,8 +1913,8 @@ struct FighterData
         int unknown634;                                        // 0x634
         float cstick_x;                                        // 0x638
         float cstick_y;                                        // 0x63C
-        int x640;                                              // 0x640
-        int unknown644;                                        // 0x644
+        float cstick_prev_x;                                   // 0x640
+        float cstick_prev_y;                                   // 0x644
         int unknown648;                                        // 0x648
         int unknown64C;                                        // 0x64C
         float trigger;                                         // 0x650
@@ -2291,7 +2291,7 @@ struct FighterData
         u8 x22135;                            // 0x2135
         float since_hitbox;                   // 0x2138
     } smash;                                  //
-    int x213c;                                // 0x213c
+    int ledge_id_unk;                         // 0x213c
     int x2140;                                // 0x2140
     int x2144;                                // 0x2144
     int x2148;                                // 0x2148

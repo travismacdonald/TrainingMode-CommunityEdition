@@ -504,9 +504,9 @@ void Ledgedash_ResetThink(LedgedashData *event_data, GOBJ *hmn)
 void Ledgedash_InitVariables(LedgedashData *event_data)
 {
     event_data->hud.timer = 0;
+    event_data->tip.refresh_displayed = 0;
     event_data->tip.is_input_release = 0;
     event_data->tip.is_input_jump = 0;
-    event_data->tip.refresh_displayed = 0;
     event_data->hud.is_release = 0;
     event_data->hud.is_jump = 0;
     event_data->hud.is_airdodge = 0;
@@ -1165,23 +1165,34 @@ int RebirthWait_IASA(GOBJ *fighter)
 
     return 0;
 }
-int Fighter_CheckFall(FighterData *hmn_data)
+int Fighter_IsFallInput(FighterData *hmn_data)
 {
+    float thresh = (*stc_ftcommon)->ledge_drop_thresh; // 0.2875
+    float drop_angle = (*stc_ftcommon)->x20;           // 0.872665 (50 deg)
+    float lx = hmn_data->input.lstick_x;
+    float ly = hmn_data->input.lstick_y;
+    float angle = atan2(ly, fabs(lx));
+    float cx = hmn_data->input.cstick_x;
+    float cy = hmn_data->input.cstick_y;
 
-    int is_fall = 0;
-
-    // look for Fall input
-    float stick_x = fabs(hmn_data->input.lstick_x);
-    float stick_y = hmn_data->input.lstick_y;
-    if ((stick_x >= 0.2875) && (hmn_data->input.timer_lstick_tilt_x < 2) ||
-        (stick_y <= -0.2875) && (hmn_data->input.timer_lstick_tilt_y < 2))
-    {
-        is_fall = 1;
-    }
-
-    return is_fall;
+    // Technically there are some false positives here that result in a ledgejump.
+    // However, this shouldn't affect the tip displays.
+    int lstick_drop = (fabs(lx) >= thresh || fabs(ly) >= thresh) &&
+        !(angle > drop_angle || (angle > -drop_angle && lx * hmn_data->facing_direction >= 0));
+    int cstick_drop = (fabs(cx) >= thresh || fabs(cy) >= thresh);
+    return (lstick_drop || cstick_drop) && !Fighter_IsFallBlocked(hmn_data);
 }
+int Fighter_IsFallBlocked(FighterData *hmn_data)
+{
+    float thresh = (*stc_ftcommon)->ledge_drop_thresh; // 0.2875
+    float lx = hmn_data->input.lstick_prev_x;
+    float ly = hmn_data->input.lstick_prev_y;
+    float cx = hmn_data->input.cstick_prev_x;
+    float cy = hmn_data->input.cstick_prev_y;
 
+    return fabs(lx) >= thresh || fabs(ly) >= thresh ||
+        fabs(cx) >= thresh || fabs(cy) >= thresh;
+}
 // Tips Functions
 void Tips_Toggle(GOBJ *menu_gobj, int value)
 {
@@ -1198,7 +1209,7 @@ void Tips_Think(LedgedashData *event_data, FighterData *hmn_data)
         return;
 
     // check for early fall input in cliffcatch
-    if ((event_data->tip.is_input_release == 0) && (hmn_data->state == ASID_CLIFFCATCH) && (Fighter_CheckFall(hmn_data) == 1))
+    if (!event_data->tip.is_input_release && hmn_data->state == ASID_CLIFFCATCH && Fighter_IsFallInput(hmn_data))
     {
         event_data->tip.is_input_release = 1;
         event_vars->Tip_Destroy();
@@ -1211,7 +1222,7 @@ void Tips_Think(LedgedashData *event_data, FighterData *hmn_data)
     }
 
     // check for early fall input on cliffwait frame 0
-    if ((event_data->tip.is_input_release == 0) && (hmn_data->state == ASID_CLIFFWAIT) && (hmn_data->TM.state_frame == 1) && (Fighter_CheckFall(hmn_data) == 1))
+    if (!event_data->tip.is_input_release && hmn_data->state == ASID_CLIFFWAIT && hmn_data->TM.state_frame == 1 && Fighter_IsFallInput(hmn_data))
     {
         event_data->tip.is_input_release = 1;
         event_vars->Tip_Destroy();
@@ -1219,22 +1230,33 @@ void Tips_Think(LedgedashData *event_data, FighterData *hmn_data)
     }
 
     // check for late fall input
-    if ((event_data->tip.is_input_release == 0) && (hmn_data->state == ASID_CLIFFJUMPQUICK1) && (Fighter_CheckFall(hmn_data) == 1))
+    if (!event_data->tip.is_input_release && hmn_data->state == ASID_CLIFFJUMPQUICK1)
     {
-        event_data->tip.is_input_release = 1;
-        event_vars->Tip_Destroy();
+        if (Fighter_IsFallInput(hmn_data))
+        {
+            event_data->tip.is_input_release = 1;
+            event_vars->Tip_Destroy();
 
-        // jumped and fell on same frame
-        if (hmn_data->TM.state_frame == 0)
-            event_vars->Tip_Display(LSDH_TIPDURATION, "Misinput:\nInputted jump and fall \non the same frame.");
+            // jumped and fell on same frame
+            if (hmn_data->TM.state_frame == 0)
+                event_vars->Tip_Display(LSDH_TIPDURATION, "Misinput:\nInputted jump and fall \non the same frame.");
 
-        // fell late
-        else
-            event_vars->Tip_Display(LSDH_TIPDURATION, "Misinput:\nJumped %d frame(s) early.", hmn_data->TM.state_frame);
+            // fell late
+            else
+                event_vars->Tip_Display(LSDH_TIPDURATION, "Misinput:\nJumped %d frame(s) early.", hmn_data->TM.state_frame);
+        }
+        else if (Fighter_IsFallBlocked(hmn_data))
+        {
+            event_data->tip.is_input_release = 1;
+            event_vars->Tip_Destroy();
+
+            // failed to release sticks to neutral
+            event_vars->Tip_Display(LSDH_TIPDURATION, "Misinput:\nDid not reset sticks \nto neutral before dropping.", hmn_data->TM.state_frame);
+        }
     }
 
     // check for ledgedash without refreshing
-    if ((event_data->tip.refresh_displayed == 0) && (event_data->hud.is_actionable == 1) && (event_data->tip.refresh_num == 0))
+    if (!event_data->tip.refresh_displayed && event_data->hud.is_actionable && event_data->tip.refresh_num == 0)
     {
 
         event_data->tip.refresh_displayed = 1;
