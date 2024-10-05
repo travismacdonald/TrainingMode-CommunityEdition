@@ -1,4 +1,4 @@
-.PHONY: clean iso all release release-old
+.PHONY: clean iso all release
 
 dats = build/ledgedash.dat build/wavedash.dat build/lcancel.dat build/labCSS.dat build/eventMenu.dat build/lab.dat
 
@@ -11,7 +11,6 @@ MEX_TRIM=mono MexTK/MexTK.exe -trim
 clean:
 	rm -rf TM-More.iso
 	rm -rf ./build/
-	rm -rf TM-More/
 
 build/:
 	mkdir build
@@ -75,19 +74,6 @@ iso: TM-More.iso
 TM-More.zip: TM-More.iso
 	zip TM-More.zip TM-More.iso
 
-release-old: TM-More.iso Release\ Scripts/*
-	rm -rf TM-More/
-	mkdir TM-More
-	cp -rf --parents "root/&&systemdata/Start.dol" "root/&&systemdata/ISO.hdr" root/codes.gct $(dats) TM-More/
-	mv TM-More/root/ TM-More/patch/
-	cp -f Additional\ ISO\ Files/* TM-More/patch/
-	cp -r Release\ Scripts/* TM-More/
-	cp gc_fst TM-More/
-	cp gc_fst.exe TM-More/
-	zip -r TM-More.zip TM-More/
-	rm -r TM-More/
-
 release: TM-More.zip
 
 all: iso release
-
