@@ -1,6 +1,6 @@
 .PHONY: clean iso all release release-old
 
-dats = root/TM/ledgedash.dat root/TM/wavedash.dat root/TM/lcancel.dat root/TM/labCSS.dat root/TM/eventMenu.dat root/TM/lab.dat
+dats = build/ledgedash.dat build/wavedash.dat build/lcancel.dat build/labCSS.dat build/eventMenu.dat build/lab.dat
 
 # find all asm files in ASM dir. We have the escape the spaces, so we pipe to sed
 ASM_FILES := $(shell find ASM -type f -name '*.asm' | sed 's/ /\\ /g')
@@ -10,59 +10,65 @@ MEX_TRIM=mono MexTK/MexTK.exe -trim
 
 clean:
 	rm -rf TM-More.iso
-	rm -rf ./root
 	rm -rf ./build/
 	rm -rf TM-More/
 
-root/:
-	rm -rf ./build
-	rm -rf ./root
-	./gc_fst extract ${iso}
-	mkdir root/TM/
-	./gc_fst set-header "root/&&systemdata/ISO.hdr" GTME01 "Melee Training Mode - More"
-	rm root/MvHowto.mth root/MvOmake15.mth root/MvOpen.mth
+build/:
+	mkdir build
 
-root/TM/eventMenu.dat: root/ src/events.c src/events.h
-	cp "dats/eventMenu.dat" "root/TM/eventMenu.dat" 
-	$(MEX_BUILD) -i "src/events.c" -s "tmFunction" -dat "root/TM/eventMenu.dat" -t "MexTK/tmFunction.txt"
-	$(MEX_TRIM) "root/TM/eventMenu.dat"
+build/eventMenu.dat: src/events.c src/events.h | build/
+	cp "dats/eventMenu.dat" "build/eventMenu.dat" 
+	$(MEX_BUILD) -i "src/events.c" -s "tmFunction" -dat "build/eventMenu.dat" -t "MexTK/tmFunction.txt"
+	$(MEX_TRIM) "build/eventMenu.dat"
 
-root/TM/lab.dat: root/ src/lab.c src/lab.h src/lab_common.h
-	cp "dats/lab.dat" "root/TM/lab.dat"
-	$(MEX_BUILD) -i "src/lab.c" -s "evFunction" -dat "root/TM/lab.dat" -t "MexTK/evFunction.txt"
-	$(MEX_TRIM) "root/TM/lab.dat"
+build/lab.dat: src/lab.c src/lab.h src/lab_common.h | build/
+	cp "dats/lab.dat" "build/lab.dat"
+	$(MEX_BUILD) -i "src/lab.c" -s "evFunction" -dat "build/lab.dat" -t "MexTK/evFunction.txt"
+	$(MEX_TRIM) "build/lab.dat"
 
-root/TM/labCSS.dat: root/ src/lab_css.c src/lab_common.h
-	cp "dats/labCSS.dat" "root/TM/labCSS.dat"
-	$(MEX_BUILD) -i "src/lab_css.c" -s "cssFunction" -dat "root/TM/labCSS.dat" -t "MexTK/cssFunction.txt"
-	$(MEX_TRIM) "root/TM/labCSS.dat"
+build/labCSS.dat: src/lab_css.c src/lab_common.h | build/
+	cp "dats/labCSS.dat" "build/labCSS.dat"
+	$(MEX_BUILD) -i "src/lab_css.c" -s "cssFunction" -dat "build/labCSS.dat" -t "MexTK/cssFunction.txt"
+	$(MEX_TRIM) "build/labCSS.dat"
 
-root/TM/lcancel.dat: root/ src/lcancel.c src/lcancel.h
-	cp "dats/lcancel.dat" "root/TM/lcancel.dat"
-	$(MEX_BUILD) -i "src/lcancel.c" -s "evFunction" -dat "root/TM/lcancel.dat" -t "MexTK/evFunction.txt"
-	$(MEX_TRIM) "root/TM/lcancel.dat"
+build/lcancel.dat: src/lcancel.c src/lcancel.h | build/
+	cp "dats/lcancel.dat" "build/lcancel.dat"
+	$(MEX_BUILD) -i "src/lcancel.c" -s "evFunction" -dat "build/lcancel.dat" -t "MexTK/evFunction.txt"
+	$(MEX_TRIM) "build/lcancel.dat"
 
-root/TM/ledgedash.dat: root/ src/ledgedash.c src/ledgedash.h
-	cp "dats/ledgedash.dat" "root/TM/ledgedash.dat"
-	$(MEX_BUILD) -i "src/ledgedash.c" -s "evFunction" -dat "root/TM/ledgedash.dat" -t "MexTK/evFunction.txt"
-	$(MEX_TRIM) "root/TM/ledgedash.dat"
+build/ledgedash.dat: src/ledgedash.c src/ledgedash.h | build/
+	cp "dats/ledgedash.dat" "build/ledgedash.dat"
+	$(MEX_BUILD) -i "src/ledgedash.c" -s "evFunction" -dat "build/ledgedash.dat" -t "MexTK/evFunction.txt"
+	$(MEX_TRIM) "build/ledgedash.dat"
 
-root/TM/wavedash.dat: root/ src/wavedash.c src/wavedash.h
-	cp "dats/wavedash.dat" "root/TM/wavedash.dat"
-	$(MEX_BUILD) -i "src/wavedash.c" -s "evFunction" -dat "root/TM/wavedash.dat" -t "MexTK/evFunction.txt"
-	$(MEX_TRIM) "root/TM/wavedash.dat"
+build/wavedash.dat: src/wavedash.c src/wavedash.h | build/
+	cp "dats/wavedash.dat" "build/wavedash.dat"
+	$(MEX_BUILD) -i "src/wavedash.c" -s "evFunction" -dat "build/wavedash.dat" -t "MexTK/evFunction.txt"
+	$(MEX_TRIM) "build/wavedash.dat"
 
-root/codes.gct: root/ Additional\ ISO\ Files/opening.bnr $(ASM_FILES)
+build/codes.gct: Additional\ ISO\ Files/opening.bnr $(ASM_FILES) | build/
 	cd "Build TM Codeset" && ./gecko build
-	cp Additional\ ISO\ Files/* root/
+	cp Additional\ ISO\ Files/* build/
 
-root/&&systemdata/Start.dol: root/
-	mv "./root/&&systemdata/Start.dol" "Start.dol"
-	xdelta3 -d -f -s "Start.dol" "Build TM Start.dol/patch.xdelta" "root/&&systemdata/Start.dol"
-	rm "Start.dol"
+build/Start.dol: | build/
+	./gc_fst read ${iso} Start.dol build/Start.dol
+	xdelta3 -d -f -s build/Start.dol "Build TM Start.dol/patch.xdelta" build/Start.dol
 
-TM-More.iso: root/&&systemdata/Start.dol root/codes.gct $(dats)
-	./gc_fst rebuild root TM-More.iso
+TM-More.iso: build/Start.dol build/codes.gct $(dats)
+	if [[ ! -f TM-More.iso ]]; then cp ${iso} TM-More.iso; fi
+	./gc_fst fs TM-More.iso \
+		delete MvHowto.mth \
+		delete MvOmake15.mth \
+		delete MvOpen.mth \
+		insert TM/eventMenu.dat build/eventMenu.dat \
+		insert TM/lab.dat build/lab.dat \
+		insert TM/labCSS.dat build/labCSS.dat \
+		insert TM/lcancel.dat build/lcancel.dat \
+		insert TM/ledgedash.dat build/ledgedash.dat \
+		insert TM/wavedash.dat build/wavedash.dat \
+		insert codes.gct build/codes.gct \
+		insert Start.dol build/Start.dol \
+		insert opening.bnr build/opening.bnr
 
 iso: TM-More.iso
 
