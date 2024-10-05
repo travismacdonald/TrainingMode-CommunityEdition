@@ -57,26 +57,7 @@ backup
 #Check if 0x21 (N/A)
   li  r3,0x21
   stb r3,0x0(r4)
-
-# COME BACK TO THIS CODE WHEN I MAKE AN EVENT
-# THAT HAS A SELECT AMOUNT OF CPU'S AVAILABLE
-/*
-CheckCPU:
-#Ensure CPU is a whitelisted character
-  lwz r20,CSS_Data(r13)      #CSS Match Info
-  addi r4,r20,0x78           #Get Player Info Start
-  lhz r5,0x0(r20)            #Get Player in control of CSS
-  subic. r5,r5,1             #Zero index cause Yasuyuki Nagashima is dumb
-  bne 0x8
-  li  r5,1
-  b 0x8
-  li  r5,0
-  mulli r5,r5,36
-  add r4,r4,r5               #r4 now contains the players info
-  addi  r3,REG_Whitelist,4   #CPU whitelist
-  bl  CheckWhitelist
-*/
-b Original
+  b Original
 
 #######################
 ToggleCSSIcon:
@@ -239,40 +220,8 @@ addi  r3,r6,1
 GetCharacterList_Exit:
 restore
 blr
-#######################
-CheckWhitelist:
-backup
-
-.set REG_PlayerPointer,31
-.set REG_Whitelist,30
-.set REG_CSSID,29
-
-#Backup registers
-  mr REG_Whitelist,r3
-  mr REG_PlayerPointer,r4
-
-#Check if no character selected
-
-
-#Get CSS ID From External
-  bl  ExternalToCSSID
-  mflr r3
-  lbz r4,0x0(REG_PlayerPointer)
-  lbzx REG_CSSID,r4,r3
-
-
-CheckWhitelist_Exit:
-  restore
-  blr
-
-#######################
 #******************************#
   EventPlayableCharacters
-#******************************#
-ExternalToCSSID:
-blrl
-.byte Doc_CSSID, Mario_CSSID, Luigi_CSSID, Bowser_CSSID, Peach_CSSID, Yoshi_CSSID, DK_CSSID, CaptainFalcon_CSSID, Ganondorf_CSSID, Falco_CSSID, Fox_CSSID, Ness_CSSID, IceClimbers_CSSID, Kirby_CSSID, Samus_CSSID, Zelda_CSSID, Link_CSSID, YLink_CSSID, Pichu_CSSID, Pikachu_CSSID, Jigglypuff_CSSID, Mewtwo_CSSID, GaW_CSSID, Marth_CSSID, Roy_CSSID
-.align 2
 #******************************#
 Original:
   restore

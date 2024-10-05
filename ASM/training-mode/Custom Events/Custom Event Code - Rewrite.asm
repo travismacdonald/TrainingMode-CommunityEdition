@@ -640,21 +640,21 @@ blrl
 .long 0x67652054
 .long 0x68726573
 .long 0x686f6c64
-.long 0x
+.long 0x00000000
 
 #Option 1 = 12+ Damage
 .long 0x3132817B
 .long 0x2044616d
 .long 0x61676500
-.long 0x
-.long 0x
+.long 0x00000000
+.long 0x00000000
 
 #Option 2 = Any Damage
 .long 0x416e7920
 .long 0x44616d61
 .long 0x67650000
-.long 0x
-.long 0x
+.long 0x00000000
+.long 0x00000000
 
 
 ################################################################################
@@ -3583,7 +3583,7 @@ blrl
 #Option 4 = Up Smash
 .long 0x55702053
 .long 0x6d617368
-.long 0x
+.long 0x00000000
 
 #Option 5 = Random Aerial
 .long 0x52616e64
@@ -3593,15 +3593,15 @@ blrl
 
 #Option 6 = Fair
 .long 0x46616972
-.long 0x
+.long 0x00000000
 
 #Option 7 = Nair
 .long 0x4e616972
-.long 0x
+.long 0x00000000
 
 #Option 8 = Dair
 .long 0x44616972
-.long 0x
+.long 0x00000000
 
 #Option 9 = FTilt
 .long 0x4654696c
@@ -3629,16 +3629,16 @@ blrl
 #Option 1 = Towards
 .long 0x546f7761
 .long 0x72647300
-.long 0x
-.long 0x
-.long 0x
+.long 0x00000000
+.long 0x00000000
+.long 0x00000000
 
 #Option 2 = Away
 .long 0x41776179
-.long 0x
-.long 0x
-.long 0x
-.long 0x
+.long 0x00000000
+.long 0x00000000
+.long 0x00000000
+.long 0x00000000
 
 #########$$$##############
 ## CPU Facing Direction ##
@@ -3655,16 +3655,16 @@ blrl
 #Option 1 = Towards
 .long 0x546f7761
 .long 0x72647300
-.long 0x
-.long 0x
-.long 0x
+.long 0x00000000
+.long 0x00000000
+.long 0x00000000
 
 #Option 2 = Away
 .long 0x41776179
-.long 0x
-.long 0x
-.long 0x
-.long 0x
+.long 0x00000000
+.long 0x00000000
+.long 0x00000000
+.long 0x00000000
 
 ####################################################
 
@@ -4047,37 +4047,37 @@ blrl
 #Random
 .long 0x52616e64
 .long 0x6f6d0000
-.long 0x
-.long 0x
-.long 0x
+.long 0x00000000
+.long 0x00000000
+.long 0x00000000
 
 #Slow
 .long 0x536c6f77
-.long 0x
-.long 0x
-.long 0x
-.long 0x
+.long 0x00000000
+.long 0x00000000
+.long 0x00000000
+.long 0x00000000
 
 #Medium
 .long 0x4d656469
 .long 0x756d0000
-.long 0x
-.long 0x
-.long 0x
+.long 0x00000000
+.long 0x00000000
+.long 0x00000000
 
 #Fast
 .long 0x46617374
-.long 0x
-.long 0x
-.long 0x
-.long 0x
+.long 0x00000000
+.long 0x00000000
+.long 0x00000000
+.long 0x00000000
 
 #Very Fast
 .long 0x56657279
 .long 0x20466173
 .long 0x74000000
-.long 0x
-.long 0x
+.long 0x00000000
+.long 0x00000000
 
 
 
@@ -4320,21 +4320,21 @@ blrl
 .long 0x6e672044
 .long 0x69726563
 .long 0x74696f6e
-.long 0x
+.long 0x00000000
 
 #Option 1 = Towards
 .long 0x546f7761
 .long 0x72647300
-.long 0x
-.long 0x
-.long 0x
+.long 0x00000000
+.long 0x00000000
+.long 0x00000000
 
 #Option 2 = Away
 .long 0x41776179
-.long 0x
-.long 0x
-.long 0x
-.long 0x
+.long 0x00000000
+.long 0x00000000
+.long 0x00000000
+.long 0x00000000
 
 
 #################################
@@ -4751,7 +4751,7 @@ blrl
 #Option 5 = Up Smash
 .long 0x55702d53
 .long 0x6d617368
-.long 0x
+.long 0x00000000
 
 #Option 6 = Shine
 .long 0x5368696e
@@ -7151,28 +7151,28 @@ blrl
 .long 0x204d6173
 .long 0x682d4f75
 .long 0x74000000
-.long 0x
+.long 0x00000000
 
 #Random Mash
 .long 0x52616e64
 .long 0x6f6d204d
 .long 0x61736800
-.long 0x
-.long 0x
+.long 0x00000000
+.long 0x00000000
 
 #Frame Perfect
 .long 0x4672616d
 .long 0x65205065
 .long 0x72666563
 .long 0x74000000
-.long 0x
+.long 0x00000000
 
 #No Mash-Out
 .long 0x4e6f204d
 .long 0x6173682d
 .long 0x4f757400
-.long 0x
-.long 0x
+.long 0x00000000
+.long 0x00000000
 
 ####################################################
 
@@ -14018,7 +14018,7 @@ ActOutOfLaserHitDisplay_BottomText:
 blrl
 .long 0x4672616d
 .long 0x65202564
-.long 0x
+.long 0x00000000
 
 ############################################
 
