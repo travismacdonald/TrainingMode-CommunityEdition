@@ -52,7 +52,7 @@ root/TM/wavedash.dat: root/ src/wavedash.c src/wavedash.h
 	$(MEX_BUILD) -i "src/wavedash.c" -s "evFunction" -dat "root/TM/wavedash.dat" -t "MexTK/evFunction.txt"
 	$(MEX_TRIM) "root/TM/wavedash.dat"
 
-root/codes.gct: root/ Additional\ ISO\ Files/opening.bnr $(ASM_FILES)
+root/codes.gct: root/ Build\ TM\ Codeset/codes.json Additional\ ISO\ Files/opening.bnr $(ASM_FILES)
 	cd "Build TM Codeset" && ./gecko build
 	cp Additional\ ISO\ Files/* root/
 

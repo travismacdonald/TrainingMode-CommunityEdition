@@ -27,8 +27,7 @@
     .endm
 
     .macro Event_Eggs_Description
-      .string "Break the eggs! Only strong hits will
-break them. DPad down = free practice."
+      .string "Break the eggs! Only strong hits will break them. DPad down = free practice."
     .endm
 
     .macro Event_Eggs_Tutorial
@@ -64,8 +63,7 @@ break them. DPad down = free practice."
     .endm
 
     .macro Event_Multishine_Description
-      .string "How many shines can you
-perform in 10 seconds?"
+      .string "How many shines can you perform in 10 seconds?"
     .endm
 
     .macro Event_Multishine_Tutorial
@@ -104,8 +102,7 @@ perform in 10 seconds?"
     .endm
 
     .macro Event_Reaction_Description
-      .string "Test your reaction time by pressing
-any button when you see/hear Fox shine!"
+      .string "Test your reaction time by pressing any button when you see/hear Fox shine!"
     .endm
 
     .macro Event_Reaction_Tutorial
@@ -141,8 +138,7 @@ any button when you see/hear Fox shine!"
     .endm
 
     .macro Event_Ledgestall_Description
-      .string "Use ledgestalling to remain
-invincible while the lava rises!"
+      .string "Use ledgestalling to remain invincible while the lava rises!"
     .endm
 
     .macro Event_Ledgestall_Tutorial
@@ -187,8 +183,7 @@ invincible while the lava rises!"
     .endm
 
     .macro Event_LCancel_Description
-      .string "Practice L-Cancelling on
-a stationary CPU."
+      .string "Practice L-Cancelling on a stationary CPU."
     .endm
 
     .macro Event_LCancel_Tutorial
@@ -222,8 +217,7 @@ a stationary CPU."
     .endm
 
     .macro Event_Ledgedash_Description
-      .string "Practice Ledgedashes!
-Use D-Pad to change ledge."
+      .string "Practice Ledgedashes! Use D-Pad to change ledge."
     .endm
 
     .macro Event_Ledgedash_Tutorial
@@ -256,8 +250,7 @@ Use D-Pad to change ledge."
     .endm
 
     .macro Event_Combo_Description
-      .string "L+DPad adjusts percent | DPadDown moves CPU
-DPad right/left saves and loads positions."
+      .string "L+DPad adjusts percent | DPadDown moves CPU DPad right/left saves and loads positions."
     .endm
 
     .macro Event_Combo_Tutorial
@@ -291,8 +284,7 @@ DPad right/left saves and loads positions."
     .endm
 
     .macro Event_AttackOnShield_Description
-      .string "Practice attacks on a shielding opponent!
-Pause to change their OoS option."
+      .string "Practice attacks on a shielding opponent! Pause to change their OoS option."
     .endm
 
     .macro Event_AttackOnShield_Tutorial
@@ -326,8 +318,7 @@ Pause to change their OoS option."
     .endm
 
     .macro Event_Reversal_Description
-      .string "Practice OoS punishes! DPad left/right
-moves characters closer and further apart."
+      .string "Practice OoS punishes! DPad left/right moves characters closer and further apart."
     .endm
 
     .macro Event_Reversal_Tutorial
@@ -361,8 +352,7 @@ moves characters closer and further apart."
     .endm
 
     .macro Event_SDI_Description
-      .string "Practice Smash DI'ing
-Fox's up-air!"
+      .string "Practice Smash DI'ing Fox's up-air!"
     .endm
 
     .macro Event_SDI_Tutorial
@@ -395,8 +385,7 @@ Fox's up-air!"
     .endm
 
     .macro Event_Powershield_Description
-      .string "Powershield Falco's laser!
-Pause to change fire-rate."
+      .string "Powershield Falco's laser! Pause to change fire-rate."
     .endm
 
     .macro Event_Powershield_Tutorial
@@ -430,8 +419,7 @@ Pause to change fire-rate."
 
     .macro Event_LedgeTech_Description
       #Ledge-Tech Training
-      .string "Practice ledge-teching
-Falco's down-smash!"
+      .string "Practice ledge-teching Falco's down-smash!"
     .endm
 
     .macro Event_LedgeTech_Tutorial
@@ -465,8 +453,7 @@ Falco's down-smash!"
     .endm
 
     .macro Event_AmsahTech_Description
-      .string "Taunt to have Marth Up-B,
-then ASDI down and tech!"
+      .string "Taunt to have Marth Up-B, then ASDI down and tech!"
     .endm
 
     .macro Event_AmsahTech_Tutorial
@@ -500,8 +487,7 @@ then ASDI down and tech!"
     .endm
 
     .macro Event_ShieldDrop_Description
-      .string "Counter with a shield-drop aerial!
-DPad left/right moves players apart."
+      .string "Counter with a shield-drop aerial! DPad left/right moves players apart."
     .endm
 
     .macro Event_ShieldDrop_Tutorial
@@ -535,8 +521,7 @@ DPad left/right moves players apart."
     .endm
 
     .macro Event_WaveshineSDI_Description
-      .string "Use Smash DI to get out
-of Fox's waveshine!"
+      .string "Use Smash DI to get out of Fox's waveshine!"
     .endm
 
     .macro Event_WaveshineSDI_Tutorial
@@ -577,8 +562,7 @@ of Fox's waveshine!"
     .endm
 
     .macro Event_SlideOff_Description
-      .string "Use Slide-Off DI to slide off
-the platform and counter attack!"
+      .string "Use Slide-Off DI to slide off the platform and counter attack!"
     .endm
 
     .macro Event_SlideOff_Tutorial
@@ -612,8 +596,7 @@ the platform and counter attack!"
     .endm
 
     .macro Event_GrabMashOut_Description
-      .string "Mash buttons to escape the grab
-as quickly as possible!"
+      .string "Mash buttons to escape the grab as quickly as possible!"
     .endm
 
     .macro Event_GrabMashOut_Tutorial
@@ -655,8 +638,7 @@ as quickly as possible!"
     .endm
 
     .macro Event_LedgetechCounter_Description
-      .string "Practice ledge-teching
-Marth's counter!"
+      .string "Practice ledge-teching Marth's counter!"
     .endm
 
     .macro Event_LedgetechCounter_Tutorial
@@ -693,8 +675,7 @@ Marth's counter!"
     .endm
 
     .macro Event_ArmadaShine_Description
-      .string "Finish off the enemy Fox
-with an Armada-Shine!"
+      .string "Finish off the enemy Fox with an Armada-Shine!"
     .endm
 
     .macro Event_ArmadaShine_Tutorial
@@ -733,8 +714,7 @@ with an Armada-Shine!"
     .endm
 
     .macro Event_SideBSweetspot_Description
-      .string "Use a sweetspot side-B to avoid Marth's
-down-tilt and grab the ledge!"
+      .string "Use a sweetspot side-B to avoid Marth's down-tilt and grab the ledge!"
     .endm
 
     .macro Event_SideBSweetspot_Tutorial
@@ -771,8 +751,7 @@ down-tilt and grab the ledge!"
     .endm
 
     .macro Event_EscapeSheik_Description
-      .string "Practice escaping the techchase with a
-frame perfect shine or jab SDI!"
+      .string "Practice escaping the techchase with a frame perfect shine or jab SDI!"
     .endm
 
     .macro Event_EscapeSheik_Tutorial

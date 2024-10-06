@@ -203,11 +203,7 @@ blrl
 .string ""
 .string ""
 .string ""
-.string "Thanks to all my patrons
-who supported this project!
-
-www.twitter.com/UnclePunch_
-www.patreon.com/UnclePunch"
+.string "Thanks to all my patrons who supported this project! www.twitter.com/UnclePunch_ www.patreon.com/UnclePunch"
 .align 2
 
 FunctionStart:
