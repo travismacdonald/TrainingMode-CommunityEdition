@@ -1,9 +1,9 @@
-.PHONY: clean iso all release release-old
+.PHONY: clean iso all release
 
 dats = root/TM/ledgedash.dat root/TM/wavedash.dat root/TM/lcancel.dat root/TM/labCSS.dat root/TM/eventMenu.dat root/TM/lab.dat
 
-# find all asm files in ASM dir. We have the escape the spaces, so we pipe to sed
-ASM_FILES := $(shell find ASM -type f -name '*.asm' | sed 's/ /\\ /g')
+# find all .asm and .s files in the ASM dir. We have the escape the spaces, so we pipe to sed
+ASM_FILES := $(shell find ASM -type f \( -name '*.asm' -o -name '*.s' \) | sed 's/ /\\ /g')
 
 MEX_BUILD=mono MexTK/MexTK.exe -ff -b "build" -q -ow -l "MexTK/melee.link" -op 2
 MEX_TRIM=mono MexTK/MexTK.exe -trim
@@ -68,18 +68,6 @@ iso: TM-More.iso
 
 TM-More.zip: TM-More.iso
 	zip TM-More.zip TM-More.iso
-
-release-old: TM-More.iso Release\ Scripts/*
-	rm -rf TM-More/
-	mkdir TM-More
-	cp -rf --parents "root/&&systemdata/Start.dol" "root/&&systemdata/ISO.hdr" root/codes.gct $(dats) TM-More/
-	mv TM-More/root/ TM-More/patch/
-	cp -f Additional\ ISO\ Files/* TM-More/patch/
-	cp -r Release\ Scripts/* TM-More/
-	cp gc_fst TM-More/
-	cp gc_fst.exe TM-More/
-	zip -r TM-More.zip TM-More/
-	rm -r TM-More/
 
 release: TM-More.zip
 
