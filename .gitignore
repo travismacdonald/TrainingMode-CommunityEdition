@@ -31,7 +31,9 @@ Build\ TM\ Codeset/mac/gecko
 Additional\ ISO\ Files/codes.gct
 Additional\ ISO\ Files/Start.dol
 ASM_OLD/
-
+build/
+root/
+*.iso
 
 # Mac files
 .DS_Store
