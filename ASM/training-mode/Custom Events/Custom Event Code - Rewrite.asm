@@ -25,7 +25,6 @@ LegacyEvent:
 #r28 = same as r26
 #r29 = event struct index (0x0 of this, then 0x8 of that to get the specifics)
 
-#region Event and Menu GObj Data Structs
 #Event GObj Data Struct
 .set EventData_DataSize,0x50
 .set EventData_MenuDataPointer,(EventData_DataSize-0x4)
@@ -38,9 +37,7 @@ LegacyEvent:
 .set MenuData_ASCIIStructPointer,0x4
 .set MenuData_OptionMenuMemory,0x8
 .set MenuData_OptionMenuToggled,0x28
-#endregion
 
-#region Init Custom Event
 #################
 ## Custom Code ##
 #################
@@ -157,13 +154,11 @@ SkipPageList:
 
 EventNoExist:
 	b	exit
-#endregion
 
 ###############
 ## Minigames ##
 ###############
 
-#region Eggs-ercise
 #########################
 ## Eggs-ercise HIJACK INFO ##
 #########################
@@ -656,13 +651,9 @@ blrl
 .long 0x00000000
 .long 0x00000000
 
-
 ################################################################################
 ################################################################################
 
-#endregion
-
-#region Multishine
 #########################
 ## Multishine HIJACK INFO ##
 #########################
@@ -799,14 +790,9 @@ b	exit
 	restore
 	blr
 
-
-
-
 ################################################################################
 ################################################################################
-#endregion
 
-#region Reaction
 #########################
 ## Reaction HIJACK INFO ##
 #########################
@@ -1065,9 +1051,7 @@ blrl
 
 ################################################################################
 ################################################################################
-#endregion
 
-#region Ledge Stall
 ###########################
 ## Ledge Stall HIJACK INFO ##
 ###########################
@@ -1317,7 +1301,6 @@ LedgeStallThink_SwitchCase:
 	beq LedgeStallThink_Reset
 	b	LedgeStallThink_CheckTimer
 
-#region LedgeStallThink_LavaDelay
 LedgeStallThink_LavaDelay:
 #Reset Timer back to 0
 	li	r3,0
@@ -1336,9 +1319,7 @@ LedgeStallThink_LavaDelay:
 	li	r3,EventState_LavaRiseThink
 	stb r3,EventState(REG_EventData)
 	b LedgeStallThink_LavaRiseThink
-#endregion
 
-#region LedgeStallThink_LavaRiseThink
 LedgeStallThink_LavaRiseThink:
 #Ensure player is in the lava before incrementing survival time
 	lfs f1,LavaPosition(REG_EventData)
@@ -1395,9 +1376,7 @@ LedgeStallThink_LavaRiseThink_NotInLavaSkip:
 LedgeStallThink_LavaRiseThink_SkipLavaRise:
 
 	b	LedgeStallThink_CheckTimer
-#endregion
 
-#region LedgeStallThink_Reset
 LedgeStallThink_Reset:
 #Effectively pause timer
 	load r4,0x8046b6a0
@@ -1418,8 +1397,6 @@ LedgeStallThink_NoSecondCarryover:
 	subi r3,r3,1
 	sth r3,0x2C(r4)		#subseconds
 	b	LedgeStallThink_CheckTimer
-
-#endregion
 
 LedgeStallThink_CheckTimer:
 #Check if timer exists
@@ -1590,13 +1567,10 @@ Ledgestall_UpdateLavaPosition_Exit:
 restore
 blr
 
-#endregion
-
 ##################
 ## General Tech ##
 ##################
 
-#region L-Cancel Training
 #########################
 ## L Cancel HIJACK INFO ##
 #########################
@@ -1773,14 +1747,8 @@ b	exit
 	restore
 	blr
 
-
-
-
 ################################################################################
 ################################################################################
-#endregion
-
-#region Ledgedash Training
 
 ###########################
 ## Ledgedash HIJACK INFO ##
@@ -2538,9 +2506,6 @@ LedgedashLoadExit:
 restore
 blr
 
-#endregion
-
-#region SDI Training
 ##############################
 ## SDI Training HIJACK INFO ##
 ##############################
@@ -3030,14 +2995,9 @@ SDITrainingLoadExit:
 restore
 blr
 
-
-
-
 ################################################################################
 ################################################################################
-#endregion
 
-#region Reversal Training
 #########################
 ## Reversal HIJACK INFO ##
 #########################
@@ -3672,13 +3632,9 @@ ReversalLoadExit:
 restore
 blr
 
-
-
 ################################################################################
 ################################################################################
-#endregion
 
-#region Powershield Training
 #########################
 ## Powershield HIJACK INFO ##
 #########################
@@ -4079,18 +4035,11 @@ blrl
 .long 0x00000000
 .long 0x00000000
 
-
-
 ##################################
 
-
-
-
 ################################################################################
 ################################################################################
-#endregion
 
-#region Shield Drop Training
 #########################
 ## Shield Drop HIJACK INFO ##
 #########################
@@ -4344,9 +4293,7 @@ restore
 blr
 
 ################################################################################
-#endregion
 
-#region Attack on Shield
 #########################
 ## Attack On Shield HIJACK INFO ##
 #########################
@@ -4781,11 +4728,8 @@ AttackOnShieldLoadExit:
 restore
 blr
 
-
 ################################################################################
-#endregion
 
-#region Ledgetech Training
 #########################
 ## Ledgetech HIJACK INFO ##
 #########################
@@ -5231,12 +5175,8 @@ LedgetechLoadExit:
 restore
 blr
 
-
-
 ###################################################
-#endregion
 
-#region Amsah Tech
 #########################
 ## Amsah Tech HIJACK INFO ##
 #########################
@@ -5541,12 +5481,8 @@ AmsahTechLoadExit:
 restore
 blr
 
-
-
 ###########################################
-#endregion
 
-#region Combo Training
 ################################
 ## Combo Training HIJACK INFO ##
 ################################
@@ -7195,9 +7131,7 @@ restore
 blr
 
 ##################################################
-#endregion
 
-#region Waveshine SDI
 #########################
 ## Waveshine SDI HIJACK INFO ##
 #########################
@@ -7656,9 +7590,7 @@ restore
 blr
 
 ##################################################
-#endregion
 
-#region Slide Off
 ###########################
 ## Slide Off HIJACK INFO ##
 ###########################
@@ -7834,7 +7766,6 @@ SlideOffThink_SwitchCase:
 	beq SlideOffThink_Shield
 	b	SlideOffThink_CheckTimer
 
-#region SlideOffThink_Hitstun
 SlideOffThink_Hitstun:
 #Check if still in ThrowHi
 	lwz r3,0x10(REG_P2Data)
@@ -7853,9 +7784,6 @@ SlideOffThink_Hitstun:
 	stb	r3,EventState(EventData)
 	b	SlideOffThink_CheckTimer
 
-#endregion
-
-#region SlideOffThink_DetermineAttackorShield
 SlideOffThink_DetermineAttackorShield:
 /*
 #Ensure facing correct direction
@@ -7962,9 +7890,6 @@ SlideOffThink_DetermineAttackorShield_CheckToAttack_StartAttack:
 SlideOffThink_DetermineAttackorShield_CheckToAttackEnd:
 	b	SlideOffThink_CheckTimer
 
-#endregion
-
-#region SlideOffThink_AttackThink
 SlideOffThink_AttackThink:
 #Get Inputs for this frame
 	mr	r3,REG_P2Data
@@ -8027,15 +7952,12 @@ SlideOffThink_AttackThink_Exit:
 	addi r3,r3,1
 	stb r3,AttackTimer(REG_EventData)
 	b	SlideOffThink_CheckTimer
-#endregion
 
-#region SlideOffThink_Shield
 SlideOffThink_Shield:
 #Hold Shield
 	li	r3,PAD_TRIGGER_R
 	stw	r3,CPU_HeldButtons(REG_P2Data)
 	b	SlideOffThink_CheckTimer
-#endregion
 
 SlideOffThink_CheckTimer:
 #Check if timer exists
@@ -8287,9 +8209,6 @@ SlideOff_InitializePositions_Exit:
 	restore
 	blr
 
-#endregion
-
-#region Grab Mash Out
 ###########################
 ## Grab Mash Out HIJACK INFO ##
 ###########################
@@ -8412,7 +8331,6 @@ GrabMashOutThink_SwitchCase:
 	beq GrabMashOutThink_Reset
 	b	GrabMashOutThink_CheckTimer
 
-#region GrabMashOutThink_ThrowDelay
 GrabMashOutThink_ThrowDelay:
 #Check to grab
 	lhz r3,ThrowTimer(REG_EventData)
@@ -8461,9 +8379,6 @@ GrabMashOutThink_ThrowDelay_ActedEarly:
 	stb	r3,EventState(EventData)
 	b	GrabMashOutThink_CheckTimer
 
-#endregion
-
-#region GrabMashOutThink_MashOutThink
 GrabMashOutThink_MashOutThink:
 #Wait for P1 to be in CaptureCut
 	lwz r3,0x10(REG_P1Data)
@@ -8482,12 +8397,8 @@ GrabMashOutThink_BrokeOut:
 	stb r3,EventState(REG_EventData)
 	b	GrabMashOutThink_CheckTimer
 
-#endregion
-
-#region GrabMashOutThink_Reset
 GrabMashOutThink_Reset:
 	b	GrabMashOutThink_CheckTimer
-#endregion
 
 GrabMashOutThink_CheckTimer:
 #Check if timer exists
@@ -8639,9 +8550,6 @@ GrabMashOut_InitializePositions_Exit:
 	restore
 	blr
 
-#endregion
-
-#region SDI IC DThrow Dair
 #########################
 ## Event 16 HIJACK INFO ##
 #########################
@@ -8747,10 +8655,7 @@ b	exit
 					li	r4,1			#Override failsafe code
 					bl	SaveState_Save
 
-
 		Event16ThinkMain:
-
-
 
 		Event16ThinkExit:
 		restore
@@ -8772,13 +8677,11 @@ restore
 blr
 
 ##################################################
-#endregion
 
 ##############
 ## Fox Tech ##
 ##############
 
-#region Ledgetech Counter
 ###################################
 ## Ledgetech Counter HIJACK INFO ##
 ###################################
@@ -9004,9 +8907,6 @@ blrl
 .float -15		#Mm to move spacies down after placing in the air
 ######
 
-#endregion
-
-#region Armada Shine
 ###################################
 ## Armada Shine HIJACK INFO ##
 ###################################
@@ -9173,7 +9073,6 @@ ArmadaShineThink_GroundCheckSkip:
 	beq	ArmadaShineThink_Reset
 	b	ArmadaShineThink_Exit
 
-#region ArmadaShineThink_Hitstun
 ArmadaShineThink_Hitstun:
 #Check if still in hitstun
 	lbz	r3,0x221C(REG_P2Data)
@@ -9190,9 +9089,7 @@ ArmadaShineThink_Hitstun_Exit:
 	li	r3,0
 	stb r3,0x67F(REG_P1Data)
 	b	ArmadaShineThink_Exit
-#endregion
 
-#region ArmadaShineThink_Falling
 ArmadaShineThink_Falling:
 .set FirefoxRadius,80
 .set FirefoxChance,8
@@ -9225,9 +9122,7 @@ ArmadaShineThink_Falling_EnterFirefox:
 	stb	r3,EventState(REG_EventData)
 #Exit
 	b	ArmadaShineThink_Exit
-#endregion
 
-#region ArmadaShineThink_RecoverStart
 ArmadaShineThink_RecoverStart:
 .set RestartTimer,30
 .set FirefoxHoldFrames,43
@@ -9311,7 +9206,6 @@ ArmadaShineThink_RecoverStart_InputAngle:
 	lwz r3,0x84(sp)
 	stb r3,0x1A8D(REG_P2Data)
 
-#region ecb test code
 .set REG_XPerFrame,29
 .set REG_YPerFrame,28
 .set REG_CurrXPos,27
@@ -9425,7 +9319,6 @@ ArmadaShineThink_RecoverStart_CollisionLoop_SkipDecay:
 	blt	ArmadaShineThink_RecoverStart_CollisionLoop
 #End Loop
 	addi	sp,sp,0x1d0
-#endregion
 
 #Restore f28-f31
 	lfs f29,0xB0(sp)
@@ -9436,9 +9329,7 @@ ArmadaShineThink_RecoverStart_CollisionLoop_SkipDecay:
 
 ArmadaShineThink_RecoverStart_Exit:
 	b	ArmadaShineThink_Exit
-#endregion
 
-#region ArmadaShineThink_RecoverEnd
 ArmadaShineThink_RecoverEnd:
 #If CPU got hit, recover again
 	lbz	r3,0x221C(REG_P2Data)
@@ -9448,9 +9339,7 @@ ArmadaShineThink_RecoverEnd:
 	li	r3,EventState_Hitstun
 	stb	r3,EventState(REG_EventData)
 	b	ArmadaShineThink_Exit
-#endregion
 
-#region ArmadaShineThink_Reset
 ArmadaShineThink_Reset:
 #Get timer
 	lbz r3,Timer(REG_EventData)
@@ -9459,8 +9348,6 @@ ArmadaShineThink_Reset:
 	cmpwi r3,0
 	ble ArmadaShineThink_Restore
 	b	ArmadaShineThink_Exit
-
-#endregion
 
 ArmadaShineThink_Restore:
 #Restore State
@@ -9668,9 +9555,7 @@ ArmadaShine_InitializePositions_Exit:
 	restore
 	blr
 
-#endregion
 
-#region SideB Sweetspot
 ###########################
 ## SideB Sweetspot HIJACK INFO ##
 ###########################
@@ -9814,7 +9699,6 @@ SideBSweetspotThink_SwitchCase:
 	beq SideBSweetspotThink_Reset
 	b	SideBSweetspotThink_CheckTimer
 
-#region SideBSweetspotThink_Endlag
 SideBSweetspotThink_Endlag:
 #Check if in Wait
 	lwz r3,0x10(P2Data)
@@ -9828,9 +9712,7 @@ SideBSweetspotThink_Endlag:
 	stb	r3,EventState(EventData)
 	b	SideBSweetspotThink_CheckTimer
 
-#endregion
 
-#region SideBSweetspotThink_WaitToAttack
 SideBSweetspotThink_WaitToAttack:
 #Wait for Fox to be in SpecialAirS
 	lwz r3,0x10(REG_P1Data)
@@ -9865,9 +9747,7 @@ SideBSweetspotThink_WaitToAttack_BlacklistMove:
 	stb r3,EventState(REG_EventData)
 	b	SideBSweetspotThink_CheckTimer
 SideBSweetspotThink_WaitToAttack_CheckForBlacklistMovesSkip:
-#endregion
 
-#region SideBSweetspotThink_AttackThink
 SideBSweetspotThink_AttackThink:
 #Check if d-tilting
 	lwz r3,0x10(REG_P2Data)
@@ -9929,12 +9809,9 @@ SideBSweetspotThink_AttackThink_FreezeSkip:
 	b	SideBSweetspotThink_CheckTimer
 SideBSweetspotThink_AttackThink_CliffCatchSkip:
 
-#endregion
 
-#region SideBSweetspotThink_Reset
 SideBSweetspotThink_Reset:
 	b	SideBSweetspotThink_CheckTimer
-#endregion
 
 SideBSweetspotThink_CheckTimer:
 #Check if timer exists
@@ -10171,9 +10048,7 @@ SideBSweetspot_InitializePositions_Exit:
 	restore
 	blr
 
-#endregion
 
-#region Escape Sheik
 ###########################
 ## Escape Sheik HIJACK INFO ##
 ###########################
@@ -10465,7 +10340,6 @@ EscapeSheikThink_SwitchCase:
 	beq	EscapeSheikThink_Jab2
 	b	EscapeSheikThink_CheckTimer
 
-#region EscapeSheikThink_ThrowDelay
 EscapeSheikThink_ThrowDelay:
 #Check to throw
 	lhz r3,ThrowTimer(REG_EventData)
@@ -10481,9 +10355,7 @@ EscapeSheikThink_ThrowDelay:
 	stb	r3,EventState(EventData)
 	b	EscapeSheikThink_CheckTimer
 
-#endregion
 
-#region EscapeSheikThink_ThrowEndlag
 EscapeSheikThink_ThrowEndlag:
 #Wait for Sheik to be out of ThrowLw
 	lwz r3,0x10(REG_P2Data)
@@ -10507,9 +10379,7 @@ EscapeSheikThink_ThrowEndlag_End:
 	stb r3,EventState(REG_EventData)
 	b	EscapeSheikThink_Chase
 
-#endregion
 
-#region EscapeSheikThink_Chase
 EscapeSheikThink_Chase:
 .set Distance,0xB0
 .set REG_Direction,20
@@ -10857,9 +10727,7 @@ EscapeSheikThink_Chase_DownBoundThink_SingleJab:
 	li	r3,ResetTimer+30
 	stb r3,Timer(REG_EventData)
 	b	EscapeSheikThink_CheckTimer
-#endregion
 
-#region EscapeSheikThink_Jab2
 EscapeSheikThink_Jab2:
 #Check if waiting on jab 2
 	lbz	r3,Jab2Timer(REG_EventData)
@@ -10890,15 +10758,12 @@ EscapeSheikThink_Jab2:
 	b	EscapeSheikThink_CheckTimer
 EscapeSheikThink_Chase_DownBoundThink_Jab2Skip:
 	b	EscapeSheikThink_CheckTimer
-#endregion
 
-#region EscapeSheikThink_Reset
 EscapeSheikThink_Reset:
 #Hold Shield
 	li	r3,PAD_TRIGGER_R
 	stw	r3,CPU_HeldButtons(REG_P2Data)
 	b	EscapeSheikThink_CheckTimer
-#endregion
 
 EscapeSheikThink_CheckTimer:
 #Check if timer exists
@@ -11086,9 +10951,7 @@ EscapeSheik_InitializePositions_Exit:
 	restore
 	blr
 
-#endregion
 
-#region Scrapped Edgeguard Event
 /*
 
 #########################
@@ -11534,16 +11397,12 @@ blr
 
 #################################
 
-
 Event16LoadExit:
 restore
 blr
 
-
 */
-#endregion
 
-#region Scrapped Dash Dance Code
 /*
 #########################
 ## Shield Drop HIJACK INFO ##
@@ -11895,9 +11754,7 @@ restore
 blr
 
 */
-#endregion
 
-#region Event Template
 /*
 
 #########################
@@ -11927,22 +11784,17 @@ b	exit
 
 	b	EggsLoadExit
 
-
 		#########################
 		## Eggs-ercise THINK FUNCT ##
 		#########################
-
 
 		EggsThink:
 		blrl
 		backup
 
-
-
 		EggsThinkExit:
 		restore
 		blr
-
 
 EggsLoadExit:
 restore
@@ -11950,7 +11802,6 @@ blr
 
 */
 ####################################################
-#endregion
 
 ###############
 ## P1 STRUCT ##

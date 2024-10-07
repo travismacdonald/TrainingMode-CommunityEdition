@@ -9,8 +9,6 @@
 #Function Addresses
 .set  PostRetraceCallback,0x800195fc
 .set  UnkPadStruct,0x804329f0
-
-#region Init New Scenes
 .set  REG_MinorSceneStruct,31
 
 #Init and backup
@@ -29,11 +27,8 @@
   bl  LagPrompt_SceneLoad
   mflr  r4
   stw r4,0x8(r3)
-
-
   b CheckProgressive
 
-#region PointerConvert
 PointerConvert:
   lwz r4,0x0(r3)          #Load bl instruction
   rlwinm r5,r4,8,25,29    #extract opcode bits
@@ -45,8 +40,7 @@ PointerConvert:
   stw r4,0x0(r3)
 PointerConvert_Exit:
   blr
-#endregion
-#region InitializeMajorSceneStruct
+
 InitializeMajorSceneStruct:
 .set  REG_MajorScene,31
 .set  REG_MinorStruct,30
@@ -86,18 +80,11 @@ InitMinorSceneStruct_Loop:
   addi  REG_MinorStructParse,REG_MinorStructParse,0x18
   b InitMinorSceneStruct_Loop
 InitMinorSceneStruct_Exit:
-
   restore
   blr
-#endregion
-#endregion
 
-#region LagPrompt
-
-#region LagPrompt_SceneLoad
 ############################################
 
-#region LagPrompt_SceneLoad_Data
 LagPrompt_SceneLoad_TextProperties:
 blrl
 .set PromptX,0x0
@@ -148,8 +135,6 @@ blrl
   .set OFST_TextGObj,0x0
   .set OFST_Selection,0x4
 
-#endregion
-#region LagPrompt_SceneLoad
 LagPrompt_SceneLoad:
 blrl
 
@@ -164,8 +149,8 @@ LagPrompt_SceneLoad_CreateText:
 .set REG_TextGObj,31
 
 #GET PROPERTIES TABLE
-	bl LagPrompt_SceneLoad_TextProperties
-	mflr REG_TextProp
+bl LagPrompt_SceneLoad_TextProperties
+mflr REG_TextProp
 
 #Create canvas
   li  r3,0
@@ -292,11 +277,8 @@ LagPrompt_SceneLoad_CreateText:
 LagPrompt_SceneLoad_Exit:
   restore
   blr
-#endregion
 
 ############################################
-#endregion
-#region LagPrompt_SceneThink
 LagPrompt_SceneThink:
 blrl
 
@@ -312,7 +294,6 @@ blrl
   bl  LagPrompt_SceneLoad_TextProperties
   mflr  REG_TextProp
 
-#region Adjust Selection
 #Adjust Menu Choice
 #Get all player inputs
   li  r3,4
@@ -364,8 +345,6 @@ LagPrompt_SceneThink_HighlightSelection:
   branchl r12,Text_ChangeTextColor
 #Play SFX
   branchl r12,0x80174380
-#endregion
-#region Check for Confirmation
 LagPrompt_SceneThink_CheckForA:
   li  r3,4
   branchl r12,0x801a36a0
@@ -381,8 +360,6 @@ LagPrompt_SceneThink_Confirmed:
   lbz r3,OFST_Selection(REG_GObjData)
   cmpwi r3,0
   bne LagPrompt_SceneThink_ExitScene
-#endregion
-#region Apply Code
 .set  REG_GeckoCode,12
 #Apply lag reduction
   bl  LagReductionGeckoCode
@@ -400,7 +377,6 @@ LagPrompt_SceneThink_Confirmed:
   lis r3,0x8000
   load r4,0x3b722c    #might be overkill but flush the entire dol file
   branchl r12,0x80328f50
-#endregion
 
 LagPrompt_SceneThink_ExitScene:
   branchl r12,0x801a4b60
@@ -408,8 +384,6 @@ LagPrompt_SceneThink_ExitScene:
 LagPrompt_SceneThink_Exit:
   restore
   blr
-#endregion
-#region LagPrompt_SceneDecide
 LagPrompt_SceneDecide:
   backup
 
@@ -423,8 +397,6 @@ LagPrompt_SceneDecide_Exit:
   restore
   blr
 ############################################
-#endregion
-#region LagReductionGeckoCode
 LagReductionGeckoCode:
 blrl
 .long 0x04019860
@@ -432,8 +404,7 @@ blrl
 .long 0x041a4c24
 .long 0xC0429A7C
 .long 0xFF000000
-#endregion
-#region ApplyGeckoCode
+
 ApplyGeckoCode:
 .set  REG_GeckoCode,12
   mr  REG_GeckoCode,r3
@@ -456,11 +427,6 @@ ApplyGeckoCode_04:
 ApplyGeckoCode_Exit:
 blr
 
-#endregion
-
-#endregion
-
-#region MinorSceneStruct
 LagPrompt_MinorSceneStruct:
 blrl
 #Lag Prompt
@@ -476,8 +442,6 @@ bl  LagPrompt_SceneDecide   #SceneDecide
 #End
 .byte -1
 .align 2
-
-#endregion
 
 CheckProgressive:
 #Check if progressive is enabled

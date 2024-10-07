@@ -21,7 +21,6 @@ backup
   cmpwi r3,1
   beq isTeams
 
-#region isSingles
 isSingles:
 #Get this players spawn order
 .set LoopCount,26
@@ -49,9 +48,7 @@ isSingles_Exit:
   lbz	r5, 0x24D0 (MatchInfo)
   bl  SetSpawn
   b Exit
-#endregion
 
-#region isTeams
 isTeams:
 CheckIf2v2:
 .set REG_TeamID,26
@@ -147,9 +144,7 @@ SearchForPlayerID_Exit:
   lbz	r5, 0x24D0 (MatchInfo)
   bl  SetSpawn
   b Exit
-#endregion
 
-#region SetSpawn
 SetSpawn:
 .set  REG_PlayerSlot,31
 .set  REG_SpawnID,30
@@ -248,7 +243,6 @@ SetSpawn_AdjustEntryFrames:
 SetSpawn_Exit:
   restore
   blr
-#endregion
 
 ######################
 NeutralSpawnTable:

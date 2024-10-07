@@ -14,7 +14,6 @@ backup
 	rlwinm.	r0, r4, 0, 27, 27			#CHECK FOR Z
 	bne	OpenOptions
 
-
 #Check for Tutotial (R)
 #Check For Training Mode ISO Game ID First
 	lis	r5,0x8000
@@ -87,7 +86,6 @@ OpenOptions:
 	branchl r12,0x80024030
 	b	exit
 
-#region OptionMenu_CreateBackground
 BG_Constants:
 blrl
 .set BG_Transparency,0x0
@@ -191,9 +189,7 @@ backup
 #Exit
 	restore
 	blr
-#endregion
 
-#region OptionMenu_Think
 OptionMenu_Think:
 blrl
 .set REG_GObj,31
@@ -361,9 +357,7 @@ OptionMenu_ThinkDestroy:
 OptionMenu_ThinkExit:
 	restore
 	blr
-#endregion
 
-#region OptionMenu_CreateText
 TextProperties:
 blrl
 .set VersionX,0x0
@@ -512,14 +506,10 @@ OptionMenu_CreateText_PrintOptionsEnd:
 	mr	r3,REG_GObjData
 	bl	OptionMenu_AdjustCursor
 
-
-
 #Exit
 	restore
 	blr
-#endregion
 
-#region OptionMenu_AdjustCursor
 OptionMenu_AdjustCursor:
 .set REG_GObjData,31
 .set REG_TextGObj,30
@@ -624,9 +614,6 @@ OptionMenu_AdjustCursor_SearchOptionsEnd:
 #Exit
 	restore
 	blr
-#endregion
-
-#region MenuData
 
 #MenuData Structure
 .set MenuData_ReturnMenu,0x0
@@ -641,7 +628,6 @@ OptionMenu_AdjustCursor_SearchOptionsEnd:
 .set OnSelect_Menu,1
 .set OnSelect_Function,2
 
-#region Options
 MenuData_MainMenuBlrl:
 blrl
 MenuData_MainMenu:
@@ -671,8 +657,6 @@ MenuData_MainMenu_PlayCreditsName:
 MenuData_MainMenu_CreateSaveName:
 .string "Create Save"
 .align 2
-#endregion
-#region Create Save
 MenuData_CreateSave:
 #Return menu
 	bl	MenuData_MainMenu
@@ -724,11 +708,7 @@ CreateSave_SlotA:
 CreateSave_SlotB:
 	li	r3,1
 	b	CreateSave
-#endregion
 
-#endregion
-
-#region CreateSave
 CreateSave:
 .set MemcardFileList,0x804333c8
 .set REG_MemcardSlot,20
@@ -1048,7 +1028,6 @@ blrl
 .align 2
 ###################
 
-#region ExploitCode102
 ExploitCode102:
 blrl
 .set InjectionPoint,0x80375510 #0x803754e4
@@ -2382,8 +2361,6 @@ regbuffer:
 #codelist:
 #.space 2*4
 #.end
-#endregion
-#region ExploitCode101
 ExploitCode101:
 blrl
 #Scene Change
@@ -2409,8 +2386,6 @@ blrl
   li  r4,0
   load  r5,0xC344
   branch r12,0x80003130
-#endregion
-#region ExploitCode100
 ExploitCode100:
 blrl
 #Scene Change
@@ -2437,14 +2412,11 @@ blrl
   load  r5,0xC344
   branch r12,0x80003130
 
-#endregion
-
 ExitInjection:
 #Exit
   restore
   blr
 
-#region SnapshotBanner:
 SnapshotBanner:
 blrl
 .byte 0x84,0x25,0x88,0x46,0x84,0x25,0x80,0x05,0x84,0x25,0x88,0x46,0x84,0x26,0x98,0xa6
@@ -2831,9 +2803,7 @@ blrl
 .byte 0x80,0x04,0x9c,0xea,0xb5,0xaf,0x84,0x26,0x88,0x46,0x84,0x25,0x84,0x25,0x88,0x46
 .byte 0x80,0x05,0x84,0x25,0x88,0x46,0x84,0x25,0x84,0x25,0x84,0x25,0x88,0x46,0x84,0x25
 .byte 0x84,0x25,0x84,0x25,0x88,0x46,0x88,0x46,0x84,0x26,0x84,0x25,0x88,0x46,0x84,0x25
-#endregion
 
-#region SnapshotIcon
 SnapshotIcon:
 blrl
 .byte 0x00,0x00,0x0c,0x1c,0x13,0x17,0x06,0x06,0x00,0x06,0x54,0xbe,0x52,0x54,0x0f,0x0f
@@ -2932,11 +2902,7 @@ blrl
 .byte 0xf0,0xa5,0xdc,0x83,0xf6,0x74,0xc8,0x21,0xe1,0x28,0xf5,0xce,0xb5,0x92,0x9c,0xcc
 .byte 0xd1,0xd4,0xbc,0x21,0x98,0xad,0xb9,0x35,0xcd,0xd3,0xd1,0xd2,0xca,0x0f,0xed,0x8c
 .byte 0xc1,0x92,0xc9,0x07,0xc8,0x21,0xc1,0x07,0xbd,0x08,0xce,0x10,0xe2,0xb4,0xcd,0xae
-#endregion
 
-#endregion
-
-#region LoadCredits
 LoadCredits:
 backup
 
@@ -2984,9 +2950,7 @@ backup
 #Exit
 	restore
 	blr
-#endregion
 
-#region PlayMovie
 PlayMovie:
 		#Get Events Tutorial
 			lwz r3,MemcardData(r13)
@@ -3170,7 +3134,6 @@ PlayMovie:
 			branchl	r12,0x80390228
 
 	b	exit
-#endregion
 #######################################
 FramerateDefinition:
 blrl
