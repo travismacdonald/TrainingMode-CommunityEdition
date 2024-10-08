@@ -372,8 +372,10 @@ void Event_Think(GOBJ *event);
 void Button_Think(GOBJ *button_gobj);
 
 void Lab_ChangePlayerPercent(GOBJ *menu_gobj, int value);
+void Lab_ChangePlayerLockPercent(GOBJ *menu_gobj, int value);
 void Lab_ChangeFrameAdvance(GOBJ *menu_gobj, int value);
 void Lab_ChangeCPUPercent(GOBJ *menu_gobj, int value);
+void Lab_ChangeCPULockPercent(GOBJ *menu_gobj, int value);
 void Lab_ChangeTech(GOBJ *menu_gobj, int value);
 void Lab_ChangeGetup(GOBJ *menu_gobj, int value);
 void Lab_ChangeTechInPlaceChance(GOBJ *menu_gobj, int value);

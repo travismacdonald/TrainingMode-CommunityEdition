@@ -54,6 +54,7 @@ enum gen_option
     OPTGEN_FRAME,
     OPTGEN_FRAMEBTN,
     OPTGEN_HMNPCNT,
+    OPTGEN_HMNPCNTLOCK,
     OPTGEN_MODEL,
     OPTGEN_HIT,
     OPTGEN_COLL,
@@ -68,6 +69,7 @@ enum gen_option
 enum cpu_option
 {
     OPTCPU_PCNT,
+    OPTCPU_LOCKPCNT,
     OPTCPU_TECHOPTIONS,
     OPTCPU_TDI,
     OPTCPU_CUSTOMTDI,
@@ -86,6 +88,12 @@ enum cpu_option
     OPTCPU_CTRFRAMES,
     OPTCPU_CTRHITS,
     OPTCPU_SHIELDHITS,
+};
+
+enum lockPercent_option
+{
+    OPT_LOCKPCNT_OFF = 0,
+    OPT_LOCKPCNT_ON,
 };
 
 enum tech_option 
@@ -1439,6 +1447,7 @@ static EventMenu LabMenu_Main = {
 // General
 static char **LabOptions_CamMode[] = {"Normal", "Zoom", "Fixed", "Advanced"};
 static char **LabOptions_FrameAdvButton[] = {"L", "Z", "X", "Y"};
+static char **LabOptions_LockPlayerPercent[] = {"Off", "On"};
 static EventOption LabOptions_General[] = {
     // frame advance
     {
@@ -1473,6 +1482,16 @@ static EventOption LabOptions_General[] = {
         .desc = "Adjust the player's percent.", // string describing what this option does
         .option_values = "%d%%",                // pointer to an array of strings
         .onOptionChange = Lab_ChangePlayerPercent,
+    },
+    {
+        .option_kind = OPTKIND_STRING,          
+        .value_num = 2,                    
+        .option_val = 0,                         
+        .menu = 0,                           
+        .option_name = "Lock Player Percent",        
+        .desc = "Locks Player percent to current percent",
+        .option_values = LabOptions_LockPlayerPercent,             
+        .onOptionChange = Lab_ChangePlayerLockPercent,
     },
     // model display
     {
@@ -1712,6 +1731,7 @@ static char **LabValues_CounterGround[] = {"None", "Spotdodge", "Shield", "Grab"
 static char **LabValues_CounterAir[] = {"None", "Airdodge", "Jump Away", "Jump Towards", "Jump Neutral", "Up B", "Side B Toward", "Side B Away", "Down B", "Neutral B", "Neutral Air", "Forward Air", "Down Air", "Back Air", "Up Air", "Tumble Fastfall", "Wiggle Fastfall"};
 static char **LabValues_CounterShield[] = {"None", "Grab", "Short Hop", "Full Hop", "Spotdodge", "Roll Away", "Roll Towards", "Roll Random", "Up B", "Down B", "Neutral Air", "Forward Air", "Down Air", "Back Air", "Up Air"};
 static char **LabValues_GrabEscape[] = {"None", "Medium", "High", "Perfect"};
+static char **LabValues_LockCPUPercent[] = {"Off", "On"};
 static EventOption LabOptions_CPU[] = {
     // cpu percent
     {
@@ -1723,6 +1743,16 @@ static EventOption LabOptions_CPU[] = {
         .desc = "Adjust the CPU's percent.", // string describing what this option does
         .option_values = "%d%%",             // pointer to an array of strings
         .onOptionChange = Lab_ChangeCPUPercent,
+    },
+    {
+        .option_kind = OPTKIND_STRING,          
+        .value_num = 2,                    
+        .option_val = 0,                         
+        .menu = 0,                           
+        .option_name = "Lock CPU Percent",        
+        .desc = "Locks CPU percent to current percent",
+        .option_values = LabValues_LockCPUPercent,             
+        .onOptionChange = Lab_ChangeCPULockPercent,
     },
     {
         .option_kind = OPTKIND_MENU,
