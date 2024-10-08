@@ -114,7 +114,7 @@ void Lab_ChangeCPULockPercent(GOBJ *menu_gobj, int value)
     GOBJ *fighter = Fighter_GetGObj(1);
     FighterData *fighter_data = fighter->userdata;
 
-    if(value == OPT_LOCKPCNT_ON)
+    if(value != OPT_LOCKPCNT_OFF)
         cpu_lockPercent = fighter_data->dmg.percent;
 
     return;
