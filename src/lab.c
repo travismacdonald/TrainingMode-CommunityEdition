@@ -68,7 +68,7 @@ void Lab_ChangePlayerLockPercent(GOBJ *menu_gobj, int value)
 
     if(value != OPT_LOCKPCNT_OFF)
         player_lockPercent = fighter_data->dmg.percent;
-    OSReport("Setting Player Lock to: %f", player_lockPercent);
+
     return;
 }
 void Lab_ChangeFrameAdvance(GOBJ *menu_gobj, int value)
