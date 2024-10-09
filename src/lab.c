@@ -44,6 +44,8 @@ static char *slots_names[] = {"A", "B"};
 static int lockout_timer = 0;
 const int LOCKOUT_DURATION = 30;
 
+static float cpu_lockPercent = 0;
+static float player_lockPercent = 0;
 
 // Menu Callbacks
 void Lab_ChangePlayerPercent(GOBJ *menu_gobj, int value)
@@ -52,7 +54,20 @@ void Lab_ChangePlayerPercent(GOBJ *menu_gobj, int value)
     FighterData *fighter_data = fighter->userdata;
 
     fighter_data->dmg.percent = value;
+    if(LabOptions_General[OPTGEN_HMNPCNTLOCK].option_val != OPT_LOCKPCNT_OFF)
+        player_lockPercent = fighter_data->dmg.percent;
+
     Fighter_SetHUDDamage(0, value);
+
+    return;
+}
+void Lab_ChangePlayerLockPercent(GOBJ *menu_gobj, int value)
+{
+    GOBJ *fighter = Fighter_GetGObj(0);
+    FighterData *fighter_data = fighter->userdata;
+
+    if(value != OPT_LOCKPCNT_OFF)
+        player_lockPercent = fighter_data->dmg.percent;
 
     return;
 }
@@ -85,8 +100,22 @@ void Lab_ChangeCPUPercent(GOBJ *menu_gobj, int value)
     GOBJ *fighter = Fighter_GetGObj(1);
     FighterData *fighter_data = fighter->userdata;
 
+    if(LabOptions_CPU[OPTCPU_LOCKPCNT].option_val != OPT_LOCKPCNT_OFF)
+        cpu_lockPercent = fighter_data->dmg.percent;
+
     fighter_data->dmg.percent = value;
     Fighter_SetHUDDamage(1, value);
+
+    return;
+}
+void Lab_ChangeCPULockPercent(GOBJ *menu_gobj, int value)
+{
+        
+    GOBJ *fighter = Fighter_GetGObj(1);
+    FighterData *fighter_data = fighter->userdata;
+
+    if(value != OPT_LOCKPCNT_OFF)
+        cpu_lockPercent = fighter_data->dmg.percent;
 
     return;
 }
@@ -5209,10 +5238,24 @@ void Event_Think(GOBJ *event)
     FighterData *cpu_data = cpu->userdata;
     HSD_Pad *pad = PadGet(hmn_data->player_controller_number, PADGET_ENGINE);
 
+    // lock percent if enabled
+    if(LabOptions_CPU[OPTCPU_LOCKPCNT].option_val != OPT_LOCKPCNT_OFF)
+    {
+        cpu_data->dmg.percent = cpu_lockPercent;
+        Fighter_SetHUDDamage(1, (int)cpu_lockPercent);
+
+    }
+    if(LabOptions_General[OPTGEN_HMNPCNTLOCK].option_val != OPT_LOCKPCNT_OFF)
+    {
+        hmn_data->dmg.percent = player_lockPercent;
+        Fighter_SetHUDDamage(0, (int)player_lockPercent);
+
+    }        
+
     // update menu's percent
     LabOptions_General[OPTGEN_HMNPCNT].option_val = hmn_data->dmg.percent;
     LabOptions_CPU[OPTCPU_PCNT].option_val = cpu_data->dmg.percent;
-
+    
     // reset stale moves
     if (LabOptions_General[OPTGEN_STALE].option_val == 0)
     {
