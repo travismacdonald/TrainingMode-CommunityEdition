@@ -1914,7 +1914,6 @@ int Savestate_Load(Savestate *savestate)
                     fighter_data->unk_hitbox.bone = IDToBone(fighter_data, ft_data->unk_hitbox.bone);
                     for (int k = 0; k < (sizeof(fighter_data->unk_hitbox.victims) / sizeof(HitVictim)); k++) // pointers to hitbox victims
                     {
-
                         fighter_data->unk_hitbox.victims[k].victim_data = IDToFtData(ft_data->unk_hitbox.victims[k].victim_data);
                     }
 
@@ -1932,6 +1931,9 @@ int Savestate_Load(Savestate *savestate)
                     Fighter_SetAllHurtboxesNotUpdated(fighter);
                     ActionStateChange(ft_data->stateFrame, ft_data->stateSpeed, -1, fighter, ft_data->state, 0, anim_source);
                     fighter_data->stateBlend = 0;
+
+                    // copy physics again to work around some bugs. Notably, this fixes savestates during dash.
+                    memcpy(&fighter_data->phys, &ft_data->phys, sizeof(fighter_data->phys));
 
                     // restore XRotN rotation
                     s8 XRotN_id = Fighter_BoneLookup(fighter_data, XRotN);
@@ -2049,7 +2051,6 @@ int Savestate_Load(Savestate *savestate)
                     GOBJ *item = gobj_list->item;
                     while (item != 0)
                     {
-
                         // get next
                         GOBJ *next_item = item->next;
 
