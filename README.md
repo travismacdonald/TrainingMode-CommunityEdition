@@ -10,6 +10,9 @@ Feel free to file an issue to request a new feature!)
 
 To download the ISO, click 'Releases' on the right side, then download "TM-More.zip".
 
+Please note that the project is currently unstable and you will likely run into crashes (especially on console).
+We're hard at work at fixing this!
+
 To discuss changes and new features or ask for assistance, join [the discord](https://discord.gg/2Khb8CVP7A).
 
 ## Changes From the Original
