@@ -76,6 +76,7 @@ gecko.exe build || (
     goto cleanup
 )
 cd ..
+
 copy "Additional ISO Files\codes.gct" "build\"
 copy "Additional ISO Files\opening.bnr" "build\"
 
