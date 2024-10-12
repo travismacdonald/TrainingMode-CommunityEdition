@@ -3145,22 +3145,6 @@ void Record_GX(GOBJ *gobj, int pass)
     // the reason im doing this here is because i want it to update in the menu
     if (pass == 0)
     {
-        // get hmn slot
-        int hmn_slot = LabOptions_Record[OPTREC_HMNSLOT].option_val;
-        if (hmn_slot == 0) // use random slot
-            hmn_slot = rec_data.hmn_rndm_slot;
-        else
-            hmn_slot--;
-
-        // get cpu slot
-        int cpu_slot = LabOptions_Record[OPTREC_CPUSLOT].option_val;
-        if (cpu_slot == 0) // use random slot
-            cpu_slot = rec_data.cpu_rndm_slot;
-        else
-            cpu_slot--;
-
-        RecInputData *hmn_inputs = rec_data.hmn_inputs[hmn_slot];
-        RecInputData *cpu_inputs = rec_data.cpu_inputs[cpu_slot];
         JOBJ *seek = rec_data.seek_jobj;
         Text *text = rec_data.text;
 
@@ -3280,14 +3264,22 @@ void Record_Think(GOBJ *rec_gobj)
     int curr_frame = Record_GetCurrFrame();
     int end_frame = Record_GetEndFrame();
 
+    // update inputs ---------------------------------------
+
+    int adjusted_hmn_mode = hmn_mode;
+    if (adjusted_hmn_mode > 0) // adjust hmn_mode to match cpu_mode
+        adjusted_hmn_mode++;
+    Record_Update(0, hmn_inputs, adjusted_hmn_mode);
+    Record_Update(1, cpu_inputs, cpu_mode);
+
     // loop inputs check ------------------------------
 
     int loop_mode = LabOptions_Record[OPTREC_LOOP].option_val;
     int modes_allow_loop = hmn_mode != RECMODE_HMN_RECORD && cpu_mode != RECMODE_CPU_CONTROL && cpu_mode != RECMODE_CPU_RECORD;
-    int past_last_input = input_num != 0 && curr_frame >= end_frame;
+    int past_last_input = input_num != 0 && curr_frame+1 >= end_frame;
     if (loop_mode & modes_allow_loop & past_last_input)
     {
-        event_vars->game_timer = rec_state->frame + 1;
+        event_vars->game_timer = rec_state->frame;
 
         // reroll
         if (LabOptions_Record[OPTREC_HMNSLOT].option_val == 0)
@@ -3325,7 +3317,7 @@ void Record_Think(GOBJ *rec_gobj)
 
         if (rec_data.restore_timer >= AUTORESTORE_DELAY) {
             event_vars->Savestate_Load(rec_state);
-            event_vars->game_timer = rec_state->frame + 1;
+            event_vars->game_timer = rec_state->frame;
             rec_data.restore_timer = 0;
 
             // reroll
@@ -3335,13 +3327,6 @@ void Record_Think(GOBJ *rec_gobj)
                 rec_data.cpu_rndm_slot = Record_GetRandomSlot(&rec_data.cpu_inputs);
         }
     }
-
-    // update inputs ---------------------------------------
-
-    if (hmn_mode > 0) // adjust hmn_mode to match cpu_mode
-        hmn_mode++;
-    Record_Update(0, hmn_inputs, hmn_mode);
-    Record_Update(1, cpu_inputs, cpu_mode);
 }
 
 // assumes rec_mode_cpu
