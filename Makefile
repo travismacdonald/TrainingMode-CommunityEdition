@@ -68,6 +68,7 @@ TM-More.iso: build/Start.dol build/codes.gct $(dats)
 		insert codes.gct build/codes.gct \
 		insert Start.dol build/Start.dol \
 		insert opening.bnr build/opening.bnr
+	./gc_fst set-header TM-More.iso "GTME01" "Melee Training Mode - More"
 
 iso: TM-More.iso
 
