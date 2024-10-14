@@ -13,29 +13,6 @@ NTSC102:
     .set InputIndex, 0x804c1f78
     .set InputArray, 0x8046b108
     .set PlayerBlock_LoadPlayerGObj, 0x8003418c
-    /*
-
-NTSC101:
-    .set Injection, 0x800C97D0
-    .set OFST_PlCo, -0x514C
-    .set InputIndex, 0x804c1258
-    .set InputArray, 0x8046a428
-    .set PlayerBlock_LoadPlayerGObj, 0x8003418C
-
-NTSC100:
-    .set Injection, 0x800C968C
-    .set OFST_PlCo, -0x514C
-    .set InputIndex, 0x804bfdf8
-    .set InputArray, 0x80469140
-    .set PlayerBlock_LoadPlayerGObj, 0x8003410C
-
-PAL100:
-    .set Injection, 0x800CA1E8
-    .set OFST_PlCo, -0x4F0C
-    .set InputIndex, 0x804b2ff8
-    .set InputArray, 0x8045bf10
-    .set PlayerBlock_LoadPlayerGObj, 0x80034780
-    */
 
     # Original codeline
     stfs f0, 0x2C(REG_PlayerData)           # Entry point, store new facing direction

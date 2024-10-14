@@ -10,26 +10,7 @@ NTSC102:
     .set Text_CreateTextGObj, 0x803a6754
     .set Text_InitializeSubtext, 0x803a6b98
     .set Text_UpdateSubtextSize, 0x803a7548
-    /*
 
-NTSC101:
-    .set Injection, 0x80265B34
-    .set Text_CreateTextGObj, 0x803A5A74
-    .set Text_InitializeSubtext, 0x803A5EB8
-    .set Text_UpdateSubtextSize, 0x803A6868
-
-NTSC100:
-    .set Injection, 0x80264FB8
-    .set Text_CreateTextGObj, 0x803A4890
-    .set Text_InitializeSubtext, 0x803A4CD4
-    .set Text_UpdateSubtextSize, 0x803A5684
-
-PAL100:
-    .set Injection, 0x802669EC
-    .set Text_CreateTextGObj, 0x803A6664
-    .set Text_InitializeSubtext, 0x803a6b54
-    .set Text_UpdateSubtextSize, 0x803A74FC
-    */
     backup
 
     # GET PROPERTIES TABLE

@@ -1,9 +1,6 @@
     # Debug Flag
     .set debug, 0
 
-    # PAL Flag, compiles with PAL codes when enabled
-    .set PAL, 0
-
     #######################
     ## Codeset Variables ##
     #######################
@@ -540,12 +537,7 @@
 
     .macro Event_WaveshineSDI_PlayableCharacters
     .byte Event_WaveshineSDI
-    .if PAL==0
-    .long Doc_CSSID | Mario_CSSID | Bowser_CSSID | Peach_CSSID | Yoshi_CSSID | DK_CSSID | CaptainFalcon_CSSID | Ganondorf_CSSID | Ness_CSSID | Samus_CSSID | Zelda_CSSID | Link_CSSID | Marth_CSSID
-    .endif
-    .if PAL==1
     .long Doc_CSSID | Mario_CSSID | Bowser_CSSID | Peach_CSSID | Yoshi_CSSID | DK_CSSID | CaptainFalcon_CSSID | Ganondorf_CSSID | Ness_CSSID | Samus_CSSID | Zelda_CSSID | Link_CSSID
-    .endif
     .long -1
     .endm
 
