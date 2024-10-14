@@ -14,7 +14,7 @@
     lwz r3, MemcardData(r13)
     lbz r3, CurrentEventPage(r3)
     # Get Event Description ASCII
-    rtocbl r12, TM_GetEventDesc
+    rtocbl r12, TM_GetEventDescription
 
 CustomEvent:
     .set text, 24

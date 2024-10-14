@@ -48,8 +48,8 @@ void OnCSSLoad(ArchiveInfo *archive)
     // alloc image (needs to be 32 byte aligned)
     import_data.snap.image = calloc(GXGetTexBufferSize(RESIZE_WIDTH, RESIZE_HEIGHT, 4, 0, 0)); // allocate 128 entries
 
-    // HUGE HACK ALERT
-    EventDesc *(*GetEventDesc)(int page, int event) = RTOC_PTR(TM_DATA + (24 * 4));
+    // HUGE HACK ALERT -- manually gets function offset of TM_GetEventDesc
+    EventDesc *(*GetEventDesc)(int page, int event) = RTOC_PTR(TM_FUNC + (1 * 4));
     event_desc = GetEventDesc(1, 0);
     event_desc->isSelectStage = 1;
     event_desc->matchData->stage = -1;

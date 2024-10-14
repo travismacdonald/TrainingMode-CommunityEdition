@@ -25,10 +25,6 @@
     .string "Break the eggs! Only strong hits will break them. DPad down = free practice."
     .endm
 
-    .macro Event_Eggs_Tutorial
-    .string "TvEgg"
-    .endm
-
     .macro Event_Eggs_PlayableCharacters
     .endm
 
@@ -47,10 +43,6 @@
 
     .macro Event_Multishine_Description
     .string "How many shines can you perform in 10 seconds?"
-    .endm
-
-    .macro Event_Multishine_Tutorial
-    .string "TvMulShine"
     .endm
 
     .macro Event_Multishine_PlayableCharacters
@@ -76,10 +68,6 @@
     .string "Test your reaction time by pressing any button when you see/hear Fox shine!"
     .endm
 
-    .macro Event_Reaction_Tutorial
-    .string "TvReaction"
-    .endm
-
     .macro Event_Reaction_PlayableCharacters
     .endm
 
@@ -98,10 +86,6 @@
 
     .macro Event_Ledgestall_Description
     .string "Use ledgestalling to remain invincible while the lava rises!"
-    .endm
-
-    .macro Event_Ledgestall_Tutorial
-    .string "TvMulShine"
     .endm
 
     .macro Event_Ledgestall_PlayableCharacters
@@ -131,11 +115,6 @@
     .string "L+DPad adjusts percent | DPadDown moves CPU DPad right/left saves and loads positions."
     .endm
 
-    .macro Event_Combo_Tutorial
-    .string "TvCombo"
-    .endm
-
-
     .macro Event_Combo_PlayableCharacters
     .endm
 
@@ -151,10 +130,6 @@
 
     .macro Event_AttackOnShield_Description
     .string "Practice attacks on a shielding opponent! Pause to change their OoS option."
-    .endm
-
-    .macro Event_AttackOnShield_Tutorial
-    .string "TvAttOnSh"
     .endm
 
     .macro Event_AttackOnShield_PlayableCharacters
@@ -174,10 +149,6 @@
     .string "Practice OoS punishes! DPad left/right moves characters closer and further apart."
     .endm
 
-    .macro Event_Reversal_Tutorial
-    .string "TvRvrsl"
-    .endm
-
     .macro Event_Reversal_PlayableCharacters
     .endm
 
@@ -195,10 +166,6 @@
     .string "Practice Smash DI'ing Fox's up-air!"
     .endm
 
-    .macro Event_SDI_Tutorial
-    .string "TvSDI"
-    .endm
-
     .macro Event_SDI_PlayableCharacters
     .endm
 
@@ -214,10 +181,6 @@
 
     .macro Event_Powershield_Description
     .string "Powershield Falco's laser! Pause to change fire-rate."
-    .endm
-
-    .macro Event_Powershield_Tutorial
-    .string "TvPowSh"
     .endm
 
     .macro Event_Powershield_PlayableCharacters
@@ -238,10 +201,6 @@
     .string "Practice ledge-teching Falco's down-smash!"
     .endm
 
-    .macro Event_LedgeTech_Tutorial
-    .string "TvLedTc"
-    .endm
-
     .macro Event_LedgeTech_PlayableCharacters
     .endm
 
@@ -257,10 +216,6 @@
 
     .macro Event_AmsahTech_Description
     .string "Taunt to have Marth Up-B, then ASDI down and tech!"
-    .endm
-
-    .macro Event_AmsahTech_Tutorial
-    .string "TvAmsTc"
     .endm
 
     .macro Event_AmsahTech_PlayableCharacters
@@ -280,10 +235,6 @@
     .string "Counter with a shield-drop aerial! DPad left/right moves players apart."
     .endm
 
-    .macro Event_ShieldDrop_Tutorial
-    .string "TvShDrp"
-    .endm
-
     .macro Event_ShieldDrop_PlayableCharacters
     .endm
 
@@ -299,10 +250,6 @@
 
     .macro Event_WaveshineSDI_Description
     .string "Use Smash DI to get out of Fox's waveshine!"
-    .endm
-
-    .macro Event_WaveshineSDI_Tutorial
-    .string "TvWvSDI"
     .endm
 
     .macro Event_WaveshineSDI_PlayableCharacters
@@ -325,10 +272,6 @@
     .string "Use Slide-Off DI to slide off the platform and counter attack!"
     .endm
 
-    .macro Event_SlideOff_Tutorial
-    .string "TvSlOff"
-    .endm
-
     .macro Event_SlideOff_PlayableCharacters
     .endm
 
@@ -345,10 +288,6 @@
 
     .macro Event_GrabMashOut_Description
     .string "Mash buttons to escape the grab as quickly as possible!"
-    .endm
-
-    .macro Event_GrabMashOut_Tutorial
-    .string "TvGrabMash"
     .endm
 
     .macro Event_GrabMashOut_PlayableCharacters
@@ -375,10 +314,6 @@
     .string "Practice ledge-teching Marth's counter!"
     .endm
 
-    .macro Event_LedgetechCounter_Tutorial
-    .string "TvLdTcCntr"
-    .endm
-
     .macro Event_LedgetechCounter_PlayableCharacters
     .byte Event_LedgetechCounter
     .long Fox_CSSID | Falco_CSSID                       # Player Characters
@@ -397,10 +332,6 @@
 
     .macro Event_ArmadaShine_Description
     .string "Finish off the enemy Fox with an Armada-Shine!"
-    .endm
-
-    .macro Event_ArmadaShine_Tutorial
-    .string "TvArmShine"
     .endm
 
     .macro Event_ArmadaShine_PlayableCharacters
@@ -425,10 +356,6 @@
     .string "Use a sweetspot side-B to avoid Marth's down-tilt and grab the ledge!"
     .endm
 
-    .macro Event_SideBSweetspot_Tutorial
-    .string "TvSideBSweet"
-    .endm
-
     .macro Event_SideBSweetspot_PlayableCharacters
     .byte Event_SideBSweetspot
     .long Fox_CSSID | Falco_CSSID                       # Player Characters
@@ -447,10 +374,6 @@
 
     .macro Event_EscapeSheik_Description
     .string "Practice escaping the techchase with a frame perfect shine or jab SDI!"
-    .endm
-
-    .macro Event_EscapeSheik_Tutorial
-    .string "TvEscSheik"
     .endm
 
     .macro Event_EscapeSheik_PlayableCharacters
@@ -592,37 +515,6 @@ EventHighScores:
     .byte 0
     .byte Minigames.NumOfEvents +1
     .byte Minigames.NumOfEvents + GeneralTech.NumOfEvents +1
-    .align 2
-
-    .endm
-
-    .macro EventTutorials
-Minigames:
-    Event_Eggs_Tutorial
-    Event_Multishine_Tutorial
-    Event_Reaction_Tutorial
-    Event_Ledgestall_Tutorial
-    .align 2
-
-GeneralTech:
-    Event_Combo_Tutorial
-    Event_AttackOnShield_Tutorial
-    Event_Reversal_Tutorial
-    Event_SDI_Tutorial
-    Event_Powershield_Tutorial
-    Event_LedgeTech_Tutorial
-    Event_AmsahTech_Tutorial
-    Event_ShieldDrop_Tutorial
-    Event_WaveshineSDI_Tutorial
-    Event_SlideOff_Tutorial
-    Event_GrabMashOut_Tutorial
-    .align 2
-
-SpacieTech:
-    Event_LedgetechCounter_Tutorial
-    Event_ArmadaShine_Tutorial
-    Event_SideBSweetspot_Tutorial
-    Event_EscapeSheik_Tutorial
     .align 2
 
     .endm
@@ -800,10 +692,10 @@ InitSettings:
     # TM Function
     .set TM_tmFunction, -(50*4)                         # offset of rtoc where function pointers are kept, probably temp solution
     .set TM_EventPages, TM_tmFunction + 0x0
-    .set TM_GetEventName, TM_EventPages + 0x4
-    .set TM_GetEventDesc, TM_GetEventName + 0x4
-    .set TM_GetEventTut, TM_GetEventDesc + 0x4
-    .set TM_GetPageName, TM_GetEventTut + 0x4
+    .set TM_GetEventDesc, TM_EventPages + 0x4
+    .set TM_GetEventName, TM_GetEventDesc + 0x4
+    .set TM_GetEventDescription, TM_GetEventName + 0x4
+    .set TM_GetPageName, TM_GetEventDescription + 0x4
     .set TM_GetPageEventNum, TM_GetPageName + 0x4
     .set TM_GetTMVersShort, TM_GetPageEventNum + 0x4
     .set TM_GetTMVersLong, TM_GetTMVersShort + 0x4
@@ -1015,7 +907,6 @@ InitSettings:
     .set GetCustomEventPageName, 0x8000552c
     .set SearchStringTable, 0x80005530
     .set GetNumOfEventsOnCurrentPage, 0x80005534
-    .set GetEventTutorialFileName, 0x80005538
     .set prim.new, 0x804DD84C
     .set prim.close, 0x804DD848
 
