@@ -1295,7 +1295,7 @@ void EventInit(int page, int eventID, MatchInit *matchData)
     s32 cpuKind;
     s32 cpuCostume;
     // If isChooseCPU is true, use the selected CPU
-    if (event->isChooseCPU == true)
+    if (event->isChooseCPU)
     {
         cpuKind = preload->fighters[1].kind;
         cpuCostume = preload->fighters[1].costume;

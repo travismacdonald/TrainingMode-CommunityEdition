@@ -12,11 +12,9 @@
     .set Time, 0x1
 
     ##################################
-    # region Minigame Page Data
     # Number of Events
     .set Minigames.NumOfEvents, 4 -1
 
-    # region Eggs-ercise
     .set Event_Eggs, 0
     # Event Name
     .macro Event_Eggs_Name
@@ -31,16 +29,6 @@
     .string "TvEgg"
     .endm
 
-    .macro Event_Eggs_ChooseCPU
-    .endm
-
-    .macro Event_Eggs_PreloadData
-    .endm
-
-    .macro Event_Eggs_LoadSSS
-    .byte Event_Eggs
-    .endm
-
     .macro Event_Eggs_PlayableCharacters
     .endm
 
@@ -51,8 +39,6 @@
     .byte KO
     .endm
 
-    # endregion
-    # region Multishine
     .set Event_Multishine, 1
     # Event Name
     .macro Event_Multishine_Name
@@ -65,16 +51,6 @@
 
     .macro Event_Multishine_Tutorial
     .string "TvMulShine"
-    .endm
-
-    .macro Event_Multishine_ChooseCPU
-    .endm
-
-    .macro Event_Multishine_PreloadData
-    .byte Event_Multishine, -1, FinalDestination
-    .endm
-
-    .macro Event_Multishine_LoadSSS
     .endm
 
     .macro Event_Multishine_PlayableCharacters
@@ -90,8 +66,6 @@
     .byte KO
     .endm
 
-    # endregion
-    # region Reaction
     .set Event_Reaction, 2
     # Event Name
     .macro Event_Reaction_Name
@@ -106,16 +80,6 @@
     .string "TvReaction"
     .endm
 
-    .macro Event_Reaction_ChooseCPU
-    .endm
-
-    .macro Event_Reaction_PreloadData
-    .byte Event_Reaction, Fox.Ext, FinalDestination
-    .endm
-
-    .macro Event_Reaction_LoadSSS
-    .endm
-
     .macro Event_Reaction_PlayableCharacters
     .endm
 
@@ -126,8 +90,6 @@
     .byte KO
     .endm
 
-    # endregion
-    # region Ledgestall
     .set Event_Ledgestall, 3
     # Event Name
     .macro Event_Ledgestall_Name
@@ -142,16 +104,6 @@
     .string "TvMulShine"
     .endm
 
-    .macro Event_Ledgestall_ChooseCPU
-    .endm
-
-    .macro Event_Ledgestall_PreloadData
-    .byte Event_Ledgestall, -1, Brinstar
-    .endm
-
-    .macro Event_Ledgestall_LoadSSS
-    .endm
-
     .macro Event_Ledgestall_PlayableCharacters
     .endm
 
@@ -164,82 +116,11 @@
 
     .set EventOSD_LedgeStall, 0x00000000
 
-# endregion
 
-    # endregion
-    # region Universal Tech Page Data
     # Number of Events
     .set GeneralTech.NumOfEvents, 13 -1
 
     # Event List
-    # region LCancel
-    .set Event_LCancel, 1
-    # Event Name
-    .macro Event_LCancel_Name
-    .string "L-Cancel Training"
-    .endm
-
-    .macro Event_LCancel_Description
-    .string "Practice L-Cancelling on a stationary CPU."
-    .endm
-
-    .macro Event_LCancel_Tutorial
-    .string "TvLC"
-    .endm
-
-    .macro Event_LCancel_ChooseCPU
-    .byte Event_LCancel
-    .endm
-
-    .macro Event_LCancel_PreloadData
-    .endm
-
-    .macro Event_LCancel_LoadSSS
-    .byte Event_LCancel
-    .endm
-
-    .macro Event_LCancel_PlayableCharacters
-    .endm
-
-    .macro Event_LCancel_ScoreType
-    .byte KO
-    .endm
-
-    # endregion
-    # region Ledgedash
-    .set Event_Ledgedash, 2
-    # Event Name
-    .macro Event_Ledgedash_Name
-    .string "Ledgedash Training"
-    .endm
-
-    .macro Event_Ledgedash_Description
-    .string "Practice Ledgedashes! Use D-Pad to change ledge."
-    .endm
-
-    .macro Event_Ledgedash_Tutorial
-    .string "TvLedDa"
-    .endm
-
-    .macro Event_Ledgedash_ChooseCPU
-    .endm
-
-    .macro Event_Ledgedash_PreloadData
-    .endm
-
-    .macro Event_Ledgedash_LoadSSS
-    .byte Event_Ledgedash
-    .endm
-
-    .macro Event_Ledgedash_PlayableCharacters
-    .endm
-
-    .macro Event_Ledgedash_ScoreType
-    .byte KO
-    .endm
-
-    # endregion
-    # region Combo
     .set Event_Combo, 4
     # Event Name
     .macro Event_Combo_Name
@@ -254,16 +135,6 @@
     .string "TvCombo"
     .endm
 
-    .macro Event_Combo_ChooseCPU
-    .byte Event_Combo
-    .endm
-
-    .macro Event_Combo_PreloadData
-    .endm
-
-    .macro Event_Combo_LoadSSS
-    .byte Event_Combo
-    .endm
 
     .macro Event_Combo_PlayableCharacters
     .endm
@@ -272,8 +143,6 @@
     .byte KO
     .endm
 
-    # endregion
-    # region AttackOnShield
     .set Event_AttackOnShield, 5
     # Event Name
     .macro Event_AttackOnShield_Name
@@ -288,17 +157,6 @@
     .string "TvAttOnSh"
     .endm
 
-    .macro Event_AttackOnShield_ChooseCPU
-    .byte Event_AttackOnShield
-    .endm
-
-    .macro Event_AttackOnShield_PreloadData
-    .byte Event_AttackOnShield, -1, FinalDestination
-    .endm
-
-    .macro Event_AttackOnShield_LoadSSS
-    .endm
-
     .macro Event_AttackOnShield_PlayableCharacters
     .endm
 
@@ -306,8 +164,6 @@
     .byte KO
     .endm
 
-    # endregion
-    # region Reversal
     .set Event_Reversal, 6
     # Event Name
     .macro Event_Reversal_Name
@@ -322,17 +178,6 @@
     .string "TvRvrsl"
     .endm
 
-    .macro Event_Reversal_ChooseCPU
-    .byte Event_Reversal
-    .endm
-
-    .macro Event_Reversal_PreloadData
-    .endm
-
-    .macro Event_Reversal_LoadSSS
-    .byte Event_Reversal
-    .endm
-
     .macro Event_Reversal_PlayableCharacters
     .endm
 
@@ -340,8 +185,6 @@
     .byte KO
     .endm
 
-    # endregion
-    # region SDI
     .set Event_SDI, 7
     # Event Name
     .macro Event_SDI_Name
@@ -356,16 +199,6 @@
     .string "TvSDI"
     .endm
 
-    .macro Event_SDI_ChooseCPU
-    .endm
-
-    .macro Event_SDI_PreloadData
-    .byte Event_SDI, Fox.Ext, FinalDestination
-    .endm
-
-    .macro Event_SDI_LoadSSS
-    .endm
-
     .macro Event_SDI_PlayableCharacters
     .endm
 
@@ -373,8 +206,6 @@
     .byte KO
     .endm
 
-    # endregion
-    # region Powershield
     .set Event_Powershield, 8
     # Event Name
     .macro Event_Powershield_Name
@@ -389,16 +220,6 @@
     .string "TvPowSh"
     .endm
 
-    .macro Event_Powershield_ChooseCPU
-    .endm
-
-    .macro Event_Powershield_PreloadData
-    .byte Event_Powershield, Falco.Ext, FinalDestination
-    .endm
-
-    .macro Event_Powershield_LoadSSS
-    .endm
-
     .macro Event_Powershield_PlayableCharacters
     .endm
 
@@ -406,8 +227,6 @@
     .byte KO
     .endm
 
-    # endregion
-    # region LedgeTech
     .set Event_LedgeTech, 9
     # Event Name
     .macro Event_LedgeTech_Name
@@ -423,17 +242,6 @@
     .string "TvLedTc"
     .endm
 
-    .macro Event_LedgeTech_ChooseCPU
-    .endm
-
-    .macro Event_LedgeTech_PreloadData
-    .byte Event_LedgeTech, Falco.Ext, -1
-    .endm
-
-    .macro Event_LedgeTech_LoadSSS
-    .byte Event_LedgeTech
-    .endm
-
     .macro Event_LedgeTech_PlayableCharacters
     .endm
 
@@ -441,8 +249,6 @@
     .byte KO
     .endm
 
-    # endregion
-    # region AmsahTech
     .set Event_AmsahTech, 10
     # Event Name
     .macro Event_AmsahTech_Name
@@ -457,17 +263,6 @@
     .string "TvAmsTc"
     .endm
 
-    .macro Event_AmsahTech_ChooseCPU
-    .endm
-
-    .macro Event_AmsahTech_PreloadData
-    .byte Event_AmsahTech, Marth.Ext, -1
-    .endm
-
-    .macro Event_AmsahTech_LoadSSS
-    .byte Event_AmsahTech
-    .endm
-
     .macro Event_AmsahTech_PlayableCharacters
     .endm
 
@@ -475,8 +270,6 @@
     .byte KO
     .endm
 
-    # endregion
-    # region ShieldDrop
     .set Event_ShieldDrop, 11
     # Event Name
     .macro Event_ShieldDrop_Name
@@ -491,17 +284,6 @@
     .string "TvShDrp"
     .endm
 
-    .macro Event_ShieldDrop_ChooseCPU
-    .byte Event_ShieldDrop
-    .endm
-
-    .macro Event_ShieldDrop_PreloadData
-    .byte Event_ShieldDrop, -1, Battlefield
-    .endm
-
-    .macro Event_ShieldDrop_LoadSSS
-    .endm
-
     .macro Event_ShieldDrop_PlayableCharacters
     .endm
 
@@ -509,8 +291,6 @@
     .byte KO
     .endm
 
-    # endregion
-    # region WaveshineSDI
     .set Event_WaveshineSDI, 12
     # Event Name
     .macro Event_WaveshineSDI_Name
@@ -525,16 +305,6 @@
     .string "TvWvSDI"
     .endm
 
-    .macro Event_WaveshineSDI_ChooseCPU
-    .endm
-
-    .macro Event_WaveshineSDI_PreloadData
-    .byte Event_WaveshineSDI, Fox.Ext, FinalDestination
-    .endm
-
-    .macro Event_WaveshineSDI_LoadSSS
-    .endm
-
     .macro Event_WaveshineSDI_PlayableCharacters
     .byte Event_WaveshineSDI
     .long Doc_CSSID | Mario_CSSID | Bowser_CSSID | Peach_CSSID | Yoshi_CSSID | DK_CSSID | CaptainFalcon_CSSID | Ganondorf_CSSID | Ness_CSSID | Samus_CSSID | Zelda_CSSID | Link_CSSID
@@ -545,8 +315,6 @@
     .byte KO
     .endm
 
-    # endregion
-    # region SlideOff
     .set Event_SlideOff, 13
     # Event Name
     .macro Event_SlideOff_Name
@@ -561,16 +329,6 @@
     .string "TvSlOff"
     .endm
 
-    .macro Event_SlideOff_ChooseCPU
-    .endm
-
-    .macro Event_SlideOff_PreloadData
-    .byte Event_SlideOff, Marth.Ext, PokemonStadium
-    .endm
-
-    .macro Event_SlideOff_LoadSSS
-    .endm
-
     .macro Event_SlideOff_PlayableCharacters
     .endm
 
@@ -579,8 +337,6 @@
 
     .set EventOSD_SlideOff, 0x00000000
 
-    # endregion
-    # region GrabMashOut
     .set Event_GrabMashOut, 14
     # Event Name
     .macro Event_GrabMashOut_Name
@@ -595,16 +351,6 @@
     .string "TvGrabMash"
     .endm
 
-    .macro Event_GrabMashOut_ChooseCPU
-    .endm
-
-    .macro Event_GrabMashOut_PreloadData
-    .byte Event_GrabMashOut, Marth.Ext, FinalDestination
-    .endm
-
-    .macro Event_GrabMashOut_LoadSSS
-    .endm
-
     .macro Event_GrabMashOut_PlayableCharacters
     .endm
 
@@ -614,15 +360,11 @@
 
     .set EventOSD_GrabMashOut, 0x01000000
 
-# endregion
 
-    # endregion
-    # region Spacie Tech Page Data
     # Number of Events
     .set SpacieTech.NumOfEvents, 4 -1
 
     # Event List
-    # region LedgetechCounter
     .set Event_LedgetechCounter, 0
     # Event Name
     .macro Event_LedgetechCounter_Name
@@ -637,17 +379,6 @@
     .string "TvLdTcCntr"
     .endm
 
-    .macro Event_LedgetechCounter_ChooseCPU
-    .endm
-
-    .macro Event_LedgetechCounter_PreloadData
-    .byte Event_LedgetechCounter, Marth.Ext, -1
-    .endm
-
-    .macro Event_LedgetechCounter_LoadSSS
-    .byte Event_LedgetechCounter
-    .endm
-
     .macro Event_LedgetechCounter_PlayableCharacters
     .byte Event_LedgetechCounter
     .long Fox_CSSID | Falco_CSSID                       # Player Characters
@@ -658,8 +389,6 @@
     .byte KO
     .endm
 
-    # endregion
-    # region ArmadaShine
     .set Event_ArmadaShine, 1
     # Event Name
     .macro Event_ArmadaShine_Name
@@ -674,17 +403,6 @@
     .string "TvArmShine"
     .endm
 
-    .macro Event_ArmadaShine_ChooseCPU
-    .endm
-
-    .macro Event_ArmadaShine_PreloadData
-    .byte Event_ArmadaShine, Fox.Ext, -1
-    .endm
-
-    .macro Event_ArmadaShine_LoadSSS
-    .byte Event_ArmadaShine
-    .endm
-
     .macro Event_ArmadaShine_PlayableCharacters
     .byte Event_ArmadaShine
     .long -1                                            # Fox_CSSID #Player Characters
@@ -697,8 +415,6 @@
 
     .set EventOSD_ArmadaShine, 0x00000000
 
-    # endregion
-    # region SideBSweetspot
     .set Event_SideBSweetspot, 2
     # Event Name
     .macro Event_SideBSweetspot_Name
@@ -713,17 +429,6 @@
     .string "TvSideBSweet"
     .endm
 
-    .macro Event_SideBSweetspot_ChooseCPU
-    .endm
-
-    .macro Event_SideBSweetspot_PreloadData
-    .byte Event_SideBSweetspot, Marth.Ext, -1
-    .endm
-
-    .macro Event_SideBSweetspot_LoadSSS
-    .byte Event_SideBSweetspot
-    .endm
-
     .macro Event_SideBSweetspot_PlayableCharacters
     .byte Event_SideBSweetspot
     .long Fox_CSSID | Falco_CSSID                       # Player Characters
@@ -734,8 +439,6 @@
     .byte KO
     .endm
 
-    # endregion
-    # region EscapeSheik
     .set Event_EscapeSheik, 3
     # Event Name
     .macro Event_EscapeSheik_Name
@@ -750,16 +453,6 @@
     .string "TvEscSheik"
     .endm
 
-    .macro Event_EscapeSheik_ChooseCPU
-    .endm
-
-    .macro Event_EscapeSheik_PreloadData
-    .byte Event_EscapeSheik, Sheik.Ext, FinalDestination
-    .endm
-
-    .macro Event_EscapeSheik_LoadSSS
-    .endm
-
     .macro Event_EscapeSheik_PlayableCharacters
     .byte Event_EscapeSheik
     .long Fox_CSSID | Falco_CSSID | CaptainFalcon_CSSID # Player Characters
@@ -770,14 +463,8 @@
     .byte KO
     .endm
 
-# endregion
-
-# endregion
 ##################################
 
-# region Event Table Macros
-
-    # region Event Page Order
     # This macro will change the order of the pages
     # Only thing this macro doesn't affect is Load CSS + Preload CPU + high scores. Must change this manually.
     .macro EventJumpTable
@@ -785,10 +472,8 @@
     bl GeneralTech
     bl SpacieTech
     .endm
-    # endregion
-    # region EventAmountPerPage
-    .macro EventAmountPerPage
 
+    .macro EventAmountPerPage
 Minigames:
     .long Minigames.NumOfEvents
     .align 2
@@ -802,11 +487,8 @@ SpacieTech:
     .align 2
 
     .endm
-# endregion
 
-    # region EventNameStrings
     .macro EventNameStrings
-
 Minigames:
     Event_Eggs_Name
     Event_Multishine_Name
@@ -815,8 +497,6 @@ Minigames:
     .align 2
 
 GeneralTech:
-    Event_LCancel_Name
-    Event_Ledgedash_Name
     Event_Combo_Name
     Event_AttackOnShield_Name
     Event_Reversal_Name
@@ -830,8 +510,6 @@ GeneralTech:
     Event_GrabMashOut_Name
     .align 2
 
-#######################
-
 SpacieTech:
     # Ledgetech Marth Counter
     Event_LedgetechCounter_Name
@@ -841,11 +519,8 @@ SpacieTech:
     Event_EscapeSheik_Name
     .align 2
     .endm
-    # endregion
-    # region EventDescriptionStrings
-    .macro EventDescriptionStrings
 
-################
+    .macro EventDescriptionStrings
 Minigames:
     Event_Eggs_Description
     Event_Multishine_Description
@@ -853,10 +528,7 @@ Minigames:
     Event_Ledgestall_Description
     .align 2
 
-################
 GeneralTech:
-    Event_LCancel_Description
-    Event_Ledgedash_Description
     Event_Combo_Description
     Event_AttackOnShield_Description
     Event_Reversal_Description
@@ -870,7 +542,6 @@ GeneralTech:
     Event_GrabMashOut_Description
     .align 2
 
-#######################
 SpacieTech:
     # Ledgetech Marths Counter
     Event_LedgetechCounter_Description
@@ -879,139 +550,9 @@ SpacieTech:
     Event_SideBSweetspot_Description
     Event_EscapeSheik_Description
     .align 2
-    ########################
     .endm
-    # endregion
-    # region EventChooseCPU
-    .macro EventChooseCPU
 
-############################
-ChooseCPU_Minigames:
-    Event_Eggs_ChooseCPU
-    Event_Multishine_ChooseCPU
-    Event_Reaction_ChooseCPU
-    Event_Ledgestall_ChooseCPU
-    .byte -1
-    .align 2
-
-############################
-ChooseCPU_GeneralTech:
-    Event_LCancel_ChooseCPU
-    Event_Ledgedash_ChooseCPU
-    Event_SDI_ChooseCPU
-    Event_Reversal_ChooseCPU
-    Event_Powershield_ChooseCPU
-    Event_ShieldDrop_ChooseCPU
-    Event_AttackOnShield_ChooseCPU
-    Event_LedgeTech_ChooseCPU
-    Event_AmsahTech_ChooseCPU
-    Event_Combo_ChooseCPU
-    Event_WaveshineSDI_ChooseCPU
-    Event_SlideOff_ChooseCPU
-    Event_GrabMashOut_ChooseCPU
-    .byte -1
-    .align 2
-
-############################
-ChooseCPU_SpacieTech:
-    Event_LedgetechCounter_ChooseCPU
-    Event_ArmadaShine_ChooseCPU
-    Event_SideBSweetspot_ChooseCPU
-    Event_EscapeSheik_ChooseCPU
-    .byte -1
-    .align 2
-############################
-
-    .endm
-    # endregion
-    # region EventPreloadData
-    .macro EventPreloadData
-
-############################
-PreloadEvents_Minigames:
-    Event_Eggs_PreloadData
-    Event_Multishine_PreloadData
-    Event_Reaction_PreloadData
-    Event_Ledgestall_PreloadData
-    .byte -1
-    .align 2
-
-############################
-PreloadEvents_GeneralTech:
-    Event_LCancel_PreloadData
-    Event_Ledgedash_PreloadData
-    Event_SDI_PreloadData
-    Event_Reversal_PreloadData
-    Event_Powershield_PreloadData
-    Event_ShieldDrop_PreloadData
-    Event_AttackOnShield_PreloadData
-    Event_LedgeTech_PreloadData
-    Event_AmsahTech_PreloadData
-    Event_Combo_PreloadData
-    Event_WaveshineSDI_PreloadData
-    Event_SlideOff_PreloadData
-    Event_GrabMashOut_PreloadData
-    .byte -1
-    .align 2
-
-############################
-PreloadEvents_SpacieTech:
-    Event_LedgetechCounter_PreloadData
-    Event_ArmadaShine_PreloadData
-    Event_SideBSweetspot_PreloadData
-    Event_EscapeSheik_PreloadData
-    .byte -1
-    .align 2
-############################
-
-    .endm
-    # endregion
-    # region EventLoadSSS
-    .macro EventLoadSSS
-
-############################
-Minigames:
-    Event_Eggs_LoadSSS
-    Event_Multishine_LoadSSS
-    Event_Reaction_LoadSSS
-    Event_Ledgestall_LoadSSS
-    .byte -1
-    .align 2
-
-############################
-GeneralTech:
-    Event_LCancel_LoadSSS
-    Event_Ledgedash_LoadSSS
-    Event_SDI_LoadSSS
-    Event_Reversal_LoadSSS
-    Event_Powershield_LoadSSS
-    Event_ShieldDrop_LoadSSS
-    Event_AttackOnShield_LoadSSS
-    Event_LedgeTech_LoadSSS
-    Event_AmsahTech_LoadSSS
-    Event_Combo_LoadSSS
-    Event_WaveshineSDI_LoadSSS
-    Event_SlideOff_LoadSSS
-    Event_GrabMashOut_LoadSSS
-    .byte -1
-    .align 2
-
-############################
-SpacieTech:
-    Event_LedgetechCounter_LoadSSS
-    Event_ArmadaShine_LoadSSS
-    Event_SideBSweetspot_LoadSSS
-    Event_EscapeSheik_LoadSSS
-    .byte -1
-    .align 2
-############################
-
-    .endm
-    # endregion
-    # region EventPlayableCharacters
     .macro EventPlayableCharacters
-
-############################
 Minigames:
     Event_Eggs_PlayableCharacters
     Event_Multishine_PlayableCharacters
@@ -1020,10 +561,7 @@ Minigames:
     .byte -1
     .align 2
 
-############################
 GeneralTech:
-    Event_LCancel_PlayableCharacters
-    Event_Ledgedash_PlayableCharacters
     Event_SDI_PlayableCharacters
     Event_Reversal_PlayableCharacters
     Event_Powershield_PlayableCharacters
@@ -1038,7 +576,6 @@ GeneralTech:
     .byte -1
     .align 2
 
-############################
 SpacieTech:
     Event_LedgetechCounter_PlayableCharacters
     Event_ArmadaShine_PlayableCharacters
@@ -1046,13 +583,10 @@ SpacieTech:
     Event_EscapeSheik_PlayableCharacters
     .byte -1
     .align 2
-############################
 
     .endm
-    # endregion
-    # region EventHighScores
-    .macro EventHighScores
 
+    .macro EventHighScores
 EventHighScores:
     blrl
     .byte 0
@@ -1061,11 +595,8 @@ EventHighScores:
     .align 2
 
     .endm
-# endregion
-# region EventTutorials
 
     .macro EventTutorials
-
 Minigames:
     Event_Eggs_Tutorial
     Event_Multishine_Tutorial
@@ -1074,8 +605,6 @@ Minigames:
     .align 2
 
 GeneralTech:
-    Event_LCancel_Tutorial
-    Event_Ledgedash_Tutorial
     Event_Combo_Tutorial
     Event_AttackOnShield_Tutorial
     Event_Reversal_Tutorial
@@ -1098,11 +627,7 @@ SpacieTech:
 
     .endm
 
-# endregion
-
-# endregion
-
-    # region OnSaveCreate
+############################
     .macro OnSaveCreate
     # Get trophy data
     lwz r3, -0x77C0(r13)
@@ -1131,8 +656,6 @@ InitSettings:
     load r3, 0x08000000
     stw r3, OSDBitfield(r4)
     .endm
-    # endregion
-    # region OnBootup
     .macro OnBootup
     # Set First Boot Flag (used for OSD backup/restore)
     li r3, 0x1
@@ -1141,7 +664,6 @@ InitSettings:
     li r3, 0x21
     stb r3, EventCPUBackup_CharID(rtoc)                 # Set CPU Character ID
     .endm
-# endregion
 
     # Custom Memcard Data Bitfield
     .set OSDBitfield, 0x1F24
