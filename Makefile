@@ -12,44 +12,41 @@ clean:
 	rm -rf TM-More.iso
 	rm -rf ./build/
 
-build/:
-	mkdir build
-
-build/eventMenu.dat: src/events.c src/events.h | build/
+build/eventMenu.dat: src/events.c src/events.h
 	cp "dats/eventMenu.dat" "build/eventMenu.dat" 
 	$(MEX_BUILD) -i "src/events.c" -s "tmFunction" -dat "build/eventMenu.dat" -t "MexTK/tmFunction.txt"
 	$(MEX_TRIM) "build/eventMenu.dat"
 
-build/lab.dat: src/lab.c src/lab.h src/lab_common.h | build/
+build/lab.dat: src/lab.c src/lab.h src/lab_common.h
 	cp "dats/lab.dat" "build/lab.dat"
 	$(MEX_BUILD) -i "src/lab.c" -s "evFunction" -dat "build/lab.dat" -t "MexTK/evFunction.txt"
 	$(MEX_TRIM) "build/lab.dat"
 
-build/labCSS.dat: src/lab_css.c src/lab_common.h | build/
+build/labCSS.dat: src/lab_css.c src/lab_common.h
 	cp "dats/labCSS.dat" "build/labCSS.dat"
 	$(MEX_BUILD) -i "src/lab_css.c" -s "cssFunction" -dat "build/labCSS.dat" -t "MexTK/cssFunction.txt"
 	$(MEX_TRIM) "build/labCSS.dat"
 
-build/lcancel.dat: src/lcancel.c src/lcancel.h | build/
+build/lcancel.dat: src/lcancel.c src/lcancel.h
 	cp "dats/lcancel.dat" "build/lcancel.dat"
 	$(MEX_BUILD) -i "src/lcancel.c" -s "evFunction" -dat "build/lcancel.dat" -t "MexTK/evFunction.txt"
 	$(MEX_TRIM) "build/lcancel.dat"
 
-build/ledgedash.dat: src/ledgedash.c src/ledgedash.h | build/
+build/ledgedash.dat: src/ledgedash.c src/ledgedash.h
 	cp "dats/ledgedash.dat" "build/ledgedash.dat"
 	$(MEX_BUILD) -i "src/ledgedash.c" -s "evFunction" -dat "build/ledgedash.dat" -t "MexTK/evFunction.txt"
 	$(MEX_TRIM) "build/ledgedash.dat"
 
-build/wavedash.dat: src/wavedash.c src/wavedash.h | build/
+build/wavedash.dat: src/wavedash.c src/wavedash.h
 	cp "dats/wavedash.dat" "build/wavedash.dat"
 	$(MEX_BUILD) -i "src/wavedash.c" -s "evFunction" -dat "build/wavedash.dat" -t "MexTK/evFunction.txt"
 	$(MEX_TRIM) "build/wavedash.dat"
 
-build/codes.gct: Additional\ ISO\ Files/opening.bnr $(ASM_FILES) | build/
+build/codes.gct: Additional\ ISO\ Files/opening.bnr $(ASM_FILES)
 	cd "Build TM Codeset" && ./gecko build
 	cp Additional\ ISO\ Files/* build/
 
-build/Start.dol: | build/
+build/Start.dol: | build
 	./gc_fst read ${iso} Start.dol build/Start.dol
 	xdelta3 -d -f -s build/Start.dol "Build TM Start.dol/patch.xdelta" build/Start.dol
 
@@ -69,6 +66,9 @@ TM-More.iso: build/Start.dol build/codes.gct $(dats)
 		insert Start.dol build/Start.dol \
 		insert opening.bnr build/opening.bnr
 	./gc_fst set-header TM-More.iso "GTME01" "Melee Training Mode - More"
+
+build:
+	mkdir -p build
 
 iso: TM-More.iso
 
