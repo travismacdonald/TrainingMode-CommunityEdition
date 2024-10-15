@@ -413,6 +413,7 @@ void Record_CObjThink(GOBJ *gobj);
 void Record_GX(GOBJ *gobj, int pass);
 void Record_Think(GOBJ *rec_gobj);
 void Record_Update(int ply, RecInputData *inputs, int rec_mode);
+void Record_LoadSavestate();
 int Record_MenuThink(GOBJ *menu_gobj);
 int Record_OptimizedSave(Savestate *savestate);
 int Record_OptimizedLoad(Savestate *savestate);

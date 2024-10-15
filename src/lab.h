@@ -2248,4 +2248,7 @@ static EventMenu LabMenu_Record = {
     .prev = 0,                                                     // pointer to previous menu, used at runtime
 };
 
+
+u32 lz77_compress(u8 *uncompressed_text, u32 uncompressed_size, u8 *compressed_text, u8 pointer_length_width);
+u32 lz77_decompress(u8 *compressed_text, u8 *uncompressed_text);
 float get_angle_out_of_deadzone(float angle, int lastSDIWasCardinal);
