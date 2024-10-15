@@ -1244,18 +1244,6 @@ static CPUAction Lab_CPUActionUpSmashOOS[] = {
         0,                            // specify stick direction
     },
     {
-        ASID_GUARD,   // state to perform this action. -1 for last
-        0,            // first possible frame to perform this action
-        0,            // last possible frame to perfrom this action
-        0,            // left stick X value
-        0,            // left stick Y value
-        0,            // c stick X value
-        0,            // c stick Y value
-        PAD_BUTTON_X, // button to input
-        0,            // is the last input
-        0,            // specify stick direction
-    },
-    {
         ASID_KNEEBEND, // state to perform this action. -1 for last
         0,             // first possible frame to perform this action
         0,             // last possible frame to perfrom this action
@@ -1266,18 +1254,6 @@ static CPUAction Lab_CPUActionUpSmashOOS[] = {
         0,             // button to input
         1,             // is the last input
         0,             // specify stick direction
-    },
-    {
-        ASID_ACTIONABLE, // state to perform this action. -1 for last
-        0,               // first possible frame to perform this action
-        0,               // last possible frame to perfrom this action
-        0,               // left stick X value
-        0,               // left stick Y value
-        0,               // c stick X value
-        127,             // c stick Y value
-        0,               // button to input
-        1,               // is the last input
-        0,               // specify stick direction
     },
     -1,
 };
