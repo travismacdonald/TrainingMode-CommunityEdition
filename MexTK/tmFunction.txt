@@ -1,7 +1,7 @@
 eventPages
+GetEventDesc
 GetEventName
 GetEventDescription
-GetEventTut
 GetPageName
 GetPageEventNum
 GetTMVersShort
@@ -21,4 +21,3 @@ OnBoot
 OnStartMelee
 OnFileLoad
 Message_Display
-GetEventDesc

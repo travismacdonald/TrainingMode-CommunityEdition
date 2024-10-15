@@ -1,4 +1,4 @@
-#To be inserted at 8023cf9c
-.include "../../../Globals.s"
+    # To be inserted at 8023cf9c
+    .include "../../../Globals.s"
 
-cmpwi r27, 0x8
+    cmpwi r27, 0x8

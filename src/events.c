@@ -58,7 +58,6 @@ EventDesc Lab = {
     // Event Name
     .eventName = "Training Lab\n",
     .eventDescription = "Free practice with\ncomplete control.\n",
-    .eventTutorial = "",
     .eventFile = "lab",
     .eventCSSFile = "TM/labCSS.dat",
     .isChooseCPU = true,
@@ -107,7 +106,6 @@ EventDesc LCancel = {
     // Event Name
     .eventName = "L-Cancel Training\n",
     .eventDescription = "Practice L-Cancelling on\na stationary CPU.\n",
-    .eventTutorial = "TvLC",
     .eventFile = "lcancel",
     .isChooseCPU = false,
     .isSelectStage = true,
@@ -154,7 +152,6 @@ static EventMatchData Ledgedash_MatchData = {
 EventDesc Ledgedash = {
     .eventName = "Ledgedash Training\n",
     .eventDescription = "Practice Ledgedashes!\nUse D-Pad to change ledge.\n",
-    .eventTutorial = "TvLedDa",
     .eventFile = "ledgedash",
     .isChooseCPU = false,
     .isSelectStage = true,
@@ -201,7 +198,6 @@ static EventMatchData Wavedash_MatchData = {
 EventDesc Wavedash = {
     .eventName = "Wavedash Training\n",
     .eventDescription = "Practice timing your wavedash,\na fundamental movement technique.\n",
-    .eventTutorial = "TvWvDsh",
     .eventFile = "wavedash",
     .isChooseCPU = false,
     .isSelectStage = true,
@@ -249,7 +245,6 @@ EventDesc Combo = {
 
     .eventName = "Combo Training\n",
     .eventDescription = "L+DPad adjusts percent | DPadDown moves CPU\nDPad right/left saves and loads positions.",
-    .eventTutorial = "TvLC",
     .eventFile = 0,
     .isChooseCPU = true,
     .isSelectStage = true,
@@ -296,7 +291,6 @@ static EventMatchData AttackOnShield_MatchData = {
 EventDesc AttackOnShield = {
     .eventName = "Attack on Shield\n",
     .eventDescription = "Practice attacks on a shielding opponent\nPause to change their OoS option\n",
-    .eventTutorial = "TvLC",
     .eventFile = 0,
     .isChooseCPU = true,
     .isSelectStage = false,
@@ -343,7 +337,6 @@ static EventMatchData Reversal_MatchData = {
 EventDesc Reversal = {
     .eventName = "Reversal Training\n",
     .eventDescription = "Practice OoS punishes! DPad left/right\nmoves characters close and further apart.",
-    .eventTutorial = "TvLC",
     .eventFile = 0,
     .isChooseCPU = true,
     .isSelectStage = true,
@@ -390,7 +383,6 @@ static EventMatchData SDI_MatchData = {
 EventDesc SDI = {
     .eventName = "SDI Training\n",
     .eventDescription = "Use Smash DI to escape\nFox's up-air attack!",
-    .eventTutorial = "TvLC",
     .eventFile = 0,
     .isChooseCPU = false,
     .isSelectStage = false,
@@ -438,7 +430,6 @@ static EventMatchData Powershield_MatchData = {
 EventDesc Powershield = {
     .eventName = "Powershield Training\n",
     .eventDescription = "Powershield Falco's laser!\nPause to change to fire-rate.",
-    .eventTutorial = "TvLC",
     .eventFile = 0,
     .isChooseCPU = false,
     .isSelectStage = false,
@@ -485,7 +476,6 @@ static EventMatchData Ledgetech_MatchData = {
 EventDesc Ledgetech = {
     .eventName = "Ledge-Tech Training\n",
     .eventDescription = "Practice ledge-teching\nFalco's down-smash",
-    .eventTutorial = "TvLC",
     .eventFile = 0,
     .isChooseCPU = false,
     .isSelectStage = true,
@@ -532,7 +522,6 @@ static EventMatchData AmsahTech_MatchData = {
 EventDesc AmsahTech = {
     .eventName = "Amsah-Tech Training\n",
     .eventDescription = "Taunt to have Marth Up-B,\nthen ASDI down and tech!\n",
-    .eventTutorial = "TvLC",
     .eventFile = 0,
     .isChooseCPU = false,
     .isSelectStage = true,
@@ -579,7 +568,6 @@ static EventMatchData ShieldDrop_MatchData = {
 EventDesc ShieldDrop = {
     .eventName = "Shield Drop Training\n",
     .eventDescription = "Counter with a shield-drop aerial!\nDPad left/right moves players apart.",
-    .eventTutorial = "TvLC",
     .eventFile = 0,
     .isChooseCPU = true,
     .isSelectStage = true,
@@ -626,7 +614,6 @@ static EventMatchData WaveshineSDI_MatchData = {
 EventDesc WaveshineSDI = {
     .eventName = "Waveshine SDI\n",
     .eventDescription = "Use Smash DI to get out\nof Fox's waveshine!",
-    .eventTutorial = "TvLC",
     .eventFile = 0,
     .isChooseCPU = false,
     .isSelectStage = false,
@@ -673,7 +660,6 @@ static EventMatchData SlideOff_MatchData = {
 EventDesc SlideOff = {
     .eventName = "Slide-Off Training\n",
     .eventDescription = "Use Slide-Off DI to slide off\nthe platform and counter attack!\n",
-    .eventTutorial = "TvLC",
     .eventFile = 0,
     .isChooseCPU = false,
     .isSelectStage = false,
@@ -720,7 +706,6 @@ static EventMatchData GrabMash_MatchData = {
 EventDesc GrabMash = {
     .eventName = "Grab Mash Training\n",
     .eventDescription = "Mash buttons to escape the grab\nas quickly as possible!\n",
-    .eventTutorial = "TvLC",
     .eventFile = 0,
     .isChooseCPU = false,
     .isSelectStage = false,
@@ -767,7 +752,6 @@ static EventMatchData TechCounter_MatchData = {
 EventDesc TechCounter = {
     .eventName = "Ledgetech Marth Counter\n",
     .eventDescription = "Practice ledge-teching\nMarth's counter!\n",
-    .eventTutorial = "TvLC",
     .eventFile = 0,
     .isChooseCPU = false,
     .isSelectStage = true,
@@ -814,7 +798,6 @@ static EventMatchData ArmadaShine_MatchData = {
 EventDesc ArmadaShine = {
     .eventName = "Edgeguard Firefox Training\n",
     .eventDescription = "Finish off the enemy Fox\nafter he uses Firefox!",
-    .eventTutorial = "TvLC",
     .eventFile = 0,
     .isChooseCPU = false,
     .isSelectStage = true,
@@ -861,7 +844,6 @@ static EventMatchData SideBSweet_MatchData = {
 EventDesc SideBSweet = {
     .eventName = "Side-B Sweetspot\n",
     .eventDescription = "Use a sweetspot Side-B to avoid Marth's\ndown-tilt and grab the ledge!",
-    .eventTutorial = "TvLC",
     .eventFile = 0,
     .isChooseCPU = false,
     .isSelectStage = true,
@@ -908,7 +890,6 @@ static EventMatchData EscapeSheik_MatchData = {
 EventDesc EscapeSheik = {
     .eventName = "Escape Sheik Techchase\n",
     .eventDescription = "Practice escaping the tech chase with a\nframe perfect shine or jab SDI!\n",
-    .eventTutorial = "TvLC",
     .eventFile = 0,
     .isChooseCPU = false,
     .isSelectStage = false,
@@ -955,7 +936,6 @@ static EventMatchData Eggs_MatchData = {
 EventDesc Eggs = {
     .eventName = "Eggs-ercise\n",
     .eventDescription = "Break the eggs! Only strong hits will\nbreak them. DPad down = free practice.",
-    .eventTutorial = "TvLC",
     .eventFile = 0,
     .isChooseCPU = false,
     .isSelectStage = true,
@@ -1002,7 +982,6 @@ static EventMatchData Multishine_MatchData = {
 EventDesc Multishine = {
     .eventName = "Shined Blind\n",
     .eventDescription = "How many shines can you\nperform in 10 seconds?",
-    .eventTutorial = "TvLC",
     .eventFile = 0,
     .isChooseCPU = false,
     .isSelectStage = false,
@@ -1049,7 +1028,6 @@ static EventMatchData Reaction_MatchData = {
 EventDesc Reaction = {
     .eventName = "Reaction Test\n",
     .eventDescription = "Test your reaction time by pressing\nany button when you see/hear Fox shine!",
-    .eventTutorial = "TvLC",
     .eventFile = 0,
     .isChooseCPU = false,
     .isSelectStage = false,
@@ -1096,7 +1074,6 @@ static EventMatchData Ledgestall_MatchData = {
 EventDesc Ledgestall = {
     .eventName = "Under Fire\n",
     .eventDescription = "Ledgestall to remain\ninvincible while the lava rises!\n",
-    .eventTutorial = "TvLC",
     .eventFile = 0,
     .isChooseCPU = false,
     .isSelectStage = false,
@@ -1295,7 +1272,7 @@ void EventInit(int page, int eventID, MatchInit *matchData)
     s32 cpuKind;
     s32 cpuCostume;
     // If isChooseCPU is true, use the selected CPU
-    if (event->isChooseCPU == true)
+    if (event->isChooseCPU)
     {
         cpuKind = preload->fighters[1].kind;
         cpuCostume = preload->fighters[1].costume;
@@ -4486,11 +4463,6 @@ char *GetEventDescription(int page, int event)
 {
     EventDesc *thisEvent = GetEventDesc(page, event);
     return (thisEvent->eventDescription);
-}
-char *GetEventTut(int page, int event)
-{
-    EventDesc *thisEvent = GetEventDesc(page, event);
-    return (thisEvent->eventTutorial);
 }
 char *GetPageName(int page)
 {

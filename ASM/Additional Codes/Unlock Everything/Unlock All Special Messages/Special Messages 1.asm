@@ -1,4 +1,4 @@
-#To be inserted at 8015d968
-.include "../../../Globals.s"
+    # To be inserted at 8015d968
+    .include "../../../Globals.s"
 
-li  r3,1
+    li r3, 1

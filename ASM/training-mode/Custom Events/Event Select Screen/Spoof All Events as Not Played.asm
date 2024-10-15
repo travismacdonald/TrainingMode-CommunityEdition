@@ -1,3 +1,3 @@
-#To be inserted at 8024d288
+# To be inserted at 8024d288
 
-li  r3,0
+    li r3, 0

@@ -1,4 +1,4 @@
-#To be inserted at 80394eac
-.include "../../../Globals.s"
+    # To be inserted at 80394eac
+    .include "../../../Globals.s"
 
-nop
+    nop
