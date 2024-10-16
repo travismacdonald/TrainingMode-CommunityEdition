@@ -239,6 +239,12 @@ struct CollDataStage
 };
 
 /*** Functions ***/
+void Shield_CreateBubble(GOBJ *ft, ShieldDesc *desc, void *(on_hit)(GOBJ *fighter));
+void Shield_HitShield(GOBJ *ft);
+void GuardReflectInitIDK(GOBJ *ft);
+void GuardOnInitIDK(GOBJ *ft);
+void Animation_GuardAgain(GOBJ *ft);
+
 void Coll_ECBCurrToPrev(CollData *coll_data);
 void Coll_InitECB(CollData *coll_data);
 int ECB_CollGround_PassLedge(CollData *ecb, ECBBones *bones); // returns is touching ground bool

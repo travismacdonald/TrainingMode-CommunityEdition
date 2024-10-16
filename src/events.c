@@ -1480,11 +1480,11 @@ void TM_CreateConsole()
     GObj_AddUserData(gobj, 4, HSD_Free, data);
     GObj_AddProc(gobj, TM_ConsoleThink, 0);
 
-    DevText *text = DevelopText_CreateDataTable(13, 0, 0, 28, 8, HSD_MemAlloc(0x1000));
+    DevText *text = DevelopText_CreateDataTable(13, 0, 0, 32, 32, HSD_MemAlloc(0x1000));
     DevelopText_Activate(0, text);
     text->show_cursor = 0;
     data[0] = text;
-    GXColor color = {21, 20, 59, 135};
+    GXColor color = {21, 20, 59, 80};
     DevelopText_StoreBGColor(text, &color);
     DevelopText_StoreTextScale(text, 10, 12);
     stc_event_vars.db_console_text = text;
@@ -1695,7 +1695,6 @@ int Savestate_Save(Savestate *savestate)
                         // convert hitbox pointers
                         for (int k = 0; k < (sizeof(fighter_data->hitbox) / sizeof(ftHit)); k++)
                         {
-
                             ft_data->hitbox[k].bone = BoneToID(fighter_data, ft_data->hitbox[k].bone);
                             for (int l = 0; l < (sizeof(fighter_data->hitbox->victims) / sizeof(HitVictim)); l++) // pointers to hitbox victims
                             {
@@ -1753,7 +1752,6 @@ int Savestate_Save(Savestate *savestate)
 #if TM_DEBUG > 0
     int save_post_tick = OSGetTick();
     int save_time = OSTicksToMilliseconds(save_post_tick - save_pre_tick);
-    OSReport("processed save in %dms\n", save_time);
 #endif
 
     return isSaved;
@@ -1872,6 +1870,7 @@ int Savestate_Load(Savestate *savestate)
                     fighter_data->grab.grab_victim = IDToGOBJ(fighter_data->grab.grab_victim);
 
                     // convert pointers
+
                     for (int k = 0; k < (sizeof(fighter_data->hitbox) / sizeof(ftHit)); k++)
                     {
                         fighter_data->hitbox[k].bone = IDToBone(fighter_data, ft_data->hitbox[k].bone);
@@ -1988,20 +1987,12 @@ int Savestate_Load(Savestate *savestate)
                     // if shield is up, update shield
                     if ((fighter_data->state >= ASID_GUARDON) && (fighter_data->state <= ASID_GUARDREFLECT))
                     {
-                        // get gfx ID
-                        int shieldGFX;
-                        static u16 ShieldGFXLookup[] = {1047, 1048, -1, 1049, -1}; // covers GUARDON -> GUARDREFLECT
-                        shieldGFX = ShieldGFXLookup[fighter_data->state - ASID_GUARDON];
+                        fighter_data->shield_bubble.bone = 0;
+                        fighter_data->reflect_bubble.bone = 0;
+                        fighter_data->absorb_bubble.bone = 0;
 
-                        // create GFX
-                        int color_index = Fighter_GetShieldColorIndex(fighter_data->ply);
-                        GXColor *shieldColors = R13_PTR(-0x5194);
-                        GXColor *shieldColor = &shieldColors[color_index];
-                        JOBJ *shieldBone = fighter_data->bones[fighter_data->ftData->modelLookup[0x11]].joint;
-                        int shieldColorParam = (shieldColor->r << 16) | (shieldColor->b << 8) | (shieldColor->g);
-                        Effect_SpawnSync(shieldGFX, fighter, shieldBone, shieldColorParam);
-
-                        Fighter_UpdateShieldGFX(fighter, 1);
+                        GuardOnInitIDK(fighter);
+                        Animation_GuardAgain(fighter);
                     }
 
                     // process dynamics
@@ -2020,7 +2011,6 @@ int Savestate_Load(Savestate *savestate)
 #if TM_DEBUG > 0
                     int dyn_post_tick = OSGetTick();
                     int dyn_time = OSTicksToMilliseconds(dyn_post_tick - dyn_pre_tick);
-                    OSReport("processed dyn %d times in %dms\n", dyn_proc_num, dyn_time);
 #endif
 
                     // remove all items belonging to this fighter
@@ -2182,7 +2172,6 @@ int Savestate_Load(Savestate *savestate)
 #if TM_DEBUG > 0
     int load_post_tick = OSGetTick();
     int load_time = OSTicksToMilliseconds(load_post_tick - load_pre_tick);
-    OSReport("processed load in %dms\n", load_time);
     sizeof(FtState);
 #endif
 
@@ -2275,13 +2264,9 @@ int BoneToID(FighterData *fighter_data, JOBJ *bone)
         }
     }
 
-#if TM_DEBUG > 0
     // no bone found
     if (bone_id == -1)
-    {
-        assert("no bone found");
-    }
-#endif
+        OSReport("no bone found %x\n", bone);
 
     return bone_id;
 }

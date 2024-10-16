@@ -458,3 +458,8 @@
 802886c4:Barrel_EnterBreak
 8018f674:Pad_GetRapidHeld
 8022ba1c:MainMenu_CamRotateThink
+8007b1b8:Shield_CreateBubble
+80092e50:Shield_HitShield
+80093a50:GuardReflectInitIDK
+800923b4:GuardOnInitIDK
+80092a24:Animation_GuardAgain
