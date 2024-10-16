@@ -101,7 +101,6 @@ void Read_Recordings()
                                 strncmp("TMREC", card_stat.fileName, 5) != 0)
                             continue;
 
-                        OSReport("found recording file %s with size %d\n", card_stat.fileName, card_stat.length);
                         import_data.file_info[import_data.file_num].file_size = card_stat.length;                                      // save file size
                         import_data.file_info[import_data.file_num].file_no = i;                                                       // save file no
                         memcpy(import_data.file_info[import_data.file_num].file_name, card_stat.fileName, sizeof(card_stat.fileName)); // save file name
@@ -346,7 +345,6 @@ void Menu_Think(GOBJ *menu_gobj)
     case (IMP_SELFILE):
     {
         Menu_SelFile_Think(menu_gobj);
-        //OSReport("thinking");
         break;
     }
     case (IMP_CONFIRM):
@@ -488,8 +486,6 @@ void Menu_SelCard_Exit(GOBJ *menu_gobj)
 // Select File
 void Menu_SelFile_Init(GOBJ *menu_gobj)
 {
-    OSReport("selfile init");
-
     Read_Recordings();
     if (import_data.file_num == 0)
     {
@@ -624,7 +620,7 @@ void Menu_SelFile_Think(GOBJ *menu_gobj)
     }
     else if (import_data.cursor >= IMPORT_FILESPERPAGE ||
         (import_data.page == total_pages - 1 &&
-        import_data.cursor >= import_data.file_num % IMPORT_FILESPERPAGE))
+        import_data.cursor >= ((import_data.file_num-1) % IMPORT_FILESPERPAGE)+1))
     {
         import_data.cursor = 0;
         import_data.page++;
@@ -632,10 +628,8 @@ void Menu_SelFile_Think(GOBJ *menu_gobj)
     if (import_data.page == 255)
     {
         import_data.page = total_pages - 1;
-        if (import_data.cursor >= import_data.file_num % IMPORT_FILESPERPAGE)
-        {
-            import_data.cursor = import_data.file_num % IMPORT_FILESPERPAGE - 1;
-        }
+        if (import_data.cursor >= ((import_data.file_num-1) % IMPORT_FILESPERPAGE)+1)
+            import_data.cursor = ((import_data.file_num-1) % IMPORT_FILESPERPAGE)+1;
     }
     else if (import_data.page >= total_pages)
     {
@@ -760,7 +754,6 @@ void Menu_SelFile_Exit(GOBJ *menu_gobj)
 }
 int Menu_SelFile_LoadPage(GOBJ *menu_gobj, int page)
 {
-
     int result = 0;
     int cursor = import_data.cursor; // start at cursor
     int page_total = (import_data.file_num + IMPORT_FILESPERPAGE - 1) / IMPORT_FILESPERPAGE;
@@ -772,7 +765,7 @@ int Menu_SelFile_LoadPage(GOBJ *menu_gobj, int page)
     // determine files on page
     int files_on_page = IMPORT_FILESPERPAGE;
     if (page == page_total - 1)
-        files_on_page = import_data.file_num % IMPORT_FILESPERPAGE;
+        files_on_page = ((import_data.file_num-1) % IMPORT_FILESPERPAGE) + 1;
 
     // cancel card read if in progress
     int memcard_status = Memcard_CheckStatus();
@@ -881,31 +874,24 @@ int Menu_SelFile_LoadPage(GOBJ *menu_gobj, int page)
 
 int Menu_SelFile_DeleteFile(GOBJ *menu_gobj, int file_index)
 {
-
     int result = 0;
     int slot = import_data.memcard_slot;
 
     // mount card
-    OSReport("delete");
     s32 memSize, sectorSize;
     if (CARDProbeEx(slot, &memSize, &sectorSize) == CARD_RESULT_READY)
     {
-        OSReport("probe");
         // mount card
         stc_memcard_work->is_done = 0;
         if (CARDMountAsync(slot, stc_memcard_work->work_area, 0, Memcard_RemovedCallback) == CARD_RESULT_READY)
         {
-            OSReport("mount async");
             Memcard_Wait();
-            OSReport("mount waited");
 
             // check card
             stc_memcard_work->is_done = 0;
             if (CARDCheckAsync(slot, Memcard_RemovedCallback) == CARD_RESULT_READY)
             {
-                OSReport("check async");
                 Memcard_Wait();
-                OSReport("check waited");
 
                 // get file info
                 char *file_name = import_data.file_info[file_index].file_name;
@@ -915,25 +901,19 @@ int Menu_SelFile_DeleteFile(GOBJ *menu_gobj, int file_index)
                 // open card (get file info)
                 if (CARDOpen(slot, file_name, &card_file_info) == CARD_RESULT_READY)
                 {
-                OSReport("open");
-
                     // delete this file
                     stc_memcard_work->is_done = 0;
                     if (CARDDeleteAsync(slot, file_name, Memcard_RemovedCallback) == CARD_RESULT_READY)
                     {
-                        OSReport("delete async");
                         Memcard_Wait();
                         result = 1;
-                        OSReport("delete waited");
                     }
 
                     CARDClose(&card_file_info);
-                    OSReport("close");
                 }
             }
             // unmount
             CARDUnmount(slot);
-            OSReport("unmount");
             stc_memcard_work->is_done = 0;
         }
     }
@@ -1198,12 +1178,10 @@ void Menu_Confirm_Think(GOBJ *menu_gobj)
             // delete selected recording
             int this_file_index = (import_data.page * IMPORT_FILESPERPAGE) + import_data.cursor;
             Menu_SelFile_DeleteFile(menu_gobj, this_file_index);
-            OSReport("done delete");
 
             // close dialog
             Menu_Confirm_Exit(menu_gobj);
 
-            OSReport("done close dialog");
             // reload selfile
             Menu_SelFile_Exit(menu_gobj); // close select file
             Menu_SelFile_Init(menu_gobj); // open select file
