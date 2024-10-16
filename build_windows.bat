@@ -68,9 +68,13 @@ copy "dats\wavedash.dat" "build\wavedash.dat"
 
 echo BUILD ASM FILES --------------------------------------------------------
 
+del "Additional ISO Files\codes.gct"
 cd "Build TM Codeset"
 echo gecko.exe build
-gecko.exe build || (
+
+REM gecko always returns success, so we check that the file exists after building as a replacement
+gecko.exe build
+if not exist "Additional ISO Files\codes.gct" (
     echo ERROR: gecko.exe build failed
     cd ..
     goto cleanup
