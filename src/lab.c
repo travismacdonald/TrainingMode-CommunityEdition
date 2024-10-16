@@ -5,9 +5,6 @@
 
 #define LOW_ANALOG_TRIGGER_THRESHOLD 24
 
-static u32 lz77_compress(u8 *uncompressed_text, u32 uncompressed_size, u8 *compressed_text, u8 pointer_length_width);
-static u32 lz77_decompress(u8 *compressed_text, u8 *uncompressed_text);
-
 // Static Variables
 static char nullString[] = " ";
 static DIDraw didraws[6];
@@ -28,6 +25,12 @@ static char stc_save_name[32] = "Training Mode Input Recording   ";
 static DevText *stc_devtext;
 static u8 stc_hmn_controller;             // making this static so importing recording doesnt overwrite
 static u8 stc_cpu_controller;             // making this static so importing recording doesnt overwrite
+static u8 stc_null_controller;            // making this static so importing recording doesnt overwrite
+
+// Aitch: not really a better way to do this that I can think of.
+// Feel free to change if you find a way to implement playback takeover without a global.
+static int playback_cancelled = false;
+
 static u8 stc_tdi_val_num;                // number of custom tdi values set
 static s8 stc_tdi_vals[TDI_HITNUM][2][2]; // contains the custom tdi values
 
@@ -1989,7 +1992,7 @@ int Update_CheckPause()
     int isChange = 0;
 
     // get their pad
-    int controller = Fighter_GetControllerPort(0);
+    int controller = Fighter_GetControllerPort(stc_hmn_controller);
     HSD_Pad *pad = PadGet(controller, PADGET_MASTER);
 
     // if event menu not showing, develop mode + pause input, toggle frame advance
@@ -3316,7 +3319,7 @@ void Record_Think(GOBJ *rec_gobj)
             rec_data.restore_timer++;
 
         if (rec_data.restore_timer >= AUTORESTORE_DELAY) {
-            event_vars->Savestate_Load(rec_state);
+            Record_LoadSavestate();
             event_vars->game_timer = rec_state->frame;
             rec_data.restore_timer = 0;
 
@@ -3403,42 +3406,46 @@ void Record_Update(int ply, RecInputData *input_data, int rec_mode)
         }
         case (RECMODE_CPU_PLAYBACK):
         {
+            // ensure we haven't taken over playback
+            if (playback_cancelled && ply == 0)
+                return;
+
             // ensure we have an input for this frame
-            if ((curr_frame >= rec_start) && ((curr_frame - rec_start) <= (input_data->num)))
-            {
-                int held = 0;
-                RecInputs *inputs = &input_data->inputs[curr_frame - 1];
-                // read inputs
-                held |= inputs->btn_a << 8;
-                held |= inputs->btn_b << 9;
-                held |= inputs->btn_x << 10;
-                held |= inputs->btn_y << 11;
-                held |= inputs->btn_L << 6;
-                held |= inputs->btn_R << 5;
-                held |= inputs->btn_Z << 4;
-                held |= inputs->btn_dpadup << 3;
-                pad->held = held;
+            if (curr_frame < rec_start || (curr_frame - rec_start) > (input_data->num))
+                return;
 
-                // stick signed bytes
-                pad->stickX = inputs->stickX;
-                pad->stickY = inputs->stickY;
-                pad->substickX = inputs->substickX;
-                pad->substickY = inputs->substickY;
+            int held = 0;
+            RecInputs *inputs = &input_data->inputs[curr_frame - 1];
+            // read inputs
+            held |= inputs->btn_a << 8;
+            held |= inputs->btn_b << 9;
+            held |= inputs->btn_x << 10;
+            held |= inputs->btn_y << 11;
+            held |= inputs->btn_L << 6;
+            held |= inputs->btn_R << 5;
+            held |= inputs->btn_Z << 4;
+            held |= inputs->btn_dpadup << 3;
+            pad->held = held;
 
-                // stick floats
-                pad->fstickX = ((float)inputs->stickX / 80);
-                pad->fstickY = ((float)inputs->stickY / 80);
-                pad->fsubstickX = ((float)inputs->substickX / 80);
-                pad->fsubstickY = ((float)inputs->substickY / 80);
+            // stick signed bytes
+            pad->stickX = inputs->stickX;
+            pad->stickY = inputs->stickY;
+            pad->substickX = inputs->substickX;
+            pad->substickY = inputs->substickY;
 
-                // trigger byte
-                pad->triggerRight = inputs->trigger;
-                pad->triggerLeft = 0;
+            // stick floats
+            pad->fstickX = ((float)inputs->stickX / 80);
+            pad->fstickY = ((float)inputs->stickY / 80);
+            pad->fsubstickX = ((float)inputs->substickX / 80);
+            pad->fsubstickY = ((float)inputs->substickY / 80);
 
-                // trigger float
-                pad->ftriggerRight = ((float)inputs->trigger / 140);
-                pad->ftriggerLeft = 0;
-            }
+            // trigger byte
+            pad->triggerRight = inputs->trigger;
+            pad->triggerLeft = 0;
+
+            // trigger float
+            pad->ftriggerRight = ((float)inputs->trigger / 140);
+            pad->ftriggerLeft = 0;
             break;
         }
         }
@@ -3476,8 +3483,7 @@ void Record_DeleteState(GOBJ *menu_gobj)
 }
 void Record_RestoreState(GOBJ *menu_gobj)
 {
-    event_vars->Savestate_Load(rec_state);
-
+    Record_LoadSavestate();
     return;
 }
 void Record_ChangeHMNSlot(GOBJ *menu_gobj, int value)
@@ -3500,7 +3506,7 @@ void Record_ChangeHMNSlot(GOBJ *menu_gobj, int value)
     }
 
     // reload save
-    event_vars->Savestate_Load(rec_state);
+    Record_LoadSavestate();
 
     return;
 }
@@ -3524,7 +3530,7 @@ void Record_ChangeCPUSlot(GOBJ *menu_gobj, int value)
     }
 
     // reload save
-    event_vars->Savestate_Load(rec_state);
+    Record_LoadSavestate();
 
     return;
 }
@@ -3542,9 +3548,7 @@ void Record_ChangeHMNMode(GOBJ *menu_gobj, int value)
 
     // upon changing to playback
     if (value == 2)
-    {
-        event_vars->Savestate_Load(rec_state);
-    }
+        Record_LoadSavestate();
 
     // disable loop options if recording is in use
     if ((LabOptions_Record[OPTREC_HMNMODE].option_val != 1) && (LabOptions_Record[OPTREC_CPUMODE].option_val != 2))
@@ -3575,9 +3579,7 @@ void Record_ChangeCPUMode(GOBJ *menu_gobj, int value)
 
     // upon toggling playback
     if (value == 3)
-    {
-        event_vars->Savestate_Load(rec_state);
-    }
+        Record_LoadSavestate();
 
     // disable loop options if recording is in use
     if ((LabOptions_Record[OPTREC_HMNMODE].option_val != 1) && (LabOptions_Record[OPTREC_CPUMODE].option_val != 2))
@@ -3830,7 +3832,7 @@ void Record_MemcardLoad(int slot, int file_no)
             rec_state->ft_state[1].player_block.controller = stc_cpu_controller;
 
             // load state
-            event_vars->Savestate_Load(rec_state);
+            Record_LoadSavestate();
 
             // copy recordings
             for (int i = 0; i < REC_SLOTS; i++)
@@ -3893,6 +3895,11 @@ void Record_StartExport(GOBJ *menu_gobj)
 
     return;
 }
+void Record_LoadSavestate() {
+    event_vars->Savestate_Load(rec_state);
+    playback_cancelled = false;
+}
+
 void Snap_CObjThink(GOBJ *gobj)
 {
     if (snap_status == 1)
@@ -5172,12 +5179,10 @@ void Event_Init(GOBJ *gobj)
     hsd_update->checkPause = Update_CheckPause;
     hsd_update->checkAdvance = Update_CheckAdvance;
 
-    // determine cpu controller
+    // determine controllers
     stc_hmn_controller = Fighter_GetControllerPort(hmn_data->ply);
-    u8 cpu_controller = 1;
-    if (stc_hmn_controller != 0)
-        cpu_controller = 0;
-    stc_cpu_controller = cpu_controller;
+    stc_cpu_controller = (stc_hmn_controller+1) % 4;
+    stc_null_controller = (stc_cpu_controller+1) % 4;
 
     // set CPU AI to no_act 15
     cpu_data->cpu.ai = 0;
@@ -5439,39 +5444,33 @@ void Event_Think(GOBJ *event)
         }
     }
 
-    // Adjust control of fighters
-    switch (LabOptions_Record[OPTREC_CPUMODE].option_val)
+    int hmn_mode = LabOptions_Record[OPTREC_HMNMODE].option_val;
+    int cpu_mode = LabOptions_Record[OPTREC_CPUMODE].option_val;
+
+    int cpu_control = false;
+
+    switch (cpu_mode)
     {
     case (RECMODE_CPU_OFF):
     {
-        // human is human
-        hmn_data->player_controller_number = stc_hmn_controller;
-
-        // cpu is cpu
         Fighter_SetSlotType(cpu_data->ply, 1);
         cpu_data->player_controller_number = stc_cpu_controller;
+
+        LCancel_CPUThink(event, hmn, cpu);
 
         break;
     }
     case (RECMODE_CPU_PLAYBACK):
     {
-
-        // human is human
-        hmn_data->player_controller_number = stc_hmn_controller;
-
-        // cpu is hmn
         Fighter_SetSlotType(cpu_data->ply, 0);
         cpu_data->player_controller_number = stc_cpu_controller;
-
         break;
     }
     case (RECMODE_CPU_CONTROL):
     case (RECMODE_CPU_RECORD):
     {
-        // human is human
-        hmn_data->player_controller_number = stc_cpu_controller;
+        cpu_control = true;
 
-        // cpu is hmn
         Fighter_SetSlotType(cpu_data->ply, 0);
         cpu_data->player_controller_number = stc_hmn_controller;
 
@@ -5479,9 +5478,24 @@ void Event_Think(GOBJ *event)
     }
     }
 
-    // CPU Think if not using recording
-    if ((LabOptions_Record[OPTREC_CPUMODE].option_val == 0))
-        LCancel_CPUThink(event, hmn, cpu);
+    if (!cpu_control) {
+        HSD_Pad *hmn_pad = PadGet(stc_hmn_controller, PADGET_MASTER);
+        int sticks = hmn_pad->stickX | hmn_pad->stickY | hmn_pad->substickX | hmn_pad->substickY;
+        int triggers = hmn_pad->triggerLeft | hmn_pad->triggerRight;
+        int buttons = hmn_pad->held & (HSD_BUTTON_A | HSD_BUTTON_B | HSD_BUTTON_X | HSD_BUTTON_Y | 
+                HSD_BUTTON_DPAD_UP | HSD_TRIGGER_L | HSD_TRIGGER_R | HSD_TRIGGER_Z);
+
+        if (hmn_mode == RECMODE_HMN_PLAYBACK && (buttons | triggers | sticks)) {
+            playback_cancelled = true;
+        }
+
+        if (playback_cancelled || hmn_mode != RECMODE_HMN_PLAYBACK)
+            hmn_data->player_controller_number = stc_hmn_controller;
+        else
+            hmn_data->player_controller_number = stc_null_controller;
+    } else {
+        hmn_data->player_controller_number = stc_null_controller;
+    }
 
     return;
 }
@@ -5635,4 +5649,3 @@ u32 lz77_decompress(u8 *compressed_text, u8 *uncompressed_text)
 
     return coding_pos;
 }
-
