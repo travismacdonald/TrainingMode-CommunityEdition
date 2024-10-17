@@ -2603,6 +2603,7 @@ void Update_Camera()
 
     return;
 }
+
 void Lab_SelectCustomTDI(GOBJ *menu_gobj)
 {
     MenuData *menu_data = menu_gobj->userdata;
@@ -5146,6 +5147,36 @@ int Export_Compress(u8 *dest, u8 *source, u32 size)
     return compress_size;
 }
 
+// Think Function that runs after the character's think functions.
+// Needed to prevent color overlays from being overwritten
+void Event_PostThink(GOBJ *gobj)
+{
+    GOBJ *hmn = Fighter_GetGObj(0);
+    FighterData *hmn_data = hmn->userdata;
+
+    int set_overlay = false;
+    GXColor overlay_colour;
+
+    for (int i = 0; i < OVERLAY_COUNT; ++i)
+    {
+        int mode_idx = LabOptions_Overlays[i].option_val;
+        if (mode_idx == 0) continue;
+
+        int asid_group = LabValues_OverlayASIDGroups[i];
+        if (CPUAction_CheckASID(hmn, asid_group))
+        {
+            set_overlay = true;
+            overlay_colour = LabValues_OverlayColours[mode_idx];
+            break;
+        }
+    }
+
+    if (set_overlay) {
+        hmn_data->color[1].hex = overlay_colour;
+        hmn_data->color[1].color_enable = 1;
+    }
+}
+
 // Init Function
 void Event_Init(GOBJ *gobj)
 {
@@ -5155,6 +5186,7 @@ void Event_Init(GOBJ *gobj)
     FighterData *hmn_data = hmn->userdata;
     GOBJ *cpu = Fighter_GetGObj(1);
     FighterData *cpu_data = cpu->userdata;
+    GObj_AddProc(gobj, Event_PostThink, 20);
 
     // theres got to be a better way to do this...
     event_vars = *event_vars_ptr;
@@ -5166,7 +5198,7 @@ void Event_Init(GOBJ *gobj)
     InfoDisplay_Init();
 
     // Init DIDraw
-    DIDraw_Init();
+    //DIDraw_Init();
 
     // Init Recording
     Record_Init();
@@ -5204,7 +5236,7 @@ void Event_Init(GOBJ *gobj)
 void Event_Update()
 {
     // update DI draw
-    DIDraw_Update();
+    //DIDraw_Update();
 
     // update info display
     InfoDisplay_Think(infodisp_gobj);

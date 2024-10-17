@@ -6,6 +6,7 @@ static EventOption LabOptions_InfoDisplay[];
 static EventOption LabOptions_Tech[];
 
 static EventMenu LabMenu_General;
+static EventMenu LabMenu_Overlays;
 static EventMenu LabMenu_InfoDisplay;
 static EventMenu LabMenu_CPU;
 static EventMenu LabMenu_Record;
@@ -1560,6 +1561,12 @@ static EventOption LabOptions_General[] = {
         .option_values = LabOptions_CamMode,                                                                                                // pointer to an array of strings
         .onOptionChange = Lab_ChangeCamMode,
     },
+    {
+        .option_kind = OPTKIND_MENU,                             // the type of option this is; menu, string list, integer list, etc
+        .menu = &LabMenu_Overlays,                               // pointer to the menu that pressing A opens
+        .option_name = {"Color Overlays"},                       // pointer to a string
+        .desc = "Set up color indicators for\n. action states.", // string describing what this option does
+    },
     // hud
     {
         .option_kind = OPTKIND_STRING,                          // the type of option this is; menu, string list, integer list, etc
@@ -1614,6 +1621,8 @@ static EventMenu LabMenu_General = {
     .options = &LabOptions_General,                                 // pointer to all of this menu's options
     .prev = 0,                                                      // pointer to previous menu, used at runtime
 };
+
+
 // Info Display
 static char **LabValues_InfoDisplay[] = {"None", "Position", "State Name", "State Frame", "Velocity - Self", "Velocity - KB", "Velocity - Total", "Engine LStick", "System LStick", "Engine CStick", "System CStick", "Engine Trigger", "System Trigger", "Ledgegrab Timer", "Intangibility Timer", "Hitlag", "Hitstun", "Shield Health", "Shield Stun", "Grip Strength", "ECB Lock", "ECB Bottom", "Jumps", "Walljumps", "Jab Counter", "Line Info", "Blastzone Left/Right", "Blastzone Up/Down"};
 static char **LabValues_InfoPresets[] = {"None", "Custom", "Ledge", "Damage"};
@@ -2248,6 +2257,49 @@ static EventMenu LabMenu_Record = {
     .prev = 0,                                                     // pointer to previous menu, used at runtime
 };
 
+enum overlay_type
+{
+    OVERLAY_ACTIONABLE_GROUND,
+    OVERLAY_ACTIONABLE_AIR,
+
+    OVERLAY_COUNT,
+};
+
+static char *LabValues_OverlayASIDGroups[OVERLAY_COUNT] = {
+    ASID_ACTIONABLEGROUND,
+    ASID_ACTIONABLEAIR,
+};
+
+#define OVERLAY_COLOUR_COUNT 4
+static char *LabValues_OverlayNames[OVERLAY_COLOUR_COUNT] = { "None", "Red", "Green", "Blue" };
+static GXColor LabValues_OverlayColours[OVERLAY_COLOUR_COUNT] = {
+    { 0, 0, 0, 0 },
+    { 255, 0, 0, 255 },
+    { 0, 255, 0, 255 },
+    { 0, 0, 255, 255 }
+};
+
+static EventOption LabOptions_Overlays[OVERLAY_COUNT] = {
+    {
+        .option_kind = OPTKIND_STRING,                               // the type of option this is; menu, string list, integer list, etc
+        .value_num = OVERLAY_COLOUR_COUNT,                           // number of values for this option
+        .option_name = "Actionable on Ground",                       // pointer to a string
+        .desc = "",                                                  // string describing what this option does
+        .option_values = LabValues_OverlayNames,                     // pointer to an array of strings
+    },
+    {
+        .option_kind = OPTKIND_STRING,                               // the type of option this is; menu, string list, integer list, etc
+        .value_num = OVERLAY_COLOUR_COUNT,                           // number of values for this option
+        .option_name = "Actionable in Air",                          // pointer to a string
+        .desc = "",                                                  // string describing what this option does
+        .option_values = LabValues_OverlayNames,                     // pointer to an array of strings
+    },
+};
+static EventMenu LabMenu_Overlays = {
+    .name = "Overlays",                                              // the name of this menu
+    .option_num = sizeof(LabOptions_Overlays) / sizeof(EventOption), // number of options this menu contains
+    .options = &LabOptions_Overlays,                                 // pointer to all of this menu's options
+};
 
 u32 lz77_compress(u8 *uncompressed_text, u32 uncompressed_size, u8 *compressed_text, u8 pointer_length_width);
 u32 lz77_decompress(u8 *compressed_text, u8 *uncompressed_text);
