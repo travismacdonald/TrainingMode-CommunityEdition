@@ -501,12 +501,12 @@ void InfoDisplay_Think(GOBJ *gobj)
                 {
                     switch (value)
                     {
-                    case (INFDISPROW_POS):
+                    case (INFDISP_POS):
                     {
                         Text_SetText(text, i, "Pos: (%+.3f , %+.3f)", fighter_data->phys.pos.X, fighter_data->phys.pos.Y);
                         break;
                     }
-                    case (INFDISPROW_STATE):
+                    case (INFDISP_STATE):
                     {
                         if (fighter_data->anim_id != -1)
                         {
@@ -549,7 +549,7 @@ void InfoDisplay_Think(GOBJ *gobj)
                             Text_SetText(text, i, "State: %s", "Unknown");
                         break;
                     }
-                    case (INFDISPROW_FRAME):
+                    case (INFDISP_FRAME):
                     {
                         float *animStruct = fighter_data->anim_curr_flags_ptr;
                         int frameCurr = 0;
@@ -569,60 +569,60 @@ void InfoDisplay_Think(GOBJ *gobj)
                         Text_SetText(text, i, "State Frame: %d/%d", frameCurr, frameTotal);
                         break;
                     }
-                    case (INFDISPROW_SELFVEL):
+                    case (INFDISP_SELFVEL):
                     {
                         Text_SetText(text, i, "SelfVel: (%+.3f , %+.3f)", fighter_data->phys.self_vel.X, fighter_data->phys.self_vel.Y);
                         break;
                     }
-                    case (INFDISPROW_KBVEL):
+                    case (INFDISP_KBVEL):
                     {
                         Text_SetText(text, i, "KBVel: (%+.3f , %+.3f)", fighter_data->phys.kb_vel.X, fighter_data->phys.kb_vel.Y);
                         break;
                     }
-                    case (INFDISPROW_TOTALVEL):
+                    case (INFDISP_TOTALVEL):
                     {
                         Text_SetText(text, i, "TotalVel: (%+.3f , %+.3f)", fighter_data->phys.self_vel.X + fighter_data->phys.kb_vel.X, fighter_data->phys.self_vel.Y + fighter_data->phys.kb_vel.Y);
                         break;
                     }
-                    case (INFDISPROW_ENGLSTICK):
+                    case (INFDISP_ENGLSTICK):
                     {
                         Text_SetText(text, i, "LStick:      (%+.4f , %+.4f)", fighter_data->input.lstick_x, fighter_data->input.lstick_y);
                         break;
                     }
-                    case (INFDISPROW_SYSLSTICK):
+                    case (INFDISP_SYSLSTICK):
                     {
                         HSD_Pad *pad = PadGet(ply, PADGET_MASTER);
                         Text_SetText(text, i, "LStick Sys: (%+.4f , %+.4f)", pad->fstickX, pad->fstickY);
                         break;
                     }
-                    case (INFDISPROW_ENGCSTICK):
+                    case (INFDISP_ENGCSTICK):
                     {
                         Text_SetText(text, i, "CStick:     (%+.4f , %+.4f)", fighter_data->input.cstick_x, fighter_data->input.cstick_y);
                         break;
                     }
-                    case (INFDISPROW_SYSCSTICK):
+                    case (INFDISP_SYSCSTICK):
                     {
                         HSD_Pad *pad = PadGet(ply, PADGET_MASTER);
                         Text_SetText(text, i, "CStick Sys: (%+.4f , %+.4f)", pad->fsubstickX, pad->fsubstickY);
                         break;
                     }
-                    case (INFDISPROW_ENGTRIGGER):
+                    case (INFDISP_ENGTRIGGER):
                     {
                         Text_SetText(text, i, "Trigger:     (%+.3f)", fighter_data->input.trigger);
                         break;
                     }
-                    case (INFDISPROW_SYSTRIGGER):
+                    case (INFDISP_SYSTRIGGER):
                     {
                         HSD_Pad *pad = PadGet(ply, PADGET_MASTER);
                         Text_SetText(text, i, "Trigger Sys: (%+.3f , %+.3f)", pad->ftriggerLeft, pad->ftriggerRight);
                         break;
                     }
-                    case (INFDISPROW_LEDGECOOLDOWN):
+                    case (INFDISP_LEDGECOOLDOWN):
                     {
                         Text_SetText(text, i, "Ledgegrab Timer: %d", fighter_data->ledge_cooldown);
                         break;
                     }
-                    case (INFDISPROW_INTANGREMAIN):
+                    case (INFDISP_INTANGREMAIN):
                     {
                         int intang = fighter_data->hurtstatus.respawn_intang_left;
                         if (fighter_data->hurtstatus.ledge_intang_left > fighter_data->hurtstatus.respawn_intang_left)
@@ -631,12 +631,12 @@ void InfoDisplay_Think(GOBJ *gobj)
                         Text_SetText(text, i, "Intangibility Timer: %d", intang);
                         break;
                     }
-                    case (INFDISPROW_HITSTOP):
+                    case (INFDISP_HITSTOP):
                     {
                         Text_SetText(text, i, "Hitlag: %.0f", fighter_data->dmg.hitlag_frames);
                         break;
                     }
-                    case (INFDISPROW_HITSTUN):
+                    case (INFDISP_HITSTUN):
                     {
                         // get hitstun
                         float hitstun = 0;
@@ -646,12 +646,12 @@ void InfoDisplay_Think(GOBJ *gobj)
                         Text_SetText(text, i, "Hitstun: %.0f", hitstun);
                         break;
                     }
-                    case (INFDISPROW_SHIELDHEALTH):
+                    case (INFDISP_SHIELDHEALTH):
                     {
                         Text_SetText(text, i, "Shield Health: %.3f", fighter_data->shield.health);
                         break;
                     }
-                    case (INFDISPROW_SHIELDSTUN):
+                    case (INFDISP_SHIELDSTUN):
                     {
                         int stunTotal = 0;
                         int stunLeft = 0;
@@ -673,7 +673,7 @@ void InfoDisplay_Think(GOBJ *gobj)
                         Text_SetText(text, i, "Shield Stun: %d/%d", stunLeft, stunTotal);
                         break;
                     }
-                    case (INFDISPROW_GRIP):
+                    case (INFDISP_GRIP):
                     {
                         float grip = 0;
                         if (fighter_data->grab.grab_victim != 0)
@@ -686,32 +686,32 @@ void InfoDisplay_Think(GOBJ *gobj)
                         Text_SetText(text, i, "Grip Strength: %.0f", grip);
                         break;
                     }
-                    case (INFDISPROW_ECBLOCK):
+                    case (INFDISP_ECBLOCK):
                     {
                         Text_SetText(text, i, "ECB Lock: %d", fighter_data->coll_data.ecb_lock);
                         break;
                     }
-                    case (INFDISPROW_ECBBOT):
+                    case (INFDISP_ECBBOT):
                     {
                         Text_SetText(text, i, "ECB Bottom: %.3f", fighter_data->coll_data.ecbCurr_bot.Y);
                         break;
                     }
-                    case (INFDISPROW_JUMPS):
+                    case (INFDISP_JUMPS):
                     {
                         Text_SetText(text, i, "Jumps: %d/%d", fighter_data->jump.jumps_used, fighter_data->attr.max_jumps);
                         break;
                     }
-                    case (INFDISPROW_WALLJUMPS):
+                    case (INFDISP_WALLJUMPS):
                     {
                         Text_SetText(text, i, "Walljumps: %d", fighter_data->jump.walljumps_used);
                         break;
                     }
-                    case (INFDISPROW_JAB):
+                    case (INFDISP_JAB):
                     {
                         Text_SetText(text, i, "Jab Counter: IDK");
                         break;
                     }
-                    case (INFDISPROW_LINE):
+                    case (INFDISP_LINE):
                     {
                         CollData *colldata = &fighter_data->coll_data;
                         int ground = -1;
@@ -731,13 +731,13 @@ void InfoDisplay_Think(GOBJ *gobj)
                         Text_SetText(text, i, "Lines: G:%d, C:%d, L:%d, R:%d,", ground, ceil, left, right);
                         break;
                     }
-                    case (INFDISPROW_BLASTLR):
+                    case (INFDISP_BLASTLR):
                     {
                         Stage *stage = STAGE;
                         Text_SetText(text, i, "Blastzone L/R: (%+.3f,%+.3f)", stage->blastzoneLeft, stage->blastzoneRight);
                         break;
                     }
-                    case (INFDISPROW_BLASTUD):
+                    case (INFDISP_BLASTUD):
                     {
                         Stage *stage = STAGE;
                         Text_SetText(text, i, "Blastzone U/D: (%.2f,%.2f)", stage->blastzoneTop, stage->blastzoneBottom);
@@ -1850,12 +1850,12 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
             if (cpu_data->phys.air_state == 0 || (eventData->cpu_groundstate == 0)) // if am grounded or started grounded
             {
                 int grndCtr = LabOptions_CPU[OPTCPU_CTRGRND].option_val;
-                action_id = GrAcLookup[grndCtr];
+                action_id = CPUCounterActionsGround[grndCtr];
             }
             else if (cpu_data->phys.air_state == 1) // only if in the air at the time of hitstun ending
             {
                 int airCtr = LabOptions_CPU[OPTCPU_CTRAIR].option_val;
-                action_id = AirAcLookup[airCtr];
+                action_id = CPUCounterActionsAir[airCtr];
             }
         }
         else if (eventData->cpu_hitkind == HITKIND_SHIELD)
@@ -1878,7 +1878,7 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
 
             // get action to perform
             int shieldCtr = LabOptions_CPU[OPTCPU_CTRSHIELD].option_val;
-            action_id = ShieldAcLookup[shieldCtr];
+            action_id = CPUCounterActionsShield[shieldCtr];
         }
         else
         {
@@ -2569,15 +2569,13 @@ void Update_Camera()
             int held = pad->held;
             float stickX = pad->fsubstickX;
             float stickY = pad->fsubstickY;
-            float deadzone = 0.2;
 
-            if (fabs(stickX) < deadzone)
+            if (fabs(stickX) < STICK_DEADZONE)
                 stickX = 0;
-            if (fabs(stickY) < deadzone)
+            if (fabs(stickY) < STICK_DEADZONE)
                 stickY = 0;
 
-            // ensure stick exceeds deadzone
-            if ((stickX != 0) || (stickY != 0))
+            if (stickX != 0 || stickY != 0)
             {
                 COBJ *cobj = COBJ_GetMatchCamera();
 
@@ -5512,7 +5510,11 @@ void Event_Think(GOBJ *event)
 
     if (!cpu_control) {
         HSD_Pad *hmn_pad = PadGet(stc_hmn_controller, PADGET_MASTER);
-        int sticks = hmn_pad->stickX | hmn_pad->stickY | hmn_pad->substickX | hmn_pad->substickY;
+
+        int sticks = fabs(hmn_pad->fstickX) >= STICK_DEADZONE
+            || fabs(hmn_pad->fstickY) >= STICK_DEADZONE
+            || fabs(hmn_pad->fsubstickX) >= STICK_DEADZONE
+            || fabs(hmn_pad->fsubstickY) >= STICK_DEADZONE;
         int triggers = hmn_pad->triggerLeft | hmn_pad->triggerRight;
         int buttons = hmn_pad->held & (HSD_BUTTON_A | HSD_BUTTON_B | HSD_BUTTON_X | HSD_BUTTON_Y | 
                 HSD_BUTTON_DPAD_UP | HSD_TRIGGER_L | HSD_TRIGGER_R | HSD_TRIGGER_Z);
@@ -5571,7 +5573,7 @@ static void rebound_tech_chances(int menu_lookup[4], int just_changed_option) {
     }
 }
 
-float get_angle_out_of_deadzone(float angle, int lastSDIWasCardinal)
+static float get_angle_out_of_deadzone(float angle, int lastSDIWasCardinal)
 {
     // get out of deadzone if last sdi was cardinal
     if (angle > M_1DEGREE * 73.5 || angle < M_1DEGREE * 106.5 && lastSDIWasCardinal)
@@ -5594,7 +5596,7 @@ float get_angle_out_of_deadzone(float angle, int lastSDIWasCardinal)
 }
 
 // lz77 functions credited to https://github.com/andyherbert/lz1
-int x_to_the_n(int x, int n)
+static int x_to_the_n(int x, int n)
 {
     int i; /* Variable used in loop counter */
     int number = 1;
@@ -5604,7 +5606,8 @@ int x_to_the_n(int x, int n)
 
     return (number);
 }
-u32 lz77_compress(u8 *uncompressed_text, u32 uncompressed_size, u8 *compressed_text, u8 pointer_length_width)
+
+static u32 lz77_compress(u8 *uncompressed_text, u32 uncompressed_size, u8 *compressed_text, u8 pointer_length_width)
 {
     u16 pointer_pos, temp_pointer_pos, output_pointer, pointer_length, temp_pointer_length;
     u32 compressed_pointer, output_size, coding_pos, output_lookahead_ref, look_behind, look_ahead;
@@ -5655,7 +5658,7 @@ u32 lz77_compress(u8 *uncompressed_text, u32 uncompressed_size, u8 *compressed_t
     return output_size;
 }
 
-u32 lz77_decompress(u8 *compressed_text, u8 *uncompressed_text)
+static u32 lz77_decompress(u8 *compressed_text, u8 *uncompressed_text)
 {
     u8 pointer_length_width;
     u16 input_pointer, pointer_length, pointer_pos, pointer_length_mask;

@@ -1,9 +1,6 @@
 // DECLARATIONS #############################################
 
-static EventOption LabOptions_Main[];
-static EventOption LabOptions_General[];
-static EventOption LabOptions_InfoDisplay[];
-static EventOption LabOptions_Tech[];
+// todo: move structs from lab_common.h to here
 
 static EventMenu LabMenu_General;
 static EventMenu LabMenu_Overlays;
@@ -12,271 +9,27 @@ static EventMenu LabMenu_CPU;
 static EventMenu LabMenu_Record;
 static EventMenu LabMenu_Tech;
 
-static void rebound_tech_chances(int menu_lookup[4], int just_changed_option);
-static int is_tech_anim(int state);
-
 #define AUTORESTORE_DELAY 20
-
-static int tech_frame_distinguishable[27] = {
-    -1, // Mario
-     4, // Fox
-     6, // Captain Falcon
-    -1, // Donkey Kong
-    -1, // Kirby
-    -1, // Bowser
-    -1, // Link
-    -1, // Sheik
-    -1, // Ness
-     3, // Peach
-     6, // Popo (Ice Climbers)
-     6, // Nana (Ice Climbers)
-     7, // Pikachu
-    -1, // Samus
-    -1, // Yoshi
-    -1, // Jigglypuff
-    -1, // Mewtwo
-    -1, // Luigi
-     6, // Marth
-    -1, // Zelda
-    -1, // Young Link
-    -1, // Dr. Mario
-     4, // Falco
-    -1, // Pichu
-    -1, // Game & Watch
-    -1, // Ganondorf
-    -1, // Roy
-};
-
-// VARS ####################################################
-
-// General Options
-enum gen_option
-{
-    OPTGEN_FRAME,
-    OPTGEN_FRAMEBTN,
-    OPTGEN_HMNPCNT,
-    OPTGEN_HMNPCNTLOCK,
-    OPTGEN_MODEL,
-    OPTGEN_HIT,
-    OPTGEN_COLL,
-    OPTGEN_CAM,
-    OPTGEN_HUD,
-    OPTGEN_DI,
-    OPTGEN_INPUT,
-    OPTGEN_STALE,
-};
-
-// CPU Options
-enum cpu_option
-{
-    OPTCPU_PCNT,
-    OPTCPU_LOCKPCNT,
-    OPTCPU_TECHOPTIONS,
-    OPTCPU_TDI,
-    OPTCPU_CUSTOMTDI,
-    OPTCPU_SDINUM,
-    OPTCPU_SDIDIR,
-    OPTCPU_ASDI,
-    OPTCPU_SHIELD,
-    OPTCPU_SHIELDDIR,
-    OPTCPU_INTANG,
-    OPTCPU_MASH,
-    //OPTCPU_RESET,
-    OPTCPU_BEHAVE,
-    OPTCPU_CTRGRND,
-    OPTCPU_CTRAIR,
-    OPTCPU_CTRSHIELD,
-    OPTCPU_CTRFRAMES,
-    OPTCPU_CTRHITS,
-    OPTCPU_SHIELDHITS,
-};
-
-enum tech_option 
-{
-    OPTTECH_INVISIBLE,
-    OPTTECH_SOUND,
-    OPTTECH_TECH,
-    OPTTECH_TECHINPLACECHANCE,
-    OPTTECH_TECHAWAYCHANCE,
-    OPTTECH_TECHTOWARDCHANCE,
-    OPTTECH_MISSTECHCHANCE,
-    OPTTECH_GETUP,
-    OPTTECH_GETUPSTANDCHANCE,
-    OPTTECH_GETUPAWAYCHANCE,
-    OPTTECH_GETUPTOWARDCHANCE,
-    OPTTECH_GETUPATTACKCHANCE,
-};
-
-// ASDI 
-enum asdi
-{
-    ASDI_NONE,
-    ASDI_AWAY,
-    ASDI_TOWARD,
-    ASDI_LEFT,
-    ASDI_RIGHT,
-    ASDI_UP,
-    ASDI_DOWN,
-};
-
-// SDI Freq
-enum sdi_dir
-{
-    SDIDIR_RANDOM,
-    SDIDIR_AWAY,
-    SDIDIR_TOWARD,
-    SDIDIR_UP,
-    SDIDIR_DOWN,
-    SDIDIR_LEFT,
-    SDIDIR_RIGHT,
-};
-
-enum autorestore
-{
-    AUTORESTORE_NONE = 0,
-    AUTORESTORE_PLAYBACK_END,
-    AUTORESTORE_COUNTER,
-};
-
-enum rec_mode_hmn
-{
-    RECMODE_HMN_OFF = 0,
-    RECMODE_HMN_RECORD,
-    RECMODE_HMN_PLAYBACK,
-};
-
-enum rec_mode_cpu
-{
-    RECMODE_CPU_OFF = 0,
-    RECMODE_CPU_CONTROL,
-    RECMODE_CPU_RECORD,
-    RECMODE_CPU_PLAYBACK,
-};
-
-// Recording Options
-#define OPTREC_SAVE_LOAD 0
-#define OPTREC_HMNMODE 1
-#define OPTREC_HMNSLOT 2
-#define OPTREC_CPUMODE 3
-#define OPTREC_CPUSLOT 4
-#define OPTREC_LOOP 5
-#define OPTREC_AUTORESTORE 6
-#define OPTREC_RESAVE 7
-#define OPTREC_EXPORT 8
-#define OPTREC_DELETE 9
-
-// Info Display Options
-//#define OPTINF_TOGGLE 0
-#define OPTINF_PLAYER 0
-#define OPTINF_SIZE 1
-#define OPTINF_PRESET 2
-#define OPTINF_ROW1 3
-
-// Info Display Rows
-enum infdisp_rows
-{
-    INFDISPROW_NONE,
-    INFDISPROW_POS,
-    INFDISPROW_STATE,
-    INFDISPROW_FRAME,
-    INFDISPROW_SELFVEL,
-    INFDISPROW_KBVEL,
-    INFDISPROW_TOTALVEL,
-    INFDISPROW_ENGLSTICK,
-    INFDISPROW_SYSLSTICK,
-    INFDISPROW_ENGCSTICK,
-    INFDISPROW_SYSCSTICK,
-    INFDISPROW_ENGTRIGGER,
-    INFDISPROW_SYSTRIGGER,
-    INFDISPROW_LEDGECOOLDOWN,
-    INFDISPROW_INTANGREMAIN,
-    INFDISPROW_HITSTOP,
-    INFDISPROW_HITSTUN,
-    INFDISPROW_SHIELDHEALTH,
-    INFDISPROW_SHIELDSTUN,
-    INFDISPROW_GRIP,
-    INFDISPROW_ECBLOCK,
-    INFDISPROW_ECBBOT,
-    INFDISPROW_JUMPS,
-    INFDISPROW_WALLJUMPS,
-    INFDISPROW_JAB,
-    INFDISPROW_LINE,
-    INFDISPROW_BLASTLR,
-    INFDISPROW_BLASTUD,
-};
-
-// CPU States
-enum cpu_state
-{
-    CPUSTATE_START,
-    CPUSTATE_GRABBED,
-    CPUSTATE_SDI,
-    CPUSTATE_TDI,
-    CPUSTATE_TECH,
-    CPUSTATE_GETUP,
-    CPUSTATE_COUNTER,
-    CPUSTATE_RECOVER,
-    CPUSTATE_NONE,
-};
-
-// Grab Escape Options
-enum cpu_mash
-{
-    CPUMASH_NONE,
-    CPUMASH_MED,
-    CPUMASH_HIGH,
-    CPUMASH_PERFECT,
-};
-
 #define INTANG_COLANIM 10
+#define STICK_DEADZONE 0.2
 
-// Grab Escape RNG Def
 #define CPUMASHRNG_MED 35
 #define CPUMASHRNG_HIGH 55
 
-// Behavior Definitions
-#define CPUBEHAVE_STAND 0
-#define CPUBEHAVE_SHIELD 1
-#define CPUBEHAVE_CROUCH 2
-#define CPUBEHAVE_JUMP 3
+typedef struct CPUAction {
+    u16 state;                  // state to perform this action. -1 for last
+    u8 frameLow;                // first possible frame to perform this action
+    u8 frameHi;                 // last possible frame to perfrom this action
+    s8 stickX;                  // left stick X value
+    s8 stickY;                  // left stick Y value
+    s8 cstickX;                 // c stick X value
+    s8 cstickY;                 // c stick Y value
+    int input;                  // button to input
+    unsigned char isLast : 1;   // flag to indicate this was the final input
+    unsigned char stickDir : 3; // 0 = none, 1 = towards opponent, 2 = away from opponent, 3 = forward, 4 = backward
+} CPUAction;
 
-// SDI Definitions
-#define CPUSDI_RANDOM 0
-#define CPUSDI_NONE 1
-
-// TDI Definitions
-#define CPUTDI_RANDOM 0
-#define CPUTDI_IN 1
-#define CPUTDI_OUT 2
-#define CPUTDI_FLOORHUG 3
-#define CPUTDI_CUSTOM 4
-#define CPUTDI_RANDOM_CUSTOM 5
-#define CPUTDI_NONE 6
-#define CPUTDI_NUM 7
-
-// Shield Angle Definitions
-#define CPUSHIELDANG_NONE 0
-#define CPUSHIELDANG_UP 1
-#define CPUSHIELDANG_TOWARD 2
-#define CPUSHIELDANG_DOWN 3
-#define CPUSHIELDANG_AWAY 4
-
-// Tech Definitions
-#define CPUTECH_RANDOM 0
-#define CPUTECH_NEUTRAL 1
-#define CPUTECH_AWAY 2
-#define CPUTECH_TOWARDS 3
-#define CPUTECH_NONE 4
-
-// Getup Definitions
-#define CPUGETUP_RANDOM 0
-#define CPUGETUP_STAND 1
-#define CPUGETUP_AWAY 2
-#define CPUGETUP_TOWARD 3
-#define CPUGETUP_ATTACK 4
-
-// Stick Direction Definitions
-enum STICKDIR
+enum stick_dir
 {
     STCKDIR_NONE,
     STCKDIR_TOWARD,
@@ -286,772 +39,377 @@ enum STICKDIR
     STICKDIR_RDM,
 };
 
-// Hit kind defintions
-#define HITKIND_DAMAGE 0
-#define HITKIND_SHIELD 1
+enum hit_kind
+{
+    HITKIND_DAMAGE,
+    HITKIND_SHIELD,
+};
 
-// Custom ASID animation checks
-#define ASID_ACTIONABLE 1000
-#define ASID_ACTIONABLEGROUND 1001
-#define ASID_ACTIONABLEAIR 1002
-#define ASID_DAMAGEAIR 1003
-#define ASID_ANY 1004
+enum custom_asid_groups
+{
+    ASID_ACTIONABLE = 1000,
+    ASID_ACTIONABLEGROUND,
+    ASID_ACTIONABLEAIR,
+    ASID_DAMAGEAIR,
+    ASID_ANY,
+};
 
 // ACTIONS #################################################
 
 // CPU Action Definitions
 static CPUAction Lab_CPUActionShield[] = {
     {
-        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
-        0,                     // first possible frame to perform this action
-        0,                     // last possible frame to perfrom this action
-        0,                     // left stick X value
-        0,                     // left stick Y value
-        0,                     // c stick X value
-        0,                     // c stick Y value
-        PAD_TRIGGER_R,         // button to input
-        1,                     // is the last input
-        0,                     // specify stick direction
+        .state     = ASID_ACTIONABLEGROUND,
+        .input     = PAD_TRIGGER_R,
+        .isLast    = 1,
     },
     {
-        ASID_GUARDREFLECT, // state to perform this action. -1 for last
-        0,                 // first possible frame to perform this action
-        0,                 // last possible frame to perfrom this action
-        0,                 // left stick X value
-        0,                 // left stick Y value
-        0,                 // c stick X value
-        0,                 // c stick Y value
-        PAD_TRIGGER_R,     // button to input
-        1,                 // is the last input
-        0,                 // specify stick direction
+        .state     = ASID_GUARDREFLECT,
+        .input     = PAD_TRIGGER_R,
+        .isLast    = 1,
     },
     {
-        ASID_GUARD,    // state to perform this action. -1 for last
-        0,             // first possible frame to perform this action
-        0,             // last possible frame to perfrom this action
-        0,             // left stick X value
-        0,             // left stick Y value
-        0,             // c stick X value
-        0,             // c stick Y value
-        PAD_TRIGGER_R, // button to input
-        1,             // is the last input
-        0,             // specify stick direction
+        .state     = ASID_GUARD,
+        .input     = PAD_TRIGGER_R,
+        .isLast    = 1,
     },
     -1,
 };
 static CPUAction Lab_CPUActionGrab[] = {
     {
-        ASID_GUARD,                   // state to perform this action. -1 for last
-        0,                            // first possible frame to perform this action
-        0,                            // last possible frame to perfrom this action
-        0,                            // left stick X value
-        0,                            // left stick Y value
-        0,                            // c stick X value
-        0,                            // c stick Y value
-        PAD_BUTTON_A | PAD_TRIGGER_R, // button to input
-        1,                            // is the last input
-        0,                            // specify stick direction
+        .state     = ASID_GUARD,
+        .input     = PAD_BUTTON_A | PAD_TRIGGER_R,
+        .isLast    = 1,
     },
     {
-        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
-        0,                     // first possible frame to perform this action
-        0,                     // last possible frame to perfrom this action
-        0,                     // left stick X value
-        0,                     // left stick Y value
-        0,                     // c stick X value
-        0,                     // c stick Y value
-        PAD_TRIGGER_Z,         // button to input
-        1,                     // is the last input
-        0,                     // specify stick direction
+        .state     = ASID_ACTIONABLEGROUND,
+        .input     = PAD_TRIGGER_Z,
+        .isLast    = 1,
     },
     -1,
 };
 static CPUAction Lab_CPUActionUpB[] = {
     {
-        ASID_GUARD,                   // state to perform this action. -1 for last
-        0,                            // first possible frame to perform this action
-        0,                            // last possible frame to perfrom this action
-        0,                            // left stick X value
-        0,                            // left stick Y value
-        0,                            // c stick X value
-        0,                            // c stick Y value
-        PAD_TRIGGER_R | PAD_BUTTON_X, // button to input
-        0,                            // is the last input
-        0,                            // specify stick direction
+        .state     = ASID_GUARD,
+        .input     = PAD_TRIGGER_R | PAD_BUTTON_X,
     },
     {
-        ASID_GUARD,   // state to perform this action. -1 for last
-        0,            // first possible frame to perform this action
-        0,            // last possible frame to perfrom this action
-        0,            // left stick X value
-        0,            // left stick Y value
-        0,            // c stick X value
-        0,            // c stick Y value
-        PAD_BUTTON_X, // button to input
-        0,            // is the last input
-        0,            // specify stick direction
+        .state     = ASID_GUARD,
+        .input     = PAD_BUTTON_X,
     },
     {
-        ASID_KNEEBEND, // state to perform this action. -1 for last
-        0,             // first possible frame to perform this action
-        0,             // last possible frame to perfrom this action
-        0,             // left stick X value
-        127,           // left stick Y value
-        0,             // c stick X value
-        0,             // c stick Y value
-        PAD_BUTTON_B,  // button to input
-        1,             // is the last input
-        0,             // specify stick direction
+        .state     = ASID_KNEEBEND,
+        .stickY    = 127,
+        .input     = PAD_BUTTON_B,
+        .isLast    = 1,
     },
     {
-        ASID_ACTIONABLE, // state to perform this action. -1 for last
-        0,               // first possible frame to perform this action
-        0,               // last possible frame to perfrom this action
-        0,               // left stick X value
-        127,             // left stick Y value
-        0,               // c stick X value
-        0,               // c stick Y value
-        PAD_BUTTON_B,    // button to input
-        1,               // is the last input
-        0,               // specify stick direction
+        .state     = ASID_ACTIONABLE,
+        .stickY    = 127,
+        .input     = PAD_BUTTON_B,
+        .isLast    = 1,
     },
     -1,
 };
 static CPUAction Lab_CPUActionSideBToward[] = {
     {
-        ASID_GUARD,                   // state to perform this action. -1 for last
-        0,                            // first possible frame to perform this action
-        0,                            // last possible frame to perfrom this action
-        0,                            // left stick X value
-        0,                            // left stick Y value
-        0,                            // c stick X value
-        0,                            // c stick Y value
-        PAD_TRIGGER_R | PAD_BUTTON_X, // button to input
-        0,                            // is the last input
-        0,                            // specify stick direction
+        .state     = ASID_GUARD,
+        .input     = PAD_TRIGGER_R | PAD_BUTTON_X,
     },
     {
-        ASID_GUARD,   // state to perform this action. -1 for last
-        0,            // first possible frame to perform this action
-        0,            // last possible frame to perfrom this action
-        0,            // left stick X value
-        0,            // left stick Y value
-        0,            // c stick X value
-        0,            // c stick Y value
-        PAD_BUTTON_X, // button to input
-        0,            // is the last input
-        0,            // specify stick direction
+        .state     = ASID_GUARD,
+        .input     = PAD_BUTTON_X,
     },
     {
-        ASID_ACTIONABLE, // state to perform this action. -1 for last
-        0,               // first possible frame to perform this action
-        0,               // last possible frame to perfrom this action
-        127,               // left stick X value
-        0,             // left stick Y value
-        0,               // c stick X value
-        0,               // c stick Y value
-        PAD_BUTTON_B,    // button to input
-        1,               // is the last input
-        STCKDIR_TOWARD,  // specify stick direction
+        .state     = ASID_ACTIONABLE,
+        .stickX    = 127,
+        .input     = PAD_BUTTON_B,
+        .isLast    = 1,
+        .stickDir  = STCKDIR_TOWARD,
     },
     -1,
 };
 static CPUAction Lab_CPUActionSideBAway[] = {
     {
-        ASID_GUARD,                   // state to perform this action. -1 for last
-        0,                            // first possible frame to perform this action
-        0,                            // last possible frame to perfrom this action
-        0,                            // left stick X value
-        0,                            // left stick Y value
-        0,                            // c stick X value
-        0,                            // c stick Y value
-        PAD_TRIGGER_R | PAD_BUTTON_X, // button to input
-        0,                            // is the last input
-        0,                            // specify stick direction
+        .state     = ASID_GUARD,
+        .input     = PAD_TRIGGER_R | PAD_BUTTON_X,
     },
     {
-        ASID_GUARD,   // state to perform this action. -1 for last
-        0,            // first possible frame to perform this action
-        0,            // last possible frame to perfrom this action
-        0,            // left stick X value
-        0,            // left stick Y value
-        0,            // c stick X value
-        0,            // c stick Y value
-        PAD_BUTTON_X, // button to input
-        0,            // is the last input
-        0,            // specify stick direction
+        .state     = ASID_GUARD,
+        .input     = PAD_BUTTON_X,
     },
     {
-        ASID_ACTIONABLE, // state to perform this action. -1 for last
-        0,               // first possible frame to perform this action
-        0,               // last possible frame to perfrom this action
-        127,             // left stick X value
-        0,               // left stick Y value
-        0,               // c stick X value
-        0,               // c stick Y value
-        PAD_BUTTON_B,    // button to input
-        1,               // is the last input
-        STCKDIR_AWAY,    // specify stick direction
+        .state     = ASID_ACTIONABLE,
+        .stickX    = 127,
+        .input     = PAD_BUTTON_B,
+        .isLast    = 1,
+        .stickDir  = STCKDIR_AWAY,
     },
     -1,
 };
 static CPUAction Lab_CPUActionDownB[] = {
     {
-        ASID_GUARD,                   // state to perform this action. -1 for last
-        0,                            // first possible frame to perform this action
-        0,                            // last possible frame to perfrom this action
-        0,                            // left stick X value
-        0,                            // left stick Y value
-        0,                            // c stick X value
-        0,                            // c stick Y value
-        PAD_TRIGGER_R | PAD_BUTTON_X, // button to input
-        0,                            // is the last input
-        0,                            // specify stick direction
+        .state     = ASID_GUARD,
+        .input     = PAD_TRIGGER_R | PAD_BUTTON_X,
     },
     {
-        ASID_GUARD,   // state to perform this action. -1 for last
-        0,            // first possible frame to perform this action
-        0,            // last possible frame to perfrom this action
-        0,            // left stick X value
-        0,            // left stick Y value
-        0,            // c stick X value
-        0,            // c stick Y value
-        PAD_BUTTON_X, // button to input
-        1,            // is the last input
-        0,            // specify stick direction
+        .state     = ASID_GUARD,
+        .input     = PAD_BUTTON_X,
+        .isLast    = 1,
     },
     {
-        ASID_ACTIONABLE, // state to perform this action. -1 for last
-        0,               // first possible frame to perform this action
-        0,               // last possible frame to perfrom this action
-        0,               // left stick X value
-        -127,            // left stick Y value
-        0,               // c stick X value
-        0,               // c stick Y value
-        PAD_BUTTON_B,    // button to input
-        1,               // is the last input
-        0,               // specify stick direction
+        .state     = ASID_ACTIONABLE,
+        .stickY    = -127,
+        .input     = PAD_BUTTON_B,
+        .isLast    = 1,
     },
     -1,
 };
 static CPUAction Lab_CPUActionNeutralB[] = {
     {
-        ASID_GUARD,                   // state to perform this action. -1 for last
-        0,                            // first possible frame to perform this action
-        0,                            // last possible frame to perfrom this action
-        0,                            // left stick X value
-        0,                            // left stick Y value
-        0,                            // c stick X value
-        0,                            // c stick Y value
-        PAD_TRIGGER_R | PAD_BUTTON_X, // button to input
-        0,                            // is the last input
-        0,                            // specify stick direction
+        .state     = ASID_GUARD,
+        .input     = PAD_TRIGGER_R | PAD_BUTTON_X,
     },
     {
-        ASID_GUARD,   // state to perform this action. -1 for last
-        0,            // first possible frame to perform this action
-        0,            // last possible frame to perfrom this action
-        0,            // left stick X value
-        0,            // left stick Y value
-        0,            // c stick X value
-        0,            // c stick Y value
-        PAD_BUTTON_X, // button to input
-        1,            // is the last input
-        0,            // specify stick direction
+        .state     = ASID_GUARD,
+        .input     = PAD_BUTTON_X,
+        .isLast    = 1,
     },
 
     {
-        ASID_ACTIONABLE, // state to perform this action. -1 for last
-        0,               // first possible frame to perform this action
-        0,               // last possible frame to perfrom this action
-        0,               // left stick X value
-        0,               // left stick Y value
-        0,               // c stick X value
-        0,               // c stick Y value
-        PAD_BUTTON_B,    // button to input
-        1,               // is the last input
-        0,               // specify stick direction
+        .state     = ASID_ACTIONABLE,
+        .input     = PAD_BUTTON_B,
+        .isLast    = 1,
     },
     -1,
 };
 
 // We buffer this for a single frame.
-// For some reason spotdodge is only possible frame 2 when floorhugging 
+// For some reason spotdodge is only possible frame 2 when floorhugging
 // an attack that would have otherwise knocked you into the air without knockdown.
 // This doesn't occur with rolls for some reason.
 static CPUAction Lab_CPUActionSpotdodge[] = {
     {
-        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
-        0,                     // first possible frame to perform this action
-        0,                     // last possible frame to perfrom this action
-        0,                     // left stick X value
-        -127,                  // left stick Y value
-        0,                     // c stick X value
-        0,                     // c stick Y value
-        PAD_TRIGGER_R,         // button to input
-        0,                     // is the last input
-        0,                     // specify stick direction
+        .state     = ASID_ACTIONABLEGROUND,
+        .stickY    = -127,
+        .input     = PAD_TRIGGER_R,
     },
     {
-        ASID_ANY,              // state to perform this action. -1 for last
-        0,                     // first possible frame to perform this action
-        0,                     // last possible frame to perfrom this action
-        0,                     // left stick X value
-        -127,                  // left stick Y value
-        0,                     // c stick X value
-        0,                     // c stick Y value
-        PAD_TRIGGER_R,         // button to input
-        1,                     // is the last input
-        0,                     // specify stick direction
+        .state     = ASID_ANY,
+        .stickY    = -127,
+        .input     = PAD_TRIGGER_R,
+        .isLast    = 1,
     },
     -1,
 };
 static CPUAction Lab_CPUActionRollAway[] = {
     {
-        ASID_GUARD,    // state to perform this action. -1 for last
-        0,             // first possible frame to perform this action
-        0,             // last possible frame to perfrom this action
-        127,           // left stick X value
-        0,             // left stick Y value
-        0,             // c stick X value
-        0,             // c stick Y value
-        PAD_TRIGGER_R, // button to input
-        1,             // is the last input
-        STCKDIR_AWAY,  // specify stick direction
+        .state     = ASID_GUARD,
+        .stickX    = 127,
+        .input     = PAD_TRIGGER_R,
+        .isLast    = 1,
+        .stickDir  = STCKDIR_AWAY,
     },
     {
-        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
-        0,                     // first possible frame to perform this action
-        0,                     // last possible frame to perfrom this action
-        0,                     // left stick X value
-        0,                     // left stick Y value
-        0,                     // c stick X value
-        0,                     // c stick Y value
-        PAD_TRIGGER_R,         // button to input
-        0,                     // is the last input
-        0,                     // specify stick direction
+        .state     = ASID_ACTIONABLEGROUND,
+        .input     = PAD_TRIGGER_R,
     },
     {
-        ASID_GUARDREFLECT, // state to perform this action. -1 for last
-        0,                 // first possible frame to perform this action
-        0,                 // last possible frame to perfrom this action
-        127,               // left stick X value
-        0,                 // left stick Y value
-        0,                 // c stick X value
-        0,                 // c stick Y value
-        PAD_TRIGGER_R,     // button to input
-        1,                 // is the last input
-        STCKDIR_AWAY,      // specify stick direction
+        .state     = ASID_GUARDREFLECT,
+        .stickX    = 127,
+        .input     = PAD_TRIGGER_R,
+        .isLast    = 1,
+        .stickDir  = STCKDIR_AWAY,
     },
     -1,
 };
 static CPUAction Lab_CPUActionRollTowards[] = {
     {
-        ASID_GUARD,     // state to perform this action. -1 for last
-        0,              // first possible frame to perform this action
-        0,              // last possible frame to perfrom this action
-        127,            // left stick X value
-        0,              // left stick Y value
-        0,              // c stick X value
-        0,              // c stick Y value
-        PAD_TRIGGER_R,  // button to input
-        1,              // is the last input
-        STCKDIR_TOWARD, // specify stick direction
+        .state     = ASID_GUARD,
+        .stickX    = 127,
+        .input     = PAD_TRIGGER_R,
+        .isLast    = 1,
+        .stickDir  = STCKDIR_TOWARD,
     },
     {
-        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
-        0,                     // first possible frame to perform this action
-        0,                     // last possible frame to perfrom this action
-        0,                     // left stick X value
-        0,                     // left stick Y value
-        0,                     // c stick X value
-        0,                     // c stick Y value
-        PAD_TRIGGER_R,         // button to input
-        0,                     // is the last input
-        0,                     // specify stick direction
+        .state     = ASID_ACTIONABLEGROUND,
+        .input     = PAD_TRIGGER_R,
     },
     {
-        ASID_GUARDREFLECT, // state to perform this action. -1 for last
-        0,                 // first possible frame to perform this action
-        0,                 // last possible frame to perfrom this action
-        127,               // left stick X value
-        0,                 // left stick Y value
-        0,                 // c stick X value
-        0,                 // c stick Y value
-        PAD_TRIGGER_R,     // button to input
-        1,                 // is the last input
-        STCKDIR_TOWARD,    // specify stick direction
+        .state     = ASID_GUARDREFLECT,
+        .stickX    = 127,
+        .input     = PAD_TRIGGER_R,
+        .isLast    = 1,
+        .stickDir  = STCKDIR_TOWARD,
     },
     -1,
 };
 static CPUAction Lab_CPUActionRollRandom[] = {
     {
-        ASID_GUARD,    // state to perform this action. -1 for last
-        0,             // first possible frame to perform this action
-        0,             // last possible frame to perfrom this action
-        127,           // left stick X value
-        0,             // left stick Y value
-        0,             // c stick X value
-        0,             // c stick Y value
-        PAD_TRIGGER_R, // button to input
-        1,             // is the last input
-        STICKDIR_RDM,  // specify stick direction
+        .state     = ASID_GUARD,
+        .stickX    = 127,
+        .input     = PAD_TRIGGER_R,
+        .isLast    = 1,
+        .stickDir  = STICKDIR_RDM,
     },
     {
-        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
-        0,                     // first possible frame to perform this action
-        0,                     // last possible frame to perfrom this action
-        0,                     // left stick X value
-        0,                     // left stick Y value
-        0,                     // c stick X value
-        0,                     // c stick Y value
-        PAD_TRIGGER_R,         // button to input
-        0,                     // is the last input
-        0,                     // specify stick direction
+        .state     = ASID_ACTIONABLEGROUND,
+        .input     = PAD_TRIGGER_R,
     },
     {
-        ASID_GUARDREFLECT, // state to perform this action. -1 for last
-        0,                 // first possible frame to perform this action
-        0,                 // last possible frame to perfrom this action
-        127,               // left stick X value
-        0,                 // left stick Y value
-        0,                 // c stick X value
-        0,                 // c stick Y value
-        PAD_TRIGGER_R,     // button to input
-        1,                 // is the last input
-        STICKDIR_RDM,      // specify stick direction
+        .state     = ASID_GUARDREFLECT,
+        .stickX    = 127,
+        .input     = PAD_TRIGGER_R,
+        .isLast    = 1,
+        .stickDir  = STICKDIR_RDM,
     },
     -1,
 };
 static CPUAction Lab_CPUActionNair[] = {
     {
-        ASID_GUARD,                   // state to perform this action. -1 for last
-        0,                            // first possible frame to perform this action
-        0,                            // last possible frame to perfrom this action
-        0,                            // left stick X value
-        0,                            // left stick Y value
-        0,                            // c stick X value
-        0,                            // c stick Y value
-        PAD_TRIGGER_R | PAD_BUTTON_X, // button to input
-        0,                            // is the last input
-        0,                            // specify stick direction
+        .state     = ASID_GUARD,
+        .input     = PAD_TRIGGER_R | PAD_BUTTON_X,
     },
     {
-        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
-        0,                     // first possible frame to perform this action
-        0,                     // last possible frame to perfrom this action
-        0,                     // left stick X value
-        0,                     // left stick Y value
-        0,                     // c stick X value
-        0,                     // c stick Y value
-        PAD_BUTTON_X,          // button to input
-        0,                     // is the last input
-        0,                     // specify stick direction
+        .state     = ASID_ACTIONABLEGROUND,
+        .input     = PAD_BUTTON_X,
     },
     {
-        ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
-        0,                  // first possible frame to perform this action
-        0,                  // last possible frame to perfrom this action
-        0,                  // left stick X value
-        0,                  // left stick Y value
-        0,                  // c stick X value
-        0,                  // c stick Y value
-        PAD_BUTTON_A,       // button to input
-        1,                  // is the last input
-        0,                  // specify stick direction
+        .state     = ASID_ACTIONABLEAIR,
+        .input     = PAD_BUTTON_A,
+        .isLast    = 1,
     },
     -1,
 };
 static CPUAction Lab_CPUActionFair[] = {
     {
-        ASID_GUARD,                   // state to perform this action. -1 for last
-        0,                            // first possible frame to perform this action
-        0,                            // last possible frame to perfrom this action
-        0,                            // left stick X value
-        0,                            // left stick Y value
-        0,                            // c stick X value
-        0,                            // c stick Y value
-        PAD_TRIGGER_R | PAD_BUTTON_X, // button to input
-        0,                            // is the last input
-        0,                            // specify stick direction
+        .state     = ASID_GUARD,
+        .input     = PAD_TRIGGER_R | PAD_BUTTON_X,
     },
     {
-        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
-        0,                     // first possible frame to perform this action
-        0,                     // last possible frame to perfrom this action
-        0,                     // left stick X value
-        0,                     // left stick Y value
-        0,                     // c stick X value
-        0,                     // c stick Y value
-        PAD_BUTTON_X,          // button to input
-        0,                     // is the last input
-        0,                     // specify stick direction
+        .state     = ASID_ACTIONABLEGROUND,
+        .input     = PAD_BUTTON_X,
     },
     {
-        ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
-        0,                  // first possible frame to perform this action
-        0,                  // last possible frame to perfrom this action
-        0,                  // left stick X value
-        0,                  // left stick Y value
-        127,                // c stick X value
-        0,                  // c stick Y value
-        0,                  // button to input
-        1,                  // is the last input
-        3,                  // specify stick direction
+        .state     = ASID_ACTIONABLEAIR,
+        .cstickX   = 127,
+        .isLast    = 1,
+        .stickDir  = 3,
     },
     -1,
 };
 static CPUAction Lab_CPUActionDair[] = {
     {
-        ASID_GUARD,                   // state to perform this action. -1 for last
-        0,                            // first possible frame to perform this action
-        0,                            // last possible frame to perfrom this action
-        0,                            // left stick X value
-        0,                            // left stick Y value
-        0,                            // c stick X value
-        0,                            // c stick Y value
-        PAD_TRIGGER_R | PAD_BUTTON_X, // button to input
-        0,                            // is the last input
-        0,                            // specify stick direction
+        .state     = ASID_GUARD,
+        .input     = PAD_TRIGGER_R | PAD_BUTTON_X,
     },
     {
-        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
-        0,                     // first possible frame to perform this action
-        0,                     // last possible frame to perfrom this action
-        0,                     // left stick X value
-        0,                     // left stick Y value
-        0,                     // c stick X value
-        0,                     // c stick Y value
-        PAD_BUTTON_X,          // button to input
-        0,                     // is the last input
-        0,                     // specify stick direction
+        .state     = ASID_ACTIONABLEGROUND,
+        .input     = PAD_BUTTON_X,
     },
     {
-        ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
-        0,                  // first possible frame to perform this action
-        0,                  // last possible frame to perfrom this action
-        0,                  // left stick X value
-        0,                  // left stick Y value
-        0,                  // c stick X value
-        -127,               // c stick Y value
-        0,                  // button to input
-        1,                  // is the last input
-        0,                  // specify stick direction
+        .state     = ASID_ACTIONABLEAIR,
+        .cstickY   = -127,
+        .isLast    = 1,
     },
     -1,
 };
 static CPUAction Lab_CPUActionBair[] = {
     {
-        ASID_GUARD,                   // state to perform this action. -1 for last
-        0,                            // first possible frame to perform this action
-        0,                            // last possible frame to perfrom this action
-        0,                            // left stick X value
-        0,                            // left stick Y value
-        0,                            // c stick X value
-        0,                            // c stick Y value
-        PAD_TRIGGER_R | PAD_BUTTON_X, // button to input
-        0,                            // is the last input
-        0,                            // specify stick direction
+        .state     = ASID_GUARD,
+        .input     = PAD_TRIGGER_R | PAD_BUTTON_X,
     },
     {
-        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
-        0,                     // first possible frame to perform this action
-        0,                     // last possible frame to perfrom this action
-        0,                     // left stick X value
-        0,                     // left stick Y value
-        0,                     // c stick X value
-        0,                     // c stick Y value
-        PAD_BUTTON_X,          // button to input
-        0,                     // is the last input
-        0,                     // specify stick direction
+        .state     = ASID_ACTIONABLEGROUND,
+        .input     = PAD_BUTTON_X,
     },
     {
-        ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
-        0,                  // first possible frame to perform this action
-        0,                  // last possible frame to perfrom this action
-        0,                  // left stick X value
-        0,                  // left stick Y value
-        127,                // c stick X value
-        0,                  // c stick Y value
-        0,                  // button to input
-        1,                  // is the last input
-        4,                  // specify stick direction
+        .state     = ASID_ACTIONABLEAIR,
+        .cstickX   = 127,
+        .isLast    = 1,
+        .stickDir  = 4,
     },
     -1,
 };
 static CPUAction Lab_CPUActionUair[] = {
     {
-        ASID_GUARD,                   // state to perform this action. -1 for last
-        0,                            // first possible frame to perform this action
-        0,                            // last possible frame to perfrom this action
-        0,                            // left stick X value
-        0,                            // left stick Y value
-        0,                            // c stick X value
-        0,                            // c stick Y value
-        PAD_TRIGGER_R | PAD_BUTTON_X, // button to input
-        0,                            // is the last input
-        0,                            // specify stick direction
+        .state     = ASID_GUARD,
+        .input     = PAD_TRIGGER_R | PAD_BUTTON_X,
     },
     {
-        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
-        0,                     // first possible frame to perform this action
-        0,                     // last possible frame to perfrom this action
-        0,                     // left stick X value
-        0,                     // left stick Y value
-        0,                     // c stick X value
-        0,                     // c stick Y value
-        PAD_BUTTON_X,          // button to input
-        0,                     // is the last input
-        0,                     // specify stick direction
+        .state     = ASID_ACTIONABLEGROUND,
+        .input     = PAD_BUTTON_X,
     },
     {
-        ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
-        0,                  // first possible frame to perform this action
-        0,                  // last possible frame to perfrom this action
-        0,                  // left stick X value
-        0,                  // left stick Y value
-        0,                  // c stick X value
-        127,                // c stick Y value
-        0,                  // button to input
-        1,                  // is the last input
-        0,                  // specify stick direction
+        .state     = ASID_ACTIONABLEAIR,
+        .cstickY   = 127,
+        .isLast    = 1,
     },
     -1,
 };
 static CPUAction Lab_CPUActionJump[] = {
     {
-        ASID_GUARD,                   // state to perform this action. -1 for last
-        0,                            // first possible frame to perform this action
-        0,                            // last possible frame to perfrom this action
-        0,                            // left stick X value
-        0,                            // left stick Y value
-        0,                            // c stick X value
-        0,                            // c stick Y value
-        PAD_TRIGGER_R | PAD_BUTTON_X, // button to input
-        0,                            // is the last input
-        0,                            // specify stick direction
+        .state     = ASID_GUARD,
+        .input     = PAD_TRIGGER_R | PAD_BUTTON_X,
     },
     {
-        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
-        0,                     // first possible frame to perform this action
-        0,                     // last possible frame to perfrom this action
-        0,                     // left stick X value
-        0,                     // left stick Y value
-        0,                     // c stick X value
-        0,                     // c stick Y value
-        PAD_BUTTON_X,          // button to input
-        1,                     // is the last input
-        0,                     // specify stick direction
+        .state     = ASID_ACTIONABLEGROUND,
+        .input     = PAD_BUTTON_X,
+        .isLast    = 1,
     },
     {
-        ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
-        0,                  // first possible frame to perform this action
-        0,                  // last possible frame to perfrom this action
-        0,                  // left stick X value
-        0,                  // left stick Y value
-        0,                  // c stick X value
-        0,                  // c stick Y value
-        0,                  // button to input
-        1,                  // is the last input
-        0,                  // specify stick direction
+        .state     = ASID_ACTIONABLEAIR,
+        .isLast    = 1,
     },
     -1,
 };
 static CPUAction Lab_CPUActionJumpFull[] = {
     {
-        ASID_GUARD,                   // state to perform this action. -1 for last
-        0,                            // first possible frame to perform this action
-        0,                            // last possible frame to perfrom this action
-        0,                            // left stick X value
-        0,                            // left stick Y value
-        0,                            // c stick X value
-        0,                            // c stick Y value
-        PAD_TRIGGER_R | PAD_BUTTON_X, // button to input
-        0,                            // is the last input
-        0,                            // specify stick direction
+        .state     = ASID_GUARD,
+        .input     = PAD_TRIGGER_R | PAD_BUTTON_X,
     },
     {
-        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
-        0,                     // first possible frame to perform this action
-        0,                     // last possible frame to perfrom this action
-        0,                     // left stick X value
-        0,                     // left stick Y value
-        0,                     // c stick X value
-        0,                     // c stick Y value
-        PAD_BUTTON_X,          // button to input
-        0,                     // is the last input
-        0,                     // specify stick direction
+        .state     = ASID_ACTIONABLEGROUND,
+        .input     = PAD_BUTTON_X,
     },
     {
-        ASID_KNEEBEND, // state to perform this action. -1 for last
-        0,             // first possible frame to perform this action
-        0,             // last possible frame to perfrom this action
-        0,             // left stick X value
-        0,             // left stick Y value
-        0,             // c stick X value
-        0,             // c stick Y value
-        PAD_BUTTON_X,  // button to input
-        0,             // is the last input
-        0,             // specify stick direction
+        .state     = ASID_KNEEBEND,
+        .input     = PAD_BUTTON_X,
     },
     {
-        ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
-        0,                  // first possible frame to perform this action
-        0,                  // last possible frame to perfrom this action
-        0,                  // left stick X value
-        0,                  // left stick Y value
-        0,                  // c stick X value
-        0,                  // c stick Y value
-        0,                  // button to input
-        1,                  // is the last input
-        0,                  // specify stick direction
+        .state     = ASID_ACTIONABLEAIR,
+        .isLast    = 1,
     },
     -1,
 };
 static CPUAction Lab_CPUActionJumpAway[] = {
     {
-        ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
-        0,                  // first possible frame to perform this action
-        0,                  // last possible frame to perfrom this action
-        127,                // left stick X value
-        0,                  // left stick Y value
-        0,                  // c stick X value
-        0,                  // c stick Y value
-        PAD_BUTTON_X,       // button to input
-        1,                  // is the last input
-        STCKDIR_AWAY,       // specify stick direction
+        .state     = ASID_ACTIONABLEAIR,
+        .stickX    = 127,
+        .input     = PAD_BUTTON_X,
+        .isLast    = 1,
+        .stickDir  = STCKDIR_AWAY,
     },
 
     -1,
 };
 static CPUAction Lab_CPUActionJumpTowards[] = {
     {
-        ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
-        0,                  // first possible frame to perform this action
-        0,                  // last possible frame to perfrom this action
-        127,                // left stick X value
-        0,                  // left stick Y value
-        0,                  // c stick X value
-        0,                  // c stick Y value
-        PAD_BUTTON_X,       // button to input
-        1,                  // is the last input
-        STCKDIR_TOWARD,     // specify stick direction
+        .state     = ASID_ACTIONABLEAIR,
+        .stickX    = 127,
+        .input     = PAD_BUTTON_X,
+        .isLast    = 1,
+        .stickDir  = STCKDIR_TOWARD,
     },
 
     -1,
 };
 static CPUAction Lab_CPUActionJumpNeutral[] = {
     {
-        ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
-        0,               // first possible frame to perform this action
-        0,               // last possible frame to perfrom this action
-        0,               // left stick X value
-        0,               // left stick Y value
-        0,               // c stick X value
-        0,               // c stick Y value
-        PAD_BUTTON_X,    // button to input
-        1,               // is the last input
-        STCKDIR_NONE,    // specify stick direction
+        .state     = ASID_ACTIONABLEAIR,
+        .input     = PAD_BUTTON_X,
+        .isLast    = 1,
+        .stickDir  = STCKDIR_NONE,
     },
 
     -1,
@@ -1059,202 +417,106 @@ static CPUAction Lab_CPUActionJumpNeutral[] = {
 static CPUAction Lab_CPUActionAirdodge[] = {
     // wiggle out if we are in tumble
     {
-        ASID_DAMAGEAIR, // state to perform this action. -1 for last
-        0,              // first possible frame to perform this action
-        0,              // last possible frame to perfrom this action
-        127,            // left stick X value
-        0,              // left stick Y value
-        0,              // c stick X value
-        0,              // c stick Y value
-        0,              // button to input
-        0,              // is the last input
-        0,              // specify stick direction
+        .state     = ASID_DAMAGEAIR,
+        .stickX    = 127,
     },
     {
-        ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
-        0,                  // first possible frame to perform this action
-        0,                  // last possible frame to perfrom this action
-        0,                  // left stick X value
-        0,                  // left stick Y value
-        0,                  // c stick X value
-        0,                  // c stick Y value
-        PAD_TRIGGER_R,      // button to input
-        1,                  // is the last input
-        0,                  // specify stick direction
+        .state     = ASID_ACTIONABLEAIR,
+        .input     = PAD_TRIGGER_R,
+        .isLast    = 1,
     },
     -1,
 };
 static CPUAction Lab_CPUActionFFTumble[] = {
     {
-        ASID_DAMAGEAIR, // state to perform this action. -1 for last
-        0,              // first possible frame to perform this action
-        0,              // last possible frame to perfrom this action
-        0,              // left stick X value
-        -127,           // left stick Y value
-        0,              // c stick X value
-        0,              // c stick Y value
-        0,              // button to input
-        1,              // is the last input
-        0,              // specify stick direction
+        .state     = ASID_DAMAGEAIR,
+        .stickY    = -127,
+        .isLast    = 1,
     },
     -1,
 };
 static CPUAction Lab_CPUActionFFWiggle[] = {
     {
-        ASID_DAMAGEAIR, // state to perform this action. -1 for last
-        0,              // first possible frame to perform this action
-        0,              // last possible frame to perfrom this action
-        127,            // left stick X value
-        0,              // left stick Y value
-        0,              // c stick X value
-        0,              // c stick Y value
-        0,              // button to input
-        0,              // is the last input
-        0,              // specify stick direction
+        .state     = ASID_DAMAGEAIR,
+        .stickX    = 127,
     },
     {
-        ASID_ACTIONABLEAIR, // state to perform this action. -1 for last
-        0,                  // first possible frame to perform this action
-        0,                  // last possible frame to perfrom this action
-        0,                  // left stick X value
-        -127,               // left stick Y value
-        0,                  // c stick X value
-        0,                  // c stick Y value
-        0,                  // button to input
-        1,                  // is the last input
-        0,                  // specify stick direction
+        .state     = ASID_ACTIONABLEAIR,
+        .stickY    = -127,
+        .isLast    = 1,
     },
     -1,
 };
 static CPUAction Lab_CPUActionJab[] = {
     {
-        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
-        0,                     // first possible frame to perform this action
-        0,                     // last possible frame to perfrom this action
-        0,                     // left stick X value
-        0,                     // left stick Y value
-        0,                     // c stick X value
-        0,                     // c stick Y value
-        PAD_BUTTON_A,          // button to input
-        1,                     // is the last input
-        0,                     // specify stick direction
+        .state     = ASID_ACTIONABLEGROUND,
+        .input     = PAD_BUTTON_A,
+        .isLast    = 1,
     },
     -1,
 };
 static CPUAction Lab_CPUActionFTilt[] = {
     {
-        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
-        0,                     // first possible frame to perform this action
-        0,                     // last possible frame to perfrom this action
-        80,                    // left stick X value
-        0,                     // left stick Y value
-        0,                     // c stick X value
-        0,                     // c stick Y value
-        PAD_BUTTON_A,          // button to input
-        1,                     // is the last input
-        STCKDIR_TOWARD,        // specify stick direction
+        .state     = ASID_ACTIONABLEGROUND,
+        .stickX    = 80,
+        .input     = PAD_BUTTON_A,
+        .isLast    = 1,
+        .stickDir  = STCKDIR_TOWARD,
     },
     -1,
 };
 static CPUAction Lab_CPUActionUTilt[] = {
     {
-        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
-        0,                     // first possible frame to perform this action
-        0,                     // last possible frame to perfrom this action
-        0,                     // left stick X value
-        80,                    // left stick Y value
-        0,                     // c stick X value
-        0,                     // c stick Y value
-        PAD_BUTTON_A,          // button to input
-        1,                     // is the last input
-        0,                     // specify stick direction
+        .state     = ASID_ACTIONABLEGROUND,
+        .stickY    = 80,
+        .input     = PAD_BUTTON_A,
+        .isLast    = 1,
     },
     -1,
 };
 static CPUAction Lab_CPUActionDTilt[] = {
     {
-        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
-        0,                     // first possible frame to perform this action
-        0,                     // last possible frame to perfrom this action
-        0,                     // left stick X value
-        -80,                   // left stick Y value
-        0,                     // c stick X value
-        0,                     // c stick Y value
-        PAD_BUTTON_A,          // button to input
-        1,                     // is the last input
-        0,                     // specify stick direction
+        .state     = ASID_ACTIONABLEGROUND,
+        .stickY    = -80,
+        .input     = PAD_BUTTON_A,
+        .isLast    = 1,
     },
     -1,
 };
 static CPUAction Lab_CPUActionUSmash[] = {
     {
-        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
-        0,                     // first possible frame to perform this action
-        0,                     // last possible frame to perfrom this action
-        0,                     // left stick X value
-        0,                     // left stick Y value
-        0,                     // c stick X value
-        127,                   // c stick Y value
-        0,                     // button to input
-        1,                     // is the last input
-        0,                     // specify stick direction
+        .state     = ASID_ACTIONABLEGROUND,
+        .cstickY   = 127,
+        .isLast    = 1,
     },
     -1,
 };
 static CPUAction Lab_CPUActionDSmash[] = {
     {
-        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
-        0,                     // first possible frame to perform this action
-        0,                     // last possible frame to perfrom this action
-        0,                     // left stick X value
-        0,                     // left stick Y value
-        0,                     // c stick X value
-        -127,                  // c stick Y value
-        0,                     // button to input
-        1,                     // is the last input
-        0,                     // specify stick direction
+        .state     = ASID_ACTIONABLEGROUND,
+        .cstickY   = -127,
+        .isLast    = 1,
     },
     -1,
 };
 static CPUAction Lab_CPUActionFSmash[] = {
     {
-        ASID_ACTIONABLEGROUND, // state to perform this action. -1 for last
-        0,                     // first possible frame to perform this action
-        0,                     // last possible frame to perfrom this action
-        0,                     // left stick X value
-        0,                     // left stick Y value
-        127,                   // c stick X value
-        0,                     // c stick Y value
-        0,                     // button to input
-        1,                     // is the last input
-        STCKDIR_TOWARD,        // specify stick direction
+        .state     = ASID_ACTIONABLEGROUND,
+        .cstickX   = 127,
+        .isLast    = 1,
+        .stickDir  = STCKDIR_TOWARD,
     },
     -1,
 };
 static CPUAction Lab_CPUActionUpSmashOOS[] = {
     {
-        ASID_GUARD,                   // state to perform this action. -1 for last
-        0,                            // first possible frame to perform this action
-        0,                            // last possible frame to perfrom this action
-        0,                            // left stick X value
-        0,                            // left stick Y value
-        0,                            // c stick X value
-        0,                            // c stick Y value
-        PAD_TRIGGER_R | PAD_BUTTON_X, // button to input
-        0,                            // is the last input
-        0,                            // specify stick direction
+        .state     = ASID_GUARD,
+        .input     = PAD_TRIGGER_R | PAD_BUTTON_X,
     },
     {
-        ASID_KNEEBEND, // state to perform this action. -1 for last
-        0,             // first possible frame to perform this action
-        0,             // last possible frame to perfrom this action
-        0,             // left stick X value
-        0,             // left stick Y value
-        0,             // c stick X value
-        127,           // c stick Y value
-        0,             // button to input
-        1,             // is the last input
-        0,             // specify stick direction
+        .state     = ASID_KNEEBEND,
+        .cstickY   = 127,
+        .isLast    = 1,
     },
     -1,
 };
@@ -1352,8 +614,10 @@ enum CPU_ACTIONS
     CPUACT_DSMASH,
     CPUACT_FSMASH,
     CPUACT_USMASHOOS,
+
+    CPUACT_COUNT
 };
-static char *CPU_ACTIONS_NAMES[] = {
+static char *CPU_ACTIONS_NAMES[CPUACT_COUNT] = {
     "CPUACT_NONE",
     "CPUACT_SHIELD",
     "CPUACT_GRAB",
@@ -1388,874 +652,978 @@ static char *CPU_ACTIONS_NAMES[] = {
     "CPUACT_FSMASH",
     "CPUACT_USMASHOOS",
 };
-static u8 GrAcLookup[] = {CPUACT_NONE, CPUACT_SPOTDODGE, CPUACT_SHIELD, CPUACT_GRAB, CPUACT_UPB, CPUACT_SIDEBTOWARD, CPUACT_SIDEBAWAY, CPUACT_DOWNB, CPUACT_NEUTRALB, CPUACT_USMASH, CPUACT_DSMASH, CPUACT_FSMASH, CPUACT_ROLLAWAY, CPUACT_ROLLTOWARDS, CPUACT_ROLLRDM, CPUACT_NAIR, CPUACT_FAIR, CPUACT_DAIR, CPUACT_BAIR, CPUACT_UAIR, CPUACT_JAB, CPUACT_FTILT, CPUACT_UTILT, CPUACT_DTILT, CPUACT_SHORTHOP, CPUACT_FULLHOP};
-static u8 AirAcLookup[] = {CPUACT_NONE, CPUACT_AIRDODGE, CPUACT_JUMPAWAY, CPUACT_JUMPTOWARDS, CPUACT_JUMPNEUTRAL, CPUACT_UPB, CPUACT_SIDEBTOWARD, CPUACT_SIDEBAWAY, CPUACT_DOWNB, CPUACT_NEUTRALB, CPUACT_NAIR, CPUACT_FAIR, CPUACT_DAIR, CPUACT_BAIR, CPUACT_UAIR, CPUACT_FFTUMBLE, CPUACT_FFWIGGLE};
-static u8 ShieldAcLookup[] = {CPUACT_NONE, CPUACT_GRAB, CPUACT_SHORTHOP, CPUACT_FULLHOP, CPUACT_SPOTDODGE, CPUACT_ROLLAWAY, CPUACT_ROLLTOWARDS, CPUACT_ROLLRDM, CPUACT_USMASHOOS, CPUACT_UPB, CPUACT_DOWNB, CPUACT_NAIR, CPUACT_FAIR, CPUACT_DAIR, CPUACT_BAIR, CPUACT_UAIR};
+
+static u8 CPUCounterActionsGround[] = {CPUACT_NONE, CPUACT_SPOTDODGE, CPUACT_SHIELD, CPUACT_GRAB, CPUACT_UPB, CPUACT_SIDEBTOWARD, CPUACT_SIDEBAWAY, CPUACT_DOWNB, CPUACT_NEUTRALB, CPUACT_USMASH, CPUACT_DSMASH, CPUACT_FSMASH, CPUACT_ROLLAWAY, CPUACT_ROLLTOWARDS, CPUACT_ROLLRDM, CPUACT_NAIR, CPUACT_FAIR, CPUACT_DAIR, CPUACT_BAIR, CPUACT_UAIR, CPUACT_JAB, CPUACT_FTILT, CPUACT_UTILT, CPUACT_DTILT, CPUACT_SHORTHOP, CPUACT_FULLHOP};
+
+static u8 CPUCounterActionsAir[] = {CPUACT_NONE, CPUACT_AIRDODGE, CPUACT_JUMPAWAY, CPUACT_JUMPTOWARDS, CPUACT_JUMPNEUTRAL, CPUACT_UPB, CPUACT_SIDEBTOWARD, CPUACT_SIDEBAWAY, CPUACT_DOWNB, CPUACT_NEUTRALB, CPUACT_NAIR, CPUACT_FAIR, CPUACT_DAIR, CPUACT_BAIR, CPUACT_UAIR, CPUACT_FFTUMBLE, CPUACT_FFWIGGLE};
+
+static u8 CPUCounterActionsShield[] = {CPUACT_NONE, CPUACT_GRAB, CPUACT_SHORTHOP, CPUACT_FULLHOP, CPUACT_SPOTDODGE, CPUACT_ROLLAWAY, CPUACT_ROLLTOWARDS, CPUACT_ROLLRDM, CPUACT_USMASHOOS, CPUACT_UPB, CPUACT_DOWNB, CPUACT_NAIR, CPUACT_FAIR, CPUACT_DAIR, CPUACT_BAIR, CPUACT_UAIR};
 
 // MENUS ###################################################
 
-// Main Menu
-static char **LabOptions_OffOn[] = {"Off", "On"};
-static EventOption LabOptions_Main[] = {
-    {
-        .option_kind = OPTKIND_MENU,                                                     // the type of option this is; menu, string list, integer list, etc
-        .value_num = 0,                                                                  // number of values for this option
-        .option_val = 0,                                                                 // value of this option
-        .menu = &LabMenu_General,                                                        // pointer to the menu that pressing A opens
-        .option_name = {"General"},                                                      // pointer to a string
-        .desc = "Toggle player percent, overlays,\nframe advance, and camera settings.", // string describing what this option does
-        .option_values = 0,                                                              // pointer to an array of strings
-        .onOptionChange = 0,
-    },
-    {
-        .option_kind = OPTKIND_MENU,       // the type of option this is; menu, string list, integers list, etc
-        .value_num = 0,                    // number of values for this option
-        .option_val = 0,                   // value of this option
-        .menu = &LabMenu_CPU,              // pointer to the menu that pressing A opens
-        .option_name = {"CPU Options"},    // pointer to a string
-        .desc = "Configure CPU behavior.", // string describing what this option does
-        .option_values = 0,                // pointer to an array of strings
-        .onOptionChange = 0,
-    },
-    {
-        .option_kind = OPTKIND_MENU,           // the type of option this is; menu, string list, integers list, etc
-        .value_num = 0,                        // number of values for this option
-        .option_val = 0,                       // value of this option
-        .menu = &LabMenu_Record,               // pointer to the menu that pressing A opens
-        .option_name = "Recording",            // pointer to a string
-        .desc = "Record and playback inputs.", // string describing what this option does
-        .option_values = 0,                    // pointer to an array of strings
-        .onOptionChange = 0,
-    },
-    // info display
-    {
-        .option_kind = OPTKIND_MENU,                          // the type of option this is; menu, string list, integer list, etc
-        .value_num = 0,                                       // number of values for this option
-        .option_val = 0,                                      // value of this option
-        .menu = &LabMenu_InfoDisplay,                         // pointer to the menu that pressing A opens
-        .option_name = "Info Display",                        // pointer to a string
-        .desc = "Display various game information onscreen.", // string describing what this option does
-        .option_values = 0,                                   // pointer to an array of strings
-        .onOptionChange = 0,
-    },
-    {
-        .option_kind = OPTKIND_FUNC,                                                                                       // the type of option this is; menu, string list, integers list, etc
-        .value_num = 0,                                                                                                    // number of values for this option
-        .option_val = 0,                                                                                                   // value of this option
-        .menu = 0,                                                                                                         // pointer to the menu that pressing A opens
-        .option_name = "Help",                                                                                             // pointer to a string
-        .desc = "D-Pad Left - Load State\nD-Pad Right - Save State\nD-Pad Down - Move CPU\nHold R in the menu for turbo.", // string describing what this option does
-        .option_values = 0,                                                                                                // pointer to an array of strings
-        .onOptionChange = Lab_Exit,
-    },
-    {
-        .option_kind = OPTKIND_FUNC,                  // the type of option this is; menu, string list, integers list, etc
-        .value_num = 0,                               // number of values for this option
-        .option_val = 0,                              // value of this option
-        .menu = 0,                                    // pointer to the menu that pressing A opens
-        .option_name = "Exit",                        // pointer to a string
-        .desc = "Return to the Event Select Screen.", // string describing what this option does
-        .option_values = 0,                           // pointer to an array of strings
-        .onOptionChange = 0,
-        .onOptionSelect = Lab_Exit,
-    },
-};
-static EventMenu LabMenu_Main = {
-    .name = "Main Menu",                                         // the name of this menu
-    .option_num = sizeof(LabOptions_Main) / sizeof(EventOption), // number of options this menu contains
-    .scroll = 0,                                                 // runtime variable used for how far down in the menu to start
-    .state = 0,                                                  // bool used to know if this menu is focused, used at runtime
-    .cursor = 0,                                                 // index of the option currently selected, used at runtime
-    .options = &LabOptions_Main,                                 // pointer to all of this menu's options
-    .prev = 0,                                                   // pointer to previous menu, used at runtime
-};
-// General
-static char **LabOptions_CamMode[] = {"Normal", "Zoom", "Fixed", "Advanced"};
-static char **LabOptions_FrameAdvButton[] = {"L", "Z", "X", "Y"};
-static EventOption LabOptions_General[] = {
-    // frame advance
-    {
-        .option_kind = OPTKIND_STRING,                                                                 // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabOptions_OffOn) / 4,                                                     // number of values for this option
-        .option_val = 0,                                                                               // value of this option
-        .menu = 0,                                                                                     // pointer to the menu that pressing A opens
-        .option_name = "Frame Advance",                                                                // pointer to a string
-        .desc = "Enable frame advance. Press to advance one\nframe. Hold to advance at normal speed.", // string describing what this option does
-        .option_values = LabOptions_OffOn,                                                             // pointer to an array of strings
-        .onOptionChange = Lab_ChangeFrameAdvance,
-    },
-    // frame advance button
-    {
-        .option_kind = OPTKIND_STRING,                        // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabOptions_FrameAdvButton) / 4,   // number of values for this option
-        .option_val = 0,                                      // value of this option
-        .menu = 0,                                            // pointer to the menu that pressing A opens
-        .option_name = "Frame Advance Button",                // pointer to a string
-        .desc = "Choose which button will advance the frame", // string describing what this option does
-        .option_values = LabOptions_FrameAdvButton,           // pointer to an array of strings
-        .onOptionChange = 0,
-        .disable = 1,
-    },
-    // p1 percent
-    {
-        .option_kind = OPTKIND_INT,             // the type of option this is; menu, string list, integer list, etc
-        .value_num = 999,                       // number of values for this option
-        .option_val = 0,                        // value of this option
-        .menu = 0,                              // pointer to the menu that pressing A opens
-        .option_name = "Player Percent",        // pointer to a string
-        .desc = "Adjust the player's percent.", // string describing what this option does
-        .option_values = "%d%%",                // pointer to an array of strings
-        .onOptionChange = Lab_ChangePlayerPercent,
-    },
-    {
-        .option_kind = OPTKIND_STRING,          
-        .value_num = 2,                    
-        .option_val = 0,                         
-        .menu = 0,                           
-        .option_name = "Lock Player Percent",        
-        .desc = "Locks Player percent to current percent",
-        .option_values = LabOptions_OffOn,             
-        .onOptionChange = Lab_ChangePlayerLockPercent,
-    },
-    // model display
-    {
-        .option_kind = OPTKIND_STRING,                      // the type of option this is; menu, string list, integer list, etc
-        .value_num = 2,                                     // number of values for this option
-        .option_val = 1,                                    // value of this option
-        .menu = 0,                                          // pointer to the menu that pressing A opens
-        .option_name = "Model Display",                     // pointer to a string
-        .desc = "Toggle player and item model visibility.", // string describing what this option does
-        .option_values = LabOptions_OffOn,                  // pointer to an array of strings
-        .onOptionChange = Lab_ChangeModelDisplay,
-    },
-    // fighter collision
-    {
-        .option_kind = OPTKIND_STRING,                                                                                                                           // the type of option this is; menu, string list, integer list, etc
-        .value_num = 2,                                                                                                                                          // number of values for this option
-        .option_val = 0,                                                                                                                                         // value of this option
-        .menu = 0,                                                                                                                                               // pointer to the menu that pressing A opens
-        .option_name = "Fighter Collision",                                                                                                                      // pointer to a string
-        .desc = "Toggle hitbox and hurtbox visualization.\nYellow = hurt, red = hit, purple = grab, \nwhite = trigger, green = reflect,\nblue = shield/absorb.", // string describing what this option does
-        .option_values = LabOptions_OffOn,                                                                                                                       // pointer to an array of strings
-        .onOptionChange = Lab_ChangeHitDisplay,
-    },
-    // environment collision
-    {
-        .option_kind = OPTKIND_STRING,                                                                                          // the type of option this is; menu, string list, integer list, etc
-        .value_num = 2,                                                                                                         // number of values for this option
-        .option_val = 0,                                                                                                        // value of this option
-        .menu = 0,                                                                                                              // pointer to the menu that pressing A opens
-        .option_name = "Environment Collision",                                                                                 // pointer to a string
-        .desc = "Toggle environment collision visualization.\nAlso displays the players' ECB (environmental \ncollision box).", // string describing what this option does
-        .option_values = LabOptions_OffOn,                                                                                      // pointer to an array of strings
-        .onOptionChange = Lab_ChangeEnvCollDisplay,
-    },
-    // camera mode
-    {
-        .option_kind = OPTKIND_STRING,                                                                                                      // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabOptions_CamMode) / 4,                                                                                        // number of values for this option
-        .option_val = 0,                                                                                                                    // value of this option
-        .menu = 0,                                                                                                                          // pointer to the menu that pressing A opens
-        .option_name = "Camera Mode",                                                                                                       // pointer to a string
-        .desc = "Adjust the camera's behavior.\nIn advanced mode, use C-Stick while holding\nA/B/Y to pan, rotate and zoom, respectively.", // string describing what this option does
-        .option_values = LabOptions_CamMode,                                                                                                // pointer to an array of strings
-        .onOptionChange = Lab_ChangeCamMode,
-    },
-    {
-        .option_kind = OPTKIND_MENU,                             // the type of option this is; menu, string list, integer list, etc
-        .menu = &LabMenu_Overlays,                               // pointer to the menu that pressing A opens
-        .option_name = {"Color Overlays"},                       // pointer to a string
-        .desc = "Set up color indicators for\n. action states.", // string describing what this option does
-    },
-    // hud
-    {
-        .option_kind = OPTKIND_STRING,                          // the type of option this is; menu, string list, integer list, etc
-        .value_num = 2,                                         // number of values for this option
-        .option_val = 1,                                        // value of this option
-        .menu = 0,                                              // pointer to the menu that pressing A opens
-        .option_name = "HUD",                                   // pointer to a string
-        .desc = "Toggle player percents and timer visibility.", // string describing what this option does
-        .option_values = LabOptions_OffOn,                      // pointer to an array of strings
-        .onOptionChange = Lab_ChangeHUD,
-    },
-    // di display
-    {
-        .option_kind = OPTKIND_STRING,                                                                                      // the type of option this is; menu, string list, integer list, etc
-        .value_num = 2,                                                                                                     // number of values for this option
-        .option_val = 0,                                                                                                    // value of this option
-        .menu = 0,                                                                                                          // pointer to the menu that pressing A opens
-        .option_name = "DI Display",                                                                                        // pointer to a string
-        .desc = "Display knockback trajectories.\nUse frame advance to see the effects of DI\nin realtime during hitstop.", // string describing what this option does
-        .option_values = LabOptions_OffOn,                                                                                  // pointer to an array of strings
-        .onOptionChange = 0,
-    },
-    // input display
-    {
-        .option_kind = OPTKIND_STRING,             // the type of option this is; menu, string list, integer list, etc
-        .value_num = 2,                            // number of values for this option
-        .option_val = 0,                           // value of this option
-        .menu = 0,                                 // pointer to the menu that pressing A opens
-        .option_name = "Input Display",            // pointer to a string
-        .desc = "Display player inputs onscreen.", // string describing what this option does
-        .option_values = LabOptions_OffOn,         // pointer to an array of strings
-        .onOptionChange = 0,
-    },
-    // move staling
-    {
-        .option_kind = OPTKIND_STRING,                                                          // the type of option this is; menu, string list, integer list, etc
-        .value_num = 2,                                                                         // number of values for this option
-        .option_val = 1,                                                                        // value of this option
-        .menu = 0,                                                                              // pointer to the menu that pressing A opens
-        .option_name = "Move Staling",                                                          // pointer to a string
-        .desc = "Toggle the staling of moves. Attacks become \nweaker the more they are used.", // string describing what this option does
-        .option_values = LabOptions_OffOn,                                                      // pointer to an array of strings
-        .onOptionChange = 0,
-    },
-};
-static EventMenu LabMenu_General = {
-    .name = "General",                                              // the name of this menu
-    .option_num = sizeof(LabOptions_General) / sizeof(EventOption), // number of options this menu contains
-    .scroll = 0,                                                    // runtime variable used for how far down in the menu to start
-    .state = 0,                                                     // bool used to know if this menu is focused, used at runtime
-    .cursor = 0,                                                    // index of the option currently selected, used at runtime
-    .options = &LabOptions_General,                                 // pointer to all of this menu's options
-    .prev = 0,                                                      // pointer to previous menu, used at runtime
+// MAIN MENU --------------------------------------------------------------
+
+enum lab_option
+{
+    OPTLAB_GENERAL_OPTIONS,
+    OPTLAB_CPU_OPTIONS,
+    OPTLAB_RECORD_OPTIONS,
+    OPTLAB_INFODISP,
+    OPTLAB_HELP,
+    OPTLAB_EXIT,
+
+    OPTLAB_COUNT
 };
 
-
-// Info Display
-static char **LabValues_InfoDisplay[] = {"None", "Position", "State Name", "State Frame", "Velocity - Self", "Velocity - KB", "Velocity - Total", "Engine LStick", "System LStick", "Engine CStick", "System CStick", "Engine Trigger", "System Trigger", "Ledgegrab Timer", "Intangibility Timer", "Hitlag", "Hitstun", "Shield Health", "Shield Stun", "Grip Strength", "ECB Lock", "ECB Bottom", "Jumps", "Walljumps", "Jab Counter", "Line Info", "Blastzone Left/Right", "Blastzone Up/Down"};
-static char **LabValues_InfoPresets[] = {"None", "Custom", "Ledge", "Damage"};
-//static char **LabValues_InfoPosition[] = {"Top Left", "Top Mid", "Top Right", "Bottom Left", "Bottom Mid", "Bottom Right"};
-static char **LabValues_InfoSize[] = {"Small", "Medium", "Large"};
-static char **LabValues_InfoPlayers[] = {"Player 1", "Player 2", "Player 3", "Player 4"};
-static EventOption LabOptions_InfoDisplay[] = {
+static char *LabOptions_OffOn[] = {"Off", "On"};
+static EventOption LabOptions_Main[OPTLAB_COUNT] = {
     {
-        .option_kind = OPTKIND_STRING,                           // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_InfoPlayers) / 4,          // number of values for this option
-        .option_val = 0,                                         // value of this option
-        .menu = 0,                                               // pointer to the menu that pressing A opens
-        .option_name = "Player",                                 // pointer to a string
-        .desc = "Toggle which player's information to display.", // string describing what this option does
-        .option_values = LabValues_InfoPlayers,                  // pointer to an array of strings
-        .onOptionChange = Lab_ChangeInfoPlayer,
-    },
-    {
-        .option_kind = OPTKIND_STRING,                                                                                                        // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_InfoSize) / 4,                                                                                          // number of values for this option
-        .option_val = 1,                                                                                                                      // value of this option
-        .menu = 0,                                                                                                                            // pointer to the menu that pressing A opens
-        .option_name = "Size",                                                                                                                // pointer to a string
-        .desc = "Change the size of the info display window.\nLarge is recommended for CRT.\nMedium/Small recommended for Dolphin Emulator.", // string describing what this option does
-        .option_values = LabValues_InfoSize,                                                                                                  // pointer to an array of strings
-        .onOptionChange = Lab_ChangeInfoSizePos,
-    },
-    {
-        .option_kind = OPTKIND_STRING,                       // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_InfoPresets) / 4,      // number of values for this option
-        .option_val = 0,                                     // value of this option
-        .menu = 0,                                           // pointer to the menu that pressing A opens
-        .option_name = "Display Preset",                     // pointer to a string
-        .desc = "Choose between pre-configured selections.", // string describing what this option does
-        .option_values = LabValues_InfoPresets,              // pointer to an array of strings
-        .onOptionChange = Lab_ChangeInfoPreset,
-    },
-    {
-        .option_kind = OPTKIND_STRING,                   // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_InfoDisplay) / 4,  // number of values for this option
-        .option_val = 0,                                 // value of this option
-        .menu = 0,                                       // pointer to the menu that pressing A opens
-        .option_name = "Row 1",                          // pointer to a string
-        .desc = "Adjust what is displayed in this row.", // string describing what this option does
-        .option_values = LabValues_InfoDisplay,          // pointer to an array of strings
-        .onOptionChange = Lab_ChangeInfoRow,
-    },
-    {
-        .option_kind = OPTKIND_STRING,                   // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_InfoDisplay) / 4,  // number of values for this option
-        .option_val = 0,                                 // value of this option
-        .menu = 0,                                       // pointer to the menu that pressing A opens
-        .option_name = "Row 2",                          // pointer to a string
-        .desc = "Adjust what is displayed in this row.", // string describing what this option does
-        .option_values = LabValues_InfoDisplay,          // pointer to an array of strings
-        .onOptionChange = Lab_ChangeInfoRow,
-    },
-    {
-        .option_kind = OPTKIND_STRING,                   // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_InfoDisplay) / 4,  // number of values for this option
-        .option_val = 0,                                 // value of this option
-        .menu = 0,                                       // pointer to the menu that pressing A opens
-        .option_name = "Row 3",                          // pointer to a string
-        .desc = "Adjust what is displayed in this row.", // string describing what this option does
-        .option_values = LabValues_InfoDisplay,          // pointer to an array of strings
-        .onOptionChange = Lab_ChangeInfoRow,
-    },
-    {
-        .option_kind = OPTKIND_STRING,                   // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_InfoDisplay) / 4,  // number of values for this option
-        .option_val = 0,                                 // value of this option
-        .menu = 0,                                       // pointer to the menu that pressing A opens
-        .option_name = "Row 4",                          // pointer to a string
-        .desc = "Adjust what is displayed in this row.", // string describing what this option does
-        .option_values = LabValues_InfoDisplay,          // pointer to an array of strings
-        .onOptionChange = Lab_ChangeInfoRow,
-    },
-    {
-        .option_kind = OPTKIND_STRING,                   // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_InfoDisplay) / 4,  // number of values for this option
-        .option_val = 0,                                 // value of this option
-        .menu = 0,                                       // pointer to the menu that pressing A opens
-        .option_name = "Row 5",                          // pointer to a string
-        .desc = "Adjust what is displayed in this row.", // string describing what this option does
-        .option_values = LabValues_InfoDisplay,          // pointer to an array of strings
-        .onOptionChange = Lab_ChangeInfoRow,
-    },
-    {
-        .option_kind = OPTKIND_STRING,                   // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_InfoDisplay) / 4,  // number of values for this option
-        .option_val = 0,                                 // value of this option
-        .menu = 0,                                       // pointer to the menu that pressing A opens
-        .option_name = "Row 6",                          // pointer to a string
-        .desc = "Adjust what is displayed in this row.", // string describing what this option does
-        .option_values = LabValues_InfoDisplay,          // pointer to an array of strings
-        .onOptionChange = Lab_ChangeInfoRow,
-    },
-    {
-        .option_kind = OPTKIND_STRING,                   // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_InfoDisplay) / 4,  // number of values for this option
-        .option_val = 0,                                 // value of this option
-        .menu = 0,                                       // pointer to the menu that pressing A opens
-        .option_name = "Row 7",                          // pointer to a string
-        .desc = "Adjust what is displayed in this row.", // string describing what this option does
-        .option_values = LabValues_InfoDisplay,          // pointer to an array of strings
-        .onOptionChange = Lab_ChangeInfoRow,
-    },
-    {
-        .option_kind = OPTKIND_STRING,                   // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_InfoDisplay) / 4,  // number of values for this option
-        .option_val = 0,                                 // value of this option
-        .menu = 0,                                       // pointer to the menu that pressing A opens
-        .option_name = "Row 8",                          // pointer to a string
-        .desc = "Adjust what is displayed in this row.", // string describing what this option does
-        .option_values = LabValues_InfoDisplay,          // pointer to an array of strings
-        .onOptionChange = Lab_ChangeInfoRow,
-    },
-};
-static EventMenu LabMenu_InfoDisplay = {
-    .name = "Info Display",             // the name of this menu
-    .option_num = 11,                   // number of options this menu contains
-    .scroll = 0,                        // runtime variable used for how far down in the menu to start
-    .state = 0,                         // bool used to know if this menu is focused, used at runtime
-    .cursor = 0,                        // index of the option currently selected, used at runtime
-    .options = &LabOptions_InfoDisplay, // pointer to all of this menu's options
-    .prev = 0,                          // pointer to previous menu, used at runtime
-};
-// CPU
-static char **LabValues_Shield[] = {"Off", "On Until Hit", "On"};
-static char **LabValues_ShieldDir[] = {"Neutral", "Up", "Towards", "Down", "Away"};
-static char **LabValues_CPUBehave[] = {"Stand", "Shield", "Crouch", "Jump"};
-static char **LabValues_TDI[] = {"Random", "Inwards", "Outwards", "Floorhug", "Custom", "Random Custom", "None"};
-static char **LabValues_ASDI[] = {"None", "Away", "Towards", "Left", "Right", "Up", "Down"};
-static char **LabValues_SDIDir[] = {"Random", "Away", "Towards", "Up", "Down", "Left", "Right"};
-static char **LabValues_Tech[] = {"Random", "Neutral", "Away", "Towards", "None"};
-static char **LabValues_Getup[] = {"Random", "Stand", "Away", "Towards", "Attack"};
-static char **LabValues_CounterGround[] = {"None", "Spotdodge", "Shield", "Grab", "Up B", "Side B Toward", "Side B Away", "Down B", "Neutral B", "Up Smash", "Down Smash", "Forward Smash", "Roll Away", "Roll Towards", "Roll Random", "Neutral Air", "Forward Air", "Down Air", "Back Air", "Up Air", "Jab", "Forward Tilt", "Up Tilt", "Down Tilt", "Short Hop", "Full Hop"};
-static char **LabValues_CounterAir[] = {"None", "Airdodge", "Jump Away", "Jump Towards", "Jump Neutral", "Up B", "Side B Toward", "Side B Away", "Down B", "Neutral B", "Neutral Air", "Forward Air", "Down Air", "Back Air", "Up Air", "Tumble Fastfall", "Wiggle Fastfall"};
-static char **LabValues_CounterShield[] = {"None", "Grab", "Short Hop", "Full Hop", "Spotdodge", "Roll Away", "Roll Towards", "Roll Random", "Up Smash", "Up B", "Down B", "Neutral Air", "Forward Air", "Down Air", "Back Air", "Up Air"};
-static char **LabValues_GrabEscape[] = {"None", "Medium", "High", "Perfect"};
-static char **LabValues_LockCPUPercent[] = {"Off", "On"};
-static EventOption LabOptions_CPU[] = {
-    // cpu percent
-    {
-        .option_kind = OPTKIND_INT,          // the type of option this is; menu, string list, integer list, etc
-        .value_num = 999,                    // number of values for this option
-        .option_val = 0,                     // value of this option
-        .menu = 0,                           // pointer to the menu that pressing A opens
-        .option_name = "CPU Percent",        // pointer to a string
-        .desc = "Adjust the CPU's percent.", // string describing what this option does
-        .option_values = "%d%%",             // pointer to an array of strings
-        .onOptionChange = Lab_ChangeCPUPercent,
-    },
-    {
-        .option_kind = OPTKIND_STRING,          
-        .value_num = 2,                    
-        .option_val = 0,                         
-        .menu = 0,                           
-        .option_name = "Lock CPU Percent",        
-        .desc = "Locks CPU percent to current percent",
-        .option_values = LabValues_LockCPUPercent,             
-        .onOptionChange = Lab_ChangeCPULockPercent,
+        .option_kind = OPTKIND_MENU,
+        .menu = &LabMenu_General,
+        .option_name = "General",
+        .desc = "Toggle player percent, overlays,\nframe advance, and camera settings.",
     },
     {
         .option_kind = OPTKIND_MENU,
-        .value_num = 0,
-        .option_val = 0,
-        .menu = &LabMenu_Tech,
-        .option_name = {"Tech Options"},
-        .desc = "Configure CPU Tech Behavior.",
-        .option_values = 0,
-        .onOptionChange = 0,
+        .menu = &LabMenu_CPU,
+        .option_name = "CPU Options",
+        .desc = "Configure CPU behavior.",
     },
     {
-        .option_kind = OPTKIND_STRING,                                        // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_TDI) / 4,                               // number of values for this option
-        .option_val = 0,                                                      // value of this option
-        .menu = 0,                                                            // pointer to the menu that pressing A opens
-        .option_name = "Trajectory DI",                                       // pointer to a string
-        .desc = "Adjust how the CPU will alter their knockback\ntrajectory.", // string describing what this option does
-        .option_values = LabValues_TDI,                                       // pointer to an array of strings
-        .onOptionChange = 0,
+        .option_kind = OPTKIND_MENU,
+        .menu = &LabMenu_Record,
+        .option_name = "Recording",
+        .desc = "Record and playback inputs.",
     },
     {
-        .option_kind = OPTKIND_FUNC,                                           // the type of option this is; menu, string list, integer list, etc
-        .value_num = 0,                                                        // number of values for this option
-        .option_val = 0,                                                       // value of this option
-        .menu = 0,                                                             // pointer to the menu that pressing A opens
-        .option_name = "Custom TDI",                                           // pointer to a string
-        .desc = "Create custom trajectory DI values for the\nCPU to perform.", // string describing what this option does
-        .option_values = 0,                                                    // pointer to an array of strings
-        .onOptionChange = 0,
-        .onOptionSelect = Lab_SelectCustomTDI,
+        .option_kind = OPTKIND_MENU,
+        .menu = &LabMenu_InfoDisplay,
+        .option_name = "Info Display",
+        .desc = "Display various game information onscreen.",
     },
-    // SDI amount
+    {
+        .option_kind = OPTKIND_FUNC,
+        .option_name = "Help",
+        .desc = "D-Pad Left - Load State\nD-Pad Right - Save State\nD-Pad Down - Move CPU\nHold R in the menu for turbo.",
+        .onOptionChange = Lab_Exit,
+    },
+    {
+        .option_kind = OPTKIND_FUNC,
+        .option_name = "Exit",
+        .desc = "Return to the Event Select Screen.",
+        .onOptionSelect = Lab_Exit,
+    },
+};
+
+static EventMenu LabMenu_Main = {
+    .name = "Main Menu",
+    .option_num = sizeof(LabOptions_Main) / sizeof(EventOption),
+    .options = &LabOptions_Main,
+};
+
+// GENERAL MENU --------------------------------------------------------------
+
+enum gen_option
+{
+    OPTGEN_FRAME,
+    OPTGEN_FRAMEBTN,
+    OPTGEN_HMNPCNT,
+    OPTGEN_HMNPCNTLOCK,
+    OPTGEN_MODEL,
+    OPTGEN_HIT,
+    OPTGEN_COLL,
+    OPTGEN_CAM,
+    OPTGEN_OVERLAYS,
+    OPTGEN_HUD,
+    OPTGEN_DI,
+    OPTGEN_INPUT,
+    OPTGEN_STALE,
+
+    OPTGEN_COUNT
+};
+
+static char *LabOptions_CamMode[] = {"Normal", "Zoom", "Fixed", "Advanced"};
+static char *LabOptions_FrameAdvButton[] = {"L", "Z", "X", "Y"};
+
+static EventOption LabOptions_General[OPTGEN_COUNT] = {
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabOptions_OffOn) / 4,
+        .option_name = "Frame Advance",
+        .desc = "Enable frame advance. Press to advance one\nframe. Hold to advance at normal speed.",
+        .option_values = LabOptions_OffOn,
+        .onOptionChange = Lab_ChangeFrameAdvance,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabOptions_FrameAdvButton) / 4,
+        .option_name = "Frame Advance Button",
+        .desc = "Choose which button will advance the frame",
+        .option_values = LabOptions_FrameAdvButton,
+        .disable = 1,
+    },
     {
         .option_kind = OPTKIND_INT,
-        .value_num = 8,
-        .option_val = 0,
-        .menu = 0,
-        .option_name = "Smash DI Amount",
-        .desc = "Adjust how often the CPU will alter their position\nduring hitstop.",
-        .option_values = "%d Frames",
-        .onOptionChange = 0,
-    },
-    // SDI Direction
-    {
-        .option_kind = OPTKIND_STRING,                                                               // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_SDIDir) / 4,                                                   // number of values for this option
-        .option_val = 0,                                                                             // value of this option
-        .menu = 0,                                                                                   // pointer to the menu that pressing A opens
-        .option_name = "Smash DI Direction",                                                         // pointer to a string
-        .desc = "Adjust the direction in which the CPU will alter \ntheir position during hitstop.", // string describing what this option does
-        .option_values = LabValues_SDIDir,                                                           // pointer to an array of strings
-        .onOptionChange = 0,
-    },
-    {
-        .option_kind = OPTKIND_STRING,                                         // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_ASDI) / 4,                               // number of values for this option
-        .option_val = 0,                                                       // value of this option
-        .menu = 0,                                                             // pointer to the menu that pressing A opens
-        .option_name = "ASDI",                                                 // pointer to a string
-        .desc = "Set CPU C-stick ASDI direction",                              // string describing what this option does
-        .option_values = LabValues_ASDI,                                       // pointer to an array of strings
-        .onOptionChange = 0,
-    },
-    {
-        .option_kind = OPTKIND_STRING,                    // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_Shield) / 4,        // number of values for this option
-        .option_val = 1,                                  // value of this option
-        .menu = 0,                                        // pointer to the menu that pressing A opens
-        .option_name = {"Infinite Shields"},              // pointer to a string
-        .desc = "Adjust how shield health deteriorates.", // string describing what this option does
-        .option_values = LabValues_Shield,                // pointer to an array of strings
-        .onOptionChange = 0,
-    },
-    {
-        .option_kind = OPTKIND_STRING,                    // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_ShieldDir) / 4,     // number of values for this option
-        .option_val = 0,                                  // value of this option
-        .menu = 0,                                        // pointer to the menu that pressing A opens
-        .option_name = {"Shield Angle"},              // pointer to a string
-        .desc = "Adjust how CPU angles their shield.",    // string describing what this option does
-        .option_values = LabValues_ShieldDir,             // pointer to an array of strings
-        .onOptionChange = 0,
-    },
-    {
-        .option_kind = OPTKIND_STRING,                      // the type of option this is; menu, string list, integer list, etc
-        .value_num = 2,                                     // number of values for this option
-        .option_val = 0,                                    // value of this option
-        .menu = 0,                                          // pointer to the menu that pressing A opens
-        .option_name = {"Intangibility"},                   // pointer to a string
-        .desc = "Toggle the CPU's ability to take damage.", // string describing what this option does
-        .option_values = LabOptions_OffOn,                  // pointer to an array of strings
-        .onOptionChange = Lab_ChangeCPUIntang,
-    },
-    {
-        .option_kind = OPTKIND_STRING,                               // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_GrabEscape) / 4,               // number of values for this option
-        .option_val = CPUMASH_NONE,                                  // value of this option
-        .menu = 0,                                                   // pointer to the menu that pressing A opens
-        .option_name = "Grab Escape",                                // pointer to a string
-        .desc = "Adjust how the CPU will attempt to escape\ngrabs.", // string describing what this option does
-        .option_values = LabValues_GrabEscape,                       // pointer to an array of strings
-        .onOptionChange = 0,
-    },
-    /*
-    {
-        .option_kind = OPTKIND_STRING,                               // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabOptions_OffOn) / 4,                   // number of values for this option
-        .option_val = 0,                                             // value of this option
-        .menu = 0,                                                   // pointer to the menu that pressing A opens
-        .option_name = "Auto Reset",                                 // pointer to a string
-        .desc = "Automatically reset after the CPU is\nactionable.", // string describing what this option does
-        .option_values = LabOptions_OffOn,                           // pointer to an array of strings
-        .onOptionChange = 0,
-    },
-*/
-    {
-        .option_kind = OPTKIND_STRING,                // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_CPUBehave) / 4, // number of values for this option
-        .option_val = 0,                              // value of this option
-        .menu = 0,                                    // pointer to the menu that pressing A opens
-        .option_name = "Behavior",                    // pointer to a string
-        .desc = "Adjust the CPU's default action.",   // string describing what this option does
-        .option_values = LabValues_CPUBehave,         // pointer to an array of strings
-        .onOptionChange = 0,
-    },
-    {
-        .option_kind = OPTKIND_STRING,                                                     // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_CounterGround) / 4,                                  // number of values for this option
-        .option_val = 1,                                                                   // value of this option
-        .menu = 0,                                                                         // pointer to the menu that pressing A opens
-        .option_name = "Counter Action (Ground)",                                          // pointer to a string
-        .desc = "Select the action to be performed after a\ngrounded CPU's hitstun ends.", // string describing what this option does
-        .option_values = LabValues_CounterGround,                                          // pointer to an array of strings
-        .onOptionChange = 0,
-    },
-    {
-        .option_kind = OPTKIND_STRING,                                                      // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_CounterAir) / 4,                                      // number of values for this option
-        .option_val = 4,                                                                    // value of this option
-        .menu = 0,                                                                          // pointer to the menu that pressing A opens
-        .option_name = "Counter Action (Air)",                                              // pointer to a string
-        .desc = "Select the action to be performed after an\nairborne CPU's hitstun ends.", // string describing what this option does
-        .option_values = LabValues_CounterAir,                                              // pointer to an array of strings
-        .onOptionChange = 0,
-    },
-    {
-        .option_kind = OPTKIND_STRING,                                               // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_CounterShield) / 4,                            // number of values for this option
-        .option_val = 1,                                                             // value of this option
-        .menu = 0,                                                                   // pointer to the menu that pressing A opens
-        .option_name = "Counter Action (Shield)",                                    // pointer to a string
-        .desc = "Select the action to be performed after the\nCPU's shield is hit.", // string describing what this option does
-        .option_values = LabValues_CounterShield,                                    // pointer to an array of strings
-        .onOptionChange = 0,
-    },
-    {
-        .option_kind = OPTKIND_INT,                                                  // the type of option this is; menu, string list, integer list, etc
-        .value_num = 100,                                                            // number of values for this option
-        .option_val = 0,                                                             // value of this option
-        .menu = 0,                                                                   // pointer to the menu that pressing A opens
-        .option_name = "Counter After Frames",                                       // pointer to a string
-        .desc = "Adjust the amount of actionable frames before \nthe CPU counters.", // string describing what this option does
-        .option_values = "%d Frames",                                                // pointer to an array of strings
-        .onOptionChange = 0,
-    },
-    {
-        .option_kind = OPTKIND_INT,                                           // the type of option this is; menu, string list, integer list, etc
-        .value_num = 100,                                                     // number of values for this option
-        .option_val = 1,                                                      // value of this option
-        .menu = 0,                                                            // pointer to the menu that pressing A opens
-        .option_name = "Counter After Hits",                                  // pointer to a string
-        .desc = "Adjust the amount of hits taken before the \nCPU counters.", // string describing what this option does
-        .option_values = "%d Hits",                                           // pointer to an array of strings
-        .onOptionChange = 0,
-    },
-    {
-        .option_kind = OPTKIND_INT,                                                           // the type of option this is; menu, string list, integer list, etc
-        .value_num = 100,                                                                     // number of values for this option
-        .option_val = 1,                                                                      // value of this option
-        .menu = 0,                                                                            // pointer to the menu that pressing A opens
-        .option_name = "Counter After Shield Hits",                                           // pointer to a string
-        .desc = "Adjust the amount of hits the CPU's shield\nwill take before they counter.", // string describing what this option does
-        .option_values = "%d Hits",                                                           // pointer to an array of strings
-        .onOptionChange = 0,
-    },
-};
-static EventMenu LabMenu_CPU = {
-    .name = "CPU Options",                                      // the name of this menu
-    .option_num = sizeof(LabOptions_CPU) / sizeof(EventOption), // number of options this menu contains
-    .scroll = 0,                                                // runtime variable used for how far down in the menu to start
-    .state = 0,                                                 // bool used to know if this menu is focused, used at runtime
-    .cursor = 0,                                                // index of the option currently selected, used at runtime
-    .options = &LabOptions_CPU,                                 // pointer to all of this menu's options
-    .prev = 0,                                                  // pointer to previous menu, used at runtime
-};
-// Tech Options
-static EventOption LabOptions_Tech[] = {
-    {
-        .option_kind = OPTKIND_STRING,                                          // the type of option this is; menu, string list, integer list, etc
-        .value_num = 2,                                                         // number of values for this option
-        .option_val = 0,                                                        // value of this option
-        .menu = 0,                                                              // pointer to the menu that pressing A opens
-        .option_name = "Tech Invisibility",                                     // pointer to a string
-        .desc = "Toggle the CPU turning invisible during tech\nanimations.",    // string describing what this option does
-        .option_values = LabOptions_OffOn,                                      // pointer to an array of strings
-        .onOptionChange = 0,
+        .value_num = 999,
+        .option_name = "Player Percent",
+        .desc = "Adjust the player's percent.",
+        .option_values = "%d%%",
+        .onOptionChange = Lab_ChangePlayerPercent,
     },
     {
         .option_kind = OPTKIND_STRING,
         .value_num = 2,
-        .option_val = 0,
-        .menu = 0,
+        .option_name = "Lock Player Percent",
+        .desc = "Locks Player percent to current percent",
+        .option_values = LabOptions_OffOn,
+        .onOptionChange = Lab_ChangePlayerLockPercent,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = 2,
+        .option_val = 1,
+        .option_name = "Model Display",
+        .desc = "Toggle player and item model visibility.",
+        .option_values = LabOptions_OffOn,
+        .onOptionChange = Lab_ChangeModelDisplay,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = 2,
+        .option_name = "Fighter Collision",
+        .desc = "Toggle hitbox and hurtbox visualization.\nYellow = hurt, red = hit, purple = grab, \nwhite = trigger, green = reflect,\nblue = shield/absorb.",
+        .option_values = LabOptions_OffOn,
+        .onOptionChange = Lab_ChangeHitDisplay,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = 2,
+        .option_name = "Environment Collision",
+        .desc = "Toggle environment collision visualization.\nAlso displays the players' ECB (environmental \ncollision box).",
+        .option_values = LabOptions_OffOn,
+        .onOptionChange = Lab_ChangeEnvCollDisplay,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabOptions_CamMode) / 4,
+        .option_name = "Camera Mode",
+        .desc = "Adjust the camera's behavior.\nIn advanced mode, use C-Stick while holding\nA/B/Y to pan, rotate and zoom, respectively.",
+        .option_values = LabOptions_CamMode,
+        .onOptionChange = Lab_ChangeCamMode,
+    },
+    {
+        .option_kind = OPTKIND_MENU,
+        .menu = &LabMenu_Overlays,
+        .option_name = "Color Overlays",
+        .desc = "Set up color indicators for\n. action states.",
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = 2,
+        .option_val = 1,
+        .option_name = "HUD",
+        .desc = "Toggle player percents and timer visibility.",
+        .option_values = LabOptions_OffOn,
+        .onOptionChange = Lab_ChangeHUD,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = 2,
+        .option_name = "DI Display",
+        .desc = "Display knockback trajectories.\nUse frame advance to see the effects of DI\nin realtime during hitstop.",
+        .option_values = LabOptions_OffOn,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = 2,
+        .option_name = "Input Display",
+        .desc = "Display player inputs onscreen.",
+        .option_values = LabOptions_OffOn,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = 2,
+        .option_val = 1,
+        .option_name = "Move Staling",
+        .desc = "Toggle the staling of moves. Attacks become \nweaker the more they are used.",
+        .option_values = LabOptions_OffOn,
+    },
+};
+static EventMenu LabMenu_General = {
+    .name = "General",
+    .option_num = sizeof(LabOptions_General) / sizeof(EventOption),
+    .options = &LabOptions_General,
+};
+
+// INFO DISPLAY MENU --------------------------------------------------------------
+
+enum infdisp_rows
+{
+    INFDISP_NONE,
+    INFDISP_POS,
+    INFDISP_STATE,
+    INFDISP_FRAME,
+    INFDISP_SELFVEL,
+    INFDISP_KBVEL,
+    INFDISP_TOTALVEL,
+    INFDISP_ENGLSTICK,
+    INFDISP_SYSLSTICK,
+    INFDISP_ENGCSTICK,
+    INFDISP_SYSCSTICK,
+    INFDISP_ENGTRIGGER,
+    INFDISP_SYSTRIGGER,
+    INFDISP_LEDGECOOLDOWN,
+    INFDISP_INTANGREMAIN,
+    INFDISP_HITSTOP,
+    INFDISP_HITSTUN,
+    INFDISP_SHIELDHEALTH,
+    INFDISP_SHIELDSTUN,
+    INFDISP_GRIP,
+    INFDISP_ECBLOCK,
+    INFDISP_ECBBOT,
+    INFDISP_JUMPS,
+    INFDISP_WALLJUMPS,
+    INFDISP_JAB,
+    INFDISP_LINE,
+    INFDISP_BLASTLR,
+    INFDISP_BLASTUD,
+
+    INFDISP_COUNT
+};
+
+enum info_disp_option
+{
+    OPTINF_PLAYER,
+    OPTINF_SIZE,
+    OPTINF_PRESET,
+    OPTINF_ROW1,
+    OPTINF_ROW2,
+    OPTINF_ROW3,
+    OPTINF_ROW4,
+    OPTINF_ROW5,
+    OPTINF_ROW6,
+    OPTINF_ROW7,
+    OPTINF_ROW8,
+
+    OPTINF_COUNT
+};
+
+static char *LabValues_InfoDisplay[INFDISP_COUNT] = {"None", "Position", "State Name", "State Frame", "Velocity - Self", "Velocity - KB", "Velocity - Total", "Engine LStick", "System LStick", "Engine CStick", "System CStick", "Engine Trigger", "System Trigger", "Ledgegrab Timer", "Intangibility Timer", "Hitlag", "Hitstun", "Shield Health", "Shield Stun", "Grip Strength", "ECB Lock", "ECB Bottom", "Jumps", "Walljumps", "Jab Counter", "Line Info", "Blastzone Left/Right", "Blastzone Up/Down"};
+static char *LabValues_InfoPresets[] = {"None", "Custom", "Ledge", "Damage"};
+static char *LabValues_InfoSize[] = {"Small", "Medium", "Large"};
+static char *LabValues_InfoPlayers[] = {"Player 1", "Player 2", "Player 3", "Player 4"};
+
+static EventOption LabOptions_InfoDisplay[OPTINF_COUNT] = {
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_InfoPlayers) / 4,
+        .option_name = "Player",
+        .desc = "Toggle which player's information to display.",
+        .option_values = LabValues_InfoPlayers,
+        .onOptionChange = Lab_ChangeInfoPlayer,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_InfoSize) / 4,
+        .option_val = 1,
+        .option_name = "Size",
+        .desc = "Change the size of the info display window.\nLarge is recommended for CRT.\nMedium/Small recommended for Dolphin Emulator.",
+        .option_values = LabValues_InfoSize,
+        .onOptionChange = Lab_ChangeInfoSizePos,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_InfoPresets) / 4,
+        .option_name = "Display Preset",
+        .desc = "Choose between pre-configured selections.",
+        .option_values = LabValues_InfoPresets,
+        .onOptionChange = Lab_ChangeInfoPreset,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_InfoDisplay) / 4,
+        .option_name = "Row 1",
+        .desc = "Adjust what is displayed in this row.",
+        .option_values = LabValues_InfoDisplay,
+        .onOptionChange = Lab_ChangeInfoRow,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_InfoDisplay) / 4,
+        .option_name = "Row 2",
+        .desc = "Adjust what is displayed in this row.",
+        .option_values = LabValues_InfoDisplay,
+        .onOptionChange = Lab_ChangeInfoRow,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_InfoDisplay) / 4,
+        .option_name = "Row 3",
+        .desc = "Adjust what is displayed in this row.",
+        .option_values = LabValues_InfoDisplay,
+        .onOptionChange = Lab_ChangeInfoRow,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_InfoDisplay) / 4,
+        .option_name = "Row 4",
+        .desc = "Adjust what is displayed in this row.",
+        .option_values = LabValues_InfoDisplay,
+        .onOptionChange = Lab_ChangeInfoRow,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_InfoDisplay) / 4,
+        .option_name = "Row 5",
+        .desc = "Adjust what is displayed in this row.",
+        .option_values = LabValues_InfoDisplay,
+        .onOptionChange = Lab_ChangeInfoRow,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_InfoDisplay) / 4,
+        .option_name = "Row 6",
+        .desc = "Adjust what is displayed in this row.",
+        .option_values = LabValues_InfoDisplay,
+        .onOptionChange = Lab_ChangeInfoRow,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_InfoDisplay) / 4,
+        .option_name = "Row 7",
+        .desc = "Adjust what is displayed in this row.",
+        .option_values = LabValues_InfoDisplay,
+        .onOptionChange = Lab_ChangeInfoRow,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_InfoDisplay) / 4,
+        .option_name = "Row 8",
+        .desc = "Adjust what is displayed in this row.",
+        .option_values = LabValues_InfoDisplay,
+        .onOptionChange = Lab_ChangeInfoRow,
+    },
+};
+static EventMenu LabMenu_InfoDisplay = {
+    .name = "Info Display",
+    .option_num = sizeof(LabOptions_InfoDisplay) / sizeof(EventOption),
+    .options = &LabOptions_InfoDisplay,
+};
+
+// CPU MENU --------------------------------------------------------------
+
+enum cpu_behave
+{
+    CPUBEHAVE_STAND,
+    CPUBEHAVE_SHIELD,
+    CPUBEHAVE_CROUCH,
+    CPUBEHAVE_JUMP,
+
+    CPUBEHAVE_COUNT
+};
+
+enum cpu_sdi
+{
+    CPUSDI_RANDOM,
+    CPUSDI_NONE,
+
+    CPUSDI_COUNT
+};
+
+enum cpu_tdi
+{
+    CPUTDI_RANDOM,
+    CPUTDI_IN,
+    CPUTDI_OUT,
+    CPUTDI_FLOORHUG,
+    CPUTDI_CUSTOM,
+    CPUTDI_RANDOM_CUSTOM,
+    CPUTDI_NONE,
+    CPUTDI_NUM,
+
+    CPUTDI_COUNT
+};
+
+enum cpu_shield_angle
+{
+    CPUSHIELDANG_NONE,
+    CPUSHIELDANG_UP,
+    CPUSHIELDANG_TOWARD,
+    CPUSHIELDANG_DOWN,
+    CPUSHIELDANG_AWAY,
+
+    CPUSHIELDANG_COUNT
+};
+
+enum cpu_tech
+{
+    CPUTECH_RANDOM,
+    CPUTECH_NEUTRAL,
+    CPUTECH_AWAY,
+    CPUTECH_TOWARDS,
+    CPUTECH_NONE,
+
+    CPUTECH_COUNT
+};
+
+enum cpu_getup
+{
+    CPUGETUP_RANDOM,
+    CPUGETUP_STAND,
+    CPUGETUP_AWAY,
+    CPUGETUP_TOWARD,
+    CPUGETUP_ATTACK,
+
+    CPUGETUP_COUNT
+};
+enum cpu_state
+{
+    CPUSTATE_START,
+    CPUSTATE_GRABBED,
+    CPUSTATE_SDI,
+    CPUSTATE_TDI,
+    CPUSTATE_TECH,
+    CPUSTATE_GETUP,
+    CPUSTATE_COUNTER,
+    CPUSTATE_RECOVER,
+    CPUSTATE_NONE,
+
+    CPUSTATE_COUNT
+};
+
+enum cpu_mash
+{
+    CPUMASH_NONE,
+    CPUMASH_MED,
+    CPUMASH_HIGH,
+    CPUMASH_PERFECT,
+
+    CPUMASH_COUNT
+};
+
+enum cpu_option
+{
+    OPTCPU_PCNT,
+    OPTCPU_LOCKPCNT,
+    OPTCPU_TECHOPTIONS,
+    OPTCPU_TDI,
+    OPTCPU_CUSTOMTDI,
+    OPTCPU_SDINUM,
+    OPTCPU_SDIDIR,
+    OPTCPU_ASDI,
+    OPTCPU_SHIELD,
+    OPTCPU_SHIELDDIR,
+    OPTCPU_INTANG,
+    OPTCPU_MASH,
+    OPTCPU_BEHAVE,
+    OPTCPU_CTRGRND,
+    OPTCPU_CTRAIR,
+    OPTCPU_CTRSHIELD,
+    OPTCPU_CTRFRAMES,
+    OPTCPU_CTRHITS,
+    OPTCPU_SHIELDHITS,
+
+    OPTCPU_COUNT
+};
+
+enum asdi
+{
+    ASDI_NONE,
+    ASDI_AWAY,
+    ASDI_TOWARD,
+    ASDI_LEFT,
+    ASDI_RIGHT,
+    ASDI_UP,
+    ASDI_DOWN,
+
+    ASDI_COUNT
+};
+
+enum sdi_dir
+{
+    SDIDIR_RANDOM,
+    SDIDIR_AWAY,
+    SDIDIR_TOWARD,
+    SDIDIR_UP,
+    SDIDIR_DOWN,
+    SDIDIR_LEFT,
+    SDIDIR_RIGHT,
+
+    SDIDIR_COUNT
+};
+
+static char *LabValues_Shield[] = {"Off", "On Until Hit", "On"};
+static char *LabValues_ShieldDir[] = {"Neutral", "Up", "Towards", "Down", "Away"};
+static char *LabValues_CPUBehave[] = {"Stand", "Shield", "Crouch", "Jump"};
+static char *LabValues_TDI[] = {"Random", "Inwards", "Outwards", "Floorhug", "Custom", "Random Custom", "None"};
+static char *LabValues_ASDI[] = {"None", "Away", "Towards", "Left", "Right", "Up", "Down"};
+static char *LabValues_SDIDir[] = {"Random", "Away", "Towards", "Up", "Down", "Left", "Right"};
+static char *LabValues_Tech[] = {"Random", "Neutral", "Away", "Towards", "None"};
+static char *LabValues_Getup[] = {"Random", "Stand", "Away", "Towards", "Attack"};
+static char *LabValues_CounterGround[] = {"None", "Spotdodge", "Shield", "Grab", "Up B", "Side B Toward", "Side B Away", "Down B", "Neutral B", "Up Smash", "Down Smash", "Forward Smash", "Roll Away", "Roll Towards", "Roll Random", "Neutral Air", "Forward Air", "Down Air", "Back Air", "Up Air", "Jab", "Forward Tilt", "Up Tilt", "Down Tilt", "Short Hop", "Full Hop"};
+static char *LabValues_CounterAir[] = {"None", "Airdodge", "Jump Away", "Jump Towards", "Jump Neutral", "Up B", "Side B Toward", "Side B Away", "Down B", "Neutral B", "Neutral Air", "Forward Air", "Down Air", "Back Air", "Up Air", "Tumble Fastfall", "Wiggle Fastfall"};
+static char *LabValues_CounterShield[] = {"None", "Grab", "Short Hop", "Full Hop", "Spotdodge", "Roll Away", "Roll Towards", "Roll Random", "Up Smash", "Up B", "Down B", "Neutral Air", "Forward Air", "Down Air", "Back Air", "Up Air"};
+static char *LabValues_GrabEscape[] = {"None", "Medium", "High", "Perfect"};
+static char *LabValues_LockCPUPercent[] = {"Off", "On"};
+
+static EventOption LabOptions_CPU[OPTCPU_COUNT] = {
+    {
+        .option_kind = OPTKIND_INT,
+        .value_num = 999,
+        .option_name = "CPU Percent",
+        .desc = "Adjust the CPU's percent.",
+        .option_values = "%d%%",
+        .onOptionChange = Lab_ChangeCPUPercent,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = 2,
+        .option_name = "Lock CPU Percent",
+        .desc = "Locks CPU percent to current percent",
+        .option_values = LabValues_LockCPUPercent,
+        .onOptionChange = Lab_ChangeCPULockPercent,
+    },
+    {
+        .option_kind = OPTKIND_MENU,
+        .menu = &LabMenu_Tech,
+        .option_name = "Tech Options",
+        .desc = "Configure CPU Tech Behavior.",
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_TDI) / 4,
+        .option_name = "Trajectory DI",
+        .desc = "Adjust how the CPU will alter their knockback\ntrajectory.",
+        .option_values = LabValues_TDI,
+    },
+    {
+        .option_kind = OPTKIND_FUNC,
+        .option_name = "Custom TDI",
+        .desc = "Create custom trajectory DI values for the\nCPU to perform.",
+        .onOptionSelect = Lab_SelectCustomTDI,
+    },
+    {
+        .option_kind = OPTKIND_INT,
+        .value_num = 8,
+        .option_name = "Smash DI Amount",
+        .desc = "Adjust how often the CPU will alter their position\nduring hitstop.",
+        .option_values = "%d Frames",
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_SDIDir) / 4,
+        .option_name = "Smash DI Direction",
+        .desc = "Adjust the direction in which the CPU will alter \ntheir position during hitstop.",
+        .option_values = LabValues_SDIDir,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_ASDI) / 4,
+        .option_name = "ASDI",
+        .desc = "Set CPU C-stick ASDI direction",
+        .option_values = LabValues_ASDI,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_Shield) / 4,
+        .option_val = 1,
+        .option_name = "Infinite Shields",
+        .desc = "Adjust how shield health deteriorates.",
+        .option_values = LabValues_Shield,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_ShieldDir) / 4,
+        .option_name = "Shield Angle",
+        .desc = "Adjust how CPU angles their shield.",
+        .option_values = LabValues_ShieldDir,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = 2,
+        .option_name = "Intangibility",
+        .desc = "Toggle the CPU's ability to take damage.",
+        .option_values = LabOptions_OffOn,
+        .onOptionChange = Lab_ChangeCPUIntang,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_GrabEscape) / 4,
+        .option_val = CPUMASH_NONE,
+        .option_name = "Grab Escape",
+        .desc = "Adjust how the CPU will attempt to escape\ngrabs.",
+        .option_values = LabValues_GrabEscape,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_CPUBehave) / 4,
+        .option_name = "Behavior",
+        .desc = "Adjust the CPU's default action.",
+        .option_values = LabValues_CPUBehave,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_CounterGround) / 4,
+        .option_val = 1,
+        .option_name = "Counter Action (Ground)",
+        .desc = "Select the action to be performed after a\ngrounded CPU's hitstun ends.",
+        .option_values = LabValues_CounterGround,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_CounterAir) / 4,
+        .option_val = 4,
+        .option_name = "Counter Action (Air)",
+        .desc = "Select the action to be performed after an\nairborne CPU's hitstun ends.",
+        .option_values = LabValues_CounterAir,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_CounterShield) / 4,
+        .option_val = 1,
+        .option_name = "Counter Action (Shield)",
+        .desc = "Select the action to be performed after the\nCPU's shield is hit.",
+        .option_values = LabValues_CounterShield,
+    },
+    {
+        .option_kind = OPTKIND_INT,
+        .value_num = 100,
+        .option_name = "Counter After Frames",
+        .desc = "Adjust the amount of actionable frames before \nthe CPU counters.",
+        .option_values = "%d Frames",
+    },
+    {
+        .option_kind = OPTKIND_INT,
+        .value_num = 100,
+        .option_val = 1,
+        .option_name = "Counter After Hits",
+        .desc = "Adjust the amount of hits taken before the \nCPU counters.",
+        .option_values = "%d Hits",
+    },
+    {
+        .option_kind = OPTKIND_INT,
+        .value_num = 100,
+        .option_val = 1,
+        .option_name = "Counter After Shield Hits",
+        .desc = "Adjust the amount of hits the CPU's shield\nwill take before they counter.",
+        .option_values = "%d Hits",
+    },
+};
+
+static EventMenu LabMenu_CPU = {
+    .name = "CPU Options",
+    .option_num = sizeof(LabOptions_CPU) / sizeof(EventOption),
+    .options = &LabOptions_CPU,
+};
+
+// TECH MENU --------------------------------------------------------------
+
+static int tech_frame_distinguishable[27] = {
+    -1, // Mario
+     4, // Fox
+     6, // Captain Falcon
+    -1, // Donkey Kong
+    -1, // Kirby
+    -1, // Bowser
+    -1, // Link
+    -1, // Sheik
+    -1, // Ness
+     3, // Peach
+     6, // Popo (Ice Climbers)
+     6, // Nana (Ice Climbers)
+     7, // Pikachu
+    -1, // Samus
+    -1, // Yoshi
+    -1, // Jigglypuff
+    -1, // Mewtwo
+    -1, // Luigi
+     6, // Marth
+    -1, // Zelda
+    -1, // Young Link
+    -1, // Dr. Mario
+     4, // Falco
+    -1, // Pichu
+    -1, // Game & Watch
+    -1, // Ganondorf
+    -1, // Roy
+};
+
+enum tech_option
+{
+    OPTTECH_INVISIBLE,
+    OPTTECH_SOUND,
+    OPTTECH_TECH,
+    OPTTECH_TECHINPLACECHANCE,
+    OPTTECH_TECHAWAYCHANCE,
+    OPTTECH_TECHTOWARDCHANCE,
+    OPTTECH_MISSTECHCHANCE,
+    OPTTECH_GETUP,
+    OPTTECH_GETUPSTANDCHANCE,
+    OPTTECH_GETUPAWAYCHANCE,
+    OPTTECH_GETUPTOWARDCHANCE,
+    OPTTECH_GETUPATTACKCHANCE,
+
+    OPTTECH_COUNT
+};
+
+
+static EventOption LabOptions_Tech[OPTTECH_COUNT] = {
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = 2,
+        .option_name = "Tech Invisibility",
+        .desc = "Toggle the CPU turning invisible during tech\nanimations.",
+        .option_values = LabOptions_OffOn,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = 2,
         .option_name = "Tech Sound",
         .desc = "Toggle playing a sound when tech is\ndistinguishable.",
         .option_values = LabOptions_OffOn,
-        .onOptionChange = 0,
     },
     {
-        .option_kind = OPTKIND_STRING,                                         // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_Tech) / 4,                               // number of values for this option
-        .option_val = 0,                                                       // value of this option
-        .menu = 0,                                                             // pointer to the menu that pressing A opens
-        .option_name = "Tech Option",                                          // pointer to a string
-        .desc = "Adjust what the CPU will do upon colliding\nwith the stage.", // string describing what this option does
-        .option_values = LabValues_Tech,                                       // pointer to an array of strings
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_Tech) / 4,
+        .option_name = "Tech Option",
+        .desc = "Adjust what the CPU will do upon colliding\nwith the stage.",
+        .option_values = LabValues_Tech,
         .onOptionChange = Lab_ChangeTech,
     },
     {
-        .option_kind = OPTKIND_INT,                                 // the type of option this is; menu, string list, integer list, etc
-        .value_num = 101,                                           // number of values for this option
-        .option_val = 25,                                           // value of this option
-        .menu = 0,                                                  // pointer to the menu that pressing A opens
-        .option_name = "Tech in Place Chance",                      // pointer to a string
-        .desc = "Adjust the chance the CPU will tech in place.",    // string describing what this option does
-        .option_values = "%d%%",                                    // pointer to an array of strings
+        .option_kind = OPTKIND_INT,
+        .value_num = 101,
+        .option_val = 25,
+        .option_name = "Tech in Place Chance",
+        .desc = "Adjust the chance the CPU will tech in place.",
+        .option_values = "%d%%",
         .onOptionChange = Lab_ChangeTechInPlaceChance,
-        .disable = 0,
     },
     {
-        .option_kind = OPTKIND_INT,                                 // the type of option this is; menu, string list, integer list, etc
-        .value_num = 101,                                           // number of values for this option
-        .option_val = 25,                                           // value of this option
-        .menu = 0,                                                  // pointer to the menu that pressing A opens
-        .option_name = "Tech Away Chance",                          // pointer to a string
-        .desc = "Adjust the chance the CPU will tech away.",        // string describing what this option does
-        .option_values = "%d%%",                                    // pointer to an array of strings
+        .option_kind = OPTKIND_INT,
+        .value_num = 101,
+        .option_val = 25,
+        .option_name = "Tech Away Chance",
+        .desc = "Adjust the chance the CPU will tech away.",
+        .option_values = "%d%%",
         .onOptionChange = Lab_ChangeTechAwayChance,
-        .disable = 0,
     },
     {
-        .option_kind = OPTKIND_INT,                             // the type of option this is; menu, string list, integer list, etc
-        .value_num = 101,                                       // number of values for this option
-        .option_val = 25,                                       // value of this option
-        .menu = 0,                                              // pointer to the menu that pressing A opens
-        .option_name = "Tech Toward Chance",                    // pointer to a string
-        .desc = "Adjust the chance the CPU will tech toward.",  // string describing what this option does
-        .option_values = "%d%%",                                // pointer to an array of strings
+        .option_kind = OPTKIND_INT,
+        .value_num = 101,
+        .option_val = 25,
+        .option_name = "Tech Toward Chance",
+        .desc = "Adjust the chance the CPU will tech toward.",
+        .option_values = "%d%%",
         .onOptionChange = Lab_ChangeTechTowardChance,
-        .disable = 0,
     },
     {
-        .option_kind = OPTKIND_INT,                             // the type of option this is; menu, string list, integer list, etc
-        .value_num = 101,                                       // number of values for this option
-        .option_val = 25,                                       // value of this option
-        .menu = 0,                                              // pointer to the menu that pressing A opens
-        .option_name = "Miss Tech Chance",                      // pointer to a string
-        .desc = "Adjust the chance the CPU will miss tech.",    // string describing what this option does
-        .option_values = "%d%%",                                // pointer to an array of strings
+        .option_kind = OPTKIND_INT,
+        .value_num = 101,
+        .option_val = 25,
+        .option_name = "Miss Tech Chance",
+        .desc = "Adjust the chance the CPU will miss tech.",
+        .option_values = "%d%%",
         .onOptionChange = Lab_ChangeMissTechChance,
-        .disable = 0,
     },
     {
-        .option_kind = OPTKIND_STRING,                                      // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_Getup) / 4,                           // number of values for this option
-        .option_val = 0,                                                    // value of this option
-        .menu = 0,                                                          // pointer to the menu that pressing A opens
-        .option_name = "Get Up Option",                                     // pointer to a string
-        .desc = "Adjust what the CPU will do after missing\na tech input.", // string describing what this option does
-        .option_values = LabValues_Getup,                                   // pointer to an array of strings
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_Getup) / 4,
+        .option_name = "Get Up Option",
+        .desc = "Adjust what the CPU will do after missing\na tech input.",
+        .option_values = LabValues_Getup,
         .onOptionChange = Lab_ChangeGetup,
     },
     {
-        .option_kind = OPTKIND_INT,                         // the type of option this is; menu, string list, integer list, etc
-        .value_num = 101,                                   // number of values for this option
-        .option_val = 25,                                   // value of this option
-        .menu = 0,                                          // pointer to the menu that pressing A opens
-        .option_name = "Stand Chance",                      // pointer to a string
-        .desc = "Adjust the chance the CPU will stand.",    // string describing what this option does
-        .option_values = "%d%%",                            // pointer to an array of strings
+        .option_kind = OPTKIND_INT,
+        .value_num = 101,
+        .option_val = 25,
+        .option_name = "Stand Chance",
+        .desc = "Adjust the chance the CPU will stand.",
+        .option_values = "%d%%",
         .onOptionChange = Lab_ChangeStandChance,
-        .disable = 0,
     },
     {
-        .option_kind = OPTKIND_INT,                             // the type of option this is; menu, string list, integer list, etc
-        .value_num = 101,                                       // number of values for this option
-        .option_val = 25,                                       // value of this option
-        .menu = 0,                                              // pointer to the menu that pressing A opens
-        .option_name = "Roll Away Chance",                      // pointer to a string
-        .desc = "Adjust the chance the CPU will roll away.",    // string describing what this option does
-        .option_values = "%d%%",                                // pointer to an array of strings
+        .option_kind = OPTKIND_INT,
+        .value_num = 101,
+        .option_val = 25,
+        .option_name = "Roll Away Chance",
+        .desc = "Adjust the chance the CPU will roll away.",
+        .option_values = "%d%%",
         .onOptionChange = Lab_ChangeRollAwayChance,
-        .disable = 0,
     },
     {
-        .option_kind = OPTKIND_INT,                             // the type of option this is; menu, string list, integer list, etc
-        .value_num = 101,                                       // number of values for this option
-        .option_val = 25,                                       // value of this option
-        .menu = 0,                                              // pointer to the menu that pressing A opens
-        .option_name = "Roll Toward Chance",                    // pointer to a string
-        .desc = "Adjust the chance the CPU will roll toward.",  // string describing what this option does
-        .option_values = "%d%%",                                // pointer to an array of strings
+        .option_kind = OPTKIND_INT,
+        .value_num = 101,
+        .option_val = 25,
+        .option_name = "Roll Toward Chance",
+        .desc = "Adjust the chance the CPU will roll toward.",
+        .option_values = "%d%%",
         .onOptionChange = Lab_ChangeRollTowardChance,
-        .disable = 0,
     },
     {
-        .option_kind = OPTKIND_INT,                             // the type of option this is; menu, string list, integer list, etc
-        .value_num = 101,                                       // number of values for this option
-        .option_val = 25,                                       // value of this option
-        .menu = 0,                                              // pointer to the menu that pressing A opens
-        .option_name = "Getup Attack Chance",                   // pointer to a string
-        .desc = "Adjust the chance the CPU will getup attack.", // string describing what this option does
-        .option_values = "%d%%",                                // pointer to an array of strings
+        .option_kind = OPTKIND_INT,
+        .value_num = 101,
+        .option_val = 25,
+        .option_name = "Getup Attack Chance",
+        .desc = "Adjust the chance the CPU will getup attack.",
+        .option_values = "%d%%",
         .onOptionChange = Lab_ChangeGetupAttackChance,
-        .disable = 0,
     },
 };
+
 static EventMenu LabMenu_Tech = {
     .name = "Tech Options",
     .option_num = sizeof(LabOptions_Tech) / sizeof(EventOption),
-    .scroll = 0,
-    .state = 0,
-    .cursor = 0,
     .options = &LabOptions_Tech,
-    .prev = 0,
 };
-// Recording
-//
+
+// RECORDING MENU --------------------------------------------------------------
+
+enum autorestore
+{
+    AUTORESTORE_NONE,
+    AUTORESTORE_PLAYBACK_END,
+    AUTORESTORE_COUNTER,
+
+    AUTORESTORE_COUNT
+};
+
+enum rec_mode_hmn
+{
+    RECMODE_HMN_OFF,
+    RECMODE_HMN_RECORD,
+    RECMODE_HMN_PLAYBACK,
+
+    RECMODE_COUNT
+};
+
+enum rec_mode_cpu
+{
+    RECMODE_CPU_OFF,
+    RECMODE_CPU_CONTROL,
+    RECMODE_CPU_RECORD,
+    RECMODE_CPU_PLAYBACK,
+
+    RECMODE_CPU_COUNT
+};
+
+enum rec_option
+{
+   OPTREC_SAVE_LOAD,
+   OPTREC_HMNMODE,
+   OPTREC_HMNSLOT,
+   OPTREC_CPUMODE,
+   OPTREC_CPUSLOT,
+   OPTREC_LOOP,
+   OPTREC_AUTORESTORE,
+   OPTREC_RESAVE,
+   OPTREC_EXPORT,
+   OPTREC_DELETE,
+
+   OPTREC_COUNT
+};
+
 // Aitch: Please be aware that the order of these options is important.
 // The option idx will be serialized when exported, so loading older replays could load the wrong option if we reorder/remove options.
-static char **LabValues_RecordSlot[] = {"Random", "Slot 1", "Slot 2", "Slot 3", "Slot 4", "Slot 5", "Slot 6"};
-static char **LabValues_HMNRecordMode[] = {"Off", "Record", "Playback"};
-static char **LabValues_CPURecordMode[] = {"Off", "Control", "Record", "Playback"};
-static char **LabValues_AutoRestore[] = {"Off", "Playback Ends", "CPU Counters"};
+static char *LabValues_RecordSlot[] = {"Random", "Slot 1", "Slot 2", "Slot 3", "Slot 4", "Slot 5", "Slot 6"};
+static char *LabValues_HMNRecordMode[] = {"Off", "Record", "Playback"};
+static char *LabValues_CPURecordMode[] = {"Off", "Control", "Record", "Playback"};
+static char *LabValues_AutoRestore[] = {"Off", "Playback Ends", "CPU Counters"};
 
 static const EventOption Record_Save = {
-    .option_kind = OPTKIND_FUNC,                                             // the type of option this is; menu, string list, integer list, etc
-    .value_num = 0,                                                          // number of values for this option
-    .option_val = 0,                                                         // value of this option
-    .menu = 0,                                                               // pointer to the menu that pressing A opens
-    .option_name = "Save Positions",                                         // pointer to a string
-    .desc = "Save the current fighter positions\nas the initial positions.", // string describing what this option does
-    .option_values = 0,                                                      // pointer to an array of strings
+    .option_kind = OPTKIND_FUNC,
+    .option_name = "Save Positions",
+    .desc = "Save the current fighter positions\nas the initial positions.",
     .onOptionSelect = Record_InitState,
 };
 
 static const EventOption Record_Load = {
-    .option_kind = OPTKIND_FUNC,                                                             // the type of option this is; menu, string list, integer list, etc
-    .value_num = 0,                                                                          // number of values for this option
-    .option_val = 0,                                                                         // value of this option
-    .menu = 0,                                                                               // pointer to the menu that pressing A opens
-    .option_name = "Restore Positions",                                                      // pointer to a string
-    .desc = "Load the saved fighter positions and \nstart the sequence from the beginning.", // string describing what this option does
-    .option_values = 0,                                                                      // pointer to an array of strings
+    .option_kind = OPTKIND_FUNC,
+    .option_name = "Restore Positions",
+    .desc = "Load the saved fighter positions and \nstart the sequence from the beginning.",
     .onOptionSelect = Record_RestoreState,
 };
 
-static EventOption LabOptions_Record[] = {
+static EventOption LabOptions_Record[OPTREC_COUNT] = {
     // swapped between Record_Save and Record_Load
     Record_Save,
 
     {
-        .option_kind = OPTKIND_STRING,                               // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_HMNRecordMode) / 4,            // number of values for this option
-        .option_val = 0,                                             // value of this option
-        .menu = 0,                                                   // pointer to the menu that pressing A opens
-        .option_name = "HMN Mode",                                   // pointer to a string
-        .desc = "Toggle between recording and playback of\ninputs.", // string describing what this option does
-        .option_values = LabValues_HMNRecordMode,                    // pointer to an array of strings
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_HMNRecordMode) / 4,
+        .option_name = "HMN Mode",
+        .desc = "Toggle between recording and playback of\ninputs.",
+        .option_values = LabValues_HMNRecordMode,
         .onOptionChange = Record_ChangeHMNMode,
     },
     {
-        .option_kind = OPTKIND_STRING,                                                                                       // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_RecordSlot) / 4,                                                                       // number of values for this option
-        .option_val = 1,                                                                                                     // value of this option
-        .menu = 0,                                                                                                           // pointer to the menu that pressing A opens
-        .option_name = "HMN Record Slot",                                                                                    // pointer to a string
-        .desc = "Toggle which recording slot to save inputs \nto. Maximum of 6 and can be set to random \nduring playback.", // string describing what this option does
-        .option_values = LabValues_RecordSlot,                                                                               // pointer to an array of strings
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_RecordSlot) / 4,
+        .option_val = 1,
+        .option_name = "HMN Record Slot",
+        .desc = "Toggle which recording slot to save inputs \nto. Maximum of 6 and can be set to random \nduring playback.",
+        .option_values = LabValues_RecordSlot,
         .onOptionChange = Record_ChangeHMNSlot,
     },
     {
-        .option_kind = OPTKIND_STRING,                               // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_CPURecordMode) / 4,            // number of values for this option
-        .option_val = 0,                                             // value of this option
-        .menu = 0,                                                   // pointer to the menu that pressing A opens
-        .option_name = "CPU Mode",                                   // pointer to a string
-        .desc = "Toggle between recording and playback of\ninputs.", // string describing what this option does
-        .option_values = LabValues_CPURecordMode,                    // pointer to an array of strings
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_CPURecordMode) / 4,
+        .option_name = "CPU Mode",
+        .desc = "Toggle between recording and playback of\ninputs.",
+        .option_values = LabValues_CPURecordMode,
         .onOptionChange = Record_ChangeCPUMode,
     },
     {
-        .option_kind = OPTKIND_STRING,                                                                                       // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_RecordSlot) / 4,                                                                       // number of values for this option
-        .option_val = 1,                                                                                                     // value of this option
-        .menu = 0,                                                                                                           // pointer to the menu that pressing A opens
-        .option_name = "CPU Record Slot",                                                                                    // pointer to a string
-        .desc = "Toggle which recording slot to save inputs \nto. Maximum of 6 and can be set to random \nduring playback.", // string describing what this option does
-        .option_values = LabValues_RecordSlot,                                                                               // pointer to an array of strings
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_RecordSlot) / 4,
+        .option_val = 1,
+        .option_name = "CPU Record Slot",
+        .desc = "Toggle which recording slot to save inputs \nto. Maximum of 6 and can be set to random \nduring playback.",
+        .option_values = LabValues_RecordSlot,
         .onOptionChange = Record_ChangeCPUSlot,
     },
     {
-        .option_kind = OPTKIND_STRING,                     // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabOptions_OffOn) / 4,         // number of values for this option
-        .option_val = 0,                                   // value of this option
-        .menu = 0,                                         // pointer to the menu that pressing A opens
-        .option_name = "Loop Input Playback",              // pointer to a string
-        .desc = "Loop the recorded inputs when they end.", // string describing what this option does
-        .option_values = LabOptions_OffOn,                 // pointer to an array of strings
-        .onOptionChange = 0,
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabOptions_OffOn) / 4,
+        .option_name = "Loop Input Playback",
+        .desc = "Loop the recorded inputs when they end.",
+        .option_values = LabOptions_OffOn,
     },
     {
-        .option_kind = OPTKIND_STRING,                                              // the type of option this is; menu, string list, integer list, etc
-        .value_num = sizeof(LabValues_AutoRestore) / 4,                             // number of values for this option
-        .option_val = 0,                                                            // value of this option
-        .menu = 0,                                                                  // pointer to the menu that pressing A opens
-        .option_name = "Auto Restore",                                              // pointer to a string
-        .desc = "Automatically restore saved positions.",                           // string describing what this option does
-        .option_values = LabValues_AutoRestore,                                     // pointer to an array of strings
-        .onOptionChange = 0,
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_AutoRestore) / 4,
+        .option_name = "Auto Restore",
+        .desc = "Automatically restore saved positions.",
+        .option_values = LabValues_AutoRestore,
     },
     {
-        .option_kind = OPTKIND_FUNC,                                                             // the type of option this is; menu, string list, integer list, etc
-        .value_num = 0,                                                                          // number of values for this option
-        .option_val = 0,                                                                         // value of this option
-        .menu = 0,                                                                               // pointer to the menu that pressing A opens
-        .option_name = "Re-Save Positions",                                                      // pointer to a string
-        .desc = "Save the current position, without\nremoving recorded inputs.",                 // string describing what this option does
-        .option_values = 0,                                                                      // pointer to an array of strings
+        .option_kind = OPTKIND_FUNC,
+        .option_name = "Re-Save Positions",
+        .desc = "Save the current position, without\nremoving recorded inputs.",
         .onOptionSelect = Record_ResaveState,
     },
     {
-        .option_kind = OPTKIND_FUNC,                                                             // the type of option this is; menu, string list, integer list, etc
-        .value_num = 0,                                                                          // number of values for this option
-        .option_val = 0,                                                                         // value of this option
-        .menu = 0,                                                                               // pointer to the menu that pressing A opens
-        .option_name = "Delete Positions",                                                       // pointer to a string
-        .desc = "Delete the current initial position\nand recordings.",                          // string describing what this option does
-        .option_values = 0,                                                                      // pointer to an array of strings
+        .option_kind = OPTKIND_FUNC,
+        .option_name = "Delete Positions",
+        .desc = "Delete the current initial position\nand recordings.",
         .onOptionSelect = Record_DeleteState,
     },
     {
-        .option_kind = OPTKIND_FUNC,                                                             // the type of option this is; menu, string list, integer list, etc
-        .value_num = 0,                                                                          // number of values for this option
-        .option_val = 0,                                                                         // value of this option
-        .menu = 0,                                                                               // pointer to the menu that pressing A opens
-        .option_name = "Export",                                                                 // pointer to a string
-        .desc = "Export the recording to a memory card\nfor later use or to share with others.", // string describing what this option does
-        .option_values = 0,                                                                      // pointer to an array of strings
+        .option_kind = OPTKIND_FUNC,
+        .option_name = "Export",
+        .desc = "Export the recording to a memory card\nfor later use or to share with others.",
         .onOptionSelect = Export_Init,
     },
 };
+
 static EventMenu LabMenu_Record = {
-    .name = "Recording",                                           // the name of this menu
-    .option_num = sizeof(LabOptions_Record) / sizeof(EventOption), // number of options this menu contains
-    .scroll = 0,                                                   // runtime variable used for how far down in the menu to start
-    .state = 0,                                                    // bool used to know if this menu is focused, used at runtime
-    .cursor = 0,                                                   // index of the option currently selected, used at runtime
-    .options = &LabOptions_Record,                                 // pointer to all of this menu's options
-    .prev = 0,                                                     // pointer to previous menu, used at runtime
+    .name = "Recording",
+    .option_num = sizeof(LabOptions_Record) / sizeof(EventOption),
+    .options = &LabOptions_Record,
 };
+
+// OVERLAY MENU --------------------------------------------------------------
 
 enum overlay_type
 {
@@ -2265,7 +1633,7 @@ enum overlay_type
     OVERLAY_COUNT,
 };
 
-static char *LabValues_OverlayASIDGroups[OVERLAY_COUNT] = {
+static int LabValues_OverlayASIDGroups[OVERLAY_COUNT] = {
     ASID_ACTIONABLEGROUND,
     ASID_ACTIONABLEAIR,
 };
@@ -2281,26 +1649,31 @@ static GXColor LabValues_OverlayColours[OVERLAY_COLOUR_COUNT] = {
 
 static EventOption LabOptions_Overlays[OVERLAY_COUNT] = {
     {
-        .option_kind = OPTKIND_STRING,                               // the type of option this is; menu, string list, integer list, etc
-        .value_num = OVERLAY_COLOUR_COUNT,                           // number of values for this option
-        .option_name = "Actionable on Ground",                       // pointer to a string
-        .desc = "",                                                  // string describing what this option does
-        .option_values = LabValues_OverlayNames,                     // pointer to an array of strings
+        .option_kind = OPTKIND_STRING,
+        .value_num = OVERLAY_COLOUR_COUNT,
+        .option_name = "Actionable on Ground",
+        .desc = "",
+        .option_values = LabValues_OverlayNames,
     },
     {
-        .option_kind = OPTKIND_STRING,                               // the type of option this is; menu, string list, integer list, etc
-        .value_num = OVERLAY_COLOUR_COUNT,                           // number of values for this option
-        .option_name = "Actionable in Air",                          // pointer to a string
-        .desc = "",                                                  // string describing what this option does
-        .option_values = LabValues_OverlayNames,                     // pointer to an array of strings
+        .option_kind = OPTKIND_STRING,
+        .value_num = OVERLAY_COLOUR_COUNT,
+        .option_name = "Actionable in Air",
+        .desc = "",
+        .option_values = LabValues_OverlayNames,
     },
 };
+
 static EventMenu LabMenu_Overlays = {
-    .name = "Overlays",                                              // the name of this menu
-    .option_num = sizeof(LabOptions_Overlays) / sizeof(EventOption), // number of options this menu contains
-    .options = &LabOptions_Overlays,                                 // pointer to all of this menu's options
+    .name = "Overlays",
+    .option_num = sizeof(LabOptions_Overlays) / sizeof(EventOption),
+    .options = &LabOptions_Overlays,
 };
 
-u32 lz77_compress(u8 *uncompressed_text, u32 uncompressed_size, u8 *compressed_text, u8 pointer_length_width);
-u32 lz77_decompress(u8 *compressed_text, u8 *uncompressed_text);
-float get_angle_out_of_deadzone(float angle, int lastSDIWasCardinal);
+// FUNCTION PROTOTYPES ##############################################################
+
+static u32 lz77_compress(u8 *uncompressed_text, u32 uncompressed_size, u8 *compressed_text, u8 pointer_length_width);
+static u32 lz77_decompress(u8 *compressed_text, u8 *uncompressed_text);
+static float get_angle_out_of_deadzone(float angle, int lastSDIWasCardinal);
+static void rebound_tech_chances(int menu_lookup[4], int just_changed_option);
+static int is_tech_anim(int state);

@@ -234,20 +234,6 @@ typedef struct TDIData
     JOBJ *stick_prev[6][2];
     Text *text_curr;
 } TDIData;
-typedef struct CPUAction
-{
-    u16 state;                  // state to perform this action. -1 for last
-    u8 frameLow;                // first possible frame to perform this action
-    u8 frameHi;                 // last possible frame to perfrom this action
-    s8 stickX;                  // left stick X value
-    s8 stickY;                  // left stick Y value
-    s8 cstickX;                 // c stick X value
-    s8 cstickY;                 // c stick Y value
-    int input;                  // button to input
-    unsigned char isLast : 1;   // flag to indicate this was the final input
-    unsigned char stickDir : 3; // 0 = none, 1 = towards opponent, 2 = away from opponent, 3 = forward, 4 = backward
-
-} CPUAction;
 typedef struct RecInputs
 {
     unsigned char btn_dpadup : 1;
