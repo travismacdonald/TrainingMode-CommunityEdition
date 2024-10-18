@@ -843,15 +843,18 @@ static int CheckOverlay(GOBJ *character, OverlayGroup overlay)
 
             if (check_IASA(data)) return true;
 
-            return (ASID_WAIT <= state && state <= ASID_WALKFAST)
-                || state == ASID_TURN
+            if (state == ASID_CLIFFWAIT && data->TM.state_frame > 1) return true;
+
+            if (ASID_WAIT <= state && state <= ASID_WALKFAST) return true;
+            if (ASID_GUARD <= state && state <= ASID_GUARDREFLECT) return true;
+            if (ASID_JUMPF <= state && state <= ASID_FALLAERIALB) return true;
+
+            return state == ASID_TURN
                 || state == ASID_DASH
                 || state == ASID_RUN
+                || state == ASID_PASS
                 || state == ASID_SQUATWAIT
                 || state == ASID_OTTOTTOWAIT
-                || (ASID_GUARD <= state && state <= ASID_GUARDREFLECT)
-                || (ASID_JUMPF <= state && state <= ASID_FALLAERIALB)
-                || (state == ASID_CLIFFWAIT && data->TM.state_frame > 1)
                 || state == ASID_DAMAGEFALL
                 || state == ASID_DAMAGEFLYROLL
                 || state == ASID_DAMAGEFLYTOP;
@@ -870,6 +873,30 @@ static int CheckOverlay(GOBJ *character, OverlayGroup overlay)
 
             int frames_from_first_l = data->TM.state_frame + 7;
             return data->input.timer_trigger_any_ignore_hitlag > frames_from_first_l;
+        }
+
+        case (OVERLAY_CAN_FASTFALL):
+        {
+            if ((state < ASID_JUMPF || ASID_FALLAERIALB < state) && state != ASID_PASS)
+                return false;
+
+            if (data->flags.is_fastfall) 
+                return false;
+
+            // We can only fastfall on second frame with negative velocity.
+            // This check prunes the first frame.
+            if (data->phys.pos_delta.Y >= 0.0)
+                return false;
+
+            return data->phys.self_vel.Y < 0.0f;
+        }
+
+        case (OVERLAY_AUTOCANCEL):
+        {
+            if (state < ASID_ATTACKAIRN || ASID_ATTACKAIRLW < state)
+                return false;
+
+            return data->ftcmd_var.subactionFlag0 == 0;
         }
 
         case (OVERLAY_CROUCH):
@@ -893,7 +920,9 @@ static int CheckOverlay(GOBJ *character, OverlayGroup overlay)
             return check_IASA(data);
     }
 
-    assert("unhandled overlay idx");
+    char * err = HSD_MemAlloc(64);
+    sprintf(err, "unhandled overlay idx %i", overlay);
+    assert(err);
     return false;
 }
 
@@ -5240,6 +5269,8 @@ static void UpdateDataTracking(GOBJ *character) {
 }
 
 static void UpdateOverlays(GOBJ *character, EventOption *overlays) {
+    static int overlay_running = -1;
+
     FighterData *data = character->userdata;
 
     // we do a check and early return for overlays first,
@@ -5271,12 +5302,23 @@ static void UpdateOverlays(GOBJ *character, EventOption *overlays) {
         if (CheckOverlay(character, j))
         {
             Overlay ov = LabValues_OverlayColours[color_idx];
+
+            if (ov.occur_once && overlay_running == j)
+                return;
+
+            overlay_running = j;
             data->color[1].hex = ov.color;
             data->color[1].color_enable = 1;
             data->flags.invisible = ov.invisible;
-            break;
+
+            if (ov.play_sound)
+                SFX_PlayCommon(2);
+
+            return;
         }
     }
+
+    overlay_running = -1;
 }
 
 // Think Function that runs after the character's think functions.
@@ -5637,7 +5679,8 @@ void Event_Think(GOBJ *event)
             || fabs(hmn_pad->fstickY) >= STICK_DEADZONE
             || fabs(hmn_pad->fsubstickX) >= STICK_DEADZONE
             || fabs(hmn_pad->fsubstickY) >= STICK_DEADZONE;
-        int triggers = hmn_pad->triggerLeft | hmn_pad->triggerRight;
+        int triggers = hmn_pad->ftriggerLeft >= TRIGGER_DEADZONE
+            || hmn_pad->ftriggerRight >= TRIGGER_DEADZONE;
         int buttons = hmn_pad->held & (HSD_BUTTON_A | HSD_BUTTON_B | HSD_BUTTON_X | HSD_BUTTON_Y | 
                 HSD_BUTTON_DPAD_UP | HSD_TRIGGER_L | HSD_TRIGGER_R | HSD_TRIGGER_Z);
 

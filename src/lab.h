@@ -13,6 +13,7 @@ static EventMenu LabMenu_Tech;
 #define AUTORESTORE_DELAY 20
 #define INTANG_COLANIM 10
 #define STICK_DEADZONE 0.2
+#define TRIGGER_DEADZONE 0.2
 
 #define CPUMASHRNG_MED 35
 #define CPUMASHRNG_HIGH 55
@@ -1634,11 +1635,16 @@ static EventMenu LabMenu_Record = {
 
 // OVERLAY MENU --------------------------------------------------------------
 
-#define OVERLAY_COLOUR_COUNT 7
-static char *LabValues_OverlayNames[OVERLAY_COLOUR_COUNT] = { "None", "Red", "Green", "Blue", "White", "Black", "Invisible" };
+#define OVERLAY_COLOUR_COUNT 10
+static char *LabValues_OverlayNames[OVERLAY_COLOUR_COUNT] = { 
+    "None", "Red", "Green", "Blue", "Yellow", "White", "Black", 
+    "Remove Overlay", "Invisible", "Play Sound" 
+};
 
 typedef struct Overlay {
     u32 invisible : 1;
+    u32 play_sound : 1;
+    u32 occur_once : 1;
     GXColor color;
 } Overlay;
 
@@ -1647,9 +1653,13 @@ static Overlay LabValues_OverlayColours[OVERLAY_COLOUR_COUNT] = {
     { .color = { 255, 20 , 20 , 180 } },
     { .color = { 20 , 255, 20 , 180 } },
     { .color = { 20 , 20 , 255, 180 } },
+    { .color = { 220 , 220 , 20, 180 } },
     { .color = { 255, 255, 255, 180 } },
     { .color = { 20 , 20 , 20 , 180 } },
-    { .invisible = 1 }
+
+    { .color = { 0  , 0  , 0  , 0   } },
+    { .invisible = 1 },
+    { .play_sound = 1, .occur_once = 1 }
 };
 
 typedef enum overlay_type
@@ -1658,6 +1668,8 @@ typedef enum overlay_type
     OVERLAY_HITSTUN,
     OVERLAY_LEDGE_ACTIONABLE,
     OVERLAY_MISSED_LCANCEL,
+    OVERLAY_CAN_FASTFALL,
+    OVERLAY_AUTOCANCEL,
     OVERLAY_CROUCH,
     OVERLAY_WAIT,
     OVERLAY_WALK,
@@ -1669,7 +1681,7 @@ typedef enum overlay_type
     OVERLAY_COUNT,
 } OverlayGroup;
 
-// copied from LabOptions_OverlaysDefault in Event_Init;
+// copied from LabOptions_OverlaysDefault in Event_Init
 static EventOption LabOptions_OverlaysCPU[OVERLAY_COUNT];
 static EventOption LabOptions_OverlaysHMN[OVERLAY_COUNT];
 
@@ -1699,6 +1711,20 @@ static EventOption LabOptions_OverlaysDefault[OVERLAY_COUNT] = {
         .option_kind = OPTKIND_STRING,
         .value_num = OVERLAY_COLOUR_COUNT,
         .option_name = "Missed L-Cancel",
+        .desc = "",
+        .option_values = LabValues_OverlayNames,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = OVERLAY_COLOUR_COUNT,
+        .option_name = "Can Fastfall",
+        .desc = "",
+        .option_values = LabValues_OverlayNames,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = OVERLAY_COLOUR_COUNT,
+        .option_name = "Autocancel",
         .desc = "",
         .option_values = LabValues_OverlayNames,
     },
