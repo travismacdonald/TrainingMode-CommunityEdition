@@ -807,19 +807,97 @@ float Fighter_GetOpponentDir(FighterData *from, FighterData *to)
     return dir;
 }
 
-static int check_hitstun_ended(GOBJ *cpu) {
-    FighterData *cpu_data = cpu->userdata;
-    int cpu_state = cpu_data->state;
+static int in_hitstun_anim(GOBJ *character) {
+    FighterData *data = character->userdata;
+    int state = data->state;
+    return ASID_DAMAGEHI1 <= state && state <= ASID_DAMAGEFLYROLL;
+}
 
-    if (ASID_DAMAGEHI1 <= cpu_state && cpu_state <= ASID_DAMAGEFLYROLL) {
-        float hitstun = *((float*)&cpu_data->state_var.stateVar1);
-        return hitstun == 0.0;
+static int hitstun_ended(GOBJ *character) {
+    FighterData *data = character->userdata;
+    float hitstun = *((float*)&data->state_var.stateVar1);
+    return hitstun == 0.0;
+}
+
+static int check_IASA(FighterData *data) {
+    // For some reason, the iasa flag isn't reset when the state changes, only when a new action that has iasa starts.
+    // So we need to do some bs tracking to figure out if the character is in iasa.
+    return data->TM.iasa_frames && data->TM.iasa_frames <= data->TM.state_frame;
+}
+
+static int CheckOverlay(GOBJ *character, OverlayGroup overlay)
+{
+    FighterData *data = character->userdata;
+    int state = data->state;
+    int in_air = data->phys.air_state;
+
+    switch (overlay)
+    {
+        case (OVERLAY_ACTIONABLE):
+        {
+            if (in_hitstun_anim(character) && hitstun_ended(character))
+                return true;
+
+            if (state == ASID_LANDING && data->stateFrame >= data->attr.normal_landing_lag)
+                return true;
+
+            if (check_IASA(data)) return true;
+
+            return (ASID_WAIT <= state && state <= ASID_WALKFAST)
+                || state == ASID_TURN
+                || state == ASID_DASH
+                || state == ASID_RUN
+                || state == ASID_SQUATWAIT
+                || state == ASID_OTTOTTOWAIT
+                || (ASID_GUARD <= state && state <= ASID_GUARDREFLECT)
+                || (ASID_JUMPF <= state && state <= ASID_FALLAERIALB)
+                || (state == ASID_CLIFFWAIT && data->TM.state_frame > 1)
+                || state == ASID_DAMAGEFALL
+                || state == ASID_DAMAGEFLYROLL
+                || state == ASID_DAMAGEFLYTOP;
+        }
+
+        case (OVERLAY_HITSTUN):
+            return in_hitstun_anim(character) && !hitstun_ended(character);
+
+        case (OVERLAY_LEDGE_ACTIONABLE):
+            return state == ASID_CLIFFWAIT && data->TM.state_frame > 1;
+
+        case (OVERLAY_MISSED_LCANCEL):
+        {
+            if (state < ASID_LANDINGAIRN || ASID_LANDINGAIRLW < state)
+                return false;
+
+            int frames_from_first_l = data->TM.state_frame + 7;
+            return data->input.timer_trigger_any_ignore_hitlag > frames_from_first_l;
+        }
+
+        case (OVERLAY_CROUCH):
+            return state >= ASID_SQUAT && state <= ASID_SQUATRV;
+
+        case (OVERLAY_WAIT):
+            return check_IASA(data) || state == ASID_WAIT;
+
+        case (OVERLAY_WALK):
+            return state == ASID_WALKSLOW
+                || state == ASID_WALKMIDDLE
+                || state == ASID_WALKFAST;
+
+        case (OVERLAY_DASH): return state == ASID_DASH;
+        case (OVERLAY_RUN): return state == ASID_RUN;
+
+        case (OVERLAY_DOUBLEJUMP):
+            return state == ASID_JUMPAERIALF || state == ASID_JUMPAERIALB;
+
+        case (OVERLAY_IASA):
+            return check_IASA(data);
     }
 
+    assert("unhandled overlay idx");
     return false;
 }
 
-// returns true if the cpu is in this asid state
+// returns true if the cpu should counter in this asid state
 int CPUAction_CheckASID(GOBJ *cpu, int asid_kind)
 {
     FighterData *cpu_data = cpu->userdata;
@@ -830,7 +908,7 @@ int CPUAction_CheckASID(GOBJ *cpu, int asid_kind)
     {
         // check custom ASID groups
         case (ASID_ANY): return true;
-        case (ASID_DAMAGEAIR): return in_air && check_hitstun_ended(cpu);
+        case (ASID_DAMAGEAIR): return in_air && in_hitstun_anim(cpu) && hitstun_ended(cpu);
 
         case (ASID_ACTIONABLE):
         {
@@ -843,7 +921,10 @@ int CPUAction_CheckASID(GOBJ *cpu, int asid_kind)
         case (ASID_ACTIONABLEAIR):
         ACTIONABLEAIR:
         {
-            if (in_air && check_hitstun_ended(cpu))
+            if (!in_air)
+                return false;
+
+            if (in_hitstun_anim(cpu) && hitstun_ended(cpu))
                 return true;
 
             return cpu_state == ASID_JUMPF 
@@ -861,7 +942,10 @@ int CPUAction_CheckASID(GOBJ *cpu, int asid_kind)
         case (ASID_ACTIONABLEGROUND):
         ACTIONABLEGROUND:
         {
-            if (!in_air && check_hitstun_ended(cpu))
+            if (in_air)
+                return false;
+
+            if (in_hitstun_anim(cpu) && hitstun_ended(cpu))
                 return true;
 
             if (cpu_state == ASID_LANDING && cpu_data->stateFrame >= cpu_data->attr.normal_landing_lag)
@@ -3454,19 +3538,19 @@ void Record_Update(int ply, RecInputData *input_data, int rec_mode)
 }
 void Record_InitState(GOBJ *menu_gobj)
 {
+    playback_cancelled = false;
     if (event_vars->Savestate_Save(rec_state))
         Record_OnSuccessfulSave(1);
-    return;
 }
-
 void Record_ResaveState(GOBJ *menu_gobj)
 {
+    playback_cancelled = false;
     if (event_vars->Savestate_Save(rec_state))
         Record_OnSuccessfulSave(0);
-    return;
 }
 void Record_DeleteState(GOBJ *menu_gobj) 
 {
+    playback_cancelled = false;
     for (int i = 0; i < sizeof(LabOptions_Record) / sizeof(EventOption); i++)
     {
         if (i == OPTREC_SAVE_LOAD) {
@@ -3960,6 +4044,7 @@ void Savestates_Update()
                 {
                     // load state
                     event_vars->Savestate_Load(event_vars->savestate);
+                    playback_cancelled = false;
 
                     // re-roll random slot
                     if (LabOptions_Record[OPTREC_HMNSLOT].option_val == 0)
@@ -5145,34 +5230,68 @@ int Export_Compress(u8 *dest, u8 *source, u32 size)
     return compress_size;
 }
 
+static void UpdateDataTracking(GOBJ *character) {
+    FighterData *data = character->userdata;
+
+    if (data->flags.past_iasa)
+        data->TM.iasa_frames++;
+    else
+        data->TM.iasa_frames = 0;
+}
+
+static void UpdateOverlays(GOBJ *character, EventOption *overlays) {
+    FighterData *data = character->userdata;
+
+    // we do a check and early return for overlays first,
+    // so that we don't need to force the character to be visible / have no color overlays.
+    int overlays_enabled = false;
+    for (int i = 0; i < OVERLAY_COUNT; i++) {
+        if (overlays[i].option_val) {
+            overlays_enabled = true;
+            break;
+        }
+    }
+
+    if (!overlays_enabled)
+        return;
+
+    memset(&data->color[1], 0, sizeof(ColorOverlay));
+    memset(&data->color[0], 0, sizeof(ColorOverlay));
+    data->flags.invisible = 0;
+
+    for (OverlayGroup i = 0; i < OVERLAY_COUNT; i++)
+    {
+        // overlays go from general to specific, so we iterate in reverse
+        // to use the most specific overlay possibe.
+        int j = OVERLAY_COUNT - i - 1;
+
+        int color_idx = overlays[j].option_val;
+        if (color_idx == 0) continue;
+
+        if (CheckOverlay(character, j))
+        {
+            Overlay ov = LabValues_OverlayColours[color_idx];
+            data->color[1].hex = ov.color;
+            data->color[1].color_enable = 1;
+            data->flags.invisible = ov.invisible;
+            break;
+        }
+    }
+}
+
 // Think Function that runs after the character's think functions.
 // Needed to prevent color overlays from being overwritten
 void Event_PostThink(GOBJ *gobj)
 {
     GOBJ *hmn = Fighter_GetGObj(0);
-    FighterData *hmn_data = hmn->userdata;
+    GOBJ *cpu = Fighter_GetGObj(1);
 
-    int set_overlay = false;
-    GXColor overlay_colour;
+    // we do this in post so that we can use the updated character data before rendering.
+    UpdateDataTracking(hmn);
+    UpdateDataTracking(cpu);
 
-    for (int i = 0; i < OVERLAY_COUNT; ++i)
-    {
-        int mode_idx = LabOptions_Overlays[i].option_val;
-        if (mode_idx == 0) continue;
-
-        int asid_group = LabValues_OverlayASIDGroups[i];
-        if (CPUAction_CheckASID(hmn, asid_group))
-        {
-            set_overlay = true;
-            overlay_colour = LabValues_OverlayColours[mode_idx];
-            break;
-        }
-    }
-
-    if (set_overlay) {
-        hmn_data->color[1].hex = overlay_colour;
-        hmn_data->color[1].color_enable = 1;
-    }
+    UpdateOverlays(hmn, LabOptions_OverlaysHMN);
+    UpdateOverlays(cpu, LabOptions_OverlaysCPU);
 }
 
 // Init Function
@@ -5185,6 +5304,9 @@ void Event_Init(GOBJ *gobj)
     GOBJ *cpu = Fighter_GetGObj(1);
     FighterData *cpu_data = cpu->userdata;
     GObj_AddProc(gobj, Event_PostThink, 20);
+
+    memcpy(LabOptions_OverlaysHMN, LabOptions_OverlaysDefault, sizeof(LabOptions_OverlaysDefault));
+    memcpy(LabOptions_OverlaysCPU, LabOptions_OverlaysDefault, sizeof(LabOptions_OverlaysDefault));
 
     // theres got to be a better way to do this...
     event_vars = *event_vars_ptr;

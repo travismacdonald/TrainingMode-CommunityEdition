@@ -2368,7 +2368,7 @@ struct FighterData
         unsigned char throw_7 : 1;               // 0x2 - x2210
         unsigned char throw_8 : 1;               // 0x1 - x2210
         float throw_timerval;                    // equal to script_event_timer of the attacker
-        unsigned char x2218_1 : 1;               // 0x80 - x2218
+        unsigned char past_iasa : 1;             // 0x80 - x2218
         unsigned char x2218_2 : 1;               // 0x40 - x2218
         unsigned char x2218_3 : 1;               // 0x20 - x2218
         unsigned char reflect_enable : 1;        // 0x10 - x2218
@@ -2623,6 +2623,7 @@ struct FighterData
         int post_hitstun_frames;    // 0x241c frames fighter has been out of hitstun
         GOBJ *fighter_hurt_shield;  // 0x2420 pointer to the fighter who's shield this fighter hit
         void *cb_anim;              // 0x2424 additional animation callback
+        u16 iasa_frames;            // 0x2428 Aitch: added this for use in lab overlays. Hope it doesn't break anything.
     } TM;
 };
 

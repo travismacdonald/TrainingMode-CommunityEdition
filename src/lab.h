@@ -3,7 +3,8 @@
 // todo: move structs from lab_common.h to here
 
 static EventMenu LabMenu_General;
-static EventMenu LabMenu_Overlays;
+static EventMenu LabMenu_OverlaysHMN;
+static EventMenu LabMenu_OverlaysCPU;
 static EventMenu LabMenu_InfoDisplay;
 static EventMenu LabMenu_CPU;
 static EventMenu LabMenu_Record;
@@ -51,6 +52,7 @@ enum custom_asid_groups
     ASID_ACTIONABLEGROUND,
     ASID_ACTIONABLEAIR,
     ASID_DAMAGEAIR,
+    ASID_CROUCH,
     ASID_ANY,
 };
 
@@ -733,7 +735,8 @@ enum gen_option
     OPTGEN_HIT,
     OPTGEN_COLL,
     OPTGEN_CAM,
-    OPTGEN_OVERLAYS,
+    OPTGEN_OVERLAYS_HMN,
+    OPTGEN_OVERLAYS_CPU,
     OPTGEN_HUD,
     OPTGEN_DI,
     OPTGEN_INPUT,
@@ -813,8 +816,14 @@ static EventOption LabOptions_General[OPTGEN_COUNT] = {
     },
     {
         .option_kind = OPTKIND_MENU,
-        .menu = &LabMenu_Overlays,
-        .option_name = "Color Overlays",
+        .menu = &LabMenu_OverlaysHMN,
+        .option_name = "HMN Color Overlays",
+        .desc = "Set up color indicators for\n. action states.",
+    },
+    {
+        .option_kind = OPTKIND_MENU,
+        .menu = &LabMenu_OverlaysCPU,
+        .option_name = "CPU Color Overlays",
         .desc = "Set up color indicators for\n. action states.",
     },
     {
@@ -1625,50 +1634,137 @@ static EventMenu LabMenu_Record = {
 
 // OVERLAY MENU --------------------------------------------------------------
 
-enum overlay_type
+#define OVERLAY_COLOUR_COUNT 7
+static char *LabValues_OverlayNames[OVERLAY_COLOUR_COUNT] = { "None", "Red", "Green", "Blue", "White", "Black", "Invisible" };
+
+typedef struct Overlay {
+    u32 invisible : 1;
+    GXColor color;
+} Overlay;
+
+static Overlay LabValues_OverlayColours[OVERLAY_COLOUR_COUNT] = {
+    { .color = { 0  , 0  , 0  , 0   } },
+    { .color = { 255, 20 , 20 , 180 } },
+    { .color = { 20 , 255, 20 , 180 } },
+    { .color = { 20 , 20 , 255, 180 } },
+    { .color = { 255, 255, 255, 180 } },
+    { .color = { 20 , 20 , 20 , 180 } },
+    { .invisible = 1 }
+};
+
+typedef enum overlay_type
 {
-    OVERLAY_ACTIONABLE_GROUND,
-    OVERLAY_ACTIONABLE_AIR,
+    OVERLAY_ACTIONABLE,
+    OVERLAY_HITSTUN,
+    OVERLAY_LEDGE_ACTIONABLE,
+    OVERLAY_MISSED_LCANCEL,
+    OVERLAY_CROUCH,
+    OVERLAY_WAIT,
+    OVERLAY_WALK,
+    OVERLAY_DASH,
+    OVERLAY_RUN,
+    OVERLAY_DOUBLEJUMP,
+    OVERLAY_IASA,
 
     OVERLAY_COUNT,
-};
+} OverlayGroup;
 
-static int LabValues_OverlayASIDGroups[OVERLAY_COUNT] = {
-    ASID_ACTIONABLEGROUND,
-    ASID_ACTIONABLEAIR,
-};
+// copied from LabOptions_OverlaysDefault in Event_Init;
+static EventOption LabOptions_OverlaysCPU[OVERLAY_COUNT];
+static EventOption LabOptions_OverlaysHMN[OVERLAY_COUNT];
 
-#define OVERLAY_COLOUR_COUNT 4
-static char *LabValues_OverlayNames[OVERLAY_COLOUR_COUNT] = { "None", "Red", "Green", "Blue" };
-static GXColor LabValues_OverlayColours[OVERLAY_COLOUR_COUNT] = {
-    { 0, 0, 0, 0 },
-    { 255, 0, 0, 255 },
-    { 0, 255, 0, 255 },
-    { 0, 0, 255, 255 }
-};
-
-static EventOption LabOptions_Overlays[OVERLAY_COUNT] = {
+static EventOption LabOptions_OverlaysDefault[OVERLAY_COUNT] = {
     {
         .option_kind = OPTKIND_STRING,
         .value_num = OVERLAY_COLOUR_COUNT,
-        .option_name = "Actionable on Ground",
+        .option_name = "Actionable",
         .desc = "",
         .option_values = LabValues_OverlayNames,
     },
     {
         .option_kind = OPTKIND_STRING,
         .value_num = OVERLAY_COLOUR_COUNT,
-        .option_name = "Actionable in Air",
+        .option_name = "Hitstun",
+        .desc = "",
+        .option_values = LabValues_OverlayNames,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = OVERLAY_COLOUR_COUNT,
+        .option_name = "Ledge Actionable",
+        .desc = "",
+        .option_values = LabValues_OverlayNames,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = OVERLAY_COLOUR_COUNT,
+        .option_name = "Missed L-Cancel",
+        .desc = "",
+        .option_values = LabValues_OverlayNames,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = OVERLAY_COLOUR_COUNT,
+        .option_name = "Crouch",
+        .desc = "",
+        .option_values = LabValues_OverlayNames,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = OVERLAY_COLOUR_COUNT,
+        .option_name = "Wait",
+        .desc = "",
+        .option_values = LabValues_OverlayNames,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = OVERLAY_COLOUR_COUNT,
+        .option_name = "Walk",
+        .desc = "",
+        .option_values = LabValues_OverlayNames,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = OVERLAY_COLOUR_COUNT,
+        .option_name = "Dash",
+        .desc = "",
+        .option_values = LabValues_OverlayNames,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = OVERLAY_COLOUR_COUNT,
+        .option_name = "Run",
+        .desc = "",
+        .option_values = LabValues_OverlayNames,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = OVERLAY_COLOUR_COUNT,
+        .option_name = "Double Jump",
+        .desc = "",
+        .option_values = LabValues_OverlayNames,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = OVERLAY_COLOUR_COUNT,
+        .option_name = "IASA",
         .desc = "",
         .option_values = LabValues_OverlayNames,
     },
 };
 
-static EventMenu LabMenu_Overlays = {
-    .name = "Overlays",
-    .option_num = sizeof(LabOptions_Overlays) / sizeof(EventOption),
-    .options = &LabOptions_Overlays,
+static EventMenu LabMenu_OverlaysHMN = {
+    .name = "HMN Overlays",
+    .option_num = sizeof(LabOptions_OverlaysHMN) / sizeof(EventOption),
+    .options = &LabOptions_OverlaysHMN,
 };
+
+static EventMenu LabMenu_OverlaysCPU = {
+    .name = "CPU Overlays",
+    .option_num = sizeof(LabOptions_OverlaysCPU) / sizeof(EventOption),
+    .options = &LabOptions_OverlaysCPU,
+};
+
 
 // FUNCTION PROTOTYPES ##############################################################
 
