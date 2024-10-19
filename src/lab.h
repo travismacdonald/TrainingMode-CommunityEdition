@@ -198,9 +198,12 @@ static CPUAction Lab_CPUActionSpotdodge[] = {
         .input     = PAD_TRIGGER_R,
     },
     {
-        .state     = ASID_ANY,
+        .state     = ASID_GUARDREFLECT,
         .stickY    = -127,
         .input     = PAD_TRIGGER_R,
+    },
+    {
+        .state     = ASID_ESCAPE,
         .isLast    = 1,
     },
     -1,
