@@ -103,11 +103,11 @@ void Lab_ChangeCPUPercent(GOBJ *menu_gobj, int value)
     GOBJ *fighter = Fighter_GetGObj(1);
     FighterData *fighter_data = fighter->userdata;
 
-    if (LabOptions_CPU[OPTCPU_LOCKPCNT].option_val)
-        cpu_locked_percent = fighter_data->dmg.percent;
-
     fighter_data->dmg.percent = value;
     Fighter_SetHUDDamage(1, value);
+
+    if (LabOptions_CPU[OPTCPU_LOCKPCNT].option_val)
+        cpu_locked_percent = fighter_data->dmg.percent;
 
     return;
 }
