@@ -84,6 +84,7 @@ typedef struct EventDesc
     u8 isSelectStage : 1;
     u8 use_savestates : 1;  // enables dpad left and right savestates
     u8 disable_hazards : 1; // removes stage hazards
+    u8 force_sopo : 1;
     u8 scoreType;
     u8 callbackPriority;
     EventMatchData *matchData;
