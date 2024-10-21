@@ -9,7 +9,6 @@
 #define STAGE 0x8049e6c8 // this is the static stage struct, labelled Stage in this file
 #define EVMENU_ASSETS -0x4A08
 #define EVENT_VAR -0x4A0C // global pointer to a bunch of event variables
-#define HSD_UPDATE 0x80479d58
 #define COLL_TEST -0x51f4
 #define MATCH_HUD 0x804a10c8
 #define COBJDESC_MATCHHUD 0x80b52980

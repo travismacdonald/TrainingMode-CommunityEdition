@@ -244,8 +244,7 @@ void LCancel_Init(LCancelData *event_data)
 
     // create hud cobj
     GOBJ *hudcam_gobj = GObj_Create(19, 20, 0);
-    HSD_Archive **ifall_archive = 0x804d6d5c;
-    COBJDesc ***dmgScnMdls = Archive_GetPublicAddress(*ifall_archive, 0x803f94d0);
+    COBJDesc ***dmgScnMdls = Archive_GetPublicAddress(*stc_ifall_archive, 0x803f94d0);
     COBJDesc *cam_desc = dmgScnMdls[1][0];
     COBJ *hud_cobj = COBJ_LoadDesc(cam_desc);
     // init camera

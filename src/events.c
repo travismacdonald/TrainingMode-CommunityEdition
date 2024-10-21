@@ -3056,8 +3056,7 @@ GOBJ *EventMenu_Init(EventDesc *event_desc, EventMenu *start_menu)
         return 0;
 
     // Create a cobj for the event menu
-    HSD_Archive **ifall_archive = 0x804d6d5c;
-    COBJDesc ***dmgScnMdls = Archive_GetPublicAddress(*ifall_archive, 0x803f94d0);
+    COBJDesc ***dmgScnMdls = Archive_GetPublicAddress(*stc_ifall_archive, 0x803f94d0);
     COBJDesc *cam_desc = dmgScnMdls[1][0];
     COBJ *cam_cobj = COBJ_LoadDesc(cam_desc);
     GOBJ *cam_gobj = GObj_Create(19, 20, 0);

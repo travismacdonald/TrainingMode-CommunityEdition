@@ -3138,7 +3138,7 @@ GOBJ *Record_Init()
 
     // create cobj
     GOBJ *cam_gobj = GObj_Create(19, 20, 0);
-    COBJDesc ***dmgScnMdls = Archive_GetPublicAddress(ACCESS_PTR(0x804d6d5c), 0x803f94d0);
+    COBJDesc ***dmgScnMdls = Archive_GetPublicAddress(*stc_ifall_archive, 0x803f94d0);
     COBJDesc *cam_desc = dmgScnMdls[1][0];
     COBJ *rec_cobj = COBJ_LoadDesc(cam_desc);
     // init camera
