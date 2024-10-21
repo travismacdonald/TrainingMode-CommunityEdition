@@ -1243,10 +1243,10 @@ void EventInit(int page, int eventID, MatchInit *matchData)
         playerCostume = preload->queued.fighters[0].costume;
     }
 
-    if (event->force_sopo && playerKind == 14)
+    if (event->force_sopo && playerKind == CKIND_ICECLIMBERS)
     {
         // Change ICs to Popo
-        playerKind = 32;
+        playerKind = CKIND_POPO;
     }
 
     // Determine the CPU
@@ -1259,9 +1259,9 @@ void EventInit(int page, int eventID, MatchInit *matchData)
         cpuCostume = preload->queued.fighters[1].costume;
 
         // change zelda to sheik
-        if (cpuKind == 18)
+        if (cpuKind == CKIND_ZELDA)
         {
-            cpuKind = 19;
+            cpuKind = CKIND_SHEIK;
             preload->queued.fighters[1].kind = cpuKind;
         }
     }
