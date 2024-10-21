@@ -1,14 +1,6 @@
 #include "events.h"
 #include <stdarg.h>
 
-void Event_Init(GOBJ *gobj)
-{
-    int *EventData = gobj->userdata;
-    EventDesc *event_desc = EventData[0];
-
-    return;
-}
-
 /////////////////////
 // Mod Information //
 /////////////////////
