@@ -1664,7 +1664,7 @@ int Savestate_Save(Savestate *savestate)
                         // copy dmg
                         // latest MexTK and savestate have different sizes for dmg struct, so we use savestates's size
                         memcpy(&ft_data->dmg, &fighter_data->dmg, sizeof(ft_data->dmg));
-                        ft_data->dmg.source_ply = GOBJToID(ft_data->dmg.source_ply);
+                        ft_data->dmg.hit_log.source = GOBJToID(ft_data->dmg.hit_log.source);
 
                         // copy grab
                         memcpy(&ft_data->grab, &fighter_data->grab, sizeof(fighter_data->grab));
@@ -1908,7 +1908,7 @@ int Savestate_Load(Savestate *savestate)
 
                     // restore damage variables
                     memcpy(&fighter_data->dmg, &ft_data->dmg, sizeof(ft_data->dmg)); // copy hitbox
-                    fighter_data->dmg.source_ply = IDToGOBJ(fighter_data->dmg.source_ply);
+                    fighter_data->dmg.hit_log.source = IDToGOBJ(fighter_data->dmg.hit_log.source);
 
                     // restore jump variables
                     memcpy(&fighter_data->jump, &ft_data->jump, sizeof(fighter_data->jump)); // copy hitbox
