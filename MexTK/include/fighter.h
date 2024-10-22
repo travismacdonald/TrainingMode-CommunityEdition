@@ -2341,8 +2341,8 @@ struct FighterData
         float grab_timer;                 // 0x1a4c
         int x1a50;                        // 0x1a50
         int x1a54;                        // 0x1a54
-        GOBJ *attacker;                   // 0x1a58
-        GOBJ *victim;                     // 0x1a5c
+        GOBJ *victim;                     // 0x1a58
+        GOBJ *attacker;                   // 0x1a5c
         GOBJ *item;                       // 0x1a60
         int x1a64;                        // 0x1a64
         u16 x1a68;                        // 0x1a68
