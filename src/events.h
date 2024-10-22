@@ -177,8 +177,8 @@ typedef struct FtSaveStateData
         float boundright_proj;  // 0x44
         float boundtop_proj;    // 0x48
         float boundbottom_proj; // 0x4c
-        // the savestate CmSubject struct is missing two fields compared
-        // to the dmg struct defined in MexTK
+        // the savestate CmSubject struct is missing one field compared
+        // to the CmSubject struct defined in MexTK
     } camera_subject;
     ftHit hitbox[4];
     ftHit throw_hitbox[2];

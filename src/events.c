@@ -1521,11 +1521,11 @@ int Savestate_Save(Savestate *savestate)
 
                 isSaved = 1;
 
-                // save playerblock
+                // We use the Savestate's Playerblock size because it's smaller
+                // than the Playerblock defined in fighter.h
                 Playerblock *playerblock = Fighter_GetPlayerblock(queue[0].fighter_data->ply);
-                memcpy(&ft_state->player_block, playerblock, sizeof(Playerblock));
+                memcpy(&ft_state->player_block, playerblock, sizeof(ft_state->player_block));
 
-                // save stale moves
                 int *stale_queue = Fighter_GetStaleMoveTable(queue[0].fighter_data->ply);
                 memcpy(&ft_state->stale_queue, stale_queue, sizeof(ft_state->stale_queue));
 
@@ -1550,7 +1550,7 @@ int Savestate_Save(Savestate *savestate)
                         memcpy(&ft_data->color, &fighter_data->color, sizeof(fighter_data->color));                            // copy color overlay
                         memcpy(&ft_data->input, &fighter_data->input, sizeof(fighter_data->input));                            // copy inputs
                         memcpy(&ft_data->coll_data, &fighter_data->coll_data, sizeof(fighter_data->coll_data));                // copy collision
-                        memcpy(&ft_data->camera_subject, fighter_data->camera_subject, sizeof(CmSubject));                     // copy camerabox
+                        memcpy(&ft_data->camera_subject, fighter_data->camera_subject, sizeof(ft_data->camera_subject));       // copy camerabox
                         memcpy(&ft_data->hitbox, &fighter_data->hitbox, sizeof(fighter_data->hitbox));                         // copy hitbox
                         memcpy(&ft_data->throw_hitbox, &fighter_data->throw_hitbox, sizeof(fighter_data->throw_hitbox));       // copy hitbox
                         memcpy(&ft_data->thrown_hitbox, &fighter_data->thrown_hitbox, sizeof(fighter_data->thrown_hitbox));    // copy hitbox
@@ -1794,7 +1794,7 @@ int Savestate_Load(Savestate *savestate)
                     if (fighter_data->flags.is_robj_child == 1)
                         anim_source = fighter_data->grab.attacker;
                     Fighter_SetAllHurtboxesNotUpdated(fighter);
-                    ActionStateChange(ft_data->state_rate, ft_data->state_rate, -1, fighter, ft_data->state_id, 0, anim_source);
+                    ActionStateChange(ft_data->state_frame, ft_data->state_rate, -1, fighter, ft_data->state_id, 0, anim_source);
                     fighter_data->state.blend = 0;
 
                     // copy physics again to work around some bugs. Notably, this fixes savestates during dash.
@@ -1861,12 +1861,12 @@ int Savestate_Load(Savestate *savestate)
                     // update colltest frame
                     fighter_data->coll_data.coll_test = *stc_colltest;
 
-                    // restore camera box
+                    // restore camera subject
                     CmSubject *thiscam = fighter_data->camera_subject;
                     CmSubject *savedcam = &ft_data->camera_subject;
                     void *alloc = thiscam->alloc;
                     CmSubject *next = thiscam->next;
-                    memcpy(thiscam, savedcam, sizeof(CmSubject)); // copy camerabox
+                    memcpy(thiscam, savedcam, sizeof(ft_data->camera_subject));
                     thiscam->alloc = alloc;
                     thiscam->next = next;
 
