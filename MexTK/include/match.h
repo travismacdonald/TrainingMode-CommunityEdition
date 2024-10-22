@@ -195,74 +195,36 @@ struct MatchInit
     unsigned char isSkipUnkStockCheck : 1; // 0x40
     unsigned char no_hit : 1;              // 0x20
     unsigned char unk12 : 5;               // 0x01
-    // byte 0x6
-    u8 bombRain;
-    // byte 0x7
-    u8 unk13;
-    // byte 0x8
-    u8 is_teams;
-    // byte 0x9
-    u8 use_ko_count;
-    // byte 0xA
-    u8 unk14;
-    // byte 0xB
-    s8 itemFreq;
-    // byte 0xC
-    s8 sd_penalty;
-    // byte 0xD
-    u8 unk16;
-    // byte 0xE
-    u16 stage;
-    // word 0x10
-    int timer_seconds;
-    // byte 0x14
-    u8 timer_subseconds;
-    // 0x18
-    int unk17;
-    // 0x1C
-    // TODO header discrepancies. Compare to decomp mn/types.h
-    u64 itemSwitch;
-    // byte 0x24
-    int unk18;
-    // 0x28
-    float quake_mult;
-    // 0x2C
-    float dmg_ratio;
-    // 0x30
-    float match_speed;
-    // 0x34
-    int x34;
-    // 0x38
-    int x38;
-    // 0x3C
-    int x3c; // something fixed camera
-    // 0x40
-    void *onStartMelee;
-    // 0x44
-    void *onMatchFrame1;
-    // 0x48
-    void *onMatchFrame2;
-    // 0x4c
-    void *onMatchEnd;
-    // 0x50
-    void *onMatchStart;
-    // 0x54
-    void *onCheckPause;
-    // 0x58
-    int x58;
-
-    /*
-    //0x5C
-    int x5c;
-
-    //0x60
-    int x60;
-    //0x64
-    int x64;
-    */
+    u8 bombRain;              // 0x6
+    u8 x7;                    // 0x7
+    u8 is_teams;              // 0x8
+    u8 use_ko_count;          // 0x9
+    u8 xa;                    // 0xA
+    s8 itemFreq;              // 0xB
+    s8 sd_penalty;            // 0xC
+    u8 xd;                    // 0xD
+    u16 stage;                // 0xE
+    int timer_seconds;        // 0x10
+    u8 timer_subseconds;      // 0x14
+    int x88;                  // 0x18
+    u64 itemSwitch;           // 0x20
+    int x28;                  // 0x28
+    float quake_mult;         // 0x2C
+    float dmg_ratio;          // 0x30
+    float match_speed;        // 0x34
+    int x38;                  // 0x38
+    int x3c;                  // 0x3C
+    int x40;                  // 0x40
+    void *onStartMelee;       // 0x44
+    int x48;                  // 0x48
+    int x4c;                  // 0x4C
+    void *onMatchEnd;         // 0x50
+    int x54;                  // 0x54
+    int x58;                  // 0x58
+    int x5c;                  // 0x5C
 
     // player data
-    PlayerData playerData[6];
+    PlayerData playerData[6]; // 0x60
 };
 
 struct MatchHUDElement
