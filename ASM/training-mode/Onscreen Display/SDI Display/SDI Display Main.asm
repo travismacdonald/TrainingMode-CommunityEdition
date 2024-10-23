@@ -29,13 +29,13 @@
     li r3, 1
     slw r0, r3, r0
     and. r0, r0, r4
-    beq Moonwalk_Exit
+    beq Exit
 
 CheckForFollower:
     mr r3, REG_FighterData
     branchl r12, 0x80005510
     cmpwi r3, 0x1
-    beq Moonwalk_Exit
+    beq Exit
 
 SDICheck:
     # Check For SDI
@@ -88,7 +88,7 @@ PrintMessage:
     lhz r8, TM_TotalSDIInputs(REG_FighterData)
     Message_Display
 
-    b Moonwalk_Exit
+    b Exit
 
 ###################
 ## TEXT CONTENTS ##
@@ -108,7 +108,7 @@ Floats:
 
 ##############################
 
-Moonwalk_Exit:
+Exit:
     lfs f0, 0x80(sp)
     lfs f1, 0x84(sp)
     lfs f2, 0x8C(sp)

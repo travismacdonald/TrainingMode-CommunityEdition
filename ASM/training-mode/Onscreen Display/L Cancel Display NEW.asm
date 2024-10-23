@@ -28,13 +28,13 @@
     li r3, 1
     slw r0, r3, r0
     and. r0, r0, r4
-    beq Moonwalk_Exit
+    beq Exit
 
 CheckForFollower:
     mr r3, REG_FighterData
     branchl r12, 0x80005510
     cmpwi r3, 0x1
-    beq Moonwalk_Exit
+    beq Exit
 
     # Check if succeeded
     lbz r5, 0x67F(REG_FighterData)  # get decimal to print
@@ -85,7 +85,7 @@ PrintMessage:
     mflr r5
     branchl r12, Text_ChangeTextColor
 
-    b Moonwalk_Exit
+    b Exit
 
 #########################
 ### LC Rate Functions ###
@@ -178,7 +178,7 @@ Color_White:
 
 ##############################
 
-Moonwalk_Exit:
+Exit:
     restoreall
 
     lwz r0, 0x0034(sp)

@@ -23,16 +23,16 @@
     # Check If Coming From Airdodge
     lhz r3, TM_OneASAgo (r5)
     cmpwi r3, 0xEC
-    bne Moonwalk_Exit
+    bne Exit
     # Check For CliffWait
     lhz r3, TM_FourASAgo (r5)
     cmpwi r3, 0xFD
-    bne Moonwalk_Exit
+    bne Exit
 
     mr r3, r31
     li r4, 0
     branchl r12, 0x80005514
 
-Moonwalk_Exit:
+Exit:
     restoreall
     mr r3, r31

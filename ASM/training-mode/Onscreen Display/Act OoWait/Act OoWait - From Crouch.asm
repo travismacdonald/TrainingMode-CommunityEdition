@@ -24,22 +24,22 @@
     # Check If Interrupted
     lwz r3, 0x10(playerdata)
     cmpwi r3, 0x27
-    beq Moonwalk_Exit
+    beq Exit
 
     # Make Sure Player Didn't Buffer Shield
     lwz r3, 0x10(playerdata)
     cmpwi r3, 0xB2
-    beq Moonwalk_Exit
+    beq Exit
 
     # Ensure I'm Actually Coming from Wait
     lhz r3, TM_TwoASAgo(playerdata)
     cmpwi r3, 0xE
-    bne Moonwalk_Exit
+    bne Exit
 
     # Check To Display OSD
     mr r3, r31
     branchl r12, 0x8000551c
 
-Moonwalk_Exit:
+Exit:
     restoreall
     lwz r0, 0x0024(sp)

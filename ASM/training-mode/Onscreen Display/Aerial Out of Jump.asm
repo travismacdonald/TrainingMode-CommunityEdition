@@ -22,7 +22,7 @@
 
     # Check For Interrupt
     cmpwi r3, 0x0
-    beq Moonwalk_Exit
+    beq Exit
 
     # CHECK IF ENABLED
     li r0, OSD.ActOoJump                     # OSD Menu ID
@@ -32,13 +32,13 @@
     li r3, 1
     slw r0, r3, r0
     and. r0, r0, r4
-    beq Moonwalk_Exit
+    beq Exit
 
 CheckForFollower:
     mr r3, playerdata
     branchl r12, 0x80005510
     cmpwi r3, 0x1
-    beq Moonwalk_Exit
+    beq Exit
 
     bl CreateText
 
@@ -74,7 +74,7 @@ StoreTextColor:
     lfs f2, -0x37B0(rtoc)           # shift down on Y axis
     branchl r12, 0x803a6b98
 
-    b Moonwalk_Exit
+    b Exit
 
 CreateText:
     mflr r0
@@ -109,6 +109,6 @@ BottomText:
 
 ##############################
 
-Moonwalk_Exit:
+Exit:
     restoreall
     cmpwi r3, 0

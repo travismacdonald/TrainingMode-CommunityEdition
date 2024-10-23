@@ -31,13 +31,13 @@
     li r3, 1
     slw r0, r3, r0
     and. r0, r0, r4
-    beq Moonwalk_Exit
+    beq Exit
 
 CheckForFollower:
     mr r3, playerdata
     branchl r12, 0x80005510
     cmpwi r3, 0x1
-    beq Moonwalk_Exit
+    beq Exit
 
     # Calculate Frames Since Wait and Get AS Before Wait
     li r5, 0                                    # Loop Count
@@ -51,7 +51,7 @@ WaitSearchLoop:
     beq WaitSearchExit
     addi r5, r5, 1
     cmpwi r5, 6
-    bge Moonwalk_Exit
+    bge Exit
     b WaitSearchLoop
 
 WaitSearchExit:
@@ -80,7 +80,7 @@ FrameCountLoopFinish:
 
     # Check If Under 13 Frames
     cmpwi FramesSince, 13
-    bgt Moonwalk_Exit
+    bgt Exit
 
     # Only Coming from Throws, Aerial Landing, and Teching/Getups
     # Aerial Landing
@@ -114,7 +114,7 @@ NotTeching:
     b ComingFromWhitelist
 
 NotWavedash:
-    b Moonwalk_Exit
+    b Exit
 
 ComingFromWhitelist:
 SpawnText:
@@ -148,7 +148,7 @@ ChangeColor:
     addi r5, sp, 0x80
     branchl r12, Text_ChangeTextColor
 
-    b Moonwalk_Exit
+    b Exit
 
 ###################
 ## TEXT CONTENTS ##
@@ -161,6 +161,6 @@ TechText:
 
 ##############################
 
-Moonwalk_Exit:
+Exit:
     restoreall
     blr

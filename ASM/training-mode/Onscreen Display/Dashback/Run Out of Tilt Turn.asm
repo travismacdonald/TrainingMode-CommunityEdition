@@ -21,9 +21,9 @@
     # Ensure NOT Coming From Dash or Crouch
     lhz r3, TM_OneASAgo(playerdata) # load last AS
     cmpwi r3, 0x14
-    beq Moonwalk_Exit
+    beq Exit
     cmpwi r3, 0x28
-    beq Moonwalk_Exit
+    beq Exit
 
     # Check If Dashed Back (Flag at 0x2340)
     mr r3, player
@@ -35,7 +35,7 @@
     li r4, 0x1
     branchl r12, 0x80005518
 
-Moonwalk_Exit:
+Exit:
     restoreall
     mr r3, r30
     li r4, 0x0
