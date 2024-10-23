@@ -15,7 +15,7 @@
 ## Store Text Info here ##
 ##########################################################
 
-    backupall
+    backup
 
     mr player, r30
     lwz playerdata, 0x2c(player)
@@ -110,5 +110,5 @@ BottomText:
 ##############################
 
 Exit:
-    restoreall
+    restore
     cmpwi r3, 0
