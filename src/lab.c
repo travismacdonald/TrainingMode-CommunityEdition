@@ -1524,7 +1524,7 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
 
             hit_angle = (float)attacker_data->throw_hitbox[0].angle * M_1DEGREE;
 
-            if (attacker_data->state != ASID_THROWB) {
+            if (attacker_data->state_id != ASID_THROWB) {
                 if (hit_angle < reverse_min_angle) {
                     // Most throws
                     dir = -attacker_data->facing_direction;
@@ -1692,7 +1692,7 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
             }
             case (ASDI_LEFT):
             {
-                cpu_data->cpu.cstickX = -127;oh true
+                cpu_data->cpu.cstickX = -127;
                 cpu_data->cpu.cstickY = 0;
                 break;
             }
