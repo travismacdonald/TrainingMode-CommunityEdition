@@ -381,7 +381,6 @@ void Event_IncTimer(GOBJ *gobj);
 void Test_Think(GOBJ *gobj);
 void Hazards_Disable();
 static EventDesc *static_eventInfo;
-static MenuData *static_menuData;
 static EventVars stc_event_vars;
 static int *eventDataBackup;
 
