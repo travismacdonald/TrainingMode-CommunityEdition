@@ -23,7 +23,7 @@
 
     # Check For Interrupt
     cmpwi r3, 0x1
-    bne Moonwalk_Exit
+    bne Exit
 
     # CHECK IF ENABLED
     li r0, OSD.ActOoHitstun         # PowerShield ID
@@ -33,13 +33,13 @@
     li r3, 1
     slw r0, r3, r0
     and. r0, r0, r4
-    beq Moonwalk_Exit
+    beq Exit
 
 CheckForFollower:
     mr r3, REG_FighterData
     branchl r12, 0x80005510
     cmpwi r3, 0x1
-    beq Moonwalk_Exit
+    beq Exit
 
     # Check if frame 1
     lhz r3, TM_PostHitstunFrameCount(REG_FighterData)
@@ -64,7 +64,7 @@ PrintMessage:
     addi r7, r7, 1
     Message_Display
 
-    b Moonwalk_Exit
+    b Exit
 
     /*
     bl CreateText
@@ -129,6 +129,6 @@ ActOoHitstun_String:
 
 ##############################
 
-Moonwalk_Exit:
+Exit:
     restore
     blr

@@ -28,19 +28,19 @@
     li r3, 1
     slw r0, r3, r0
     and. r0, r0, r4
-    beq Moonwalk_Exit
+    beq Exit
 
 CheckForFollower:
     mr r3, playerdata
     branchl r12, 0x80005510
     cmpwi r3, 0x1
-    beq Moonwalk_Exit
+    beq Exit
 
     # Check If Under 15 Frames
     lhz r3, 0x2416(playerdata)
     subi r3, r3, 1
     cmpwi r3, 15
-    bgt Moonwalk_Exit
+    bgt Exit
 
     bl CreateText
 
@@ -86,7 +86,7 @@ LateLedgestall:
     lfs f2, -0x37B0(rtoc)           # shift down on Y axis
     branchl r12, 0x803a6b98
 
-    b Moonwalk_Exit
+    b Exit
 
 CreateText:
     mflr r0
@@ -124,6 +124,6 @@ BottomText_PerfectStall:
 
 ##############################
 
-Moonwalk_Exit:
+Exit:
     restoreall
     lwz r0, 0x0034(sp)

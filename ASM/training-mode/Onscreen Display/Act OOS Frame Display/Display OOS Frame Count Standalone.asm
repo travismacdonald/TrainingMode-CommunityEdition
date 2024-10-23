@@ -36,22 +36,22 @@
     li r5, 1
     slw r0, r5, r0
     and. r0, r0, r4
-    beq Moonwalk_Exit
+    beq Exit
 
 CheckForIASA:
     cmpwi r3, 0x1
-    bne Moonwalk_Exit
+    bne Exit
 
 CheckForFollower:
     mr r3, REG_FighterData
     branchl r12, 0x80005510
     cmpwi r3, 0x1
-    beq Moonwalk_Exit
+    beq Exit
 
 CheckForGuardOff:
     lwz r3, 0x10(REG_FighterData)
     cmpwi r3, 0xB4
-    beq Moonwalk_Exit
+    beq Exit
 
 ShieldWaitCheck:
     # CHECK IF 3RD MOST RECENT AS WAS SHIELD STUN
@@ -64,7 +64,7 @@ GuardOffCheck:
     lhz r3, TM_ThreeASAgo(REG_FighterData)
     cmpwi r3, 0xB5
     beq CreateText
-    b Moonwalk_Exit
+    b Exit
 
 CreateText:
     # Change color to Green if frame perfect act oos
@@ -88,7 +88,7 @@ PrintMessage:
     addi r7, r7, 1
     Message_Display
 
-    b Moonwalk_Exit
+    b Exit
 
     /*
     mr r3, REG_FighterData                      # backup REG_FighterData pointer
@@ -129,7 +129,7 @@ NotFramePerfect:
     lfs f2, -0x37B0(rtoc)                       # shift down on Y axis
     branchl r12, 0x803a6b98
 
-    b Moonwalk_Exit
+    b Exit
     */
 
 ###################
@@ -143,6 +143,6 @@ OoS_String:
 
 ##############################
 
-Moonwalk_Exit:
+Exit:
     restoreall
     blr

@@ -28,7 +28,7 @@
     beq FoxFalco
 
     # Check If Anyone Else
-    b Moonwalk_Exit
+    b Exit
 
 # /////////////////////////////////////////////////////////////////////////////
 
@@ -41,7 +41,7 @@ FoxFalco:
     li r3, 1
     slw r0, r3, r0
     and. r0, r0, r4
-    beq Moonwalk_Exit
+    beq Exit
 
     # Branch to AS Functions
     lwz r3, 0x10(playerdata)
@@ -65,7 +65,7 @@ FoxFalco:
     cmpwi r3, 0x16E
     beq Fox_ShineAirLoop
 
-    b Moonwalk_Exit
+    b Exit
 
 # /////////////////////////////////////////////////////////////////////////////
 
@@ -110,7 +110,7 @@ Fox_SideBStart:
     branchl r12, 0x803a6b98
 
 Fox_SideBStart_NoPress:
-    b Moonwalk_Exit
+    b Exit
 
 # /////////////////////////////////////////////////////////////////////////////
 
@@ -148,7 +148,7 @@ Fox_SideB:
     branchl r12, 0x803a6b98
 
 Fox_SideB_NoPress:
-    b Moonwalk_Exit
+    b Exit
 
 # /////////////////////////////////////////////////////////////////////////////
 
@@ -186,7 +186,7 @@ Fox_SideBEnd:
     branchl r12, 0x803a6b98
 
 Fox_SideBEnd_NoPress:
-    b Moonwalk_Exit
+    b Exit
 
 # /////////////////////////////////////////////////////////////////////////////
 
@@ -194,7 +194,7 @@ Fox_ShineGroundLoop:
     # Check For JC
     bl CheckForJumpCancel
     cmpwi r3, 0x0
-    beq Moonwalk_Exit
+    beq Exit
 
 Fox_ShineGroundLoop_Interrupted:
     # Create Text
@@ -245,7 +245,7 @@ Fox_ShineGroundLoop_BottomLine:
     lfs f2, -0x37B0(rtoc)           # shift down on Y axis
     branchl r12, 0x803a6b98
 
-    b Moonwalk_Exit
+    b Exit
 
 # /////////////////////////////////////////////////////////////////////////////
 
@@ -254,12 +254,12 @@ Fox_ShineAirLoop:
     lbz r3, 0x1968(playerdata)      # Jumps Used
     lwz r0, 0x0168(playerdata)      # Total Jumps
     cmpw r3, r0
-    bge Moonwalk_Exit
+    bge Exit
 
     # Check For JC
     bl CheckForJumpCancel
     cmpwi r3, 0x0
-    beq Moonwalk_Exit
+    beq Exit
 
 Fox_ShineAirLoop_Interrupted:
     # Create Text
@@ -310,7 +310,7 @@ Fox_ShineAirLoop_BottomLine:
     lfs f2, -0x37B0(rtoc)           # shift down on Y axis
     branchl r12, 0x803a6b98
 
-    b Moonwalk_Exit
+    b Exit
 
 # /////////////////////////////////////////////////////////////////////////////
 
@@ -411,6 +411,6 @@ ActOOShineBottom:
 
 ##############################
 
-Moonwalk_Exit:
+Exit:
     restoreall
     lwz r12, 0x219C(r31)

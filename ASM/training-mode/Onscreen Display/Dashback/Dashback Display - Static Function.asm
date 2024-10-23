@@ -32,13 +32,13 @@
     li r3, 1
     slw r0, r3, r0
     and. r0, r0, r4
-    beq Moonwalk_Exit
+    beq Exit
 
 CheckForFollower:
     mr r3, REG_FighterData
     branchl r12, 0x80005510
     cmpwi r3, 0x1
-    beq Moonwalk_Exit
+    beq Exit
 
     # Change color to Green if frame perfect act oos
     cmpwi REG_DBBool, 0x0
@@ -110,7 +110,7 @@ ChangeColor:
     li r4, 0
     branchl r12, Text_ChangeTextColor
 
-    b Moonwalk_Exit
+    b Exit
 
 #########################
 ### DB Rate Functions ###
@@ -214,6 +214,6 @@ Colors:
 
 ##############################
 
-Moonwalk_Exit:
+Exit:
     restoreall
     blr

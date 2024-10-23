@@ -31,7 +31,7 @@ CliffWaitSearch:
     addi r5, r5, 1
     cmpwi r5, 5
     ble CliffWaitSearch
-    b Moonwalk_Exit
+    b Exit
 
 # Display GALINT
 DisplayGALINT:
@@ -39,6 +39,6 @@ DisplayGALINT:
     li r4, 0
     branchl r12, 0x80005514
 
-Moonwalk_Exit:
+Exit:
     restoreall
     mr r3, r28
