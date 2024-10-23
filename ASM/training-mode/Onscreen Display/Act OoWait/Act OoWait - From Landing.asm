@@ -20,7 +20,7 @@
 
     # Check if Interrupted
     cmpwi r3, 0x1
-    bne Moonwalk_Exit
+    bne Exit
 
     # CHECK IF ENABLED
     li r0, 0x10                                 # PowerShield ID
@@ -30,33 +30,33 @@
     li r3, 1
     slw r0, r3, r0
     and. r0, r0, r4
-    beq Moonwalk_Exit
+    beq Exit
 
 CheckForFollower:
     mr r3, playerdata
     branchl r12, 0x80005510
     cmpwi r3, 0x1
-    beq Moonwalk_Exit
+    beq Exit
 
     # Ensure I'm Actually Coming from Landing (Wait interrupt is used for certain IASA)
     lhz r3, TM_OneASAgo(playerdata)
     cmpwi r3, ASID_Landing
-    bne Moonwalk_Exit
+    bne Exit
 
     # Make Sure Player Didn't Buffer Crouch, Shield, or Walk
     lwz r3, 0x10(playerdata)
     cmpwi r3, 0xF
-    beq Moonwalk_Exit
+    beq Exit
     cmpwi r3, 0x10
-    beq Moonwalk_Exit
+    beq Exit
     cmpwi r3, 0x11
-    beq Moonwalk_Exit
+    beq Exit
     cmpwi r3, 0x27
-    beq Moonwalk_Exit
+    beq Exit
     cmpwi r3, 0xB2
-    beq Moonwalk_Exit
+    beq Exit
     cmpwi r3, ASID_SquatWait
-    beq Moonwalk_Exit
+    beq Exit
 
 # Ensure player came from aerial attack landing or special move
 CheckForAerial:
@@ -69,7 +69,7 @@ CheckForAerial:
 
 CheckForSpecialMove:
     cmpwi r3, ASID_BarrelCannonWait
-    ble Moonwalk_Exit
+    ble Exit
 
 LandingSearch:
     # Calculate Frames Since Wait and Get AS Before Wait
@@ -84,7 +84,7 @@ LandingSearchLoop:
     beq LandingSearchExit
     addi r5, r5, 1
     cmpwi r5, 6
-    bge Moonwalk_Exit
+    bge Exit
     b LandingSearchLoop
 
 LandingSearchExit:
@@ -147,7 +147,7 @@ ChangeColor:
     addi r5, sp, 0x80
     branchl r12, Text_ChangeTextColor
 
-    b Moonwalk_Exit
+    b Exit
 
 ###################
 ## TEXT CONTENTS ##
@@ -160,6 +160,6 @@ Text:
 
 ##############################
 
-Moonwalk_Exit:
+Exit:
     restoreall
     lwz r0, 0x002C(sp)

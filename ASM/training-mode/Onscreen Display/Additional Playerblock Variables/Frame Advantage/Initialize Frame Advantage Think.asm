@@ -76,7 +76,7 @@ SkipGrabCheck:
 # Check If ShieldStun Ended
 # lwz r3, 0x10(REG_VictimData)
 # cmpwi r3, 0xB5
-# beq Moonwalk_Exit
+# beq Exit
 
 #########################
 ## Check If Actionable ##
@@ -134,7 +134,7 @@ SkipAttackCheck:
     b CheckIASA
 
 SkipThrowCheck:
-    b Moonwalk_Exit
+    b Exit
 
 #########################
 ## Check for IASA Flag ##
@@ -143,7 +143,7 @@ SkipThrowCheck:
 CheckIASA:
     lbz r3, 0x2218(REG_FighterData)
     rlwinm. r3, r3, 0, 24, 24
-    beq Moonwalk_Exit
+    beq Exit
 
 ##########################
 ## Get Frame Advantages ##
@@ -269,7 +269,7 @@ SelfDestruct:
     stw r3, TM_AnimCallback(REG_FighterData)
 
     # Exit
-    b Moonwalk_Exit
+    b Exit
 
 ###################
 ## TEXT CONTENTS ##
@@ -282,7 +282,7 @@ FrameAdvantage_String:
 
 ##############################
 
-Moonwalk_Exit:
+Exit:
     restore
     blr
 

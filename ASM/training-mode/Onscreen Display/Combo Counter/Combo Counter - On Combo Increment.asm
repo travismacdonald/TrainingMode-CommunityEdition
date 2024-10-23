@@ -32,7 +32,7 @@
     li r3, 1
     slw r0, r3, r0
     and. r0, r0, r4
-    beq Moonwalk_Exit
+    beq Exit
 
     # Get Playerdata
     mr r3, r27
@@ -44,11 +44,11 @@ CheckForFollower:
     mr r3, playerdata
     branchl r12, 0x80005510
     cmpwi r3, 0x1
-    beq Moonwalk_Exit
+    beq Exit
 
     # Check If Combo Count is 2 Hits or Higher
     cmpwi ComboCount, 2
-    blt Moonwalk_Exit
+    blt Exit
 
     bl CreateText
 
@@ -79,7 +79,7 @@ CheckForFollower:
     # Check If Valid Player GObj
     branchl r12, 0x80086960
     cmpwi r3, 0
-    beq Moonwalk_Exit
+    beq Exit
     # Store Function
     bl HitstunMonitor
     mflr r3
@@ -87,7 +87,7 @@ CheckForFollower:
     lwz r4, 0x2C(r4)
     stw r3, TM_AnimCallback(r4)
 
-    b Moonwalk_Exit
+    b Exit
 
 CreateText:
     mflr r0
@@ -246,6 +246,6 @@ HitstunMonitor_Exit:
 
 ##############################
 
-Moonwalk_Exit:
+Exit:
     restore
     lmw r27, 0x0024(sp)

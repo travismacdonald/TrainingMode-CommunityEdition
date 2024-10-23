@@ -620,7 +620,7 @@ void Menu_SelFile_Think(GOBJ *menu_gobj)
     }
     else if (import_data.cursor >= IMPORT_FILESPERPAGE ||
         (import_data.page == total_pages - 1 &&
-        import_data.cursor >= ((import_data.file_num-1) % IMPORT_FILESPERPAGE)+1))
+        import_data.cursor > (import_data.file_num - 1) % IMPORT_FILESPERPAGE))
     {
         import_data.cursor = 0;
         import_data.page++;
@@ -628,8 +628,8 @@ void Menu_SelFile_Think(GOBJ *menu_gobj)
     if (import_data.page == 255)
     {
         import_data.page = total_pages - 1;
-        if (import_data.cursor >= ((import_data.file_num-1) % IMPORT_FILESPERPAGE)+1)
-            import_data.cursor = ((import_data.file_num-1) % IMPORT_FILESPERPAGE)+1;
+        if (import_data.cursor > (import_data.file_num - 1) % IMPORT_FILESPERPAGE)
+            import_data.cursor = (import_data.file_num - 1) % IMPORT_FILESPERPAGE;
     }
     else if (import_data.page >= total_pages)
     {

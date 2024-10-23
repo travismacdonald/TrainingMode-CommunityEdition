@@ -27,20 +27,20 @@
     li r3, 1
     slw r0, r3, r0
     and. r0, r0, r4
-    beq Moonwalk_Exit
+    beq Exit
 
 CheckForFollower:
     mr r3, REG_FighterData
     branchl r12, 0x80005510
     cmpwi r3, 0x1
-    beq Moonwalk_Exit
+    beq Exit
 
     # Check If Falling Off Ledge and Respawn Platform
     lhz r3, TM_OneASAgo(REG_FighterData)
     # cmpwi r3, 0xFD #CliffWait
-    # beq Moonwalk_Exit
+    # beq Exit
     cmpwi r3, 0xD                   # RebirthWait
-    beq Moonwalk_Exit
+    beq Exit
 
 PrintMessage:
     li r3, 7                        # Message Kind
@@ -56,14 +56,14 @@ PrintMessage:
     # Check if frame 1
     lhz r3, TM_CanFastfallFrameCount(REG_FighterData)
     cmpwi r3, 1
-    bne Moonwalk_Exit
+    bne Exit
     mr r3, REG_Text
     li r4, 1
     bl Colors
     mflr r5
     branchl r12, Text_ChangeTextColor
 
-    b Moonwalk_Exit
+    b Exit
 
 ###################
 ## TEXT CONTENTS ##
@@ -80,6 +80,6 @@ Colors:
 
 ##############################
 
-Moonwalk_Exit:
+Exit:
     restoreall
     li r0, 1

@@ -20,7 +20,7 @@
 
     # Check If Interrupted
     cmpwi r3, 0x0
-    beq Moonwalk_Exit
+    beq Exit
 
     # Get Playerdata
     lwz playerdata, 0x2C(player)
@@ -28,27 +28,27 @@
     # Ensure I'm Actually Coming from Wait (Wait interrupt is used for certain IASA)
     lhz r3, TM_OneASAgo(playerdata)
     cmpwi r3, 0xE
-    bne Moonwalk_Exit
+    bne Exit
 
     # Make Sure Player Didn't Buffer Crouch, Shield, or Walk
     lwz r3, 0x10(playerdata)
     cmpwi r3, 0xF
-    beq Moonwalk_Exit
+    beq Exit
     cmpwi r3, 0x10
-    beq Moonwalk_Exit
+    beq Exit
     cmpwi r3, 0x11
-    beq Moonwalk_Exit
+    beq Exit
     cmpwi r3, 0x27
-    beq Moonwalk_Exit
+    beq Exit
     cmpwi r3, 0xB2
-    beq Moonwalk_Exit
+    beq Exit
     cmpwi r3, ASID_SquatWait
-    beq Moonwalk_Exit
+    beq Exit
 
     # Check To Display OSD
     mr r3, r31
     branchl r12, 0x8000551c
 
-Moonwalk_Exit:
+Exit:
     restoreall
     lwz r0, 0x001C(sp)

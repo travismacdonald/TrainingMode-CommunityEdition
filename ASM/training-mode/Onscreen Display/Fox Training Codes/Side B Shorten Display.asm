@@ -28,7 +28,7 @@
     beq FoxFalco
 
     # Check If Anyone Else
-    b Moonwalk_Exit
+    b Exit
 
 # /////////////////////////////////////////////////////////////////////////////
 
@@ -41,7 +41,7 @@ FoxFalco:
     li r3, 1
     slw r0, r3, r0
     and. r0, r0, r4
-    beq Moonwalk_Exit
+    beq Exit
 
     # Branch to AS Functions
     lwz r3, 0x10(playerdata)
@@ -65,7 +65,7 @@ FoxFalco:
     cmpwi r3, 0x16E
     beq Fox_ShineAirLoop
 
-    b Moonwalk_Exit
+    b Exit
 
 # /////////////////////////////////////////////////////////////////////////////
 
@@ -92,7 +92,7 @@ Fox_SideBStart:
     # fctiwz f1, f1
     # stfd f1, 0xF0(sp)
     # lwz r3, 0xF4(sp)
-    lhz r3, 0x23EC(playerdata)
+    lhz r3, 0x23F8(playerdata)
     # Get Frames Early
     lwz r5, 0x590(playerdata)       # get anim data
     lfs f1, 0x008(r5)               # get anim length (float)
@@ -110,7 +110,7 @@ Fox_SideBStart:
     branchl r12, 0x803a6b98
 
 Fox_SideBStart_NoPress:
-    b Moonwalk_Exit
+    b Exit
 
 # /////////////////////////////////////////////////////////////////////////////
 
@@ -148,7 +148,7 @@ Fox_SideB:
     branchl r12, 0x803a6b98
 
 Fox_SideB_NoPress:
-    b Moonwalk_Exit
+    b Exit
 
 # /////////////////////////////////////////////////////////////////////////////
 
@@ -175,7 +175,7 @@ Fox_SideBEnd:
     # fctiwz f1, f1
     # stfd f1, 0xF0(sp)
     # lwz r3, 0xF4(sp)
-    lhz r5, 0x23EC(playerdata)
+    lhz r5, 0x23F8(playerdata)
 # addi r5, r3, 0x1
 
     bl LatePressText
@@ -186,7 +186,7 @@ Fox_SideBEnd:
     branchl r12, 0x803a6b98
 
 Fox_SideBEnd_NoPress:
-    b Moonwalk_Exit
+    b Exit
 
 # /////////////////////////////////////////////////////////////////////////////
 
@@ -194,7 +194,7 @@ Fox_ShineGroundLoop:
     # Check For JC
     bl CheckForJumpCancel
     cmpwi r3, 0x0
-    beq Moonwalk_Exit
+    beq Exit
 
 Fox_ShineGroundLoop_Interrupted:
     # Create Text
@@ -207,7 +207,7 @@ Fox_ShineGroundLoop_Interrupted:
     # fctiwz f1, f1
     # stfd f1, 0xF0(sp)
     # lwz r3, 0xF4(sp)
-    lhz r3, 0x23EC(playerdata)
+    lhz r3, 0x23F8(playerdata)
     cmpwi r3, 0x1
     bne Fox_ShineGroundLoop_RedText
 
@@ -240,12 +240,12 @@ Fox_ShineGroundLoop_BottomLine:
     # fctiwz f1, f1
     # stfd f1, 0xF0(sp)
     # lwz r3, 0xF4(sp)
-    lhz r5, 0x23EC(playerdata)
+    lhz r5, 0x23F8(playerdata)
     lfs f1, -0x37B4(rtoc)           # default text X/Y
     lfs f2, -0x37B0(rtoc)           # shift down on Y axis
     branchl r12, 0x803a6b98
 
-    b Moonwalk_Exit
+    b Exit
 
 # /////////////////////////////////////////////////////////////////////////////
 
@@ -254,12 +254,12 @@ Fox_ShineAirLoop:
     lbz r3, 0x1968(playerdata)      # Jumps Used
     lwz r0, 0x0168(playerdata)      # Total Jumps
     cmpw r3, r0
-    bge Moonwalk_Exit
+    bge Exit
 
     # Check For JC
     bl CheckForJumpCancel
     cmpwi r3, 0x0
-    beq Moonwalk_Exit
+    beq Exit
 
 Fox_ShineAirLoop_Interrupted:
     # Create Text
@@ -272,7 +272,7 @@ Fox_ShineAirLoop_Interrupted:
     # fctiwz f1, f1
     # stfd f1, 0xF0(sp)
     # lwz r3, 0xF4(sp)
-    lhz r3, 0x23EC(playerdata)
+    lhz r3, 0x23F8(playerdata)
     cmpwi r3, 0x1
     bne Fox_ShineAirLoop_RedText
 
@@ -305,12 +305,12 @@ Fox_ShineAirLoop_BottomLine:
     # fctiwz f1, f1
     # stfd f1, 0xF0(sp)
     # lwz r3, 0xF4(sp)
-    lhz r5, 0x23EC(playerdata)
+    lhz r5, 0x23F8(playerdata)
     lfs f1, -0x37B4(rtoc)           # default text X/Y
     lfs f2, -0x37B0(rtoc)           # shift down on Y axis
     branchl r12, 0x803a6b98
 
-    b Moonwalk_Exit
+    b Exit
 
 # /////////////////////////////////////////////////////////////////////////////
 
@@ -411,6 +411,6 @@ ActOOShineBottom:
 
 ##############################
 
-Moonwalk_Exit:
+Exit:
     restoreall
     lwz r12, 0x219C(r31)

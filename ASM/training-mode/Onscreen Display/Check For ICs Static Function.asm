@@ -91,6 +91,6 @@ Follower:
 NoFollower:
     li r3, 0x0
 
-Moonwalk_Exit:
+Exit:
     restore
     blr

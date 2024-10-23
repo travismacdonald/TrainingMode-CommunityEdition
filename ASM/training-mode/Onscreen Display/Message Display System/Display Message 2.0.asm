@@ -210,7 +210,7 @@ GetYLocation:
     lfs f2, 0x18(textprop)      # stretch Y (30)
     branchl r12, 0x803a7548
 
-    b Moonwalk_Exit
+    b Exit
 
 #######################################################################
 
@@ -421,7 +421,7 @@ TextASCII3:
     blrl
     .long 0x815B0000
 
-Moonwalk_Exit:
+Exit:
     mr r3, text                 # return text pointer
     restore
     blr

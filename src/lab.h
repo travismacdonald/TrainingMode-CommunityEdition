@@ -1048,7 +1048,6 @@ enum cpu_tdi
     CPUTDI_RANDOM,
     CPUTDI_IN,
     CPUTDI_OUT,
-    CPUTDI_FLOORHUG,
     CPUTDI_CUSTOM,
     CPUTDI_RANDOM_CUSTOM,
     CPUTDI_NONE,
@@ -1141,7 +1140,7 @@ enum cpu_option
 
 enum asdi
 {
-    ASDI_NONE,
+    ASDI_AUTO,
     ASDI_AWAY,
     ASDI_TOWARD,
     ASDI_LEFT,
@@ -1168,8 +1167,8 @@ enum sdi_dir
 static char *LabValues_Shield[] = {"Off", "On Until Hit", "On"};
 static char *LabValues_ShieldDir[] = {"Neutral", "Up", "Towards", "Down", "Away"};
 static char *LabValues_CPUBehave[] = {"Stand", "Shield", "Crouch", "Jump"};
-static char *LabValues_TDI[] = {"Random", "Inwards", "Outwards", "Floorhug", "Custom", "Random Custom", "None"};
-static char *LabValues_ASDI[] = {"None", "Away", "Towards", "Left", "Right", "Up", "Down"};
+static char *LabValues_TDI[] = {"Random", "Inwards", "Outwards", "Custom", "Random Custom", "None"};
+static char *LabValues_ASDI[] = {"Auto", "Away", "Towards", "Left", "Right", "Up", "Down"};
 static char *LabValues_SDIDir[] = {"Random", "Away", "Towards", "Up", "Down", "Left", "Right"};
 static char *LabValues_Tech[] = {"Random", "Neutral", "Away", "Towards", "None"};
 static char *LabValues_Getup[] = {"Random", "Stand", "Away", "Towards", "Attack"};

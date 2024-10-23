@@ -23,12 +23,12 @@
     # Check For CliffWait
     lhz r3, TM_TwoASAgo (r5)
     cmpwi r3, 0xFD
-    bne Moonwalk_Exit
+    bne Exit
 
     mr r3, r30
     li r4, 0
     branchl r12, 0x80005514
 
-Moonwalk_Exit:
+Exit:
     restoreall
     mr r3, r30
