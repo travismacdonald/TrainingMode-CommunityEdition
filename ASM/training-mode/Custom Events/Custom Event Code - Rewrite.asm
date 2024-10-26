@@ -8038,6 +8038,7 @@ ArmadaShineLoad:
     li r3, 2                                            # randalls map_gobj is 2
     branchl r12, Stage_map_gobj_Load
     branchl r12, Stage_Destroy_map_gobj
+LedgedashLoad_SkipRemoveRandall:
 
     b ArmadaShineThink_Exit
 
