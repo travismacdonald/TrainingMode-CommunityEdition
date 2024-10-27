@@ -4292,7 +4292,10 @@ AmsahTechLoad:
     bl AmsahTechThink
     mflr r3
     li r4, 3                                            # Priority (After Interrupt)
-    li r5, 0                                            # No Option Menu
+    bl AmsahTechWindowInfo
+    mflr r5
+    bl AmsahTechWindowText
+    mflr r6
     bl CreateEventThinkFunction
 
     b AmsahTechLoadExit
@@ -4309,6 +4312,8 @@ AmsahTechLoad:
 
     # Offsets
     .set Timer, 0x8
+    .set TimerOption, MenuData_OptionMenuMemory+0x2 + 0x0
+    .set TimerOptionToggled, MenuData_OptionMenuToggled + 0x0
 
 AmsahTechThink:
     blrl
@@ -4316,6 +4321,7 @@ AmsahTechThink:
 
     # INIT FUNCTION VARIABLES
     lwz EventData, 0x2c(r3)                             # backup data pointer in r31
+    lwz MenuData, EventData_MenuDataPointer(EventData)
 
     bl GetAllPlayerPointers
     mr P1GObj, r3
@@ -4451,10 +4457,25 @@ AmsahTechIsTaunting:
     # Set Grounded
     mr r3, P2Data
     branchl r12, Air_SetAsGrounded
-    # Set UpB Timer
+
+AmsahTechSetUpBTimer:
+    lbz r3, TimerOption(MenuData)
+    cmpwi r3, 0x0
+    beq AmsahTechSetUpBTimer_30
+    cmpwi r3, 0x1
+    beq AmsahTechSetUpBTimer_50
+
+AmsahTechSetUpBTimer_30:
     li r3, 30
     stw r3, Timer(EventData)
-    # Store To Backups as Well
+    b AmsahTechStoreToBackupsAsWell
+
+AmsahTechSetUpBTimer_50:
+    li r3, 50
+    stw r3, Timer(EventData)
+    b AmsahTechStoreToBackupsAsWell
+
+AmsahTechStoreToBackupsAsWell:
     lwz r3, 0x18(EventData)                             # P2 Backup
     lfs f1, 0xB0(P2Data)                                # Get P2 X
     stfs f1, 0xB0(r3)                                   # Store to P2 Backup
@@ -4553,7 +4574,35 @@ AmsahTech_Floats:
     .long 0x41800000                                    # Distance to place Marth from P1
     .long 0x428C0000                                    # FD Stage Boundary X
 
+
 #################################
+
+AmsahTechWindowInfo:
+    blrl
+    # amount of options, amount of options in each window
+    .long 0x00010000                                    # 1 window, 2 options
+
+####################################################
+
+AmsahTechWindowText:
+    blrl
+
+#############################
+## Up B Timer Frame Option ##
+#############################
+
+    # Window Title = Up B Timer Frame
+    .long 0x55702042
+    .long 0x2054696d
+    .long 0x65722046
+    .long 0x72616d65
+    .long 0x00000000
+
+    # Option 1 = 30
+    .long 0x33300000
+
+    # Option 2 = 50
+    .long 0x35300000
 
 AmsahTechLoadExit:
     restore
