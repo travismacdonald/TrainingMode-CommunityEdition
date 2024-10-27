@@ -6,7 +6,6 @@ dats = build/ledgedash.dat build/wavedash.dat build/lcancel.dat build/labCSS.dat
 ASM_FILES := $(shell find ASM -type f \( -name '*.asm' -o -name '*.s' \) | sed 's/ /\\ /g')
 
 MEX_BUILD=mono MexTK/MexTK.exe -ff -b "build" -q -ow -l "MexTK/melee.link" -op 2
-MEX_TRIM=mono MexTK/MexTK.exe -trim
 
 clean:
 	rm -rf TM-More.iso
@@ -15,32 +14,26 @@ clean:
 build/eventMenu.dat: src/events.c src/events.h
 	cp "dats/eventMenu.dat" "build/eventMenu.dat" 
 	$(MEX_BUILD) -i "src/events.c" -s "tmFunction" -dat "build/eventMenu.dat" -t "MexTK/tmFunction.txt"
-	$(MEX_TRIM) "build/eventMenu.dat"
 
 build/lab.dat: src/lab.c src/lab.h src/lab_common.h
 	cp "dats/lab.dat" "build/lab.dat"
 	$(MEX_BUILD) -i "src/lab.c" -s "evFunction" -dat "build/lab.dat" -t "MexTK/evFunction.txt"
-	$(MEX_TRIM) "build/lab.dat"
 
 build/labCSS.dat: src/lab_css.c src/lab_common.h
 	cp "dats/labCSS.dat" "build/labCSS.dat"
 	$(MEX_BUILD) -i "src/lab_css.c" -s "cssFunction" -dat "build/labCSS.dat" -t "MexTK/cssFunction.txt"
-	$(MEX_TRIM) "build/labCSS.dat"
 
 build/lcancel.dat: src/lcancel.c src/lcancel.h
 	cp "dats/lcancel.dat" "build/lcancel.dat"
 	$(MEX_BUILD) -i "src/lcancel.c" -s "evFunction" -dat "build/lcancel.dat" -t "MexTK/evFunction.txt"
-	$(MEX_TRIM) "build/lcancel.dat"
 
 build/ledgedash.dat: src/ledgedash.c src/ledgedash.h
 	cp "dats/ledgedash.dat" "build/ledgedash.dat"
 	$(MEX_BUILD) -i "src/ledgedash.c" -s "evFunction" -dat "build/ledgedash.dat" -t "MexTK/evFunction.txt"
-	$(MEX_TRIM) "build/ledgedash.dat"
 
 build/wavedash.dat: src/wavedash.c src/wavedash.h
 	cp "dats/wavedash.dat" "build/wavedash.dat"
 	$(MEX_BUILD) -i "src/wavedash.c" -s "evFunction" -dat "build/wavedash.dat" -t "MexTK/evFunction.txt"
-	$(MEX_TRIM) "build/wavedash.dat"
 
 build/codes.gct: Additional\ ISO\ Files/opening.bnr $(ASM_FILES)
 	cd "Build TM Codeset" && ./gecko build
