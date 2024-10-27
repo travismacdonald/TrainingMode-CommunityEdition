@@ -1053,7 +1053,6 @@ static EventVars stc_event_vars = {
 };
 static Savestate *stc_savestate;
 static EventDesc *static_eventInfo;
-static MenuData *static_menuData;
 static int show_console = 1;
 static int *eventDataBackup;
 static TipMgr stc_tipmgr;
