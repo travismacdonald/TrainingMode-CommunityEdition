@@ -90,48 +90,6 @@ PrintMessage:
 
     b Exit
 
-    /*
-    mr r3, REG_FighterData                      # backup REG_FighterData pointer
-    li r4, 60                                   # display for 60 frames
-    li r5, 0                                    # Area to Display (0-2)
-    li r6, 3                                    # Window ID(Unique to This Display)
-    branchl r12, TextCreateFunction             # create text custom function
-
-    mr text, r3                                 # backup text pointer
-
-    # CHECK IF FRAME PERFECT
-    lhz r3, 0x23EE(REG_FighterData)             # get shield stun frames left
-    cmpwi r3, 0x0
-    bgt NotFramePerfect
-
-    # SET TEXT COLOR TO GREEN
-    load r3, 0x8dff6eff
-    stw r3, 0x0030(text)
-
-NotFramePerfect:
-    # INITALIZE TEXT 1
-    mr r3, r29                                  # text pointer
-    bl DuringSSASCII
-    mflr r4                                     # get ASCII to print
-    lfs f1, -0x37B4(rtoc)                       # default text X/Y
-    lfs f2, -0x37B4(rtoc)                       # default text X/Y
-    branchl r12, 0x803a6b98
-
-    # INITALIZE TEXT 2
-    mr r3, r29                                  # text pointer
-    bl DuringSSASCII2
-    mflr r4                                     # get ASCII to print
-
-    lhz r5, 0x23EE(REG_FighterData)             # get shield stun frames left
-    addi r5, r5, 0x1
-
-    lfs f1, -0x37B4(rtoc)                       # default text X/Y
-    lfs f2, -0x37B0(rtoc)                       # shift down on Y axis
-    branchl r12, 0x803a6b98
-
-    b Exit
-    */
-
 ###################
 ## TEXT CONTENTS ##
 ###################
