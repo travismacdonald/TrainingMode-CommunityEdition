@@ -50,29 +50,41 @@ CheckForFollower:
     cmpwi ComboCount, 2
     blt Exit
 
-    bl CreateText
+#    bl CreateText
+#
+#    # Create Text
+#    bl TopText
+#    mr r3, r29                      # text pointer
+#    mflr r4
+#    lfs f1, -0x37B4(rtoc)           # default text X/Y
+#    lfs f2, -0x37B4(rtoc)           # default text X/Y
+#    branchl r12, 0x803a6b98
+#
+#    # Get Damage as Int
+#    lbz r3, 0xC(playerdata)
+#    branchl r12, 0x80041300
+#    mr r6, r3
+#
+#    # Create Text2
+#    bl BottomText
+#    mr r3, r29                      # text pointer
+#    mflr r4
+#    mr r5, ComboCount
+#    lfs f1, -0x37B4(rtoc)           # default text X/Y
+#    lfs f2, -0x37B0(rtoc)           # shift down on Y axis
+#    branchl r12, 0x803a6b98 # add subtext
 
-    # Create Text
-    bl TopText
-    mr r3, r29                      # text pointer
-    mflr r4
-    lfs f1, -0x37B4(rtoc)           # default text X/Y
-    lfs f2, -0x37B4(rtoc)           # default text X/Y
-    branchl r12, 0x803a6b98
 
-    # Get Damage as Int
-    lbz r3, 0xC(playerdata)
+    # get damage dealt
     branchl r12, 0x80041300
-    mr r6, r3
-
-    # Create Text2
-    bl BottomText
-    mr r3, r29                      # text pointer
-    mflr r4
-    mr r5, ComboCount
-    lfs f1, -0x37B4(rtoc)           # default text X/Y
-    lfs f2, -0x37B0(rtoc)           # shift down on Y axis
-    branchl r12, 0x803a6b98
+    mr r8, r3
+    mr r3, 13                   # id
+    lbz r4, 0xC(playerdata)     # queue
+    li r5, MSGCOLOR_WHITE
+    bl Text
+    mflr r6
+    mr r7, ComboCount
+    Message_Display
 
     # Store Per Frame Function to Monitor When Hitstun Runs Out
     lwz r3, 0x2094(playerdata)
@@ -89,41 +101,46 @@ CheckForFollower:
 
     b Exit
 
-CreateText:
-    mflr r0
-    stw r0, 0x0004(sp)
-    stwu sp, -0x0008(sp)
-    mr r3, playerdata               # backup playerdata pointer
-    li r4, 120                      # display until terminated
-    li r5, 0                        # Area to Display (0-2)
-    li r6, 13                       # Window ID(Unique to This Display)
-    branchl r12, TextCreateFunction # create text custom function
+#CreateText:
+#    mflr r0
+#    stw r0, 0x0004(sp)
+#    stwu sp, -0x0008(sp)
+#    mr r3, playerdata               # backup playerdata pointer
+#    li r3, 13                       # Window ID(Unique to This Display)
+#    lbz r4, 0xC(playerdata)     # message queue
+#    Message_Display # create text custom function
+#
+#    mr text, r3                     # backup text pointer
+#    lwz r0, 0x000C(sp)
+#    addi sp, sp, 8
+#    mtlr r0
+#    blr
 
-    mr text, r3                     # backup text pointer
-    lwz r0, 0x000C(sp)
-    addi sp, sp, 8
-    mtlr r0
-    blr
+
+#CreateText:
+#    mflr r0
+#    stw r0, 0x0004(sp)
+#    stwu sp, -0x0008(sp)
+#    mr r3, playerdata               # backup playerdata pointer
+#    li r4, 120                      # display until terminated
+#    li r5, 0                        # Area to Display (0-2)
+#    li r6, 13                       # Window ID(Unique to This Display)
+#    branchl r12, TextCreateFunction # create text custom function
+#
+#    mr text, r3                     # backup text pointer
+#    lwz r0, 0x000C(sp)
+#    addi sp, sp, 8
+#    mtlr r0
+#    blr
 
 ###################
 ## TEXT CONTENTS ##
 ###################
 
-TopText:
+Text:
     blrl
-    .string "Combo Count"
+    .string "Combo Count\n%d Hits / %d%"
     .align 2
-
-BottomText:
-    blrl
-    .string "%d Hits / %d%"
-    .align 2
-    /*
-    .long 0x25642048
-    .long 0x69747320
-    .long 0x815e2025
-    .long 0x64819300
-    */
 
 ##############################
 
@@ -228,7 +245,7 @@ HitstunMonitor_EditOSD:
     lwz r3, 0x0(r26)
     li r4, 1
     addi r5, sp, 0xF0
-    branchl r12, 0x803a74f0
+    branchl r12, 0x803a74f0 # Text_SetColor
     lwz r3, 0x0(r26)
     li r4, 2
     addi r5, sp, 0xF0
