@@ -29,6 +29,7 @@ CheckForFollower:
     cmpwi r3, 0x1
     beq Exit
 
+SetColor:
     load r5, MSGCOLOR_RED
     lhz r3, 0x2408(playerdata)
     cmpwi r3, 0x1
