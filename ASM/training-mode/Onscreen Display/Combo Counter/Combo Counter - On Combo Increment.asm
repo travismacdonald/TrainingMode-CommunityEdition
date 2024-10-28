@@ -12,13 +12,6 @@
     .set MessageAreaLength, 0x100
     .set PerPlayerMessageStructLength, 0x28
 
-##########################################################
-## 804a1f5c -> 804a1fd4 = Static Stock Icon Text Struct ##
-## Is 0x80 long and is zero'd at the start ##
-## of every VS Match ##
-## Store Text Info here ##
-##########################################################
-
     backup
 
     # Backup Combo Count
@@ -49,31 +42,6 @@ CheckForFollower:
     # Check If Combo Count is 2 Hits or Higher
     cmpwi ComboCount, 2
     blt Exit
-
-#    bl CreateText
-#
-#    # Create Text
-#    bl TopText
-#    mr r3, r29                      # text pointer
-#    mflr r4
-#    lfs f1, -0x37B4(rtoc)           # default text X/Y
-#    lfs f2, -0x37B4(rtoc)           # default text X/Y
-#    branchl r12, 0x803a6b98
-#
-#    # Get Damage as Int
-#    lbz r3, 0xC(playerdata)
-#    branchl r12, 0x80041300
-#    mr r6, r3
-#
-#    # Create Text2
-#    bl BottomText
-#    mr r3, r29                      # text pointer
-#    mflr r4
-#    mr r5, ComboCount
-#    lfs f1, -0x37B4(rtoc)           # default text X/Y
-#    lfs f2, -0x37B0(rtoc)           # shift down on Y axis
-#    branchl r12, 0x803a6b98 # add subtext
-
 
     # get damage dealt
     branchl r12, 0x80041300
