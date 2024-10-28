@@ -557,7 +557,7 @@ void Menu_SelFile_Init(GOBJ *menu_gobj)
     if (page_total <= 1)
         JOBJ_SetFlagsAll(import_data.scroll_jobj, JOBJ_HIDDEN);
     else
-        import_data.scroll_bot->trans.Y = (-16.2 / (page_total + 1));
+        import_data.scroll_bot->trans.Y = -16.2 / page_total;
 
     // load in first page recordsings
     int page_result = Menu_SelFile_LoadPage(menu_gobj, 0);
@@ -792,7 +792,7 @@ int Menu_SelFile_LoadPage(GOBJ *menu_gobj, int page)
     int slot = import_data.memcard_slot;
 
     // update scroll bar position
-    import_data.scroll_top->trans.Y = ((float)page / (page_total)) * (import_data.scroll_bot->trans.Y);
+    import_data.scroll_top->trans.Y = page * import_data.scroll_bot->trans.Y;
     JOBJ_SetMtxDirtySub(menu_gobj->hsd_object);
 
     // free prev buffers
