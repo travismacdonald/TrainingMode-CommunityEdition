@@ -101,38 +101,6 @@ CheckForFollower:
 
     b Exit
 
-#CreateText:
-#    mflr r0
-#    stw r0, 0x0004(sp)
-#    stwu sp, -0x0008(sp)
-#    mr r3, playerdata               # backup playerdata pointer
-#    li r3, 13                       # Window ID(Unique to This Display)
-#    lbz r4, 0xC(playerdata)     # message queue
-#    Message_Display # create text custom function
-#
-#    mr text, r3                     # backup text pointer
-#    lwz r0, 0x000C(sp)
-#    addi sp, sp, 8
-#    mtlr r0
-#    blr
-
-
-#CreateText:
-#    mflr r0
-#    stw r0, 0x0004(sp)
-#    stwu sp, -0x0008(sp)
-#    mr r3, playerdata               # backup playerdata pointer
-#    li r4, 120                      # display until terminated
-#    li r5, 0                        # Area to Display (0-2)
-#    li r6, 13                       # Window ID(Unique to This Display)
-#    branchl r12, TextCreateFunction # create text custom function
-#
-#    mr text, r3                     # backup text pointer
-#    lwz r0, 0x000C(sp)
-#    addi sp, sp, 8
-#    mtlr r0
-#    blr
-
 ###################
 ## TEXT CONTENTS ##
 ###################
