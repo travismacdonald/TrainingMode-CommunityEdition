@@ -4312,8 +4312,10 @@ AmsahTechLoad:
 
     # Offsets
     .set Timer, 0x8
-    .set TimerOption, MenuData_OptionMenuMemory+0x2 + 0x0
-    .set TimerOptionToggled, MenuData_OptionMenuToggled + 0x0
+    .set UpBTimerOption, MenuData_OptionMenuMemory+0x2 + 0x0
+    .set ResetTimerOption, MenuData_OptionMenuMemory+0x2 + 0x1
+    .set UpBTimerOptionToggled, MenuData_OptionMenuToggled + 0x0
+    .set ResetTimerOptionToggled, MenuData_OptionMenuToggled + 0x1
 
 AmsahTechThink:
     blrl
@@ -4459,7 +4461,7 @@ AmsahTechIsTaunting:
     branchl r12, Air_SetAsGrounded
 
 AmsahTechSetUpBTimer:
-    lbz r3, TimerOption(MenuData)
+    lbz r3, UpBTimerOption(MenuData)
     cmpwi r3, 0x0
     beq AmsahTechSetUpBTimer_30
     cmpwi r3, 0x1
@@ -4535,11 +4537,31 @@ AmsahTechCheckUpBTimer:
     stw r3, 0x1A88(r29)
     li r3, 127
     stb r3, 0x1A8D(r29)
-    # Initiate Reset Timer
+
+AmsahTechInitiateResetTimer:
+    lbz r3, ResetTimerOption(MenuData)
+    cmpwi r3, 0x0
+    beq AmsahTechResetTimer_120
+    cmpwi r3, 0x1
+    beq AmsahTechResetTimer_180
+    cmpwi r3, 0x2
+    beq AmsahTechResetTimer_240
+
+AmsahTechResetTimer_120:
     li r3, 120
     stw r3, 0x4(r31)
+    b AmsahTechCheckToReset
 
-# Check To Reset
+AmsahTechResetTimer_180:
+    li r3, 180
+    stw r3, 0x4(r31)
+    b AmsahTechCheckToReset
+
+AmsahTechResetTimer_240:
+    li r3, 240
+    stw r3, 0x4(r31)
+    b AmsahTechCheckToReset
+
 AmsahTechCheckToReset:
     lwz r3, 0x4(r31)                                    # get timer #Get Timer
     cmpwi r3, 0x0                                       # No Reset Timer Set Yet
@@ -4580,7 +4602,7 @@ AmsahTech_Floats:
 AmsahTechWindowInfo:
     blrl
     # amount of options, amount of options in each window
-    .long 0x00010000                                    # 1 window, 2 options
+    .long 0x01010200                                    # 2 window, Up B Timer has 2 options, Reset Timer has 3 options
 
 ####################################################
 
@@ -4603,6 +4625,26 @@ AmsahTechWindowText:
 
     # Option 2 = 50
     .long 0x35300000
+
+#############################
+## Reset Timer Frame Option ##
+#############################
+
+    # Window Title = Reset Timer Frame
+    .long 0x52657365
+    .long 0x74205469
+    .long 0x6d657220
+    .long 0x4672616d
+    .long 0x65000000
+
+    # Option 1 = 120
+    .long 0x31323000
+
+    # Option 2 = 180
+    .long 0x31383000
+
+    # Option 3 = 240
+    .long 0x32343000
 
 AmsahTechLoadExit:
     restore
