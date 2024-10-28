@@ -4613,38 +4613,37 @@ AmsahTechWindowText:
 ## Up B Timer Frame Option ##
 #############################
 
-    # Window Title = Up B Timer Frame
-    .long 0x55702042
-    .long 0x2054696d
-    .long 0x65722046
-    .long 0x72616d65
-    .long 0x00000000
+    # Window Title
+    .string "Up B Timer Frame"
+    .align 2
 
-    # Option 1 = 30
-    .long 0x33300000
+    # Option 1
+    .string "30"
+    .align 2
 
-    # Option 2 = 50
-    .long 0x35300000
+    # Option 2
+    .string "50"
+    .align 2
 
 #############################
 ## Reset Timer Frame Option ##
 #############################
 
-    # Window Title = Reset Timer Frame
-    .long 0x52657365
-    .long 0x74205469
-    .long 0x6d657220
-    .long 0x4672616d
-    .long 0x65000000
+    # Window Title
+    .string "Reset Timer Frame"
+    .align 2
 
-    # Option 1 = 120
-    .long 0x31323000
+    # Option 1
+    .string "120"
+    .align 2
 
-    # Option 2 = 180
-    .long 0x31383000
+    # Option 2
+    .string "180"
+    .align 2
 
-    # Option 3 = 240
-    .long 0x32343000
+    # Option 3
+    .string "240"
+    .align 2
 
 AmsahTechLoadExit:
     restore
