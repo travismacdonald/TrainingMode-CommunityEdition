@@ -4292,7 +4292,10 @@ AmsahTechLoad:
     bl AmsahTechThink
     mflr r3
     li r4, 3                                            # Priority (After Interrupt)
-    li r5, 0                                            # No Option Menu
+    bl AmsahTechWindowInfo
+    mflr r5
+    bl AmsahTechWindowText
+    mflr r6
     bl CreateEventThinkFunction
 
     b AmsahTechLoadExit
@@ -4309,6 +4312,10 @@ AmsahTechLoad:
 
     # Offsets
     .set Timer, 0x8
+    .set UpBTimerOption, MenuData_OptionMenuMemory+0x2 + 0x0
+    .set ResetTimerOption, MenuData_OptionMenuMemory+0x2 + 0x1
+    .set UpBTimerOptionToggled, MenuData_OptionMenuToggled + 0x0
+    .set ResetTimerOptionToggled, MenuData_OptionMenuToggled + 0x1
 
 AmsahTechThink:
     blrl
@@ -4316,6 +4323,7 @@ AmsahTechThink:
 
     # INIT FUNCTION VARIABLES
     lwz EventData, 0x2c(r3)                             # backup data pointer in r31
+    lwz MenuData, EventData_MenuDataPointer(EventData)
 
     bl GetAllPlayerPointers
     mr P1GObj, r3
@@ -4451,10 +4459,25 @@ AmsahTechIsTaunting:
     # Set Grounded
     mr r3, P2Data
     branchl r12, Air_SetAsGrounded
-    # Set UpB Timer
+
+AmsahTechSetUpBTimer:
+    lbz r3, UpBTimerOption(MenuData)
+    cmpwi r3, 0x0
+    beq AmsahTechSetUpBTimer_30
+    cmpwi r3, 0x1
+    beq AmsahTechSetUpBTimer_50
+
+AmsahTechSetUpBTimer_30:
     li r3, 30
     stw r3, Timer(EventData)
-    # Store To Backups as Well
+    b AmsahTechStoreToBackupsAsWell
+
+AmsahTechSetUpBTimer_50:
+    li r3, 50
+    stw r3, Timer(EventData)
+    b AmsahTechStoreToBackupsAsWell
+
+AmsahTechStoreToBackupsAsWell:
     lwz r3, 0x18(EventData)                             # P2 Backup
     lfs f1, 0xB0(P2Data)                                # Get P2 X
     stfs f1, 0xB0(r3)                                   # Store to P2 Backup
@@ -4514,11 +4537,31 @@ AmsahTechCheckUpBTimer:
     stw r3, 0x1A88(r29)
     li r3, 127
     stb r3, 0x1A8D(r29)
-    # Initiate Reset Timer
+
+AmsahTechInitiateResetTimer:
+    lbz r3, ResetTimerOption(MenuData)
+    cmpwi r3, 0x0
+    beq AmsahTechResetTimer_120
+    cmpwi r3, 0x1
+    beq AmsahTechResetTimer_180
+    cmpwi r3, 0x2
+    beq AmsahTechResetTimer_240
+
+AmsahTechResetTimer_120:
     li r3, 120
     stw r3, 0x4(r31)
+    b AmsahTechCheckToReset
 
-# Check To Reset
+AmsahTechResetTimer_180:
+    li r3, 180
+    stw r3, 0x4(r31)
+    b AmsahTechCheckToReset
+
+AmsahTechResetTimer_240:
+    li r3, 240
+    stw r3, 0x4(r31)
+    b AmsahTechCheckToReset
+
 AmsahTechCheckToReset:
     lwz r3, 0x4(r31)                                    # get timer #Get Timer
     cmpwi r3, 0x0                                       # No Reset Timer Set Yet
@@ -4553,7 +4596,54 @@ AmsahTech_Floats:
     .long 0x41800000                                    # Distance to place Marth from P1
     .long 0x428C0000                                    # FD Stage Boundary X
 
+
 #################################
+
+AmsahTechWindowInfo:
+    blrl
+    # amount of options, amount of options in each window
+    .long 0x01010200                                    # 2 window, Up B Timer has 2 options, Reset Timer has 3 options
+
+####################################################
+
+AmsahTechWindowText:
+    blrl
+
+#############################
+## Up B Timer Frame Option ##
+#############################
+
+    # Window Title
+    .string "Up B Timer Frame"
+    .align 2
+
+    # Option 1
+    .string "30"
+    .align 2
+
+    # Option 2
+    .string "50"
+    .align 2
+
+#############################
+## Reset Timer Frame Option ##
+#############################
+
+    # Window Title
+    .string "Reset Timer Frame"
+    .align 2
+
+    # Option 1
+    .string "120"
+    .align 2
+
+    # Option 2
+    .string "180"
+    .align 2
+
+    # Option 3
+    .string "240"
+    .align 2
 
 AmsahTechLoadExit:
     restore
