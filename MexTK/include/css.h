@@ -306,7 +306,7 @@ static JOBJ **stc_css_cameramodel = 0x804D6CCC;        // -0x49D4
 static CSSCursor **stc_css_cursors = 0x804A0BC0;       // 0x804a0bc0
 static CSSPuck **stc_css_pucks = 0x804A0BD0;           // 0x804a0bd0
 
-static s8 *stc_css_hmnport = 0x804D68C0;                      // -0x49B0
+static s8 *stc_css_hmnport = 0x804D6CF0;                      // -0x49B0
 static s8 *stc_css_cpuport = 0x804D6CF1;                      // -0x49AF
 static u8 *stc_css_delay = 0x804D6CF2;                        // -0x49AE
 static u8 *stc_css_exitkind = 0x804D6CF6;                     // -0x49AA
