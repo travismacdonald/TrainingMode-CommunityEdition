@@ -312,16 +312,16 @@ static HSD_Pad *PadGet(int playerIndex, int padType)
 }
 static int Pad_GetDownSys(int pad_idx)
 {
-    HSD_Pad *pads = (HSD_Pads *)0x804c1fac;
+    HSD_Pads *pads = (HSD_Pads *)0x804c1fac;
 
     int down;
 
     if (pad_idx < 4)
-        down = pads[pad_idx].down;
+        down = pads->pad[pad_idx].down;
     else
     {
         for (int i = 0; i < 4; i++)
-            down |= pads[i].down;
+            down |= pads->pad[i].down;
     }
 
     return down;
