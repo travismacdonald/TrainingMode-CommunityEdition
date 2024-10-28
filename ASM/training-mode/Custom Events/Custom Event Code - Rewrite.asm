@@ -2746,7 +2746,7 @@ Powershield:
     li r5, Falco.Ext                                    # Use chosen CPU
     li r6, FinalDestination                             # Use SSS Stage
     load r7, EventOSD_Powershield
-    li r8, 0                                            # Use Sopo bool
+    li r8, 1                                            # Use Sopo bool
     bl InitializeMatch
 
     # STORE THINK FUNCTION
@@ -4270,7 +4270,7 @@ AmsahTech:
     li r5, 9                                            # Use chosen CPU
     li r6, -1                                           # Use chosen Stage
     load r7, EventOSD_AmsahTech
-    li r8, 0                                            # Use Sopo bool
+    li r8, 1                                            # Use Sopo bool
     bl InitializeMatch
 
     # STORE THINK FUNCTION
