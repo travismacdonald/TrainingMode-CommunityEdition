@@ -873,6 +873,7 @@ static int CheckOverlay(GOBJ *character, OverlayGroup overlay)
     FighterData *data = character->userdata;
     int state = data->state_id;
     int in_air = data->phys.air_state;
+    int kind = data->kind;
 
     switch (overlay)
     {
@@ -920,7 +921,21 @@ static int CheckOverlay(GOBJ *character, OverlayGroup overlay)
 
         case (OVERLAY_CAN_FASTFALL):
         {
-            if ((state < ASID_JUMPF || ASID_FALLAERIALB < state) && state != ASID_PASS)
+            if (!in_air)
+                return false;
+
+            if (in_hitstun_anim(character) && !hitstun_ended(character))
+                return false;
+
+            if ((state < ASID_JUMPF || state > ASID_DAMAGEFALL)
+                    && (state < ASID_DAMAGEHI1 || state > ASID_DAMAGEFLYROLL)
+                    && (state < ASID_ATTACKAIRN || state > ASID_ATTACKAIRLW)
+                    && state != ASID_PASS)
+                return false;
+
+            // peach, yoshi, ness, mewtwo cannot fastfall in dj animation for whatever reason.
+            if ((kind == FTKIND_PEACH || kind == FTKIND_YOSHI || kind == FTKIND_NESS || kind == FTKIND_MEWTWO)
+                    && (state == ASID_JUMPAERIALF || state == ASID_JUMPAERIALB))
                 return false;
 
             if (data->flags.is_fastfall) 
