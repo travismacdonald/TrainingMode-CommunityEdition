@@ -1,3 +1,5 @@
+#include "lab_common.h"
+
 // DECLARATIONS #############################################
 
 // todo: move structs from lab_common.h to here
@@ -1490,6 +1492,146 @@ static EventMenu LabMenu_Tech = {
     .options = &LabOptions_Tech,
 };
 
+// PLAYBACK CHANCES MENU -----------------------------------------------------
+
+enum slot_chance_menu
+{
+    OPTSLOTCHANCE_1,
+    OPTSLOTCHANCE_2,
+    OPTSLOTCHANCE_3,
+    OPTSLOTCHANCE_4,
+    OPTSLOTCHANCE_5,
+    OPTSLOTCHANCE_6,
+
+    OPTSLOTCHANCE_COUNT
+};
+
+static EventOption LabOptions_SlotChancesHMN[REC_SLOTS] = {
+    {
+        .option_kind = OPTKIND_INT,
+        .option_name = "Slot 1",
+        .desc = "Chance of slot 1 occuring.",
+        .option_values = "%d%%",
+        .value_num = 101,
+        .disable = 1,
+        .onOptionChange = Lab_ChangeSlot1ChanceHMN,
+    },
+    {
+        .option_kind = OPTKIND_INT,
+        .option_name = "Slot 2",
+        .desc = "Chance of slot 2 occuring.",
+        .option_values = "%d%%",
+        .value_num = 101,
+        .disable = 1,
+        .onOptionChange = Lab_ChangeSlot2ChanceHMN,
+    },
+    {
+        .option_kind = OPTKIND_INT,
+        .option_name = "Slot 3",
+        .desc = "Chance of slot 3 occuring.",
+        .option_values = "%d%%",
+        .value_num = 101,
+        .disable = 1,
+        .onOptionChange = Lab_ChangeSlot3ChanceHMN,
+    },
+    {
+        .option_kind = OPTKIND_INT,
+        .option_name = "Slot 4",
+        .desc = "Chance of slot 4 occuring.",
+        .option_values = "%d%%",
+        .value_num = 101,
+        .disable = 1,
+        .onOptionChange = Lab_ChangeSlot4ChanceHMN,
+    },
+    {
+        .option_kind = OPTKIND_INT,
+        .option_name = "Slot 5",
+        .desc = "Chance of slot 5 occuring.",
+        .option_values = "%d%%",
+        .value_num = 101,
+        .disable = 1,
+        .onOptionChange = Lab_ChangeSlot5ChanceHMN,
+    },
+    {
+        .option_kind = OPTKIND_INT,
+        .option_name = "Slot 6",
+        .desc = "Chance of slot 6 occuring.",
+        .option_values = "%d%%",
+        .value_num = 101,
+        .disable = 1,
+        .onOptionChange = Lab_ChangeSlot6ChanceHMN,
+    },
+};
+
+static EventOption LabOptions_SlotChancesCPU[REC_SLOTS] = {
+    {
+        .option_kind = OPTKIND_INT,
+        .option_name = "Slot 1",
+        .desc = "Chance of slot 1 occuring.",
+        .option_values = "%d%%",
+        .value_num = 101,
+        .disable = 1,
+        .onOptionChange = Lab_ChangeSlot1ChanceCPU,
+    },
+    {
+        .option_kind = OPTKIND_INT,
+        .option_name = "Slot 2",
+        .desc = "Chance of slot 2 occuring.",
+        .option_values = "%d%%",
+        .value_num = 101,
+        .disable = 1,
+        .onOptionChange = Lab_ChangeSlot2ChanceCPU,
+    },
+    {
+        .option_kind = OPTKIND_INT,
+        .option_name = "Slot 3",
+        .desc = "Chance of slot 3 occuring.",
+        .option_values = "%d%%",
+        .value_num = 101,
+        .disable = 1,
+        .onOptionChange = Lab_ChangeSlot3ChanceCPU,
+    },
+    {
+        .option_kind = OPTKIND_INT,
+        .option_name = "Slot 4",
+        .desc = "Chance of slot 4 occuring.",
+        .option_values = "%d%%",
+        .value_num = 101,
+        .disable = 1,
+        .onOptionChange = Lab_ChangeSlot4ChanceCPU,
+    },
+    {
+        .option_kind = OPTKIND_INT,
+        .option_name = "Slot 5",
+        .desc = "Chance of slot 5 occuring.",
+        .option_values = "%d%%",
+        .value_num = 101,
+        .disable = 1,
+        .onOptionChange = Lab_ChangeSlot5ChanceCPU,
+    },
+    {
+        .option_kind = OPTKIND_INT,
+        .option_name = "Slot 6",
+        .desc = "Chance of slot 6 occuring.",
+        .option_values = "%d%%",
+        .value_num = 101,
+        .disable = 1,
+        .onOptionChange = Lab_ChangeSlot6ChanceCPU,
+    },
+};
+
+static EventMenu LabMenu_SlotChancesHMN = {
+    .name = "HMN Playback Slot Chances",
+    .option_num = sizeof(LabOptions_SlotChancesHMN) / sizeof(EventOption),
+    .options = &LabOptions_SlotChancesHMN,
+};
+
+static EventMenu LabMenu_SlotChancesCPU = {
+    .name = "HMN Playback Slot Chances",
+    .option_num = sizeof(LabOptions_SlotChancesCPU) / sizeof(EventOption),
+    .options = &LabOptions_SlotChancesCPU,
+};
+
 // RECORDING MENU --------------------------------------------------------------
 
 enum autorestore
@@ -1530,8 +1672,10 @@ enum rec_option
    OPTREC_LOOP,
    OPTREC_AUTORESTORE,
    OPTREC_RESAVE,
-   OPTREC_EXPORT,
    OPTREC_DELETE,
+   OPTREC_HMNCHANCE,
+   OPTREC_CPUCHANCE,
+   OPTREC_EXPORT,
 
    OPTREC_COUNT
 };
@@ -1620,6 +1764,18 @@ static EventOption LabOptions_Record[OPTREC_COUNT] = {
         .option_name = "Delete Positions",
         .desc = "Delete the current initial position\nand recordings.",
         .onOptionSelect = Record_DeleteState,
+    },
+    {
+        .option_kind = OPTKIND_MENU,
+        .option_name = "Set HMN Playback Chances",
+        .desc = "Set the chances that slots will be selected\nduring random playback.",
+        .menu = &LabMenu_SlotChancesHMN,
+    },
+    {
+        .option_kind = OPTKIND_MENU,
+        .option_name = "Set CPU Playback Chances",
+        .desc = "Set the chances that slots will be selected\nduring random playback.",
+        .menu = &LabMenu_SlotChancesCPU,
     },
     {
         .option_kind = OPTKIND_FUNC,
@@ -1799,5 +1955,6 @@ static EventMenu LabMenu_OverlaysCPU = {
 static u32 lz77_compress(u8 *uncompressed_text, u32 uncompressed_size, u8 *compressed_text, u8 pointer_length_width);
 static u32 lz77_decompress(u8 *compressed_text, u8 *uncompressed_text);
 static float get_angle_out_of_deadzone(float angle, int lastSDIWasCardinal);
-static void rebound_tech_chances(int menu_lookup[4], int just_changed_option);
+static void distribute_chances(u16 *chances[], unsigned int chance_count);
+static void rebound_chances(u16 *chances[], unsigned int chance_count, int just_changed_option);
 static int is_tech_anim(int state);

@@ -1,4 +1,3 @@
-#include "lab_common.h"
 #include "lab.h"
 
 #include <stddef.h>
@@ -151,15 +150,62 @@ static int getup_option_menu_lookup[4] = {
     OPTTECH_GETUPATTACKCHANCE,
 };
 
-void Lab_ChangeTechInPlaceChance (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(tech_option_menu_lookup, 0); }
-void Lab_ChangeTechAwayChance    (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(tech_option_menu_lookup, 1); }
-void Lab_ChangeTechTowardChance  (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(tech_option_menu_lookup, 2); }
-void Lab_ChangeMissTechChance    (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(tech_option_menu_lookup, 3); }
+static void rebound_tech_chances(EventOption tech_menu[4], int menu_lookup[], int slot_idx_changed) {
+    u16 *chances[4];
+    int enabled_slots = 0;
 
-void Lab_ChangeStandChance       (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(getup_option_menu_lookup, 0); }
-void Lab_ChangeRollAwayChance    (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(getup_option_menu_lookup, 1); }
-void Lab_ChangeRollTowardChance  (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(getup_option_menu_lookup, 2); }
-void Lab_ChangeGetupAttackChance (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(getup_option_menu_lookup, 3); }
+    for (int i = 0; i < 4; i++) {
+        int tech_menu_idx = menu_lookup[i];
+        chances[enabled_slots] = &tech_menu[tech_menu_idx].option_val;
+        enabled_slots++;
+    }
+
+    rebound_chances(chances, 4, slot_idx_changed);
+}
+
+void Lab_ChangeTechInPlaceChance (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(LabOptions_Tech, tech_option_menu_lookup, 0); }
+void Lab_ChangeTechAwayChance    (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(LabOptions_Tech, tech_option_menu_lookup, 1); }
+void Lab_ChangeTechTowardChance  (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(LabOptions_Tech, tech_option_menu_lookup, 2); }
+void Lab_ChangeMissTechChance    (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(LabOptions_Tech, tech_option_menu_lookup, 3); }
+
+void Lab_ChangeStandChance       (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(LabOptions_Tech, getup_option_menu_lookup, 0); }
+void Lab_ChangeRollAwayChance    (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(LabOptions_Tech, getup_option_menu_lookup, 1); }
+void Lab_ChangeRollTowardChance  (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(LabOptions_Tech, getup_option_menu_lookup, 2); }
+void Lab_ChangeGetupAttackChance (GOBJ *menu_gobj, int _new_val) { rebound_tech_chances(LabOptions_Tech, getup_option_menu_lookup, 3); }
+
+static int enabled_slot_chances(EventOption slot_menu[REC_SLOTS], u16 *chances[REC_SLOTS]) {
+    int enabled_slots = 0;
+    for (int i = 0; i < REC_SLOTS; i++) {
+        int slot_menu_idx = OPTSLOTCHANCE_1 + i;
+
+        if (!slot_menu[slot_menu_idx].disable) {
+            chances[enabled_slots] = &slot_menu[slot_menu_idx].option_val;
+            enabled_slots++;
+        }
+    }
+
+    return enabled_slots;
+}
+
+static void rebound_slot_chances(EventOption slot_menu[REC_SLOTS], int slot_idx_changed) {
+    u16 *chances[REC_SLOTS];
+    int chance_count = enabled_slot_chances(slot_menu, chances);
+    rebound_chances(chances, chance_count, slot_idx_changed);
+}
+
+void Lab_ChangeSlot1ChanceHMN (GOBJ *menu_gobj, int _new_val) { rebound_slot_chances(LabOptions_SlotChancesHMN, 0); }
+void Lab_ChangeSlot2ChanceHMN (GOBJ *menu_gobj, int _new_val) { rebound_slot_chances(LabOptions_SlotChancesHMN, 1); }
+void Lab_ChangeSlot3ChanceHMN (GOBJ *menu_gobj, int _new_val) { rebound_slot_chances(LabOptions_SlotChancesHMN, 2); }
+void Lab_ChangeSlot4ChanceHMN (GOBJ *menu_gobj, int _new_val) { rebound_slot_chances(LabOptions_SlotChancesHMN, 3); }
+void Lab_ChangeSlot5ChanceHMN (GOBJ *menu_gobj, int _new_val) { rebound_slot_chances(LabOptions_SlotChancesHMN, 4); }
+void Lab_ChangeSlot6ChanceHMN (GOBJ *menu_gobj, int _new_val) { rebound_slot_chances(LabOptions_SlotChancesHMN, 5); }
+
+void Lab_ChangeSlot1ChanceCPU (GOBJ *menu_gobj, int _new_val) { rebound_slot_chances(LabOptions_SlotChancesCPU, 0); }
+void Lab_ChangeSlot2ChanceCPU (GOBJ *menu_gobj, int _new_val) { rebound_slot_chances(LabOptions_SlotChancesCPU, 1); }
+void Lab_ChangeSlot3ChanceCPU (GOBJ *menu_gobj, int _new_val) { rebound_slot_chances(LabOptions_SlotChancesCPU, 2); }
+void Lab_ChangeSlot4ChanceCPU (GOBJ *menu_gobj, int _new_val) { rebound_slot_chances(LabOptions_SlotChancesCPU, 3); }
+void Lab_ChangeSlot5ChanceCPU (GOBJ *menu_gobj, int _new_val) { rebound_slot_chances(LabOptions_SlotChancesCPU, 4); }
+void Lab_ChangeSlot6ChanceCPU (GOBJ *menu_gobj, int _new_val) { rebound_slot_chances(LabOptions_SlotChancesCPU, 5); }
 
 void Lab_ChangeCPUIntang(GOBJ *menu_gobj, int value)
 {
@@ -3373,9 +3419,9 @@ void Record_Think(GOBJ *rec_gobj)
 
         // reroll
         if (LabOptions_Record[OPTREC_HMNSLOT].option_val == 0)
-            rec_data.hmn_rndm_slot = Record_GetRandomSlot(&rec_data.hmn_inputs);
+            rec_data.hmn_rndm_slot = Record_GetRandomSlot(&rec_data.hmn_inputs, LabOptions_SlotChancesHMN);
         if (LabOptions_Record[OPTREC_CPUSLOT].option_val == 0)
-            rec_data.cpu_rndm_slot = Record_GetRandomSlot(&rec_data.cpu_inputs);
+            rec_data.cpu_rndm_slot = Record_GetRandomSlot(&rec_data.cpu_inputs, LabOptions_SlotChancesCPU);
     }
 
     // autorestore check -----------------------------------
@@ -3412,9 +3458,9 @@ void Record_Think(GOBJ *rec_gobj)
 
             // reroll
             if (LabOptions_Record[OPTREC_HMNSLOT].option_val == 0)
-                rec_data.hmn_rndm_slot = Record_GetRandomSlot(&rec_data.hmn_inputs);
+                rec_data.hmn_rndm_slot = Record_GetRandomSlot(&rec_data.hmn_inputs, LabOptions_SlotChancesHMN);
             if (LabOptions_Record[OPTREC_CPUSLOT].option_val == 0)
-                rec_data.cpu_rndm_slot = Record_GetRandomSlot(&rec_data.cpu_inputs);
+                rec_data.cpu_rndm_slot = Record_GetRandomSlot(&rec_data.cpu_inputs, LabOptions_SlotChancesCPU);
         }
     }
 }
@@ -3565,11 +3611,26 @@ void Record_DeleteState(GOBJ *menu_gobj)
         }
     }
 
+    for (int i = 0; i < REC_SLOTS; ++i) {
+        LabOptions_SlotChancesHMN[i].option_val = 0;
+        LabOptions_SlotChancesCPU[i].option_val = 0;
+        LabOptions_SlotChancesHMN[i].disable = 1;
+        LabOptions_SlotChancesCPU[i].disable = 1;
+    }
+
     LabMenu_Record.scroll = 0;
     LabMenu_Record.cursor = 0;
 }
 void Record_RestoreState(GOBJ *menu_gobj)
 {
+    if (LabOptions_Record[OPTREC_HMNMODE].option_val == RECMODE_HMN_PLAYBACK
+            && LabOptions_Record[OPTREC_HMNSLOT].option_val == 0)
+        rec_data.hmn_rndm_slot = Record_GetRandomSlot(&rec_data.hmn_inputs, LabOptions_SlotChancesHMN);
+
+    if (LabOptions_Record[OPTREC_CPUMODE].option_val == RECMODE_CPU_PLAYBACK
+            && LabOptions_Record[OPTREC_CPUSLOT].option_val == 0)
+        rec_data.cpu_rndm_slot = Record_GetRandomSlot(&rec_data.cpu_inputs, LabOptions_SlotChancesCPU);
+
     Record_LoadSavestate();
     return;
 }
@@ -3578,18 +3639,10 @@ void Record_ChangeHMNSlot(GOBJ *menu_gobj, int value)
     // upon changing to random
     if (value == 0)
     {
-        // if set to record
         if (LabOptions_Record[OPTREC_HMNMODE].option_val == 1)
-        {
-            // change to slot 1
             LabOptions_Record[OPTREC_HMNSLOT].option_val = 1;
-        }
-
-        // update random slot
         else
-        {
-            rec_data.hmn_rndm_slot = Record_GetRandomSlot(&rec_data.hmn_inputs);
-        }
+            rec_data.hmn_rndm_slot = Record_GetRandomSlot(&rec_data.hmn_inputs, LabOptions_SlotChancesHMN);
     }
 
     // reload save
@@ -3602,18 +3655,10 @@ void Record_ChangeCPUSlot(GOBJ *menu_gobj, int value)
     // upon changing to random
     if (value == 0)
     {
-        // if set to record
         if (LabOptions_Record[OPTREC_CPUMODE].option_val == 2)
-        {
-            // change to slot 1
             LabOptions_Record[OPTREC_CPUSLOT].option_val = 1;
-        }
-
-        // update random slot
         else
-        {
-            rec_data.cpu_rndm_slot = Record_GetRandomSlot(&rec_data.cpu_inputs);
-        }
+            rec_data.cpu_rndm_slot = Record_GetRandomSlot(&rec_data.cpu_inputs, LabOptions_SlotChancesCPU);
     }
 
     // reload save
@@ -3682,29 +3727,29 @@ void Record_ChangeCPUMode(GOBJ *menu_gobj, int value)
 
     return;
 }
-int Record_GetRandomSlot(RecInputData **input_data)
+int Record_GetRandomSlot(RecInputData **input_data, EventOption slot_menu[])
 {
-    // create array of slots in use
-    u8 slot_num = 0;
-    u8 arr[REC_SLOTS];
-    for (int i = 0; i < REC_SLOTS; i++)
-    {
-        // if this recording slot is in use
-        if (input_data[i]->num != 0)
-        {
-            arr[slot_num] = i;
-            slot_num++;
-        }
+    u16 *chances[REC_SLOTS];
+    int chance_count = enabled_slot_chances(slot_menu, chances);
+    if (chance_count == 0) return 0;
+
+    int slots[REC_SLOTS];
+    int slot_num = 0;
+    for (int i = 0; i < REC_SLOTS; ++i) {
+        if (!slot_menu[i].disable)
+            slots[slot_num++] = i;
     }
 
-    // ensure at least one slot found
-    if (slot_num == 0)
-    {
-        return 0;
+    int rand = HSD_Randi(100);
+
+    for (int i = 0; i < chance_count; ++i) {
+        int chance = (int)*chances[i];
+        if (rand < chance)
+            return slots[i];
+        rand -= chance;
     }
 
-    // get random slot in use
-    return arr[(HSD_Randi(slot_num))];
+    return 0;
 }
 int Record_GetCurrFrame()
 {
@@ -4050,11 +4095,11 @@ void Savestates_Update()
                     // re-roll random slot
                     if (LabOptions_Record[OPTREC_HMNSLOT].option_val == 0)
                     {
-                        rec_data.hmn_rndm_slot = Record_GetRandomSlot(&rec_data.hmn_inputs);
+                        rec_data.hmn_rndm_slot = Record_GetRandomSlot(&rec_data.hmn_inputs, LabOptions_SlotChancesHMN);
                     }
                     if (LabOptions_Record[OPTREC_CPUSLOT].option_val == 0)
                     {
-                        rec_data.cpu_rndm_slot = Record_GetRandomSlot(&rec_data.cpu_inputs);
+                        rec_data.cpu_rndm_slot = Record_GetRandomSlot(&rec_data.cpu_inputs, LabOptions_SlotChancesCPU);
                     }
                 }
             }
@@ -5658,6 +5703,40 @@ void Event_Think(GOBJ *event)
         hmn_data->pad_index = stc_null_controller;
     }
 
+    for (int i = 0; i < REC_SLOTS; i++) {
+        int slot_menu_idx = OPTSLOTCHANCE_1 + i;
+
+        // if slot newly created
+
+        if (rec_data.hmn_inputs[i]->num != 0 && LabOptions_SlotChancesHMN[slot_menu_idx].disable) {
+            u16 *chances[REC_SLOTS];
+            int chance_count = enabled_slot_chances(LabOptions_SlotChancesHMN, chances);
+
+            LabOptions_SlotChancesHMN[slot_menu_idx].disable = 0;
+            if (chance_count) {
+                LabOptions_SlotChancesHMN[slot_menu_idx].option_val = 100 / chance_count;
+                chances[chance_count++] = &LabOptions_SlotChancesHMN[slot_menu_idx].option_val;
+                distribute_chances(chances, chance_count);
+            } else {
+                LabOptions_SlotChancesHMN[slot_menu_idx].option_val = 100;
+            }
+        }
+
+        if (rec_data.cpu_inputs[i]->num != 0 && LabOptions_SlotChancesCPU[slot_menu_idx].disable) {
+            u16 *chances[REC_SLOTS];
+            int chance_count = enabled_slot_chances(LabOptions_SlotChancesCPU, chances);
+
+            LabOptions_SlotChancesCPU[slot_menu_idx].disable = 0;
+            if (chance_count) {
+                LabOptions_SlotChancesCPU[slot_menu_idx].option_val = 100 / chance_count;
+                chances[chance_count++] = &LabOptions_SlotChancesCPU[slot_menu_idx].option_val;
+                distribute_chances(chances, chance_count);
+            } else {
+                LabOptions_SlotChancesCPU[slot_menu_idx].option_val = 100;
+            }
+        }
+    }
+
     return;
 }
 // Initial Menu
@@ -5669,19 +5748,67 @@ static int is_tech_anim(int state) {
     return state == ASID_PASSIVE || state == ASID_PASSIVESTANDF || state == ASID_PASSIVESTANDB;
 }
 
-// Clean up percentages so the total is always 100
-static void rebound_tech_chances(int menu_lookup[4], int just_changed_option) {
+// Clean up percentages so the total is 100, evenly distributing the change.
+static void distribute_chances(u16 *chances[], unsigned int chance_count) {
+    if (chance_count == 0) return;
+
     int sum = 0;
-    for (int t = 0; t < 4; ++t)
-        sum += LabOptions_Tech[menu_lookup[t]].option_val;
+    for (int t = 0; t < chance_count; ++t)
+        sum += *chances[t];
+
+    int delta = 100 - sum;
+    int change;
+    if (sum > 100) { change = -1; } else { change = 1; }
+
+    // Aitch: We could always start on the first chance, but when adding a new slot we should distribute starting
+    // on the largest (if decreasing) or smallest (if increasing) option.
+    // This fixes percents when rounding: for example, three options will have chances 33, 33, and 34.
+    // When we add a new event to this, if we always start on the first option,
+    // then the resulting percents will be 24, 25, 25, 26.
+    // When we start on the largest/smallest option then they will all be 25 as expected.
+    int option = 0;
+    int min = 999;
+    for (int t = 0; t < chance_count; ++t) {
+        int check = (int)*chances[t] * change;
+        if (check < min) {
+            min = check;
+            option = t;
+        }
+    }
+
+    // Keep adding/removing from next option until all needed change to revert to 100% is applied.
+    // Algorithm is pretty garbage, but it should be quick enough.
+    while (delta)
+    {
+        u16 *opt_val = chances[option];
+        int prev_chance = (int)*opt_val;
+        int new_chance = prev_chance + change;
+
+        if (0 <= new_chance && new_chance <= 100) {
+            *opt_val = new_chance;
+            delta -= change;
+        }
+
+        option = (option + 1) % chance_count;
+    }
+}
+
+// Clean up percentages so the total is always 100.
+// The next percentage is modified.
+static void rebound_chances(u16 *chances[], unsigned int chance_count, int just_changed_option) {
+    if (chance_count == 0) return;
+
+    int sum = 0;
+    for (int t = 0; t < chance_count; ++t)
+        sum += *chances[t];
 
     int delta = 100 - sum;
     // keep adding/removing from next option chance until all needed change to revert to 100% is applied
     while (delta)
     {
-        int rebound_option = (just_changed_option + 1) % 4;
+        int rebound_option = (just_changed_option + 1) % chance_count;
 
-        u16 *opt_val = &LabOptions_Tech[menu_lookup[rebound_option]].option_val;
+        u16 *opt_val = chances[rebound_option];
         int prev_chance = (int)*opt_val;
 
         int new_chance = prev_chance + delta;
