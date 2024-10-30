@@ -333,12 +333,10 @@ void HSD_StateSetBlendMode(GXBlendMode type, GXBlendFactor src_factor,
 void HSD_StateSetCullMode(GXCullMode cull_mode);
 void HSD_StateSetDither();
 void HSD_StateSetLineWidth(u8 width, int tex_offsets);
-void HSD_StateSetNumChans(u8 nChans);
 void HSD_StateSetNumTevStages(u8 stages);
 void HSD_StateSetNumTexGens(u8 nTexGens);
 void HSD_StateSetPointSize();
 void HSD_StateSetZCompLoc(GXBool enable);
-void HSD_StateSetZMode(GXBool compare_enable, GXCompare func, GXBool update_enable);
 void HSD_ClearVtxDesc();
 void HSD_VICopyXFBASync(int unk);
 int HSD_VIGetDrawDoneWaitingFlag();

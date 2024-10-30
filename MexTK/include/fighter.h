@@ -3391,7 +3391,6 @@ void Fighter_Respawn(GOBJ *f, int ms);
 void Fighter_CreateAbsorb(GOBJ *fighter_gobj, AbsorbDesc *absorb_desc);
 void Fighter_EnableAbsorbUpdate(GOBJ *fighter_gobj);
 void Fighter_PlaySFX(FighterData *fp, int sfxid, int volume, int pitch);
-void Fighter_PlayVoiceSFX(FighterData *fp, int sfxid, int volume, int pitch);
 void SFX_StopAllFighterSFX(FighterData *fighter_data);
 void Fighter_EnterFallOrWait(GOBJ *fighter_gobj);
 void Fighter_EnterTech(GOBJ *gobj);
