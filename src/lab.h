@@ -760,6 +760,7 @@ enum gen_option
 };
 
 static char *LabOptions_CamMode[] = {"Normal", "Zoom", "Fixed", "Advanced"};
+static char *LabOptions_ShowInputs[] = {"Off", "HMN", "HMN and CPU"};
 static char *LabOptions_FrameAdvButton[] = {"L", "Z", "X", "Y"};
 
 static EventOption LabOptions_General[OPTGEN_COUNT] = {
@@ -858,10 +859,10 @@ static EventOption LabOptions_General[OPTGEN_COUNT] = {
     },
     {
         .option_kind = OPTKIND_STRING,
-        .value_num = 2,
+        .value_num = sizeof(LabOptions_ShowInputs) / sizeof(*LabOptions_ShowInputs),
         .option_name = "Input Display",
         .desc = "Display player inputs onscreen.",
-        .option_values = LabOptions_OffOn,
+        .option_values = LabOptions_ShowInputs,
     },
     {
         .option_kind = OPTKIND_STRING,

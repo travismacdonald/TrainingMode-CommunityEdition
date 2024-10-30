@@ -275,12 +275,14 @@ typedef struct RecordingSave
     RecInputData hmn_inputs[REC_SLOTS];
     RecInputData cpu_inputs[REC_SLOTS];
 } RecordingSave;
-typedef struct InputData
+
+typedef struct Controller
 {
-    JOBJ *controller_joint[4];
+    JOBJ *jobj;
     Vec2 ltrig_origin;
     Vec2 rtrig_origin;
-} InputData;
+} Controller;
+
 typedef struct ExportData
 {
     u16 menu_index;

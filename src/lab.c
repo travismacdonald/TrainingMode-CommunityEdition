@@ -2955,113 +2955,105 @@ void CustomTDI_Destroy(GOBJ *gobj)
 
     return;
 }
-void Inputs_GX(GOBJ *gobj, int pass)
-{
-    // only render when enabled and unpaused
-    if ((LabOptions_General[OPTGEN_INPUT].option_val == 1) && (Pause_CheckStatus(1) != 2))
-    {
-        GXLink_Common(gobj, pass);
-    }
-
-    return;
-}
 void Inputs_Think(GOBJ *gobj)
 {
-    InputData *input_data = gobj->userdata;
+    Controller *controllers = gobj->userdata;
+    int hide_rest = false;
 
     // update controllers
-    for (int i = 0; i < (sizeof(input_data->controller_joint) / 4); i++)
+    for (int i = 0; i < 4; i++)
     {
-        JOBJ *controller = input_data->controller_joint[i];
+        Controller *controller = &controllers[i];
+        JOBJ *controller_jobj = controller->jobj;
 
-        if (controller != 0)
+        if (controller_jobj == NULL) continue;
+
+        // get port and controller data
+        GOBJ *fighter = Fighter_GetGObj(i);
+        FighterData *ft_data = fighter->userdata;
+        HSD_Pad *pad = PadGet(ft_data->pad_index, PADGET_ENGINE);
+
+        // move lstick
+        JOBJ *lstick_joint;
+        JOBJ_GetChild(controller_jobj, &lstick_joint, 10, -1);
+        lstick_joint->trans.X = (pad->fstickX * 2.3);
+        lstick_joint->trans.Y = (pad->fstickY * 2.3);
+
+        // move lstick
+        JOBJ *rstick_joint;
+        JOBJ_GetChild(controller_jobj, &rstick_joint, 8, -1);
+        rstick_joint->trans.X = (pad->fsubstickX * 2.3);
+        rstick_joint->trans.Y = (pad->fsubstickY * 2.3);
+
+        // move ltrigger
+        JOBJ *ltrig_joint;
+        JOBJ_GetChild(controller_jobj, &ltrig_joint, button_lookup[BTN_L].jobj, -1);
+        ltrig_joint->trans.X = (pad->ftriggerLeft * 0.5) + controller->ltrig_origin.X;
+        ltrig_joint->trans.Z = (pad->ftriggerLeft * 1.5) + controller->ltrig_origin.Y;
+
+        // move rtrigger
+        JOBJ *rtrig_joint;
+        JOBJ_GetChild(controller_jobj, &rtrig_joint, button_lookup[BTN_R].jobj, -1);
+        rtrig_joint->trans.X = (pad->ftriggerRight * -0.5) + controller->rtrig_origin.X;
+        rtrig_joint->trans.Z = (pad->ftriggerRight *  1.5) + controller->rtrig_origin.Y;
+
+        // update button colors
+        int held = pad->held;
+        for (int i = 0; i < BTN_NUM; i++)
         {
+            // Get buttons jobj and dobj from the lookup table
+            JOBJ *button_jobj;
+            JOBJ_GetChild(controller_jobj, &button_jobj, button_lookup[i].jobj, -1);
+            DOBJ *button_dobj = JOBJ_GetDObjChild(button_jobj, button_lookup[i].dobj);
 
-            // get port and controller data
-            int port = Fighter_GetControllerPort(i);
-            HSD_Pad *pad = PadGet(port, PADGET_ENGINE);
-
-            // move lstick
-            JOBJ *lstick_joint;
-            JOBJ_GetChild(controller, &lstick_joint, 10, -1);
-            lstick_joint->trans.X = (pad->fstickX * 2.3);
-            lstick_joint->trans.Y = (pad->fstickY * 2.3);
-
-            // move lstick
-            JOBJ *rstick_joint;
-            JOBJ_GetChild(controller, &rstick_joint, 8, -1);
-            rstick_joint->trans.X = (pad->fsubstickX * 2.3);
-            rstick_joint->trans.Y = (pad->fsubstickY * 2.3);
-
-            // move ltrigger
-            JOBJ *ltrig_joint;
-            JOBJ_GetChild(controller, &ltrig_joint, button_lookup[BTN_L].jobj, -1);
-            ltrig_joint->trans.X = (pad->ftriggerLeft * 0.5) + input_data->ltrig_origin.X;
-            ltrig_joint->trans.Z = (pad->ftriggerLeft * 1.5) + input_data->ltrig_origin.Y;
-
-            // move rtrigger
-            JOBJ *rtrig_joint;
-            JOBJ_GetChild(controller, &rtrig_joint, button_lookup[BTN_R].jobj, -1);
-            rtrig_joint->trans.X = (pad->ftriggerRight * -0.5) + input_data->rtrig_origin.X;
-            rtrig_joint->trans.Z = (pad->ftriggerRight * 1.5) + input_data->rtrig_origin.Y;
-
-            // update button colors
-            int held = pad->held;
-            for (int i = 0; i < (BTN_NUM); i++)
+            // check if button is pressed
+            if (held & button_bits[i])
             {
-
-                // Get buttons jobj and dobj from the lookup table
-                JOBJ *button_jobj;
-                JOBJ_GetChild(controller, &button_jobj, button_lookup[i].jobj, -1);
-                DOBJ *button_dobj = JOBJ_GetDObjChild(button_jobj, button_lookup[i].dobj);
-
-                // check if button is pressed
-                if (held & button_bits[i])
-                {
-                    // make white i guess for now
-                    GXColor color_pressed = INPUT_COLOR_PRESSED;
-                    button_dobj->mobj->mat->diffuse = color_pressed;
-                }
-                // not pressed, make the default color
-                else
-                {
-                    GXColor *color_released = &button_colors[i];
-                    button_dobj->mobj->mat->diffuse = *color_released;
-                }
+                // make white i guess for now
+                GXColor color_pressed = INPUT_COLOR_PRESSED;
+                button_dobj->mobj->mat->diffuse = color_pressed;
             }
+            // not pressed, make the default color
+            else
+            {
+                GXColor *color_released = &button_colors[i];
+                button_dobj->mobj->mat->diffuse = *color_released;
+            }
+        }
 
-            JOBJ_SetMtxDirtySub(controller);
+        JOBJ_SetMtxDirtySub(controller_jobj);
+
+        int input_option = LabOptions_General[OPTGEN_INPUT].option_val;
+        int paused = Pause_CheckStatus(1) == 2;
+
+        // Aitch: I would LOVE to set the hidden flag instead of abusing the Z axis.
+        // But for some reason, it doesn't work! Lmk if you have a better idea.
+        if (paused || input_option == 0) {
+            Match_ShowTimer();
+            controller_jobj->trans.Z = -99999.0;
+            //JOBJ_SetFlags(controller_jobj, JOBJ_HIDDEN);
+        } else if (hide_rest) {
+            controller_jobj->trans.Z = -99999.0;
+            //JOBJ_SetFlags(controller_jobj, JOBJ_HIDDEN);
+        } else if (input_option == 1) {
+            Match_HideTimer();
+            controller_jobj->trans.Z = 0.0;
+            //JOBJ_ClearFlags(controller_jobj, JOBJ_HIDDEN);
+            hide_rest = true;
+        } else {
+            Match_HideTimer();
+            controller_jobj->trans.Z = 0.0;
+            //JOBJ_ClearFlags(controller_jobj, JOBJ_HIDDEN);
         }
     }
-
-    // toggle visibility
-    JOBJ *root = gobj->hsd_object;
-    if ((LabOptions_General[OPTGEN_INPUT].option_val == 1) && (Pause_CheckStatus(1) != 2))
-    {
-        Match_HideTimer();
-        JOBJ_ClearFlags(root, JOBJ_HIDDEN);
-    }
-    else if ((LabOptions_General[OPTGEN_INPUT].option_val == 0) && (Pause_CheckStatus(1) != 2))
-    {
-        Match_ShowTimer();
-        JOBJ_SetFlags(root, JOBJ_HIDDEN);
-    }
-
-    /*
-        // toggle timer visibility
-        if (LabOptions_General[OPTGEN_INPUT].option_val == 1)
-            Match_HideTimer();
-        else if (Pause_CheckStatus(1) != 2)
-            Match_ShowTimer();
-*/
-    return;
 }
+
 void Inputs_Init()
 {
     // Create Input Display GOBJ
     GOBJ *input_gobj = GObj_Create(0, 0, 0);
-    InputData *input_data = calloc(sizeof(InputData));
-    GObj_AddUserData(input_gobj, 4, HSD_Free, input_data);
+    Controller *controllers = calloc(sizeof(Controller) * 4);
+    GObj_AddUserData(input_gobj, 4, HSD_Free, controllers);
     GObj_AddProc(input_gobj, Inputs_Think, 4);
 
     // alloc a dummy root jobj
@@ -3072,56 +3064,43 @@ void Inputs_Init()
     root_desc->scale.Z = 1;
     JOBJ *root = JOBJ_LoadJoint(root_desc);
 
-    // init jobj pointers
-    for (int i = 0; i < (sizeof(input_data->controller_joint) / 4); i++)
-    {
-        input_data->controller_joint[i] = 0;
-    }
+    static Vec2 stc_pos[4] = {
+        {5, 20},
+        {15, 20},
+        {5, 10},
+        {15, 10},
+    };
 
-    // count humans in this match
-    int hmn_count = 0;
+    int controller_count = 0;
     for (int i = 0; i < 4; i++)
     {
-        if (Fighter_GetSlotType(i) == 0)
-            hmn_count++;
-    }
+        int slot = Fighter_GetSlotType(i);
+        if (slot != 0 && slot != 1)
+            continue;
 
-    // create X controllers
-    int found_origin = 0;
-    for (int i = 0; i < hmn_count; i++)
-    {
+        Vec2 pos = stc_pos[controller_count++];
 
-        JOBJ *controller = JOBJ_LoadJoint(stc_lab_data->controller); // Load jobj
-        input_data->controller_joint[i] = controller;                // store jobj pointer
+        Controller *controller = &controllers[i];
 
-        // Add to root
-        JOBJ_AddChild(root, controller);
+        // create jobj
+        JOBJ *controller_jobj = JOBJ_LoadJoint(stc_lab_data->controller);
+        controller->jobj = controller_jobj;
+        controller_jobj->trans.X = pos.X;
+        controller_jobj->trans.Y = pos.Y;
+        JOBJ_AddChild(root, controller_jobj);
 
-        if (found_origin == 0)
-        {
-            // save trigger origins
-            JOBJ *ltrig_jobj, *rtrig_jobj;
-            JOBJ_GetChild(controller, &ltrig_jobj, button_lookup[BTN_L].jobj, -1);
-            JOBJ_GetChild(controller, &rtrig_jobj, button_lookup[BTN_R].jobj, -1);
-            input_data->ltrig_origin.X = ltrig_jobj->trans.X;
-            input_data->ltrig_origin.Y = ltrig_jobj->trans.Z;
-            input_data->rtrig_origin.X = rtrig_jobj->trans.X;
-            input_data->rtrig_origin.Y = rtrig_jobj->trans.Z;
-
-            found_origin = 1;
-        }
-
-        /*
-        // adjust size based on the console / settings
-        if ((OSGetConsoleType() == OS_CONSOLE_DEVHW3) || (stc_HSD_VI->is_prog == 1)) // 480p / dolphin uses medium by default
-            LabOptions_InfoDisplay[OPT_SCALE].option_val = 1;
-        else // 480i on wii uses large (shitty composite!)
-            LabOptions_InfoDisplay[OPT_SCALE].option_val = 2;
-        */
+        // save trigger origins
+        JOBJ *ltrig_jobj, *rtrig_jobj;
+        JOBJ_GetChild(controller_jobj, &ltrig_jobj, button_lookup[BTN_L].jobj, -1);
+        JOBJ_GetChild(controller_jobj, &rtrig_jobj, button_lookup[BTN_R].jobj, -1);
+        controller->ltrig_origin.X = ltrig_jobj->trans.X;
+        controller->ltrig_origin.Y = ltrig_jobj->trans.Z;
+        controller->rtrig_origin.X = rtrig_jobj->trans.X;
+        controller->rtrig_origin.Y = rtrig_jobj->trans.Z;
     }
 
     GObj_AddObject(input_gobj, 3, root);                              // add to gobj
-    GObj_AddGXLink(input_gobj, Inputs_GX, INPUT_GXLINK, INPUT_GXPRI); // add gx link
+    GObj_AddGXLink(input_gobj, GXLink_Common, INPUT_GXLINK, INPUT_GXPRI); // add gx link
 
     return;
 }
