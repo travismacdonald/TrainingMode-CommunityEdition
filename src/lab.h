@@ -7,7 +7,8 @@
 static EventMenu LabMenu_General;
 static EventMenu LabMenu_OverlaysHMN;
 static EventMenu LabMenu_OverlaysCPU;
-static EventMenu LabMenu_InfoDisplay;
+static EventMenu LabMenu_InfoDisplayHMN;
+static EventMenu LabMenu_InfoDisplayCPU;
 static EventMenu LabMenu_CPU;
 static EventMenu LabMenu_Record;
 static EventMenu LabMenu_Tech;
@@ -676,7 +677,8 @@ enum lab_option
     OPTLAB_GENERAL_OPTIONS,
     OPTLAB_CPU_OPTIONS,
     OPTLAB_RECORD_OPTIONS,
-    OPTLAB_INFODISP,
+    OPTLAB_INFODISP_HMN,
+    OPTLAB_INFODISP_CPU,
     OPTLAB_HELP,
     OPTLAB_EXIT,
 
@@ -705,8 +707,14 @@ static EventOption LabOptions_Main[OPTLAB_COUNT] = {
     },
     {
         .option_kind = OPTKIND_MENU,
-        .menu = &LabMenu_InfoDisplay,
-        .option_name = "Info Display",
+        .menu = &LabMenu_InfoDisplayHMN,
+        .option_name = "HMN Info Display",
+        .desc = "Display various game information onscreen.",
+    },
+    {
+        .option_kind = OPTKIND_MENU,
+        .menu = &LabMenu_InfoDisplayCPU,
+        .option_name = "CPU Info Display",
         .desc = "Display various game information onscreen.",
     },
     {
@@ -908,8 +916,6 @@ enum infdisp_rows
 
 enum info_disp_option
 {
-    OPTINF_PLAYER,
-    OPTINF_SIZE,
     OPTINF_PRESET,
     OPTINF_ROW1,
     OPTINF_ROW2,
@@ -925,27 +931,12 @@ enum info_disp_option
 
 static char *LabValues_InfoDisplay[INFDISP_COUNT] = {"None", "Position", "State Name", "State Frame", "Velocity - Self", "Velocity - KB", "Velocity - Total", "Engine LStick", "System LStick", "Engine CStick", "System CStick", "Engine Trigger", "System Trigger", "Ledgegrab Timer", "Intangibility Timer", "Hitlag", "Hitstun", "Shield Health", "Shield Stun", "Grip Strength", "ECB Lock", "ECB Bottom", "Jumps", "Walljumps", "Jab Counter", "Line Info", "Blastzone Left/Right", "Blastzone Up/Down"};
 static char *LabValues_InfoPresets[] = {"None", "Custom", "Ledge", "Damage"};
-static char *LabValues_InfoSize[] = {"Small", "Medium", "Large"};
-static char *LabValues_InfoPlayers[] = {"Player 1", "Player 2", "Player 3", "Player 4"};
 
-static EventOption LabOptions_InfoDisplay[OPTINF_COUNT] = {
-    {
-        .option_kind = OPTKIND_STRING,
-        .value_num = sizeof(LabValues_InfoPlayers) / 4,
-        .option_name = "Player",
-        .desc = "Toggle which player's information to display.",
-        .option_values = LabValues_InfoPlayers,
-        .onOptionChange = Lab_ChangeInfoPlayer,
-    },
-    {
-        .option_kind = OPTKIND_STRING,
-        .value_num = sizeof(LabValues_InfoSize) / 4,
-        .option_val = 1,
-        .option_name = "Size",
-        .desc = "Change the size of the info display window.\nLarge is recommended for CRT.\nMedium/Small recommended for Dolphin Emulator.",
-        .option_values = LabValues_InfoSize,
-        .onOptionChange = Lab_ChangeInfoSizePos,
-    },
+// copied from LabOptions_InfoDisplayDefault in Event_Init
+static EventOption LabOptions_InfoDisplayHMN[OPTINF_COUNT];
+static EventOption LabOptions_InfoDisplayCPU[OPTINF_COUNT];
+
+static EventOption LabOptions_InfoDisplayDefault[OPTINF_COUNT] = {
     {
         .option_kind = OPTKIND_STRING,
         .value_num = sizeof(LabValues_InfoPresets) / 4,
@@ -1019,10 +1010,17 @@ static EventOption LabOptions_InfoDisplay[OPTINF_COUNT] = {
         .onOptionChange = Lab_ChangeInfoRow,
     },
 };
-static EventMenu LabMenu_InfoDisplay = {
-    .name = "Info Display",
-    .option_num = sizeof(LabOptions_InfoDisplay) / sizeof(EventOption),
-    .options = &LabOptions_InfoDisplay,
+
+static EventMenu LabMenu_InfoDisplayHMN = {
+    .name = "HMN Info Display",
+    .option_num = sizeof(LabOptions_InfoDisplayHMN) / sizeof(EventOption),
+    .options = &LabOptions_InfoDisplayHMN,
+};
+
+static EventMenu LabMenu_InfoDisplayCPU = {
+    .name = "CPU Info Display",
+    .option_num = sizeof(LabOptions_InfoDisplayCPU) / sizeof(EventOption),
+    .options = &LabOptions_InfoDisplayCPU,
 };
 
 // CPU MENU --------------------------------------------------------------

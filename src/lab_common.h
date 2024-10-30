@@ -433,8 +433,7 @@ int Export_Compress(u8 *dest, u8 *source, u32 size);
 void CustomTDI_Update(GOBJ *gobj);
 void CustomTDI_Destroy(GOBJ *gobj);
 void Lab_Exit(int value);
-void InfoDisplay_Think(GOBJ *gobj);
-void InfoDisplay_GX(GOBJ *gobj, int pass);
+void InfoDisplay_Update(GOBJ *menu_gobj, EventOption menu[], GOBJ *fighter, GOBJ *below);
 
 // info display
 #define GXPRI_INFDISP GXPRI_MENUMODEL - 2

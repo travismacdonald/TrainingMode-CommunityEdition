@@ -7,7 +7,8 @@
 // Static Variables
 static char nullString[] = " ";
 static DIDraw didraws[6];
-static GOBJ *infodisp_gobj;
+static GOBJ *infodisp_gobj_hmn;
+static GOBJ *infodisp_gobj_cpu;
 static RecData rec_data;
 static Savestate *rec_state;
 static _HSD_ImageDesc snap_image = {0};
@@ -295,99 +296,98 @@ void Lab_ChangeCamMode(GOBJ *menu_gobj, int value)
 
     return;
 }
+
 void Lab_ChangeInfoRow(GOBJ *menu_gobj, int value)
 {
-    EventOption *idOptions = &LabOptions_InfoDisplay;
+    //EventOption *idOptions = &LabOptions_InfoDisplay;
 
-    // changed option, set preset to custom
-    idOptions[OPTINF_PRESET].option_val = 1;
+    //// changed option, set preset to custom
+    //idOptions[OPTINF_PRESET].option_val = 1;
 }
+
 void Lab_ChangeInfoPreset(GOBJ *menu_gobj, int value)
 {
-    static int idPresets[][8] =
-        {
-            // None
-            {
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-            },
-            // Ledge
-            {
-                2,
-                3,
-                8,
-                7,
-                14,
-                20,
-                21,
-                0,
-            },
-            // Damage
-            {
-                2,
-                3,
-                4,
-                5,
-                6,
-                15,
-                16,
-                18,
-            },
-        };
+    //static int idPresets[][8] =
+    //    {
+    //        // None
+    //        {
+    //            0,
+    //            0,
+    //            0,
+    //            0,
+    //            0,
+    //            0,
+    //            0,
+    //            0,
+    //        },
+    //        // Ledge
+    //        {
+    //            2,
+    //            3,
+    //            8,
+    //            7,
+    //            14,
+    //            20,
+    //            21,
+    //            0,
+    //        },
+    //        // Damage
+    //        {
+    //            2,
+    //            3,
+    //            4,
+    //            5,
+    //            6,
+    //            15,
+    //            16,
+    //            18,
+    //        },
+    //    };
 
-    EventOption *idOptions = &LabOptions_InfoDisplay;
-    int *currPreset = 0;
+    //EventOption *idOptions = &LabOptions_InfoDisplay;
+    //int *currPreset = 0;
 
-    // check for NONE
-    if (value == 0)
-        currPreset = idPresets[0];
+    //// check for NONE
+    //if (value == 0)
+    //    currPreset = idPresets[0];
 
-    // check for preset
-    value -= 2;
-    if (value >= 0)
-    {
-        currPreset = idPresets[value + 1];
-    }
+    //// check for preset
+    //value -= 2;
+    //if (value >= 0)
+    //{
+    //    currPreset = idPresets[value + 1];
+    //}
 
-    // copy values
-    if (currPreset != 0)
-    {
-        for (int i = 0; i < 8; i++)
-        {
-            idOptions[i + OPTINF_ROW1].option_val = currPreset[i];
-        }
-    }
+    //// copy values
+    //if (currPreset != 0)
+    //{
+    //    for (int i = 0; i < 8; i++)
+    //    {
+    //        idOptions[i + OPTINF_ROW1].option_val = currPreset[i];
+    //    }
+    //}
 }
+
 void Lab_ChangeInfoSizePos(GOBJ *menu_gobj, int value)
 {
-
     return;
 }
+
 void Lab_ChangeInfoPlayer(GOBJ *menu_gobj, int value)
 {
-
     return;
 }
+
 void Lab_ChangeHUD(GOBJ *menu_gobj, int value)
 {
     // toggle HUD
     u8 *hideHUD = (u8 *)(R13 + -0x4948);
     if (value == 0)
-    {
         *hideHUD = 1;
-    }
     else
-    {
         *hideHUD = 0;
-    }
-    return;
 }
+
 void Lab_Exit(int value)
 {
     Match *match = MATCH;
@@ -405,13 +405,12 @@ void Lab_Exit(int value)
 }
 
 // Event Functions
-GOBJ *InfoDisplay_Init()
+GOBJ *InfoDisplay_Init(int ply)
 {
     // Create Info Display GOBJ
     GOBJ *idGOBJ = GObj_Create(0, 0, 0);
     InfoDisplayData *idData = calloc(sizeof(InfoDisplayData));
     GObj_AddUserData(idGOBJ, 4, HSD_Free, idData);
-    infodisp_gobj = idGOBJ;
     // Load jobj
     evMenu *menuAssets = event_vars->menu_assets;
     JOBJ *menu = JOBJ_LoadJoint(menuAssets->popup);
@@ -419,16 +418,13 @@ GOBJ *InfoDisplay_Init()
     // Add to gobj
     GObj_AddObject(idGOBJ, 3, menu);
     // Add gxlink
-    GObj_AddGXLink(idGOBJ, InfoDisplay_GX, GXLINK_INFDISP, GXPRI_INFDISP);
+    GObj_AddGXLink(idGOBJ, GXLink_Common, GXLINK_INFDISP, GXPRI_INFDISP);
     // Save pointers to corners
     JOBJ *corners[4];
     JOBJ_GetChild(menu, &corners, 2, 3, 4, 5, -1);
     idData->botLeftEdge = corners[0];
     idData->botRightEdge = corners[1];
-    // move into position
-    //menu->scale.X = INFDISP_SCALE;
-    //menu->scale.Y = INFDISP_SCALE;
-    //menu->scale.Z = INFDISP_SCALE;
+
     menu->trans.X = INFDISP_X;
     menu->trans.Y = INFDISP_Y;
     corners[0]->trans.X = 0;
@@ -458,54 +454,56 @@ GOBJ *InfoDisplay_Init()
     idData->text = text;
 
     // adjust size based on the console / settings
-    if ((OSGetConsoleType() == OS_CONSOLE_DEVHW3) || (stc_HSD_VI->is_prog == 1)) // 480p / dolphin uses medium by default
-        LabOptions_InfoDisplay[OPT_SCALE].option_val = 1;
-    else // 480i on wii uses large (shitty composite!)
-        LabOptions_InfoDisplay[OPT_SCALE].option_val = 2;
+    //if ((OSGetConsoleType() == OS_CONSOLE_DEVHW3) || (stc_HSD_VI->is_prog == 1)) // 480p / dolphin uses medium by default
+    //    LabOptions_InfoDisplay[OPT_SCALE].option_val = 1;
+    //else // 480i on wii uses large (shitty composite!)
+    //    LabOptions_InfoDisplay[OPT_SCALE].option_val = 2;
 
-    // update size
-    Lab_ChangeInfoSizePos(0, 0);
+    // background scale
+    menu->scale.X = INFDISP_SCALE;
+    menu->scale.Y = INFDISP_SCALE;
 
-    // update to show/hide
-    InfoDisplay_Think(idGOBJ);
+    // text scale
+    text->viewport_scale.X = ((INFDISP_SCALE / 4.0) * INFDISPTEXT_SCALE);
+    text->viewport_scale.Y = ((INFDISP_SCALE / 4.0) * INFDISPTEXT_SCALE);
+
+    Vec2 pos = {-26.5, 21.5};
+    text->trans.X = pos.X + (INFDISPTEXT_X * (INFDISP_SCALE / 4.0));
+    text->trans.Y = (pos.Y * -1) + (INFDISPTEXT_Y * (INFDISP_SCALE / 4.0));
+
+    menu->trans.X = pos.X;
+    menu->trans.Y = pos.Y;
+
+    GXColor shield_color = (*stc_shieldcolors)[ply];
+    shield_color.a = 255;
+    GXColor *border_color = &menu->dobj->mobj->mat->diffuse;
+    *border_color = shield_color;
 
     return idGOBJ;
 }
-void InfoDisplay_GX(GOBJ *gobj, int pass)
-{
-    GXLink_Common(gobj, pass);
-    return;
-}
-void InfoDisplay_Think(GOBJ *gobj)
-{
 
-    static Vec2 stc_info_pos[] = {
-        {-26.5, 21.5},
-        {-10, 21.5},
-        {6, 21.5},
-        {-26.5, -10.5},
-        {-10, -10.5},
-        {6, -10.5},
-    };
-    static float stc_info_scale[] = {
-        2,
-        3,
-        4,
-    };
-
-    InfoDisplayData *idData = gobj->userdata;
+void InfoDisplay_Update(GOBJ *menu_gobj, EventOption menu[], GOBJ *fighter, GOBJ *below)
+{
+    InfoDisplayData *idData = menu_gobj->userdata;
     Text *text = idData->text;
-    EventOption *idOptions = &LabOptions_InfoDisplay;
-    if ((Pause_CheckStatus(1) != 2)) //&& (idOptions[OPTINF_TOGGLE].option_val == 1))
+    if (Pause_CheckStatus(1) != 2)
     {
         // get the last row enabled
         int rowsEnabled = 8;
         while (rowsEnabled > 0)
         {
-            if (idOptions[rowsEnabled - 1 + OPTINF_ROW1].option_val != 0)
+            if (menu[rowsEnabled - 1 + OPTINF_ROW1].option_val != 0)
                 break;
             rowsEnabled--;
         }
+
+        // scale window Y based on rows enabled
+        JOBJ *leftCorner = idData->botLeftEdge;
+        JOBJ *rightCorner = idData->botRightEdge;
+        float yPos = (rowsEnabled * INFDISP_BOTYOFFSET) + INFDISP_BOTY;
+        leftCorner->trans.Y = yPos;
+        rightCorner->trans.Y = yPos;
+        JOBJ_SetMtxDirtySub(idData->menuModel);
 
         // if a row is enabled, display
         if (rowsEnabled != 0)
@@ -514,313 +512,275 @@ void InfoDisplay_Think(GOBJ *gobj)
             JOBJ_ClearFlags(idData->menuModel, JOBJ_HIDDEN);
             idData->text->hidden = 0;
 
-            // scale window Y based on rows enabled
-            JOBJ *leftCorner = idData->botLeftEdge;
-            JOBJ *rightCorner = idData->botRightEdge;
-            float yPos = (rowsEnabled * INFDISP_BOTYOFFSET) + INFDISP_BOTY;
-            leftCorner->trans.Y = yPos;
-            rightCorner->trans.Y = yPos;
-            JOBJ_SetMtxDirtySub(idData->menuModel);
-
             // update info display strings
-            int ply = idOptions[OPTINF_PLAYER].option_val;
-            GOBJ *fighter = Fighter_GetGObj(ply);
-            FighterData *fighter_data;
-            if (fighter != 0)
-                fighter_data = fighter->userdata;
+            FighterData *fighter_data = fighter->userdata;
+
             for (int i = 0; i < 8; i++)
             {
-
-                int value = idOptions[i + OPTINF_ROW1].option_val;
+                int value = menu[i + OPTINF_ROW1].option_val;
 
                 // hide text if set to 0 or fighter DNE
-                if ((idOptions[i + OPTINF_ROW1].option_val == 0) || fighter == 0)
-                {
+                if (menu[i + OPTINF_ROW1].option_val == 0) {
                     Text_SetText(text, i, "");
+                    continue;
                 }
 
                 // display info
-                else
+                switch (value)
                 {
-                    switch (value)
+                case (INFDISP_POS):
+                {
+                    Text_SetText(text, i, "Pos: (%+.3f , %+.3f)", fighter_data->phys.pos.X, fighter_data->phys.pos.Y);
+                    break;
+                }
+                case (INFDISP_STATE):
+                {
+                    if (fighter_data->action_id != -1)
                     {
-                    case (INFDISP_POS):
-                    {
-                        Text_SetText(text, i, "Pos: (%+.3f , %+.3f)", fighter_data->phys.pos.X, fighter_data->phys.pos.Y);
-                        break;
-                    }
-                    case (INFDISP_STATE):
-                    {
-                        if (fighter_data->action_id != -1)
+                        FtAction *action = Fighter_GetFtAction(fighter_data, fighter_data->action_id);
+                        // extract state name from symbol
+                        int pos = 0;
+                        int posStart;
+                        int nameSize = 0;
+                        char *symbol = action->anim_symbol;
+                        for (int i = 0; pos < 50; pos++)
                         {
-                            FtAction *action = Fighter_GetFtAction(fighter_data, fighter_data->action_id);
-                            // extract state name from symbol
-                            int pos = 0;
-                            int posStart;
-                            int nameSize = 0;
-                            char *symbol = action->anim_symbol;
-                            for (int i = 0; pos < 50; pos++)
+                            // search for "N_"
+                            if ((symbol[pos] == 'N') && (symbol[pos + 1] == '_'))
                             {
-                                // search for "N_"
-                                if ((symbol[pos] == 'N') && (symbol[pos + 1] == '_'))
-                                {
-                                    // posStart = beginning of state name
-                                    pos++;
-                                    posStart = pos + 1;
+                                // posStart = beginning of state name
+                                pos++;
+                                posStart = pos + 1;
 
-                                    // search for "_"
-                                    for (int i = 0; pos < 50; pos++)
+                                // search for "_"
+                                for (int i = 0; pos < 50; pos++)
+                                {
+                                    if (symbol[pos] == '_')
                                     {
-                                        if (symbol[pos] == '_')
-                                        {
-                                            nameSize = pos - posStart;
-                                        }
+                                        nameSize = pos - posStart;
                                     }
                                 }
                             }
-                            if (nameSize != 0)
-                            {
-                                // copy string
-                                char stateNameBuffer[50];
-                                memcpy(&stateNameBuffer, &symbol[posStart], nameSize);
-                                stateNameBuffer[nameSize] = 0;
-                                Text_SetText(text, i, "State: %s", &stateNameBuffer);
-                            }
                         }
-
-                        else
-                            Text_SetText(text, i, "State: %s", "Unknown");
-                        break;
-                    }
-                    case (INFDISP_FRAME):
-                    {
-                        Figatree *animStruct = fighter_data->figatree_curr;
-                        int frameCurr = 0;
-                        int frameTotal = 0;
-
-                        // if exists
-                        if (animStruct != 0)
+                        if (nameSize != 0)
                         {
-                            // determine how many frames shield stun is
-                            float animFrameTotal = animStruct->frame_num;
-                            float animFrameCurr = fighter_data->state.frame;
-                            float animSpeed = fighter_data->state.rate;
-                            frameTotal = (animFrameTotal / animSpeed);
-                            frameCurr = (animFrameCurr / animSpeed);
+                            // copy string
+                            char stateNameBuffer[50];
+                            memcpy(&stateNameBuffer, &symbol[posStart], nameSize);
+                            stateNameBuffer[nameSize] = 0;
+                            Text_SetText(text, i, "State: %s", &stateNameBuffer);
                         }
+                    }
 
-                        Text_SetText(text, i, "State Frame: %d/%d", frameCurr, frameTotal);
-                        break;
-                    }
-                    case (INFDISP_SELFVEL):
-                    {
-                        Text_SetText(text, i, "SelfVel: (%+.3f , %+.3f)", fighter_data->phys.self_vel.X, fighter_data->phys.self_vel.Y);
-                        break;
-                    }
-                    case (INFDISP_KBVEL):
-                    {
-                        Text_SetText(text, i, "KBVel: (%+.3f , %+.3f)", fighter_data->phys.kb_vel.X, fighter_data->phys.kb_vel.Y);
-                        break;
-                    }
-                    case (INFDISP_TOTALVEL):
-                    {
-                        Text_SetText(text, i, "TotalVel: (%+.3f , %+.3f)", fighter_data->phys.self_vel.X + fighter_data->phys.kb_vel.X, fighter_data->phys.self_vel.Y + fighter_data->phys.kb_vel.Y);
-                        break;
-                    }
-                    case (INFDISP_ENGLSTICK):
-                    {
-                        Text_SetText(text, i, "LStick:      (%+.4f , %+.4f)", fighter_data->input.lstick.X, fighter_data->input.lstick.Y);
-                        break;
-                    }
-                    case (INFDISP_SYSLSTICK):
-                    {
-                        HSD_Pad *pad = PadGet(ply, PADGET_MASTER);
-                        Text_SetText(text, i, "LStick Sys: (%+.4f , %+.4f)", pad->fstickX, pad->fstickY);
-                        break;
-                    }
-                    case (INFDISP_ENGCSTICK):
-                    {
-                        Text_SetText(text, i, "CStick:     (%+.4f , %+.4f)", fighter_data->input.cstick.X, fighter_data->input.cstick.Y);
-                        break;
-                    }
-                    case (INFDISP_SYSCSTICK):
-                    {
-                        HSD_Pad *pad = PadGet(ply, PADGET_MASTER);
-                        Text_SetText(text, i, "CStick Sys: (%+.4f , %+.4f)", pad->fsubstickX, pad->fsubstickY);
-                        break;
-                    }
-                    case (INFDISP_ENGTRIGGER):
-                    {
-                        Text_SetText(text, i, "Trigger:     (%+.3f)", fighter_data->input.trigger);
-                        break;
-                    }
-                    case (INFDISP_SYSTRIGGER):
-                    {
-                        HSD_Pad *pad = PadGet(ply, PADGET_MASTER);
-                        Text_SetText(text, i, "Trigger Sys: (%+.3f , %+.3f)", pad->ftriggerLeft, pad->ftriggerRight);
-                        break;
-                    }
-                    case (INFDISP_LEDGECOOLDOWN):
-                    {
-                        Text_SetText(text, i, "Ledgegrab Timer: %d", fighter_data->ledge_cooldown);
-                        break;
-                    }
-                    case (INFDISP_INTANGREMAIN):
-                    {
-                        int intang = fighter_data->hurt.intang_frames.respawn;
-                        if (fighter_data->hurt.intang_frames.ledge > fighter_data->hurt.intang_frames.respawn)
-                            intang = fighter_data->hurt.intang_frames.ledge;
+                    else
+                        Text_SetText(text, i, "State: %s", "Unknown");
+                    break;
+                }
+                case (INFDISP_FRAME):
+                {
+                    Figatree *animStruct = fighter_data->figatree_curr;
+                    int frameCurr = 0;
+                    int frameTotal = 0;
 
-                        Text_SetText(text, i, "Intangibility Timer: %d", intang);
-                        break;
-                    }
-                    case (INFDISP_HITSTOP):
+                    // if exists
+                    if (animStruct != 0)
                     {
-                        Text_SetText(text, i, "Hitlag: %.0f", fighter_data->dmg.hitlag_frames);
-                        break;
+                        // determine how many frames shield stun is
+                        float animFrameTotal = animStruct->frame_num;
+                        float animFrameCurr = fighter_data->state.frame;
+                        float animSpeed = fighter_data->state.rate;
+                        frameTotal = (animFrameTotal / animSpeed);
+                        frameCurr = (animFrameCurr / animSpeed);
                     }
-                    case (INFDISP_HITSTUN):
-                    {
-                        // get hitstun
-                        float hitstun = 0;
-                        if (fighter_data->flags.hitstun == 1)
-                            hitstun = AS_FLOAT(fighter_data->state_var.state_var1);
 
-                        Text_SetText(text, i, "Hitstun: %.0f", hitstun);
-                        break;
-                    }
-                    case (INFDISP_SHIELDHEALTH):
-                    {
-                        Text_SetText(text, i, "Shield Health: %.3f", fighter_data->shield.health);
-                        break;
-                    }
-                    case (INFDISP_SHIELDSTUN):
-                    {
-                        int stunTotal = 0;
-                        int stunLeft = 0;
+                    Text_SetText(text, i, "State Frame: %d/%d", frameCurr, frameTotal);
+                    break;
+                }
+                case (INFDISP_SELFVEL):
+                {
+                    Text_SetText(text, i, "SelfVel: (%+.3f , %+.3f)", fighter_data->phys.self_vel.X, fighter_data->phys.self_vel.Y);
+                    break;
+                }
+                case (INFDISP_KBVEL):
+                {
+                    Text_SetText(text, i, "KBVel: (%+.3f , %+.3f)", fighter_data->phys.kb_vel.X, fighter_data->phys.kb_vel.Y);
+                    break;
+                }
+                case (INFDISP_TOTALVEL):
+                {
+                    Text_SetText(text, i, "TotalVel: (%+.3f , %+.3f)", fighter_data->phys.self_vel.X + fighter_data->phys.kb_vel.X, fighter_data->phys.self_vel.Y + fighter_data->phys.kb_vel.Y);
+                    break;
+                }
+                case (INFDISP_ENGLSTICK):
+                {
+                    Text_SetText(text, i, "LStick:      (%+.4f , %+.4f)", fighter_data->input.lstick.X, fighter_data->input.lstick.Y);
+                    break;
+                }
+                case (INFDISP_SYSLSTICK):
+                {
+                    HSD_Pad *pad = PadGet(fighter_data->ply, PADGET_MASTER);
+                    Text_SetText(text, i, "LStick Sys: (%+.4f , %+.4f)", pad->fstickX, pad->fstickY);
+                    break;
+                }
+                case (INFDISP_ENGCSTICK):
+                {
+                    Text_SetText(text, i, "CStick:     (%+.4f , %+.4f)", fighter_data->input.cstick.X, fighter_data->input.cstick.Y);
+                    break;
+                }
+                case (INFDISP_SYSCSTICK):
+                {
+                    HSD_Pad *pad = PadGet(fighter_data->ply, PADGET_MASTER);
+                    Text_SetText(text, i, "CStick Sys: (%+.4f , %+.4f)", pad->fsubstickX, pad->fsubstickY);
+                    break;
+                }
+                case (INFDISP_ENGTRIGGER):
+                {
+                    Text_SetText(text, i, "Trigger:     (%+.3f)", fighter_data->input.trigger);
+                    break;
+                }
+                case (INFDISP_SYSTRIGGER):
+                {
+                    HSD_Pad *pad = PadGet(fighter_data->ply, PADGET_MASTER);
+                    Text_SetText(text, i, "Trigger Sys: (%+.3f , %+.3f)", pad->ftriggerLeft, pad->ftriggerRight);
+                    break;
+                }
+                case (INFDISP_LEDGECOOLDOWN):
+                {
+                    Text_SetText(text, i, "Ledgegrab Timer: %d", fighter_data->ledge_cooldown);
+                    break;
+                }
+                case (INFDISP_INTANGREMAIN):
+                {
+                    int intang = fighter_data->hurt.intang_frames.respawn;
+                    if (fighter_data->hurt.intang_frames.ledge > fighter_data->hurt.intang_frames.respawn)
+                        intang = fighter_data->hurt.intang_frames.ledge;
 
-                        // check if taking shield stun
-                        if (fighter_data->state_id == ASID_GUARDSETOFF)
-                        {
-                            // determine how many frames shield stun is
-                            float frameTotal = JOBJ_GetJointAnimFrameTotal(fighter->hsd_object);
-                            float frameCurr = fighter_data->state.frame;
-                            float animSpeed = fighter_data->state.rate;
-                            stunTotal = (frameTotal / animSpeed);
-                            stunLeft = stunTotal - (frameCurr / animSpeed);
-                            // 0 index
-                            stunTotal++;
-                            stunLeft++;
-                        }
+                    Text_SetText(text, i, "Intangibility Timer: %d", intang);
+                    break;
+                }
+                case (INFDISP_HITSTOP):
+                {
+                    Text_SetText(text, i, "Hitlag: %.0f", fighter_data->dmg.hitlag_frames);
+                    break;
+                }
+                case (INFDISP_HITSTUN):
+                {
+                    // get hitstun
+                    float hitstun = 0;
+                    if (fighter_data->flags.hitstun == 1)
+                        hitstun = AS_FLOAT(fighter_data->state_var.state_var1);
 
-                        Text_SetText(text, i, "Shield Stun: %d/%d", stunLeft, stunTotal);
-                        break;
-                    }
-                    case (INFDISP_GRIP):
-                    {
-                        float grip = 0;
-                        if (fighter_data->grab.victim != 0)
-                        {
-                            GOBJ *victim = fighter_data->grab.victim;
-                            FighterData *victim_data = victim->userdata;
-                            grip = victim_data->grab.grab_timer;
-                        }
+                    Text_SetText(text, i, "Hitstun: %.0f", hitstun);
+                    break;
+                }
+                case (INFDISP_SHIELDHEALTH):
+                {
+                    Text_SetText(text, i, "Shield Health: %.3f", fighter_data->shield.health);
+                    break;
+                }
+                case (INFDISP_SHIELDSTUN):
+                {
+                    int stunTotal = 0;
+                    int stunLeft = 0;
 
-                        Text_SetText(text, i, "Grip Strength: %.0f", grip);
-                        break;
-                    }
-                    case (INFDISP_ECBLOCK):
+                    // check if taking shield stun
+                    if (fighter_data->state_id == ASID_GUARDSETOFF)
                     {
-                        Text_SetText(text, i, "ECB Lock: %d", fighter_data->coll_data.u.ecb_bot_lock_frames);
-                        break;
+                        // determine how many frames shield stun is
+                        float frameTotal = JOBJ_GetJointAnimFrameTotal(fighter->hsd_object);
+                        float frameCurr = fighter_data->state.frame;
+                        float animSpeed = fighter_data->state.rate;
+                        stunTotal = (frameTotal / animSpeed);
+                        stunLeft = stunTotal - (frameCurr / animSpeed);
+                        // 0 index
+                        stunTotal++;
+                        stunLeft++;
                     }
-                    case (INFDISP_ECBBOT):
-                    {
-                        Text_SetText(text, i, "ECB Bottom: %.3f", fighter_data->coll_data.ecbCurr_bot.Y);
-                        break;
-                    }
-                    case (INFDISP_JUMPS):
-                    {
-                        Text_SetText(text, i, "Jumps: %d/%d", fighter_data->jump.jumps_used, fighter_data->attr.max_jumps);
-                        break;
-                    }
-                    case (INFDISP_WALLJUMPS):
-                    {
-                        Text_SetText(text, i, "Walljumps: %d", fighter_data->jump.walljumps_used);
-                        break;
-                    }
-                    case (INFDISP_JAB):
-                    {
-                        Text_SetText(text, i, "Jab Counter: IDK");
-                        break;
-                    }
-                    case (INFDISP_LINE):
-                    {
-                        CollData *colldata = &fighter_data->coll_data;
-                        int ground = -1;
-                        int ceil = -1;
-                        int left = -1;
-                        int right = -1;
 
-                        if ((colldata->envFlags & ECB_GROUND) != 0)
-                            ground = colldata->ground_index;
-                        if ((colldata->envFlags & ECB_CEIL) != 0)
-                            ceil = colldata->ceil_index;
-                        if ((colldata->envFlags & ECB_WALLLEFT) != 0)
-                            left = colldata->leftwall_index;
-                        if ((colldata->envFlags & ECB_WALLRIGHT) != 0)
-                            right = colldata->rightwall_index;
+                    Text_SetText(text, i, "Shield Stun: %d/%d", stunLeft, stunTotal);
+                    break;
+                }
+                case (INFDISP_GRIP):
+                {
+                    float grip = 0;
+                    if (fighter_data->grab.victim != 0)
+                    {
+                        GOBJ *victim = fighter_data->grab.victim;
+                        FighterData *victim_data = victim->userdata;
+                        grip = victim_data->grab.grab_timer;
+                    }
 
-                        Text_SetText(text, i, "Lines: G:%d, C:%d, L:%d, R:%d,", ground, ceil, left, right);
-                        break;
-                    }
-                    case (INFDISP_BLASTLR):
-                    {
-                        Stage *stage = STAGE;
-                        Text_SetText(text, i, "Blastzone L/R: (%+.3f,%+.3f)", stage->blastzoneLeft, stage->blastzoneRight);
-                        break;
-                    }
-                    case (INFDISP_BLASTUD):
-                    {
-                        Stage *stage = STAGE;
-                        Text_SetText(text, i, "Blastzone U/D: (%.2f,%.2f)", stage->blastzoneTop, stage->blastzoneBottom);
-                        break;
-                    }
-                    }
+                    Text_SetText(text, i, "Grip Strength: %.0f", grip);
+                    break;
+                }
+                case (INFDISP_ECBLOCK):
+                {
+                    Text_SetText(text, i, "ECB Lock: %d", fighter_data->coll_data.u.ecb_bot_lock_frames);
+                    break;
+                }
+                case (INFDISP_ECBBOT):
+                {
+                    Text_SetText(text, i, "ECB Bottom: %.3f", fighter_data->coll_data.ecbCurr_bot.Y);
+                    break;
+                }
+                case (INFDISP_JUMPS):
+                {
+                    Text_SetText(text, i, "Jumps: %d/%d", fighter_data->jump.jumps_used, fighter_data->attr.max_jumps);
+                    break;
+                }
+                case (INFDISP_WALLJUMPS):
+                {
+                    Text_SetText(text, i, "Walljumps: %d", fighter_data->jump.walljumps_used);
+                    break;
+                }
+                case (INFDISP_JAB):
+                {
+                    Text_SetText(text, i, "Jab Counter: IDK");
+                    break;
+                }
+                case (INFDISP_LINE):
+                {
+                    CollData *colldata = &fighter_data->coll_data;
+                    int ground = -1;
+                    int ceil = -1;
+                    int left = -1;
+                    int right = -1;
+
+                    if ((colldata->envFlags & ECB_GROUND) != 0)
+                        ground = colldata->ground_index;
+                    if ((colldata->envFlags & ECB_CEIL) != 0)
+                        ceil = colldata->ceil_index;
+                    if ((colldata->envFlags & ECB_WALLLEFT) != 0)
+                        left = colldata->leftwall_index;
+                    if ((colldata->envFlags & ECB_WALLRIGHT) != 0)
+                        right = colldata->rightwall_index;
+
+                    Text_SetText(text, i, "Lines: G:%d, C:%d, L:%d, R:%d,", ground, ceil, left, right);
+                    break;
+                }
+                case (INFDISP_BLASTLR):
+                {
+                    Stage *stage = STAGE;
+                    Text_SetText(text, i, "Blastzone L/R: (%+.3f,%+.3f)", stage->blastzoneLeft, stage->blastzoneRight);
+                    break;
+                }
+                case (INFDISP_BLASTUD):
+                {
+                    Stage *stage = STAGE;
+                    Text_SetText(text, i, "Blastzone U/D: (%.2f,%.2f)", stage->blastzoneTop, stage->blastzoneBottom);
+                    break;
+                }
                 }
             }
 
-            // adjust scale
-            JOBJ *info_jobj = idData->menuModel;
-            Text *info_text = idData->text;
-            Vec2 *pos = &info_jobj->trans;
-            //Vec2 *pos = &stc_info_pos[LabOptions_InfoDisplay[OPTINF_POS].option_val];
-            float scale = stc_info_scale[LabOptions_InfoDisplay[OPTINF_SIZE].option_val];
-            // background scale
-            info_jobj->scale.X = scale;
-            info_jobj->scale.Y = scale;
-            // text scale
-            info_text->viewport_scale.X = ((scale / 4.0) * INFDISPTEXT_SCALE);
-            info_text->viewport_scale.Y = ((scale / 4.0) * INFDISPTEXT_SCALE);
-            /*
-            // background position
-            info_jobj->trans.X = pos->X;
-            info_jobj->trans.Y = pos->Y;
-            */
-            // text position
-            info_text->trans.X = pos->X + (INFDISPTEXT_X * (scale / 4.0));
-            info_text->trans.Y = (pos->Y * -1) + (INFDISPTEXT_Y * (scale / 4.0));
-
-            // model color
-            int info_player = LabOptions_InfoDisplay[OPTINF_PLAYER].option_val;
-            GXColor *shield_color = *stc_shieldcolors;
-            GXColor *border_color = &info_jobj->dobj->mobj->mat->diffuse;
-            border_color->r = shield_color[info_player].r;
-            border_color->g = shield_color[info_player].g;
-            border_color->b = shield_color[info_player].b;
-
-            // update jobj
-            JOBJ_SetMtxDirtySub(info_jobj);
+            if (below != NULL) {
+                InfoDisplayData *belowData = below->userdata;
+                float y_above = belowData->menuModel->trans.Y + belowData->botLeftEdge->trans.Y*INFDISP_SCALE;
+                float new_y = y_above + INFDISP_BOTYOFFSET*3;
+                idData->menuModel->trans.Y = new_y;
+                idData->text->trans.Y = (new_y * -1) + (INFDISPTEXT_Y * (INFDISP_SCALE / 4.0));
+                JOBJ_SetMtxDirtySub(idData->menuModel);
+            }
         }
         else
         {
@@ -835,8 +795,6 @@ void InfoDisplay_Think(GOBJ *gobj)
         JOBJ_SetFlags(idData->menuModel, JOBJ_HIDDEN);
         idData->text->hidden = 1;
     }
-
-    return;
 }
 float Fighter_GetOpponentDir(FighterData *from, FighterData *to)
 {
@@ -5372,6 +5330,9 @@ void Event_Init(GOBJ *gobj)
     memcpy(LabOptions_OverlaysHMN, LabOptions_OverlaysDefault, sizeof(LabOptions_OverlaysDefault));
     memcpy(LabOptions_OverlaysCPU, LabOptions_OverlaysDefault, sizeof(LabOptions_OverlaysDefault));
 
+    memcpy(LabOptions_InfoDisplayHMN, LabOptions_InfoDisplayDefault, sizeof(LabOptions_InfoDisplayDefault));
+    memcpy(LabOptions_InfoDisplayCPU, LabOptions_InfoDisplayDefault, sizeof(LabOptions_InfoDisplayDefault));
+
     // theres got to be a better way to do this...
     event_vars = *event_vars_ptr;
 
@@ -5379,7 +5340,12 @@ void Event_Init(GOBJ *gobj)
     stc_lab_data = Archive_GetPublicAddress(event_vars->event_archive, "lab");
 
     // Init Info Display
-    InfoDisplay_Init();
+    infodisp_gobj_hmn = InfoDisplay_Init(0);
+    infodisp_gobj_cpu = InfoDisplay_Init(1);
+
+    // update to show/hide
+    InfoDisplay_Update(infodisp_gobj_hmn, LabOptions_InfoDisplayHMN, Fighter_GetGObj(0), NULL);
+    InfoDisplay_Update(infodisp_gobj_cpu, LabOptions_InfoDisplayCPU, Fighter_GetGObj(1), infodisp_gobj_hmn);
 
     // Init DIDraw
     //DIDraw_Init();
@@ -5423,7 +5389,8 @@ void Event_Update()
     //DIDraw_Update();
 
     // update info display
-    InfoDisplay_Think(infodisp_gobj);
+    InfoDisplay_Update(infodisp_gobj_hmn, LabOptions_InfoDisplayHMN, Fighter_GetGObj(0), NULL);
+    InfoDisplay_Update(infodisp_gobj_cpu, LabOptions_InfoDisplayCPU, Fighter_GetGObj(1), infodisp_gobj_hmn);
 
     // update advanced cam
     Update_Camera();
