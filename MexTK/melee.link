@@ -349,7 +349,6 @@
 8003254C:Fighter_SetSlotType
 80033C60:Fighter_SetStocks
 80088478:Fighter_PlaySFX
-80182DF0:Fighter_PlayVoiceSFX
 80033CE0:Fighter_LoseStock
 800D34E0:Fighter_DeathLogic
 800D331C:Fighter_RunOnDeathCallbacks
@@ -548,8 +547,6 @@
 8034F314:VIWaitForRetrace
 8034F7DC:VIConfigure
 8034EBD0:VISetPostRetraceCallback
-8033CCD0:GXWaitDrawDone
-8033CC38:GXSetDrawDone
 8000ACFC:Hitbox_CheckIfPreviouslyHit
 80008688:Hitbox_SetAsPreviouslyHit
 8007AFF8:Fighter_HitboxDisableAll
@@ -594,12 +591,10 @@
 80361AD8:HSD_StateSetCullMode
 80361EE0:HSD_StateSetDither
 80361A74:HSD_StateSetLineWidth
-803623D0:HSD_StateSetNumChans
 80362518:HSD_StateSetNumTevStages
 803624A8:HSD_StateSetNumTexGens
 80361C60:HSD_StateSetPointSize
 80361E8C:HSD_StateSetZCompLoc
-80361BB8:HSD_StateSetZMode
 803786F0:HSD_PadRumbleInterpret
 803761C0:HSD_VICopyXFBASync
 80375C34:HSD_VIPostRetraceCallback
@@ -612,7 +607,6 @@
 8037CD80:HSD_IDGetAllocData
 80363FF8:HSD_AObjGetAllocData
 8036A938:HSD_FObjGetAllocData
-8037CD80:HSD_IDGetAllocData
 8037CDEC:HSD_IDInsertToTable
 8037CEE8:HSD_IDRemoveByIDFromTable
 8037CF98:HSD_IDGetDataFromTable
