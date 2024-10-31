@@ -32,11 +32,14 @@ you're interested in learning more, you should read the Decomp Intro.
 
 ## Notes:
 
+- **The numbers 0..32 are allowed as registers!**
+  You may run into silent errors where you expect to use a constant value but end up using a register.
+  The most common place to see this are in math instructions - `addi r3, r3, 10` can be accidentally written as `add r3, r3, 10` and introduce a bug.
 - If you see a load with offset around 0x23ec-0x2424 in OSD related code,
   it's probably reading or writing to `struct MEX` or `struct TM` in `struct FighterData` in `MexTK/include/fighter.h`.
 - **Don't be afraid of the dolphin debugger!**. Use the latest version of dolphin.
 - Everything in both `ASM/Globals.s` and `ASM/training-mode/Globals.s` are helper macros.
-  These are imported into most other ASM files.
+  These are imported into most other ASM files. `ASM/Globals.s` is outdated, use `ASM/training-mode/Globals.s` for new asm files.
 
 ### `mflr`
 
