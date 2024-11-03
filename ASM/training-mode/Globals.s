@@ -578,7 +578,7 @@ InitSettings:
     .set OSD.Dashback, 5
     .set OSD.ShieldDrop, 6
     .set OSD.APM, 7
-    .set OSD.SpacieTech, 8
+    .set OSD.FighterSpecificTech, 8
     .set OSD.SDI, 10
     .set OSD.Powershield, 9
     .set OSD.ShieldPoke, 11

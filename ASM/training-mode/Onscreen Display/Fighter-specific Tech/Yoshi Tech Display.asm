@@ -1,6 +1,6 @@
     # To be inserted at 8006b7f8
-    .include "../Globals.s"
-    .include "../../m-ex/Header.s"
+    .include "../../Globals.s"
+    .include "../../../m-ex/Header.s"
 
     .set playerdata, 31
     .set player, 30
@@ -13,7 +13,7 @@
     bne Exit
 
     # Check if enabled
-    li r0, OSD.SpacieTech    # OSD ID
+    li r0, OSD.FighterSpecificTech  # OSD ID
     lwz r4, -0x77C0(r13)
     lwz r4, 0x1F24(r4)
     li r3, 1
@@ -43,8 +43,8 @@ ParryStart_SetColor:
     load r5, MSGCOLOR_GREEN
 
 ParryStart_EndSetColor:
-    li r3, OSD.SpacieTech       # ID
-    lbz r4, 0xC(playerdata)     # queue
+    li r3, OSD.FighterSpecificTech  # ID
+    lbz r4, 0xC(playerdata)         # queue
     bl JumpOoParryText
     mflr r6
     lhz r7, 0x23F8(playerdata)

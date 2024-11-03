@@ -1,6 +1,6 @@
     # To be inserted at 8006b7f4
-    .include "../Globals.s"
-    .include "../../m-ex/Header.s"
+    .include "../../Globals.s"
+    .include "../../../m-ex/Header.s"
 
     .set playerdata, 31
     .set player, 30
@@ -23,7 +23,7 @@
 
 FoxFalco:
     # CHECK IF ENABLED
-    li r0, OSD.SpacieTech           # Fox Training Codes ID
+    li r0, OSD.FighterSpecificTech    # OSD ID
     lwz r4, -0x77C0(r13)
     lwz r4, 0x1F24(r4)
     li r3, 1
@@ -73,8 +73,8 @@ SideBStart:
     sub r7, r7, r3
     subi r7, r7, 0x1
 
-    li r3, 8                    # ID
-    lbz r4, 0xC(playerdata)     # queue
+    li r3, OSD.FighterSpecificTech  # ID
+    lbz r4, 0xC(playerdata)         # queue
     load r5, MSGCOLOR_RED
     bl ShortenEarlyPressText
     mflr r6
@@ -132,7 +132,7 @@ ShineGroundLoop:
     beq Exit
 
 ShineGroundLoop_Interrupted:
-    
+
 ShineGroundLoop_SetColor:
     load r5, MSGCOLOR_RED
     lhz r3, 0x23F8(playerdata)
