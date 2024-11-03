@@ -38,7 +38,7 @@ ParryStart:
 ParryStart_SetColor:
     load r5, MSGCOLOR_RED
     lhz r3, 0x23F8(playerdata)
-    cmpwi r3, 0x1
+    cmpwi r3, 0x5
     bne ParryStart_EndSetColor
     load r5, MSGCOLOR_GREEN
 
@@ -93,7 +93,7 @@ CheckForJumpCancel_Exit:
 
 JumpOoParryText:
     blrl
-    .string "Jump OOParry\nFrame %d"
+    .string "Jump OoParry\nFrame %d"
     .align 2
 
 ##############################
