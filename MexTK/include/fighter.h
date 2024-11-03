@@ -2783,9 +2783,11 @@ struct FighterData
     int x23e4;                     // 0x23e4
     int x23e8;                     // 0x23e8
     // The following structs are extensions to the vanilla FighterData struct
-    // to allow modding. The upstream m-ex repo has added more fields here,
-    // but for now it will stay the same to maintain backwards compatibility
-    // with savestates.
+    // to help modding. The upstream m-ex repo has added more fields here,
+    // but for now it will stay the same to avoid breaking delicate ASM code in
+    // strange ways. It should be possible to add to the end of the TM struct
+    // without breaking things. Any future changes to these structs must be
+    // reflected in ASM/m-ex/Header.s
     struct MEX                     // 0x23ec
     {                              //
         int anim_owner;            // 0x23ec
@@ -2801,10 +2803,17 @@ struct FighterData
         u16 last_move_hurt;        // 0x2414, Previous Move Instance Hit By
         u16 vuln_frames;           // 0x2416, how many frames the fighter has been vulnerable
         u16 can_fastfall_frames;   // 0x2418, how many frames the fighter has been able to fast fall
+        u16 iasa_frames;           // 0x241a, Aitch: added this for use in lab overlays
         int post_hitstun_frames;   // 0x241c, frames fighter has been out of hitstun
         GOBJ *fighter_hurt_shield; // 0x2420, pointer to the fighter who's shield this fighter hit
         void *cb_anim;             // 0x2424, additional animation callback
-        u16 iasa_frames;           // 0x2428, Aitch: added this for use in lab overlays. Hope it doesn't break anything.
+        union {
+            float airdodge_angle;
+            struct {
+                u16 successful_sdi_inputs;
+                u16 total_sdi_inputs;
+            } sdi;
+        } tm_union;                // 0x2428
     } TM;
 };
 

@@ -358,8 +358,8 @@
 
     # Fighter Data Sizes
     .set FighterDataOrigSize, 0x23ec
-    .set MEX_FighterDataSize, 0xC                                   # mex needs additional 0x4 bytes
-    .set TM_FighterDataSize, 0x34                                   # TM needs additional 0x34 bytes
+    .set MEX_FighterDataSize, 0xC
+    .set TM_FighterDataSize, 0x34
     .set FighterDataTotalSize, FighterDataOrigSize + MEX_FighterDataSize + TM_FighterDataSize
 
     # Fighter Data Start
@@ -367,7 +367,7 @@
     .set MEX_FighterDataStart, FighterDataStart + FighterDataOrigSize
     .set TM_FighterDataStart, MEX_FighterDataStart + MEX_FighterDataSize
 
-    # Fighter Data Vairables
+    # Fighter Data Variables
     # MEX
     .set MEX_AnimOwner, MEX_FighterDataStart + 0x0                  # 4 bytes
     .set MEX_UCFCurrX, MEX_AnimOwner + 0x4                          # 1 byte
@@ -381,7 +381,6 @@
     .set TM_ShieldFrames, TM_FramesinCurrentAS + 0x2                # half
     .set TM_PrevASSlots, 6
     .set TM_PrevASStart, TM_ShieldFrames + 0x2                      # halves
-    .set CurrentAS, 0x10
     .set TM_OneASAgo, TM_PrevASStart+0x0
     .set TM_TwoASAgo, TM_OneASAgo+0x2
     .set TM_ThreeASAgo, TM_TwoASAgo+0x2
@@ -398,36 +397,12 @@
     .set TM_PreviousMoveInstanceHitBy, TM_FramesinSixASAgo + 0x2    # half
     .set TM_TangibleFrameCount, TM_PreviousMoveInstanceHitBy + 0x2  # half
     .set TM_CanFastfallFrameCount, TM_TangibleFrameCount + 0x2      # half
-    .set TM_align, TM_CanFastfallFrameCount + 0x2                   # half
-    .set TM_PostHitstunFrameCount, TM_align + 0x2                   # word
+    .set TM_IasaFrames, TM_CanFastfallFrameCount + 0x2              # half
+    .set TM_PostHitstunFrameCount, TM_IasaFrames + 0x2              # word
     .set TM_PlayerWhoShieldedAttack, TM_PostHitstunFrameCount + 0x4 # word
     .set TM_AnimCallback, TM_PlayerWhoShieldedAttack + 0x4
-    ## Volatile ##
-    .set TM_VolatileStart, TM_AnimCallback + 0x4
-    # Airdodge
-    .set TM_AirdodgeAngle, TM_VolatileStart + 0x0
-    # Damage
-    .set TM_SuccessfulSDIInputs, TM_VolatileStart + 0x0
+    # union
+    .set TM_UnionStart, TM_AnimCallback + 0x4
+    .set TM_AirdodgeAngle, TM_UnionStart
+    .set TM_SuccessfulSDIInputs, TM_UnionStart
     .set TM_TotalSDIInputs, TM_SuccessfulSDIInputs + 0x2
-
-    /*
-    # SSM Struct Offsets
-    # Header
-    .set SSM_Header_OFST, 0x0
-    .set SSM_Header_Length, 45*4
-    # Disposable Orig
-    .set SSM_ToLoadOrig_OFST, SSM_Header_OFST + SSM_Header_Length
-    .set SSM_ToLoadOrig_Length, (56 + NumOfAddedChars) * 4
-    # Disposable Copy
-    .set SSM_ToLoadCopy_OFST, SSM_ToLoadOrig_OFST + SSM_ToLoadOrig_Length
-    .set SSM_ToLoadCopy_Length, (56 + NumOfAddedChars) * 4
-    # Persist Orig
-    .set SSM_IsLoadedOrig_OFST, SSM_ToLoadCopy_OFST + SSM_ToLoadCopy_Length
-    .set SSM_IsLoadedOrig_Length, (56 + NumOfAddedChars) * 4
-    # Persist Copy
-    .set SSM_IsLoadedCopy_OFST, SSM_IsLoadedOrig_OFST + SSM_IsLoadedOrig_Length
-    .set SSM_IsLoadedCopy_Length, (56 + NumOfAddedChars) * 4
-    # Unk
-    .set SSM_Footer_OFST, SSM_IsLoadedCopy_OFST + SSM_IsLoadedCopy_Length
-    .set SSM_Footer_Length, (56 + NumOfAddedChars) * 4
-    */
