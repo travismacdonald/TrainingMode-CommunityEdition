@@ -1553,7 +1553,7 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
                     hit_angle = M_PI - hit_angle;
                 }
             } else {
-                // Dthrow is special - we can't use attacker direction cuz it's different between throws,
+                // Bthrow is special - we can't use attacker direction cuz it's different between throws,
                 // e.x. peach doesn't turn around, but fox does. So we need to use cpu direction.
                 // We assume that bthrows will always be a "reverse" throw.
 

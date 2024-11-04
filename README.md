@@ -22,19 +22,25 @@ To discuss changes and new features or ask for assistance, join [the discord](ht
     - Reworked recording UI. Allows resaveing existing recordings with different percents or positioning.
     - Tech animations can be set invisible after they are distinguishable.
     - Random custom DI option.
+    - Set chances for slots during random playback.
     - CPU Shield angling options.
     - Auto-restore state when the CPU performs a counter action.
+    - Color overlays.
     - All special moves can be used as counter actions.
     - Press DPad left/right when browsing savestates to quickly change pages.
+    - Adjustable timing in Amsah tech event.
+    - Hitboxes are now colored by ID.
     - Hazard toggle in training lab.
+    - Show info display and inputs for both HMN and CPU.
     - New SDI and ASDI options.
     - SDI and mashing are set to none by default.
     - New neutral jump option for CPUs, set as the default.
 - Bugfixes:
     - Jump actions no longer make the CPU self-destruct.
-    - Ledge and Act out of Jump OSDs are now back.
+    - Various OSDs have been fixed.
     - Fixed cpu acting too late out of sakurai angle and other non-knockdown hits (such as fox drill).
     - Lightshield now works in recordings.
+    - Fix CPU DI on back throws and moves that send backwards.
     - Can now use lightshield L with DPad to adjust percents.
     - CPUs now DI DK cargo throw.
     - Samus homing missiles will target the CPU.
@@ -43,7 +49,6 @@ To discuss changes and new features or ask for assistance, join [the discord](ht
     - Deleting replays too fast will no longer crash.
     - Every character can be used in Amsah Tech training.
 - Work in progress:
-    - Fixing Export/Import replay crashes.
     - Reaction Tech Chase Event
     - Fixing Sheik/Zelda savestate glitches
 - Developer Features:
