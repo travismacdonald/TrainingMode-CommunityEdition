@@ -1,19 +1,12 @@
 ﻿<p align="center"><img src="Logos/Training-Mode-banner.png"  alt=""  width="300"/></p>
 
-# Training Mode - More :: A Melee Modpack for Practicing Tech
+# Training Mode - More
 
 Training Mode - More is an expanded and updated version of UnclePunch's training modpack for Super Smash Bros. Melee.
 
-[comment]: <> (To download the ISO, click 'Releases' on the right side, then download "TM-More.zip".
-Unzip, then drag your melee iso on the 'Drag Vanilla Melee Here.bat' file.
-Feel free to file an issue to request a new feature!)
+To download the ISO, click [here](https://github.com/AlexanderHarrison/TrainingMode-More/releases/latest).
 
-To download the ISO, click 'Releases' on the right side, then download "TM-More.zip".
-
-Please note that the project is currently unstable and you will likely run into crashes (especially on console).
-We're hard at work at fixing this!
-
-To discuss changes and new features or ask for assistance, join [the discord](https://discord.gg/2Khb8CVP7A).
+Join [the discord](https://discord.gg/2Khb8CVP7A) to discuss changes, new features, or ask for assistance.
 
 ## Changes From the Original
 - Global Changes:
