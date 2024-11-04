@@ -16,32 +16,42 @@ We're hard at work at fixing this!
 To discuss changes and new features or ask for assistance, join [the discord](https://discord.gg/2Khb8CVP7A).
 
 ## Changes From the Original
-- New Training Lab Features:
+- Global Changes:
     - Updated to UCF 0.84 (Allows practicing with dashback out of crouch).
-    - Savestates now require holding DPad right, preventing accidental savestates.
-    - Reworked recording UI. Allows resaveing existing recordings with different percents or positioning.
-    - Tech animations can be set invisible after they are distinguishable.
-    - Random custom DI option.
-    - Set chances for slots during random playback.
-    - CPU Shield angling options.
-    - Auto-restore state when the CPU performs a counter action.
-    - Color overlays.
-    - All special moves can be used as counter actions.
-    - Press DPad left/right when browsing savestates to quickly change pages.
-    - Adjustable timing in Amsah tech event.
     - Hitboxes are now colored by ID.
-    - Hazard toggle in training lab.
-    - Show info display and inputs for both HMN and CPU.
-    - New SDI and ASDI options.
-    - SDI and mashing are set to none by default.
-    - New neutral jump option for CPUs, set as the default.
-- Bugfixes:
+- New Training Lab Features:
+    - Recording:
+        - Reworked recording UI. Allows re-saveing existing recordings with different percents or positioning.
+        - Savestates now require holding DPad right, preventing accidental savestates.
+        - Set chances for slots during random playback.
+        - Option to auto-restore state when the CPU performs a counter action.
+        - Takeover HMN playback at any point.
+        - Press DPad left/right when browsing savestates to quickly change pages.
+        - Savestates can now always be saved. (May cause crashes if you save during special moves).
+    - CPU Options:
+        - Random custom DI option. The CPU will pick a random option from your custom TDI.
+        - CPU Shield angling options.
+        - Tech animations can be set invisible after they are distinguishable.
+        - Added usmash OoS and all specials moves as counter actions.
+        - All special moves can be used as counter actions.
+        - Neutral jump action, set as the default.
+        - SDI and ASDI options.
+        - SDI is now set by number of inputs rather than by chance.
+        - SDI and mashing are set to none by default.
+    - Other Changes:
+        - Color overlays.
+        - Lock percents.
+        - Hazard toggle.
+        - Show input and info displays for both HMN and CPU.
+- Bugfixes/Small Changes:
+    - **Fixed cpu acting too late out of sakurai angle and other non-knockdown hits (such as fox drill).**
+    - Adjustable timing in Amsah tech event.
     - Jump actions no longer make the CPU self-destruct.
     - Various OSDs have been fixed.
-    - Fixed cpu acting too late out of sakurai angle and other non-knockdown hits (such as fox drill).
     - Lightshield now works in recordings.
     - Fix CPU DI on back throws and moves that send backwards.
     - Can now use lightshield L with DPad to adjust percents.
+    - Sopo is used for the ledgedash event.
     - CPUs now DI DK cargo throw.
     - Samus homing missiles will target the CPU.
     - Nana will not drop shield when Popo's shield is hit.
