@@ -77,7 +77,7 @@ Have some specific tech you want to train? Find a bug that's been annoying you? 
     Alas it is just as deeply ingrained the SSBM ecosystem as I am.
 3. Install xdelta3. This should be simple to install through your package manager.
 4. Run `make iso=path-to-melee.iso iso`. If all goes well, 'TM-CE.iso' will be created.
-    - If the provided 'gecko' binary fails (likely due to libc issues), you can compile your own binary from [here](https://github.com/JLaferri/gecko). YOU MUST USE VERSION 3.4.0.
+    - If the provided 'gecko' binary fails (likely due to libc issues), you can compile your own binary from [here](https://github.com/JLaferri/gecko/releases/tag/v3.4.0). **YOU MUST USE VERSION 3.4.0 OF GECKO OR IT WILL SILENTLY FAIL**.
     - If the provided 'gc_fst' binary fails (likely due to libc issues), you can compile your own binary from [here](https://github.com/AlexanderHarrison/gc_fst).
 
 ## How to make changes:  
