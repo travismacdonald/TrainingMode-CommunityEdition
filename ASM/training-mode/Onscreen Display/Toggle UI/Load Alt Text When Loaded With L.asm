@@ -313,7 +313,7 @@ TextASCIILeft:
     .string "Dashback"
     .string "Shield Drop"
     .string "Inputs Per Minute"
-    .string "Spacie Tech"
+    .string "Fighter-specific Tech"
     .string "Powershield Frame"
     .string "Shield Poke + ADT"
     .string "SDI Inputs"
