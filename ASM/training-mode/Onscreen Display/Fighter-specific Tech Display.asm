@@ -195,23 +195,15 @@ Yoshi_Parry:
     cmpwi r3, 0x0
     beq Exit
 
-Yoshi_Parry_SetColor:
-    load r5, MSGCOLOR_RED
-    lhz r3, 0x23F8(playerdata)
-    cmpwi r3, 0x5
-    bne Yoshi_Parry_EndSetColor
-    load r5, MSGCOLOR_GREEN
-
-Yoshi_Parry_EndSetColor:
+Yoshi_PrintJumpOoParryText:
+    load r5, MSGCOLOR_WHITE
     li r3, OSD.FighterSpecificTech  # ID
     lbz r4, 0xC(playerdata)         # queue
     bl Yoshi_JumpOoParryText
     mflr r6
     lhz r7, 0x23F8(playerdata)
     Message_Display
-
     b Exit
-
 
 # /////////////////////////////////////////////////////////////////////////////
 
