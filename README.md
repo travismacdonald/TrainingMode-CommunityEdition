@@ -98,6 +98,8 @@ Have some specific tech you want to train? Find a bug that's been annoying you? 
             - **You will need to use [HSDRaw](https://github.com/Ploaj/HSDLib) to modify the internal name.**
         - If you want other assets, you can use HSDRaw to add new objects to the dat file, or copy them from the other events.
     - Add the required compilation steps in `Makefile` and `build_windows.bat`. Follow the same structure as the other events. Be sure to use the evFunction mode.
+    - Add the `EventDesc` and `EventMatchData` structs to `events.c` and add a reference to them in the `General_Events`, `Minigames_Events`, or `Spacie_Events` array.
+    - Ask Clown in the discord on what to do when something inevitably goes wrong (work to simplify making a new event is in progress!). 
     - Implement the `Event_Init`, `Event_Update`, `Event_Think` methods and `Event_Menu` pointer in your c file. Poke around the other events to figure out how the data flows.
 - Other changes may be easy or difficult. Join [the discord](https://discord.gg/2Khb8CVP7A) if you want a nudge in the right direction.
 
