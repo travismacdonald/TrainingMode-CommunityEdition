@@ -8,7 +8,7 @@ ASM_FILES := $(shell find ASM -type f \( -name '*.asm' -o -name '*.s' \) | sed '
 MEX_BUILD=mono MexTK/MexTK.exe -ff -b "build" -q -ow -l "MexTK/melee.link" -op 2
 
 clean:
-	rm -rf TM-More.iso
+	rm -rf TM-CE.iso
 	rm -rf ./build/
 
 build/eventMenu.dat: src/events.c src/events.h
@@ -43,9 +43,9 @@ build/Start.dol: | build
 	./gc_fst read ${iso} Start.dol build/Start.dol
 	xdelta3 -d -f -s build/Start.dol "Build TM Start.dol/patch.xdelta" build/Start.dol
 
-TM-More.iso: build/Start.dol build/codes.gct $(dats)
-	if [[ ! -f TM-More.iso ]]; then cp ${iso} TM-More.iso; fi
-	./gc_fst fs TM-More.iso \
+TM-CE.iso: build/Start.dol build/codes.gct $(dats)
+	if [[ ! -f TM-CE.iso ]]; then cp ${iso} TM-CE.iso; fi
+	./gc_fst fs TM-CE.iso \
 		delete MvHowto.mth \
 		delete MvOmake15.mth \
 		delete MvOpen.mth \
@@ -58,16 +58,16 @@ TM-More.iso: build/Start.dol build/codes.gct $(dats)
 		insert codes.gct build/codes.gct \
 		insert Start.dol build/Start.dol \
 		insert opening.bnr build/opening.bnr
-	./gc_fst set-header TM-More.iso "GTME01" "Melee Training Mode - More"
+	./gc_fst set-header TM-CE.iso "GTME01" "Training Mode Community Edition"
 
 build:
 	mkdir -p build
 
-iso: TM-More.iso
+iso: TM-CE.iso
 
-TM-More.zip: TM-More.iso
-	zip TM-More.zip TM-More.iso
+TM-CE.zip: TM-CE.iso
+	zip TM-CE.zip TM-CE.iso
 
-release: TM-More.zip
+release: TM-CE.zip
 
 all: iso release

@@ -28,8 +28,8 @@ if not exist "C:/devkitPro/devkitPPC" (
     echo found devkitPro
 )
 
-if not exist "TM-More.iso" (
-    copy %ISO% "TM-More.iso"
+if not exist "TM-CE.iso" (
+    copy %ISO% "TM-CE.iso"
 )
 
 echo BUILD C FILES --------------------------------------------------------
@@ -91,7 +91,7 @@ gc_fst read %ISO% "Start.dol" "Start.dol"
 del Start.dol
 
 echo BUILD ISO --------------------------------------------------------
-gc_fst fs TM-More.iso ^
+gc_fst fs TM-CE.iso ^
 	delete MvHowto.mth ^
 	delete MvOmake15.mth ^
 	delete MvOpen.mth ^
@@ -104,10 +104,10 @@ gc_fst fs TM-More.iso ^
 	insert codes.gct build\codes.gct ^
 	insert Start.dol build\Start.dol ^
 	insert opening.bnr build\opening.bnr
-gc_fst set-header TM-More.iso "GTME01" "Melee Training Mode - More"
+gc_fst set-header TM-CE.iso "GTME01" "Training Mode Community Edition"
 
 
-echo ############ TM-More.iso has been created ######################
+echo ############ TM-CE.iso has been created ######################
 
 :cleanup
 

@@ -1,10 +1,10 @@
 ﻿<p align="center"><img src="Logos/Training-Mode-banner.png"  alt=""  width="300"/></p>
 
-# Training Mode - More
+# Training Mode - Community Edition
 
-Training Mode - More is an expanded and updated version of UnclePunch's training modpack for Super Smash Bros. Melee.
+Training Mode - Community Edition is an expanded and updated version of UnclePunch's training modpack for Super Smash Bros. Melee.
 
-To download the ISO, click [here](https://github.com/AlexanderHarrison/TrainingMode-More/releases/latest).
+To download the ISO, click [here](https://github.com/AlexanderHarrison/TrainingMode-CommunityEdition/releases/latest).
 
 Join [the discord](https://discord.gg/2Khb8CVP7A) to discuss changes, new features, or ask for assistance.
 
@@ -67,7 +67,7 @@ Have some specific tech you want to train? Find a bug that's been annoying you? 
 
 ### Windows
 1. [Install DevKitPro](https://github.com/devkitPro/installer/releases/latest). Install the Gamecube (aka PPC or PowerPC) package.
-2. Drag your legally obtained SSBM v1.02 ISO on to the 'build_windows.bat' file. If all goes well, 'TM-More.iso' will be created.
+2. Drag your legally obtained SSBM v1.02 ISO on to the 'build_windows.bat' file. If all goes well, 'TM-CE.iso' will be created.
 
 ### Linux
 1. [Install DevKitPro](https://devkitpro.org/wiki/Getting_Started#Unix-like_platforms). Install the Gamecube (gamecube-dev) package.
@@ -76,7 +76,7 @@ Have some specific tech you want to train? Find a bug that's been annoying you? 
     - I would like nothing more than to remove mono, msbuild, .NET, C#, and Microsoft from my life. 
     Alas it is just as deeply ingrained the SSBM ecosystem as I am.
 3. Install xdelta3. This should be simple to install through your package manager.
-4. Run `make iso=path-to-melee.iso iso`. If all goes well, 'TM-More.iso' will be created.
+4. Run `make iso=path-to-melee.iso iso`. If all goes well, 'TM-CE.iso' will be created.
     - If the provided 'gecko' binary fails (likely due to libc issues), you can compile your own binary from [here](https://github.com/JLaferri/gecko). YOU MUST USE VERSION 3.4.0.
     - If the provided 'gc_fst' binary fails (likely due to libc issues), you can compile your own binary from [here](https://github.com/AlexanderHarrison/gc_fst).
 
