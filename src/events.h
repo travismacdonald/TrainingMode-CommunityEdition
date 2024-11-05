@@ -523,7 +523,7 @@ void Message_CObjThink(GOBJ *gobj);
 float BezierBlend(float t);
 
 #define MSGQUEUE_NUM 7
-#define MSGQUEUE_SIZE 5
+#define MSGQUEUE_SIZE 8
 #define MSGQUEUE_GENERAL 6
 enum MsgState
 {

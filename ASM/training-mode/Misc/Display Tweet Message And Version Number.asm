@@ -99,7 +99,7 @@ Version:
 
 ResetCombo:
     blrl
-    .string "               ## TWEET A PICTURE OF THIS MESSAGE TO @rwing_aitch ##\n## After submitting, PRESS LRA-START to reboot ##\n"
+    .string "## TWEET A PICTURE OF THIS MESSAGE TO @rwing_aitch ##\n## After submitting, PRESS LRA-START to reboot ##\n"
     .align 2
 
 #########################################################
