@@ -5359,6 +5359,9 @@ void Event_Init(GOBJ *gobj)
         LabOptions_Record[OPTREC_SAVE_LOAD] = Record_Load;
     }
 
+    // Aitch: VERY nice for debugging. Please don't remove.
+    TMLOG("HMN: %x\tCPU: %x\n", (u32)hmn_data, (u32)cpu_data);
+
     return;
 }
 // Update Function

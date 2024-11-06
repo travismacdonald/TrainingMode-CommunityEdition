@@ -20,23 +20,29 @@
     li r3, 1
     slw r0, r3, r0
     and. r0, r0, r4
-    beq Injection_Exit
+    beq Exit
 
     # Check if fighter is a subcharacter
     mr r3, REG_FighterData
     branchl r12, 0x80005510
     cmpwi r3, 0x1
-    beq Injection_Exit
+    beq Exit
 
     # CHECK IF IT WAS A WAVEDASH (landed within 20 frames)
     lhz r3, TM_FramesinCurrentAS(REG_FighterData)
     cmpwi r3, 20
-    bgt Injection_Exit
+    bgt Exit
 
     # Get wavedash angle
     lfs f1, TM_AirdodgeAngle(REG_FighterData)
     bl GetWavedashAngle
     stfs f1, 0x80(sp)
+
+    # Get frames in jump
+    lhz r7, TM_FramesinOneASAgo(REG_FighterData)
+
+    # Get frames in airdodge
+    lhz r8, TM_FramesinCurrentAS(REG_FighterData)
 
 PrintMessage:
     li r3, 0                        # Message Kind
@@ -44,16 +50,14 @@ PrintMessage:
     li r5, MSGCOLOR_WHITE
     bl Wavedash_String
     mflr r6
-    lhz r7, TM_FramesinCurrentAS(REG_FighterData)
-    addi r7, r7, 1                  # 1-index number
     Message_Display
     lwz r3, 0x2C(r3)
     lwz REG_Text, MsgData_Text(r3)
 
     # Adjust Timing color
-    lhz r3, TM_FramesinCurrentAS(REG_FighterData)
-    cmpwi r3, 0
-    bne AdjustAngleColor
+    lhz r3, TM_FramesinOneASAgo(REG_FighterData)
+    cmpwi r3, 1
+    bne CheckSetAngleColor
     bl Floats
     mflr r4
     addi r5, r4, 0xC
@@ -62,7 +66,7 @@ PrintMessage:
     li r4, 0
     branchl r12, Text_ChangeTextColor
 
-AdjustAngleColor:
+CheckSetAngleColor:
     # Adjust Angle color
     # Get Angle and Float Pointer
     bl Floats
@@ -71,13 +75,13 @@ AdjustAngleColor:
     # Check For Perfect Angle
     lfs f2, 0x0(r4)
     fcmpo cr0, f1, f2
-    blt Injection_Exit
+    blt CheckSetAirdodgeFramesColor
     lfs f2, 0x4(r4)
     fcmpo cr0, f1, f2
     blt PerfectAngle
     lfs f2, 0x8(r4)
     fcmpo cr0, f1, f2
-    bgt Injection_Exit
+    bgt CheckSetAirdodgeFramesColor
 
 OKAngle:
     addi r5, r4, 0x10
@@ -93,7 +97,19 @@ ChangeAngleColor:
     li r4, 1
     branchl r12, Text_ChangeTextColor
 
-    b Injection_Exit
+CheckSetAirdodgeFramesColor:
+    lhz r3, TM_FramesinCurrentAS(REG_FighterData)
+    cmpwi r3, 0
+    bne Exit
+    bl Floats
+    mflr r4
+    addi r5, r4, 0xC
+    # Change Color
+    mr r3, REG_Text                 # text pointer
+    li r4, 2
+    branchl r12, Text_ChangeTextColor
+
+    b Exit
 
 #########################
 ## Get Wavedash Angle ##
@@ -167,17 +183,7 @@ SaveAngle:
 
 Wavedash_String:
     blrl
-    .string "Wavedash Frame: %d\nAngle: %2.1f"
-    .align 2
-
-TextASCII:
-    blrl
-    .string "Wavedash Frame: %d"
-    .align 2
-
-TextASCII2:
-    blrl
-    .string "Angle: %2.1f"
+    .string "Wavedash Frame: %d\nAngle: %2.1f\nAirdodge Frames: %d"
     .align 2
 
 Floats:
@@ -214,7 +220,7 @@ IntToFloat:
 
 ##############################
 
-Injection_Exit:
+Exit:
     mr r3, REG_FighterGObj
     restore
 
