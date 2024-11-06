@@ -37,11 +37,13 @@ ConvertToDecimal:
 StoreGB:
     subi r5, r13, 0x8000    # get hitbox color ptr
 
-    cmpwi r25, 0
+    # Because we swapped the order in Reverse Hitbox ID Order, 
+    # we need to swap IDs again here to get the correct ID colors.
+    cmpwi r25, 3
     beq ID_0
-    cmpwi r25, 1
-    beq ID_1
     cmpwi r25, 2
+    beq ID_1
+    cmpwi r25, 1
     beq ID_2
     b ID_ETC
 
@@ -65,8 +67,9 @@ ID_2:
     stb r6, 0x2(r5)         # B
     b Alpha
 ID_ETC:
-    stb r6, 0x0(r5)         # R
     stb r6, 0x1(r5)         # G
+    li r6, 255
+    stb r6, 0x0(r5)         # R
     stb r6, 0x2(r5)         # B
 
 Alpha:
@@ -76,7 +79,7 @@ Alpha:
 
 Floats:
     blrl
-    .long 0x43480000        # Min GB Value 200
+    .long 0x43340000        # Min GB Value 180
     .long 0x40A00000        # Damage Value for Lightest Color 5
     .long 0x41900000        # Damage Value for Darkest Color 18
 
