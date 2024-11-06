@@ -193,17 +193,17 @@ GetDBRate:
 
 DBVanilla_String:
     blrl
-    .string "Vanilla Dashback\nSuccession: %d%"
+    .string "Vanilla Dashback\nSuccess Rate: %d%"
     .align 2
 
 DBUCF_String:
     blrl
-    .string "UCF Dashback\nSuccession: %d%"
+    .string "UCF Dashback\nSuccess Rate: %d%"
     .align 2
 
 DBFailed_String:
     blrl
-    .string "Failed Dashback\nSuccession: %d%"
+    .string "Failed Dashback\nSuccess Rate: %d%"
     .align 2
 
 Colors:
