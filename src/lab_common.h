@@ -384,7 +384,6 @@ void Lab_ChangeInfoRow(GOBJ *menu_gobj, int value);
 void Lab_ChangeInfoSizePos(GOBJ *menu_gobj, int value);
 void Lab_ChangeInfoPlayer(GOBJ *menu_gobj, int value);
 void Lab_ChangeHUD(GOBJ *menu_gobj, int value);
-void Lab_ChangeGameSpeed(GOBJ *menu_gobj, int value);
 void Lab_SelectCustomTDI(GOBJ *menu_gobj);
 void Lab_ChangeSlot1ChanceHMN (GOBJ *menu_gobj, int _new_val);
 void Lab_ChangeSlot2ChanceHMN (GOBJ *menu_gobj, int _new_val);
