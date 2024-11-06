@@ -43,6 +43,11 @@ static int chunk_num;
 static int save_pre_tick;
 static char *slots_names[] = {"A", "B"};
 
+// We can't have the game speed anything other than 1.0 while in the menu,
+// or the curser gets really messed up, jumping options, moving multiple times.
+// So we have to cache the game speed, and only set it when we are not in the menu.
+static float game_speed = 1.0;
+
 // timer variables
 static int lockout_timer = 0;
 const int LOCKOUT_DURATION = 30;
@@ -51,6 +56,10 @@ static float cpu_locked_percent = 0;
 static float hmn_locked_percent = 0;
 
 // Menu Callbacks
+void Lab_ChangeGameSpeed(GOBJ *menu_gobj, int value)
+{
+    game_speed = LabOptions_GameSpeeds[value];
+}
 void Lab_ChangePlayerPercent(GOBJ *menu_gobj, int value)
 {
     GOBJ *fighter = Fighter_GetGObj(0);
@@ -5364,6 +5373,11 @@ void Event_Init(GOBJ *gobj)
 // Update Function
 void Event_Update()
 {
+    if (Pause_CheckStatus(1) != 2)
+        HSD_SetSpeedEasy(game_speed);
+    else
+        HSD_SetSpeedEasy(1.0);
+
     // update DI draw
     //DIDraw_Update();
 
