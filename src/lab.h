@@ -874,7 +874,6 @@ static EventOption LabOptions_General[OPTGEN_COUNT] = {
         .option_name = "Game Speed",
         .desc = "Change how fast the game engine runs.",
         .option_values = LabOptions_GameSpeedText,
-        .onOptionChange = Lab_ChangeGameSpeed
     },
     {
         .option_kind = OPTKIND_STRING,
