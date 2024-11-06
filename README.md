@@ -101,6 +101,11 @@ Have some specific tech you want to train? Find a bug that's been annoying you? 
     - Add the `EventDesc` and `EventMatchData` structs to `events.c` and add a reference to them in the `General_Events`, `Minigames_Events`, or `Spacie_Events` array.
     - Ask Clown in the discord on what to do when something inevitably goes wrong (work to simplify making a new event is in progress!). 
     - Implement the `Event_Init`, `Event_Update`, `Event_Think` methods and `Event_Menu` pointer in your c file. Poke around the other events to figure out how the data flows.
+    - Create an `EventMatchData` and `EventDesc` struct for the new event near the top of `events.c`.
+    - Add a `.long 0` spacer word to the event jump list table for the page the event will be on in `Custom Event Code - Rewrite.asm`.
+    - In `ASM/training-mode/Global.s`, increment `X.NumOfEvents` (where X is the name of the page it's on).
+      Also, increment the event index for each legacy event on that page so they are pushed down in the menu.
+
 - Other changes may be easy or difficult. Join [the discord](https://discord.gg/2Khb8CVP7A) if you want a nudge in the right direction.
 
 ## Debugging tips
