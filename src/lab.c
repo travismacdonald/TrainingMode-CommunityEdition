@@ -1014,7 +1014,7 @@ int CPU_IsGrabbed(GOBJ *cpu, GOBJ *hmn)
     return 0;
 }
 
-int LCancel_CPUPerformAction(GOBJ *cpu, int action_id, GOBJ *hmn)
+int Lab_CPUPerformAction(GOBJ *cpu, int action_id, GOBJ *hmn)
 {
     FighterData *cpu_data = cpu->userdata;
     FighterData *hmn_data = hmn->userdata;
@@ -1123,10 +1123,10 @@ int LCancel_CPUPerformAction(GOBJ *cpu, int action_id, GOBJ *hmn)
 
     return action_done;
 }
-void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
+void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
 {
     // get gobjs data
-    LCancelData *eventData = event->userdata;
+    LabData *eventData = event->userdata;
     FighterData *hmn_data = hmn->userdata;
     FighterData *cpu_data = cpu->userdata;
     GOBJ **gobj_lookup = (*stc_gobj_lookup);
@@ -1260,7 +1260,7 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         case (CPUBEHAVE_JUMP):
         {
             // run jump command
-            LCancel_CPUPerformAction(cpu, 12, hmn);
+            Lab_CPUPerformAction(cpu, 12, hmn);
             break;
         }
         }
@@ -1960,7 +1960,7 @@ void LCancel_CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         else 
         {
             eventData->cpu_countering = true;
-            if (LCancel_CPUPerformAction(cpu, action_id, hmn))
+            if (Lab_CPUPerformAction(cpu, action_id, hmn))
                 eventData->cpu_state = CPUSTATE_RECOVER;
         }
 
@@ -2667,7 +2667,7 @@ void Lab_SelectCustomTDI(GOBJ *menu_gobj)
     EventMenu *curr_menu = menu_data->currMenu;
     evMenu *menuAssets = event_vars->menu_assets;
     GOBJ *event_gobj = event_vars->event_gobj;
-    LCancelData *event_data = event_gobj->userdata;
+    LabData *event_data = event_gobj->userdata;
     Arch_LabData *LabAssets = stc_lab_data;
 
     // set menu state to wait
@@ -2781,7 +2781,7 @@ void CustomTDI_Update(GOBJ *gobj)
     // get data
     TDIData *tdi_data = gobj->userdata;
     MenuData *menu_data = event_vars->menu_gobj->userdata;
-    LCancelData *event_data = event_vars->event_gobj->userdata;
+    LabData *event_data = event_vars->event_gobj->userdata;
 
     // get pausing players inputs
     HSD_Pad *pad = PadGet(menu_data->controller_index, PADGET_MASTER);
@@ -2881,7 +2881,7 @@ void CustomTDI_Destroy(GOBJ *gobj)
     // get data
     TDIData *tdi_data = gobj->userdata;
     MenuData *menu_data = event_vars->menu_gobj->userdata;
-    LCancelData *event_data = event_vars->event_gobj->userdata;
+    LabData *event_data = event_vars->event_gobj->userdata;
 
     // set TDI to custom
     if (stc_tdi_val_num > 0) {
@@ -3331,7 +3331,7 @@ void Record_Think(GOBJ *rec_gobj)
     if (modes_allow_loop) {
         int autorestore_mode = LabOptions_Record[OPTREC_AUTORESTORE].option_val;
         int restore = false;
-        LCancelData *event_data = event_vars->event_gobj->userdata;
+        LabData *event_data = event_vars->event_gobj->userdata;
         switch (autorestore_mode)
         {
             case (AUTORESTORE_NONE):
@@ -5248,7 +5248,7 @@ void Event_PostThink(GOBJ *gobj)
 // Init Function
 void Event_Init(GOBJ *gobj)
 {
-    LCancelData *eventData = gobj->userdata;
+    LabData *eventData = gobj->userdata;
     EventDesc *eventInfo = eventData->eventInfo;
     GOBJ *hmn = Fighter_GetGObj(0);
     FighterData *hmn_data = hmn->userdata;
@@ -5343,7 +5343,7 @@ void Event_Update()
 // Think Function
 void Event_Think(GOBJ *event)
 {
-    LCancelData *eventData = event->userdata;
+    LabData *eventData = event->userdata;
 
     // get fighter data
     GOBJ *hmn = Fighter_GetGObj(0);
@@ -5580,7 +5580,7 @@ void Event_Think(GOBJ *event)
         Fighter_SetSlotType(cpu_data->ply, 1);
         cpu_data->pad_index = stc_cpu_controller;
 
-        LCancel_CPUThink(event, hmn, cpu);
+        CPUThink(event, hmn, cpu);
 
         break;
     }

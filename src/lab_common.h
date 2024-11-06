@@ -178,7 +178,7 @@ typedef struct Arch_LabData
     JOBJDesc *export_menu;
     JOBJDesc *export_popup;
 } Arch_LabData;
-typedef struct LCancelData
+typedef struct LabData
 {
     EventDesc *eventInfo;
     u8 cpu_state;
@@ -206,7 +206,7 @@ typedef struct LCancelData
     GOBJ *rec_gobj;
     u8 hmn_controller;
     u8 cpu_controller;
-} LCancelData;
+} LabData;
 typedef struct InfoDisplayData
 {
     JOBJ *menuModel;
