@@ -932,6 +932,22 @@ static int CheckOverlay(GOBJ *character, OverlayGroup overlay)
         case (OVERLAY_DOUBLEJUMP):
             return state == ASID_JUMPAERIALF || state == ASID_JUMPAERIALB;
 
+        case (OVERLAY_FULLHOP):
+        {
+            if (state != ASID_JUMPF && state != ASID_JUMPB)
+                return false;
+
+            return data->state_var.state_var1 == 0;
+        }
+
+        case (OVERLAY_SHORTHOP):
+        {
+            if (state != ASID_JUMPF && state != ASID_JUMPB)
+                return false;
+
+            return data->state_var.state_var1 == 1;
+        }
+
         case (OVERLAY_IASA):
             return check_IASA(data);
     }
