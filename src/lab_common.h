@@ -379,10 +379,8 @@ void Lab_ChangeModelDisplay(GOBJ *menu_gobj, int value);
 void Lab_ChangeHitDisplay(GOBJ *menu_gobj, int value);
 void Lab_ChangeEnvCollDisplay(GOBJ *menu_gobj, int value);
 void Lab_ChangeCamMode(GOBJ *menu_gobj, int value);
-void Lab_ChangeInfoPreset(GOBJ *menu_gobj, int value);
-void Lab_ChangeInfoRow(GOBJ *menu_gobj, int value);
-void Lab_ChangeInfoSizePos(GOBJ *menu_gobj, int value);
-void Lab_ChangeInfoPlayer(GOBJ *menu_gobj, int value);
+void Lab_ChangeInfoPresetHMN(GOBJ *menu_gobj, int preset_id);
+void Lab_ChangeInfoPresetCPU(GOBJ *menu_gobj, int preset_id);
 void Lab_ChangeHUD(GOBJ *menu_gobj, int value);
 void Lab_SelectCustomTDI(GOBJ *menu_gobj);
 void Lab_ChangeSlot1ChanceHMN (GOBJ *menu_gobj, int _new_val);
@@ -454,8 +452,8 @@ void InfoDisplay_Update(GOBJ *menu_gobj, EventOption menu[], GOBJ *fighter, GOBJ
 #define INFDISP_BOTYOFFSET -0.30
 // info display text
 #define INFDISPTEXT_SCALE 0.04
-#define INFDISPTEXT_X 1
-#define INFDISPTEXT_Y 1
+#define INFDISPTEXT_X 1.0
+#define INFDISPTEXT_Y 1.0
 #define INFDISPTEXT_YOFFSET 30
 
 // DI Draw Constants

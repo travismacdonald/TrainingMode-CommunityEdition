@@ -929,6 +929,7 @@ enum infdisp_rows
 enum info_disp_option
 {
     OPTINF_PRESET,
+    OPTINF_SIZE,
     OPTINF_ROW1,
     OPTINF_ROW2,
     OPTINF_ROW3,
@@ -941,8 +942,42 @@ enum info_disp_option
     OPTINF_COUNT
 };
 
+#define OPTINF_ROW_COUNT (OPTINF_COUNT - OPTINF_ROW1)
+
 static char *LabValues_InfoDisplay[INFDISP_COUNT] = {"None", "Position", "State Name", "State Frame", "Velocity - Self", "Velocity - KB", "Velocity - Total", "Engine LStick", "System LStick", "Engine CStick", "System CStick", "Engine Trigger", "System Trigger", "Ledgegrab Timer", "Intangibility Timer", "Hitlag", "Hitstun", "Shield Health", "Shield Stun", "Grip Strength", "ECB Lock", "ECB Bottom", "Jumps", "Walljumps", "Jab Counter", "Line Info", "Blastzone Left/Right", "Blastzone Up/Down"};
-static char *LabValues_InfoPresets[] = {"None", "Custom", "Ledge", "Damage"};
+
+static char *LabValues_InfoSizeText[] = {"Small", "Medium", "Large"};
+static float LabValues_InfoSizes[] = {0.7, 0.85, 1.0};
+
+static char *LabValues_InfoPresets[] = {"None", "Ledge", "Damage"};
+static int LabValues_InfoPresetStates[][OPTINF_ROW_COUNT] = {
+    // None
+    { 0 },
+
+    // Ledge
+    {
+        INFDISP_STATE,
+        INFDISP_FRAME,
+        INFDISP_SYSLSTICK,
+        INFDISP_ENGLSTICK,
+        INFDISP_INTANGREMAIN,
+        INFDISP_ECBLOCK,
+        INFDISP_ECBBOT,
+        INFDISP_NONE,
+    },
+
+    // Damage
+    {
+        INFDISP_STATE,
+        INFDISP_FRAME,
+        INFDISP_SELFVEL,
+        INFDISP_KBVEL,
+        INFDISP_TOTALVEL,
+        INFDISP_HITSTOP,
+        INFDISP_HITSTUN,
+        INFDISP_SHIELDSTUN,
+    },
+};
 
 // copied from LabOptions_InfoDisplayDefault in Event_Init
 static EventOption LabOptions_InfoDisplayHMN[OPTINF_COUNT];
@@ -955,7 +990,17 @@ static EventOption LabOptions_InfoDisplayDefault[OPTINF_COUNT] = {
         .option_name = "Display Preset",
         .desc = "Choose between pre-configured selections.",
         .option_values = LabValues_InfoPresets,
-        .onOptionChange = Lab_ChangeInfoPreset,
+
+        // set as Lab_ChangeInfoPresetHMN/CPU after memcpy.
+        .onOptionChange = 0,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_InfoSizeText) / 4,
+        .option_val = 1,
+        .option_name = "Size",
+        .desc = "Change the size of the info display window.\nLarge is recommended for CRT.\nMedium/Small recommended for Dolphin Emulator.",
+        .option_values = LabValues_InfoSizeText,
     },
     {
         .option_kind = OPTKIND_STRING,
@@ -963,7 +1008,6 @@ static EventOption LabOptions_InfoDisplayDefault[OPTINF_COUNT] = {
         .option_name = "Row 1",
         .desc = "Adjust what is displayed in this row.",
         .option_values = LabValues_InfoDisplay,
-        .onOptionChange = Lab_ChangeInfoRow,
     },
     {
         .option_kind = OPTKIND_STRING,
@@ -971,7 +1015,6 @@ static EventOption LabOptions_InfoDisplayDefault[OPTINF_COUNT] = {
         .option_name = "Row 2",
         .desc = "Adjust what is displayed in this row.",
         .option_values = LabValues_InfoDisplay,
-        .onOptionChange = Lab_ChangeInfoRow,
     },
     {
         .option_kind = OPTKIND_STRING,
@@ -979,7 +1022,6 @@ static EventOption LabOptions_InfoDisplayDefault[OPTINF_COUNT] = {
         .option_name = "Row 3",
         .desc = "Adjust what is displayed in this row.",
         .option_values = LabValues_InfoDisplay,
-        .onOptionChange = Lab_ChangeInfoRow,
     },
     {
         .option_kind = OPTKIND_STRING,
@@ -987,7 +1029,6 @@ static EventOption LabOptions_InfoDisplayDefault[OPTINF_COUNT] = {
         .option_name = "Row 4",
         .desc = "Adjust what is displayed in this row.",
         .option_values = LabValues_InfoDisplay,
-        .onOptionChange = Lab_ChangeInfoRow,
     },
     {
         .option_kind = OPTKIND_STRING,
@@ -995,7 +1036,6 @@ static EventOption LabOptions_InfoDisplayDefault[OPTINF_COUNT] = {
         .option_name = "Row 5",
         .desc = "Adjust what is displayed in this row.",
         .option_values = LabValues_InfoDisplay,
-        .onOptionChange = Lab_ChangeInfoRow,
     },
     {
         .option_kind = OPTKIND_STRING,
@@ -1003,7 +1043,6 @@ static EventOption LabOptions_InfoDisplayDefault[OPTINF_COUNT] = {
         .option_name = "Row 6",
         .desc = "Adjust what is displayed in this row.",
         .option_values = LabValues_InfoDisplay,
-        .onOptionChange = Lab_ChangeInfoRow,
     },
     {
         .option_kind = OPTKIND_STRING,
@@ -1011,7 +1050,6 @@ static EventOption LabOptions_InfoDisplayDefault[OPTINF_COUNT] = {
         .option_name = "Row 7",
         .desc = "Adjust what is displayed in this row.",
         .option_values = LabValues_InfoDisplay,
-        .onOptionChange = Lab_ChangeInfoRow,
     },
     {
         .option_kind = OPTKIND_STRING,
@@ -1019,7 +1057,6 @@ static EventOption LabOptions_InfoDisplayDefault[OPTINF_COUNT] = {
         .option_name = "Row 8",
         .desc = "Adjust what is displayed in this row.",
         .option_values = LabValues_InfoDisplay,
-        .onOptionChange = Lab_ChangeInfoRow,
     },
 };
 

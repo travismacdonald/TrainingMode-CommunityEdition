@@ -297,85 +297,22 @@ void Lab_ChangeCamMode(GOBJ *menu_gobj, int value)
     return;
 }
 
-void Lab_ChangeInfoRow(GOBJ *menu_gobj, int value)
+static void Lab_ChangeInfoPreset(EventOption options[], int preset_id)
 {
-    //EventOption *idOptions = &LabOptions_InfoDisplay;
+    int *preset = LabValues_InfoPresetStates[preset_id];
 
-    //// changed option, set preset to custom
-    //idOptions[OPTINF_PRESET].option_val = 1;
+    for (int i = 0; i < OPTINF_ROW_COUNT; ++i)
+        options[OPTINF_ROW1 + i].option_val = preset[i];
 }
 
-void Lab_ChangeInfoPreset(GOBJ *menu_gobj, int value)
+void Lab_ChangeInfoPresetHMN(GOBJ *menu_gobj, int preset_id)
 {
-    //static int idPresets[][8] =
-    //    {
-    //        // None
-    //        {
-    //            0,
-    //            0,
-    //            0,
-    //            0,
-    //            0,
-    //            0,
-    //            0,
-    //            0,
-    //        },
-    //        // Ledge
-    //        {
-    //            2,
-    //            3,
-    //            8,
-    //            7,
-    //            14,
-    //            20,
-    //            21,
-    //            0,
-    //        },
-    //        // Damage
-    //        {
-    //            2,
-    //            3,
-    //            4,
-    //            5,
-    //            6,
-    //            15,
-    //            16,
-    //            18,
-    //        },
-    //    };
-
-    //EventOption *idOptions = &LabOptions_InfoDisplay;
-    //int *currPreset = 0;
-
-    //// check for NONE
-    //if (value == 0)
-    //    currPreset = idPresets[0];
-
-    //// check for preset
-    //value -= 2;
-    //if (value >= 0)
-    //{
-    //    currPreset = idPresets[value + 1];
-    //}
-
-    //// copy values
-    //if (currPreset != 0)
-    //{
-    //    for (int i = 0; i < 8; i++)
-    //    {
-    //        idOptions[i + OPTINF_ROW1].option_val = currPreset[i];
-    //    }
-    //}
+    Lab_ChangeInfoPreset(LabOptions_InfoDisplayHMN, preset_id);
 }
 
-void Lab_ChangeInfoSizePos(GOBJ *menu_gobj, int value)
+void Lab_ChangeInfoPresetCPU(GOBJ *menu_gobj, int preset_id)
 {
-    return;
-}
-
-void Lab_ChangeInfoPlayer(GOBJ *menu_gobj, int value)
-{
-    return;
+    Lab_ChangeInfoPreset(LabOptions_InfoDisplayCPU, preset_id);
 }
 
 void Lab_ChangeHUD(GOBJ *menu_gobj, int value)
@@ -460,17 +397,8 @@ GOBJ *InfoDisplay_Init(int ply)
     //    LabOptions_InfoDisplay[OPT_SCALE].option_val = 2;
 
     // background scale
-    menu->scale.X = INFDISP_SCALE;
-    menu->scale.Y = INFDISP_SCALE;
-
-    // text scale
-    text->viewport_scale.X = ((INFDISP_SCALE / 4.0) * INFDISPTEXT_SCALE);
-    text->viewport_scale.Y = ((INFDISP_SCALE / 4.0) * INFDISPTEXT_SCALE);
 
     Vec2 pos = {-26.5, 21.5};
-    text->trans.X = pos.X + (INFDISPTEXT_X * (INFDISP_SCALE / 4.0));
-    text->trans.Y = (pos.Y * -1) + (INFDISPTEXT_Y * (INFDISP_SCALE / 4.0));
-
     menu->trans.X = pos.X;
     menu->trans.Y = pos.Y;
 
@@ -775,12 +703,20 @@ void InfoDisplay_Update(GOBJ *menu_gobj, EventOption menu[], GOBJ *fighter, GOBJ
 
             if (below != NULL) {
                 InfoDisplayData *belowData = below->userdata;
-                float y_above = belowData->menuModel->trans.Y + belowData->botLeftEdge->trans.Y*INFDISP_SCALE;
+                float y_above = belowData->menuModel->trans.Y + belowData->botLeftEdge->trans.Y*belowData->menuModel->scale.X;
                 float new_y = y_above + INFDISP_BOTYOFFSET*3;
                 idData->menuModel->trans.Y = new_y;
-                idData->text->trans.Y = (new_y * -1) + (INFDISPTEXT_Y * (INFDISP_SCALE / 4.0));
-                JOBJ_SetMtxDirtySub(idData->menuModel);
             }
+
+            float scale = LabValues_InfoSizes[menu[OPTINF_SIZE].option_val];
+            idData->menuModel->scale.Y = scale * INFDISP_SCALE;
+            idData->menuModel->scale.X = scale * INFDISP_SCALE;
+            idData->text->viewport_scale.X = scale * INFDISPTEXT_SCALE;
+            idData->text->viewport_scale.Y = scale * INFDISPTEXT_SCALE;
+            idData->text->trans.X =  idData->menuModel->trans.X + scale * INFDISPTEXT_X;
+            idData->text->trans.Y = -idData->menuModel->trans.Y + scale * INFDISPTEXT_Y;
+
+            JOBJ_SetMtxDirtySub(idData->menuModel);
         }
         else
         {
@@ -3168,8 +3104,6 @@ GOBJ *Record_Init()
     Text *text = Text_CreateText(2, canvas_index);
     text->align = 1;
     text->kerning = 1;
-    text->viewport_scale.X = INFDISPTEXT_SCALE;
-    text->viewport_scale.Y = INFDISPTEXT_SCALE;
 
     // Get text positions
     JOBJ *text_joint[2];
@@ -5327,6 +5261,8 @@ void Event_Init(GOBJ *gobj)
 
     memcpy(LabOptions_InfoDisplayHMN, LabOptions_InfoDisplayDefault, sizeof(LabOptions_InfoDisplayDefault));
     memcpy(LabOptions_InfoDisplayCPU, LabOptions_InfoDisplayDefault, sizeof(LabOptions_InfoDisplayDefault));
+    LabOptions_InfoDisplayHMN[OPTINF_PRESET].onOptionChange = Lab_ChangeInfoPresetHMN;
+    LabOptions_InfoDisplayCPU[OPTINF_PRESET].onOptionChange = Lab_ChangeInfoPresetCPU;
 
     // theres got to be a better way to do this...
     event_vars = *event_vars_ptr;
