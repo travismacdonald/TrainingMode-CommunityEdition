@@ -1344,14 +1344,6 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
             goto CPULOGIC_TECH;
         }
 
-        // if final frame of hitlag, enter TDI state
-        else if (cpu_data->dmg.hitlag_frames == 1)
-        {
-            eventData->cpu_sdinum = 0; // Done SDIing, reset
-            eventData->cpu_state = CPUSTATE_TDI;
-            goto CPULOGIC_TDI;
-        }
-
         // update move instance
         if (eventData->cpu_lasthit != cpu_data->dmg.atk_instance_hurtby)
         {
@@ -1364,6 +1356,14 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
             {
                 eventData->cpu_sdidir = HSD_Randi(2);
             }
+        }
+
+        // if final frame of hitlag, enter TDI state
+        if (cpu_data->dmg.hitlag_frames == 1)
+        {
+            eventData->cpu_sdinum = 0; // Done SDIing, reset
+            eventData->cpu_state = CPUSTATE_TDI;
+            goto CPULOGIC_TDI;
         }
 
         // perform SDI behavior
