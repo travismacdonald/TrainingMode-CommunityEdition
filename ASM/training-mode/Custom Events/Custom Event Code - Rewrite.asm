@@ -4901,11 +4901,21 @@ ComboTrainingInputDIAndTechNoJiggs:
     beq ComboTrainingMissedTechThink
     cmpwi r3, 0xC0                                      # Missed Tech, Needs to Input a Roll or Attack
     beq ComboTrainingMissedTechThink
+
     # Check If Still Grabbed
     cmpwi r3, ASID_ShoulderedWait
-    blt ComboTraining_GrabCheckSkipShoulder
+    blt ComboTraining_GrabCheckCargoThrow
     cmpwi r3, ASID_ShoulderedTurn
     ble ComboTrainingMashOutOfGrab
+
+ComboTraining_GrabCheckCargoThrow:
+    lwz r4, 0x4(r27) # get char ID
+    cmpwi r4, DK.Int
+    bne ComboTraining_GrabCheckSkipShoulder
+    cmpwi r3, ASID_ThrownF
+    beq ComboTrainingMashOutOfGrab
+    cmpwi r3, ASID_ThrownFF
+    beq ComboTrainingMashOutOfGrab
 
 ComboTraining_GrabCheckSkipShoulder:
     cmpwi r3, ASID_CaptureKoopa
@@ -5039,12 +5049,30 @@ ComboTrainingNoSDI:
 
 # CHECK TO DI A THROW
 ComboTrainingCheckIfBeingThrown:
-    # Check If Being Thrown
-    lwz r3, 0x10(r29)
-    cmpwi r3, 0xEF
+    lwz r3, 0x10(r29) # cpu state
+
+ComboTrainingCheckIfBeingThrown_CheckCargoThrow:
+    lwz r4, 0x4(r27) # get char ID
+    cmpwi r4, DK.Int
+    bne ComboTrainingCheckIfBeingThrown_CheckNormalThrows
+    cmpwi r3, ASID_ThrownF
+    beq ComboTrainingCheckToJumpOutOfHitstun
+    cmpwi r3, ASID_ThrownFF
+    beq ComboTrainingCheckToJumpOutOfHitstun
+
+ComboTrainingCheckIfBeingThrown_CheckNormalThrows:
+    cmpwi r3, ASID_ThrownF
+    blt ComboTrainingCheckIfBeingThrown_CheckFThrows
+    cmpwi r3, ASID_ThrownLwWomen
+    bgt ComboTrainingCheckIfBeingThrown_CheckFThrows
+    b ComboTrainingInputDI
+
+ComboTrainingCheckIfBeingThrown_CheckFThrows:
+    cmpwi r3, ASID_ThrownFF
     blt ComboTrainingCheckToJumpOutOfHitstun
-    cmpwi r3, 0xF3
+    cmpwi r3, ASID_ThrownFLw
     bgt ComboTrainingCheckToJumpOutOfHitstun
+    b ComboTrainingInputDI
 
 ComboTrainingInputDI:
     lbz r3, DIBehavior(MenuData)

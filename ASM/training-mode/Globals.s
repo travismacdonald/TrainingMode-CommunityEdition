@@ -58,6 +58,11 @@
     .byte KO
     .endm
 
+    # bp call sets r3 to 0!! Only put before a write to r3!!
+    .macro SetBreakpoint
+    branchl r3, 0x8021b2d8
+    .endm
+
     .set Event_Reaction, 2
     # Event Name
     .macro Event_Reaction_Name
