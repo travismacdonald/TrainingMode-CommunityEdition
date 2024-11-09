@@ -404,5 +404,6 @@
     # union
     .set TM_UnionStart, TM_AnimCallback + 0x4
     .set TM_AirdodgeAngle, TM_UnionStart
+    .set TM_ShortOrFullHop, TM_AirdodgeAngle + 0x4
     .set TM_SuccessfulSDIInputs, TM_UnionStart
     .set TM_TotalSDIInputs, TM_SuccessfulSDIInputs + 0x2

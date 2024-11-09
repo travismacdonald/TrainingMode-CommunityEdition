@@ -2808,7 +2808,10 @@ struct FighterData
         GOBJ *fighter_hurt_shield; // 0x2420, pointer to the fighter who's shield this fighter hit
         void *cb_anim;             // 0x2424, additional animation callback
         union {
-            float airdodge_angle;
+            struct {
+                float airdodge_angle;
+                u32 hop_type;
+            } wavedash;
             struct {
                 u16 successful_sdi_inputs;
                 u16 total_sdi_inputs;

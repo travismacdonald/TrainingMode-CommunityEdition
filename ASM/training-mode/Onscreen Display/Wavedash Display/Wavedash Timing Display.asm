@@ -41,8 +41,16 @@
     # Get frames in jump
     lhz r7, TM_FramesinOneASAgo(REG_FighterData)
 
-    # Get frames in airdodge
-    lhz r8, TM_FramesinCurrentAS(REG_FighterData)
+    # Get short or full hop
+    bl ShortHopString
+    mflr r8
+    lwz r9, TM_ShortOrFullHop(REG_FighterData)
+    cmpwi r9, 0
+    bne SkipShortOrFullHop
+    bl FullHopString
+    mflr r8
+
+SkipShortOrFullHop:
 
 PrintMessage:
     li r3, 0                        # Message Kind
@@ -75,13 +83,13 @@ CheckSetAngleColor:
     # Check For Perfect Angle
     lfs f2, 0x0(r4)
     fcmpo cr0, f1, f2
-    blt CheckSetAirdodgeFramesColor
+    blt CheckSetHopTypeColor
     lfs f2, 0x4(r4)
     fcmpo cr0, f1, f2
     blt PerfectAngle
     lfs f2, 0x8(r4)
     fcmpo cr0, f1, f2
-    bgt CheckSetAirdodgeFramesColor
+    bgt CheckSetHopTypeColor
 
 OKAngle:
     addi r5, r4, 0x10
@@ -97,10 +105,10 @@ ChangeAngleColor:
     li r4, 1
     branchl r12, Text_ChangeTextColor
 
-CheckSetAirdodgeFramesColor:
-    lhz r3, TM_FramesinCurrentAS(REG_FighterData)
+CheckSetHopTypeColor:
+    lwz r3, TM_ShortOrFullHop(REG_FighterData)
     cmpwi r3, 0
-    bne Exit
+    beq Exit
     bl Floats
     mflr r4
     addi r5, r4, 0xC
@@ -183,7 +191,17 @@ SaveAngle:
 
 Wavedash_String:
     blrl
-    .string "Wavedash Frame: %d\nAngle: %2.1f\nAirdodge Frames: %d"
+    .string "Wavedash Frame: %d\nAngle: %2.1f\n%s"
+    .align 2
+
+ShortHopString:
+    blrl
+    .string "Short Hop"
+    .align 2
+
+FullHopString:
+    blrl
+    .string "Full Hop"
     .align 2
 
 Floats:
