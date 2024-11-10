@@ -359,7 +359,7 @@
     # Fighter Data Sizes
     .set FighterDataOrigSize, 0x23ec
     .set MEX_FighterDataSize, 0xC
-    .set TM_FighterDataSize, 0x34
+    .set TM_FighterDataSize, 0x138
     .set FighterDataTotalSize, FighterDataOrigSize + MEX_FighterDataSize + TM_FighterDataSize
 
     # Fighter Data Start
@@ -407,3 +407,5 @@
     .set TM_ShortOrFullHop, TM_AirdodgeAngle + 0x4
     .set TM_SuccessfulSDIInputs, TM_UnionStart
     .set TM_TotalSDIInputs, TM_SuccessfulSDIInputs + 0x2
+    # end union
+    .set TM_Inputs, TM_UnionStart + 0x8

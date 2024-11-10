@@ -793,6 +793,7 @@ InitSettings:
     .set HSD_MemAlloc, 0x8037f1e4
     .set HSD_JObjLoadJoint, 0x80370e44
     .set memcpy, 0x800031f4
+    .set memmove, 0x80323938
     .set strcpy, 0x80325a50
     .set ZeroAreaLength, 0x8000c160
     .set CreateCameraBox, 0x80029020

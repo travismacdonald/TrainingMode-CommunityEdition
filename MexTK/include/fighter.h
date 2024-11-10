@@ -2787,7 +2787,12 @@ struct FighterData
     // but for now it will stay the same to avoid breaking delicate ASM code in
     // strange ways. It should be possible to add to the end of the TM struct
     // without breaking things. Any future changes to these structs must be
-    // reflected in ASM/m-ex/Header.s
+    // reflected in ASM/m-ex/Header.s:
+    //   - Add a symbol for the new field at the bottom: '.set YOUR_SYMBOL, PREV_SYMBOL + sizeof(PREV_SYMBOL)'
+    //   - Change the size of the struct in the 'Fighter Data Sizes' section
+    //
+    // the per frame data in struct TM is updated in 
+    // ASM/training-mode/Onscreen Display/Additional Playerblock Variables/StatesAndTimers/
     struct MEX                     // 0x23ec
     {                              //
         int anim_owner;            // 0x23ec
@@ -2807,6 +2812,7 @@ struct FighterData
         int post_hitstun_frames;   // 0x241c, frames fighter has been out of hitstun
         GOBJ *fighter_hurt_shield; // 0x2420, pointer to the fighter who's shield this fighter hit
         void *cb_anim;             // 0x2424, additional animation callback
+
         union {
             struct {
                 float airdodge_angle;
@@ -2817,6 +2823,16 @@ struct FighterData
                 u16 total_sdi_inputs;
             } sdi;
         } tm_union;                // 0x2428
+
+        struct {
+            u16 buttons; // use HSD_BUTTON_* to lookup
+            s8 stick_x;
+            s8 stick_y;
+            s8 cstick_x;
+            s8 cstick_y;
+            u8 ltrigger;
+            u8 rtrigger;
+        } inputs[32];  // 0x242C
     } TM;
 };
 
