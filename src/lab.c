@@ -3104,6 +3104,8 @@ GOBJ *Record_Init()
     Text *text = Text_CreateText(2, canvas_index);
     text->align = 1;
     text->kerning = 1;
+    text->viewport_scale.X = REC_TEXTSCALE;
+    text->viewport_scale.Y = REC_TEXTSCALE;
 
     // Get text positions
     JOBJ *text_joint[2];

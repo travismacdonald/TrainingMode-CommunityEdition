@@ -40,6 +40,7 @@ v2 = not released
 #define REC_RIGHTBOUNDJOINT 6
 #define REC_LEFTTEXTJOINT 2
 #define REC_RIGHTTEXTJOINT 3
+#define REC_TEXTSCALE 0.04
 
 // export
 enum export_status
