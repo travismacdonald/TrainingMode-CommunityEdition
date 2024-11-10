@@ -46,11 +46,43 @@
     mflr r8
     lwz r9, TM_ShortOrFullHop(REG_FighterData)
     cmpwi r9, 0
-    bne SkipShortOrFullHop
+    bne EndShortOrFullHop
     bl FullHopString
     mflr r8
+EndShortOrFullHop:
 
-SkipShortOrFullHop:
+    # Get frames since jump release
+    li r9, 0
+JumpInputsLoop:
+    mulli r10, r9, 8
+    add r10, r10, REG_FighterData
+
+    lhz r11, TM_Inputs(r10) # buttons
+    andi. r11, r11, 0xC00 # x or y
+    bne EndJumpInputsLoop
+
+    addi r10, r10, 3
+    lbz r11, TM_Inputs(r10) # stick y
+    extsb r11, r11
+    cmpwi r11, 44
+    bgt EndJumpInputsLoop
+
+    # no jump input this frame
+    addi r9, r9, 1
+    cmpwi r9, 32
+    blt JumpInputsLoop
+
+    # out of input history with no jump input - either wavedash took longer than 32 frames,
+    # or more likely some tap jump range change BS.
+    # Seems like tap jump has a different min y in some action states???
+
+    # IDK what to do here. Hopefully this never occurs.
+    li r9, -0xFF
+
+EndJumpInputsLoop:
+    lbz r10, 0x685(REG_FighterData) # timer_jump
+    sub r9, r10, r9 # get jump held frames
+    addi r9, r9, 1 # 1-index
 
 PrintMessage:
     li r3, 0                        # Message Kind
@@ -191,7 +223,7 @@ SaveAngle:
 
 Wavedash_String:
     blrl
-    .string "Wavedash Frame: %d\nAngle: %2.1f\n%s"
+    .string "Wavedash Frame: %d\nAngle: %2.1f\n%s: %df"
     .align 2
 
 ShortHopString:

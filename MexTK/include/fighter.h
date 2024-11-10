@@ -2832,7 +2832,7 @@ struct FighterData
             s8 cstick_y;
             u8 ltrigger;
             u8 rtrigger;
-        } inputs[32];  // 0x242C
+        } inputs[32];  // 0x2430
     } TM;
 };
 
