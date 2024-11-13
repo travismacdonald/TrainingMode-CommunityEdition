@@ -589,7 +589,7 @@ InitSettings:
     .set OSD.ShieldPoke, 11
     .set OSD.HitstunLeft, 12
     .set OSD.ShieldStun, 13
-    .set OSD.ASFramesLeft, 14
+    .set OSD.BoostGrab, 14
     .set OSD.Miscellaneous, 15
     .set OSD.ActOoWait, 16
     .set OSD.CrouchCancel, 17

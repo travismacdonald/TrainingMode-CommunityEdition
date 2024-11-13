@@ -328,8 +328,8 @@ TextASCIIRight:
     .string ""
     .string "Hitstun/Hitlag"
     .string "Shield Stun"
-    .string "State Frames Left"
-    .string ""
+    .string "Boost Grab"
+    .string "" # DO NOT USE - reserved for custom events
     .string "Act OoLag"
     .string "Crouch Cancel"
     .string "Act OoJump"
