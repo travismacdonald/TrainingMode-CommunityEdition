@@ -30,19 +30,40 @@ CheckForFollower:
     cmpwi r3, 0x1
     beq Exit
 
+
+CheckForPreviousActionState:
+    lhz r3, TM_OneASAgo(playerdata)
+    cmpwi r3, ASID_JumpF
+    beq PreviousStateIsJump
+    cmpwi r3, ASID_JumpB
+    beq PreviousStateIsJump
+    cmpwi r3, ASID_JumpAerialF
+    beq PreviousStateIsDoubleJump
+    cmpwi r3, ASID_JumpAerialB
+    beq PreviousStateIsDoubleJump
+    b Exit
+
+PreviousStateIsJump:
+    lfs f1, 0x150(playerdata)  # get jump_v_initial_velocity
+    b CheckForCutoffFrames
+
+PreviousStateIsDoubleJump:
+    lfs f1, 0x150(playerdata)  # get jump_v_initial_velocity
+    lfs f2, 0x160(playerdata)  # get air_jump_v_multiplier
+    fmuls f1, f1, f2           # calculate double jump vertical initial velocity
+
 CheckForCutoffFrames:
     lhz r7, TM_FramesinOneASAgo(playerdata)
-
-    # Disable OSD, after frames it takes for the fighter's jump to reach its peak and then some
-    lfs f1, 0x150(playerdata)  # get jump_v_initial_velocity
+    # Disable OSD if the act is after frames to reach the peak of fighter's jump (+ some additional frames)
     lfs f2, 0x16C(playerdata)  # get gravity
-    fdivs f1, f1, f2           # calculate frames it takes for the fighter's jump to reach its peak
+    fdivs f1, f1, f2           # calculate frames to reach the peak of fighter's jump
     fctiwz f1, f1              # round down
     stfd f1, 0x80(sp)
     lwz r4, 0x84(sp)           # load the integer part
-    addi r4, r4, 0x5           # add buffer frames
+    addi r4, r4, 0x5           # add some frames
     cmpw r7, r4
     bgt Exit
+
 
 CheckForPreviousFrame:
     cmpwi r7, 0x1
@@ -54,6 +75,7 @@ GreenText:
 
 RedText:
     load r5, MSGCOLOR_RED
+
 
 CheckForDoubleJump:
     lwz r3, 0x10(playerdata) # load current action state ID
