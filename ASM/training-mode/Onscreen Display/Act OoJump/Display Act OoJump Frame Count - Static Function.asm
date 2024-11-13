@@ -30,17 +30,21 @@ CheckForFollower:
     cmpwi r3, 0x1
     beq Exit
 
-CheckForYVelocity:
-    lfs f1, 0x84(playerdata)  # Get Y Velocity
-    lis r3, 0xBF00            # Exit threshold is -0.5 (BF00 0000 is the bit pattern of -0.5)
-    ori r3, r3, 0x0000
-    stw r3, -4(r1)            # store threshold to stack
-    lfs f2, -4(r1)            # load threshold as float from stack
-    fcmpo cr0, f1, f2         # Exit if Y velocity is less than threshold
-    blt Exit
+CheckForCutoffFrames:
+    lhz r7, TM_FramesinOneASAgo(playerdata)
+
+    # Disable OSD, after frames it takes for the fighter's jump to reach its peak and then some
+    lfs f1, 0x150(playerdata)  # get jump_v_initial_velocity
+    lfs f2, 0x16C(playerdata)  # get gravity
+    fdivs f1, f1, f2           # calculate frames it takes for the fighter's jump to reach its peak
+    fctiwz f1, f1              # round down
+    stfd f1, 0x80(sp)
+    lwz r4, 0x84(sp)           # load the integer part
+    addi r4, r4, 0x5           # add buffer frames
+    cmpw r7, r4
+    bgt Exit
 
 CheckForPreviousFrame:
-    lhz r7, TM_FramesinOneASAgo(playerdata)
     cmpwi r7, 0x1
     bne RedText
 
