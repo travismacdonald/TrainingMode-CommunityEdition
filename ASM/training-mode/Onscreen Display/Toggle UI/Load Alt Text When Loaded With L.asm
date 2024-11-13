@@ -333,7 +333,7 @@ TextASCIIRight:
     .string "Act OoLag"
     .string "Crouch Cancel"
     .string "Act OoJump"
-    .string "Act OoJumpSquat"
+    .string "Jump Cancel Timing"
     .string "Fastfall Timing"
     .string "Frame Advantage"
     .string "Combo Counter"

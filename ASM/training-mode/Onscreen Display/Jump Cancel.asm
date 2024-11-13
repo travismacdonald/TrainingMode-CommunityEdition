@@ -52,7 +52,7 @@ EndSetColor:
 
 Text:
     blrl
-    .string "Act OoJumpSquat\nFrame %d"
+    .string "Jump Cancel\nFrame %d"
     .align 2
 
 ##############################
