@@ -843,6 +843,11 @@ static int CheckOverlay(GOBJ *character, OverlayGroup overlay)
             return data->phys.self_vel.Y < 0.0f;
         }
 
+        case (OVERLAY_INVINCIBLE):
+        {
+            return data->hurt.kind_script != 0 || data->hurt.kind_game != 0;
+        }
+
         case (OVERLAY_AUTOCANCEL):
         {
             if (state < ASID_ATTACKAIRN || ASID_ATTACKAIRLW < state)

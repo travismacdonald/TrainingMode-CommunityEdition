@@ -1197,7 +1197,7 @@ struct ftHit
 
 struct FtHurt
 {
-    int state;                    // 0x0, whether or not this hurtbox can be hit
+    FtHurtKind state;             // 0x0, whether or not this hurtbox can be hit
     Vec3 hurt1_offset;            // 0x4
     Vec3 hurt2_offset;            // 0x10
     float scale;                  // 0x1c

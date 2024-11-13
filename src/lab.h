@@ -1871,6 +1871,7 @@ typedef enum overlay_type
 {
     OVERLAY_ACTIONABLE,
     OVERLAY_HITSTUN,
+    OVERLAY_INVINCIBLE,
     OVERLAY_LEDGE_ACTIONABLE,
     OVERLAY_MISSED_LCANCEL,
     OVERLAY_CAN_FASTFALL,
@@ -1904,6 +1905,13 @@ static EventOption LabOptions_OverlaysDefault[OVERLAY_COUNT] = {
         .option_kind = OPTKIND_STRING,
         .value_num = OVERLAY_COLOUR_COUNT,
         .option_name = "Hitstun",
+        .desc = "",
+        .option_values = LabValues_OverlayNames,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = OVERLAY_COLOUR_COUNT,
+        .option_name = "Invincible",
         .desc = "",
         .option_values = LabValues_OverlayNames,
     },
