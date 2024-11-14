@@ -41,7 +41,15 @@ CheckForPreviousActionState:
     beq PreviousStateIsDoubleJump
     cmpwi r3, ASID_JumpAerialB
     beq PreviousStateIsDoubleJump
-    b Exit
+    # Aerial jump state IDs are 0x155, 0x156, 0x157, 0x158, 0x159 for fighters which have multiple jumps (Jigglypuff, Kirby)
+    lwz r4, 0x168(playerdata) # load max_jumps
+    cmpwi r4, 0x2
+    ble Exit
+    cmpwi r3, 0x155 # first aerial jump
+    blt Exit
+    cmpwi r3, 0x159 # last(5th) aerial jump
+    bgt Exit
+    b PreviousStateIsDoubleJump
 
 PreviousStateIsJump:
     lfs f1, 0x150(playerdata)  # get jump_v_initial_velocity
@@ -82,6 +90,12 @@ CheckForDoubleJump:
     cmpwi r3, ASID_JumpAerialF
     beq DoubleJump
     cmpwi r3, ASID_JumpAerialB
+    beq DoubleJump
+    # First aerial jump state ID is 0x155 for fighters which have multiple jumps (Jigglypuff, Kirby)
+    lwz r4, 0x168(playerdata) # load max_jumps
+    cmpwi r4, 0x2
+    ble CheckForAerial
+    cmpwi r3, 0x155 # first aerial jump
     beq DoubleJump
 
 CheckForAerial:
