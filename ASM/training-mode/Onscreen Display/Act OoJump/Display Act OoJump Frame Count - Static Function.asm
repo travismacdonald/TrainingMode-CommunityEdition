@@ -7,7 +7,11 @@
 
     backup
 
-    # This static function needs to store Interrupt Bool to r3 and store player to r4 before being called
+    # This static function requires before being called:
+    # - store Interrupt Bool to r3
+    # - store player to r4
+    # - store the address of a text data for OSD to r6
+    # - store the OSD kind ID to r10
     mr player, r4
     lwz playerdata, 0x2c(player)
 
@@ -79,79 +83,17 @@ CheckForPreviousFrame:
 
 GreenText:
     load r5, MSGCOLOR_GREEN
-    b CheckForDoubleJump
+    b DisplayText
 
 RedText:
     load r5, MSGCOLOR_RED
 
-
-CheckForDoubleJump:
-    lwz r3, 0x10(playerdata) # load current action state ID
-    cmpwi r3, ASID_JumpAerialF
-    beq DoubleJump
-    cmpwi r3, ASID_JumpAerialB
-    beq DoubleJump
-    # First aerial jump state ID is 0x155 for fighters which have multiple jumps (Jigglypuff, Kirby)
-    lwz r4, 0x168(playerdata) # load max_jumps
-    cmpwi r4, 0x2
-    ble CheckForAerial
-    cmpwi r3, 0x155 # first aerial jump
-    beq DoubleJump
-
-CheckForAerial:
-    cmpwi r3, ASID_AttackAirN
-    blt CheckForSpecialMove
-    cmpwi r3, ASID_AttackAirLw
-    bgt CheckForSpecialMove
-    b Aerial
-
-CheckForSpecialMove:
-    cmpwi r3, ASID_BarrelCannonWait
-    ble Exit
-    b SpecialMove
-
-DoubleJump:
-    li r3, OSD.Miscellaneous    # message kind / Originally OSD.ActOoJump is natural, but use other ID to show at the same time as Aerial OoJump for fighters with DoubleJump cancel techniques
-    bl DoubleJumpText
-    mflr r6
-    b DisplayText
-
-Aerial:
-    li r3, OSD.ActOoJump        # message kind
-    bl AerialText
-    mflr r6
-    b DisplayText
-
-SpecialMove:
-    li r3, OSD.ActOoJump        # message kind
-    bl SpecialMoveText
-    mflr r6
-
 DisplayText:
+    mr r3, r10                  # message kind
     lbz r4, 0xC(playerdata)     # message queue
     Message_Display
     b Exit
 
-###################
-## TEXT CONTENTS ##
-###################
-
-DoubleJumpText:
-    blrl
-    .string "DoubleJump OoJump\nFrame %d"
-    .align 2
-
-AerialText:
-    blrl
-    .string "Aerial OoJump\nFrame %d"
-    .align 2
-
-SpecialMoveText:
-    blrl
-    .string "Special OoJump\nFrame %d"
-    .align 2
-
-##############################
 
 Exit:
     restore
