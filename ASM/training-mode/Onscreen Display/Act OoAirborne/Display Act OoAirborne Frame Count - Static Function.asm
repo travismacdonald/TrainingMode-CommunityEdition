@@ -20,7 +20,7 @@
     beq Exit
 
     # CHECK IF ENABLED
-    li r0, OSD.ActOoJump
+    li r0, OSD.ActOoAirborne
     lwz r4, -0x77C0(r13)
     lwz r4, 0x1F24(r4)
     li r3, 1
@@ -37,6 +37,9 @@ CheckForFollower:
 
 CheckForPreviousActionState:
     lhz r3, TM_OneASAgo(playerdata)
+    lhz r7, TM_FramesinOneASAgo(playerdata)
+    cmpwi r3, ASID_Pass
+    beq CheckForPreviousFrame
     cmpwi r3, ASID_JumpF
     beq PreviousStateIsJump
     cmpwi r3, ASID_JumpB
@@ -57,15 +60,14 @@ CheckForPreviousActionState:
 
 PreviousStateIsJump:
     lfs f1, 0x150(playerdata)  # get jump_v_initial_velocity
-    b CheckForCutoffFrames
+    b CheckForCutoffFramesForOoJump
 
 PreviousStateIsDoubleJump:
     lfs f1, 0x150(playerdata)  # get jump_v_initial_velocity
     lfs f2, 0x160(playerdata)  # get air_jump_v_multiplier
     fmuls f1, f1, f2           # calculate double jump vertical initial velocity
 
-CheckForCutoffFrames:
-    lhz r7, TM_FramesinOneASAgo(playerdata)
+CheckForCutoffFramesForOoJump:
     # Disable OSD if the act is after frames to reach the peak of fighter's jump (+ some additional frames)
     lfs f2, 0x16C(playerdata)  # get gravity
     fdivs f1, f1, f2           # calculate frames to reach the peak of fighter's jump
