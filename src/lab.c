@@ -792,10 +792,7 @@ static int CheckOverlay(GOBJ *character, OverlayGroup overlay)
                 || state == ASID_RUN
                 || state == ASID_PASS
                 || state == ASID_SQUATWAIT
-                || state == ASID_OTTOTTOWAIT
-                || state == ASID_DAMAGEFALL
-                || state == ASID_DAMAGEFLYROLL
-                || state == ASID_DAMAGEFLYTOP;
+                || state == ASID_OTTOTTOWAIT;
         }
 
         case (OVERLAY_HITSTUN):
