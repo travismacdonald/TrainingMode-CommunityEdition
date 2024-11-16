@@ -40,6 +40,8 @@ CheckForPreviousActionState:
     lhz r7, TM_FramesinOneASAgo(playerdata)
     cmpwi r3, ASID_Pass
     beq CheckForPreviousFrame
+    cmpwi r3, ASID_Fall
+    beq CheckForNecessarySituationForOoFall
     cmpwi r3, ASID_JumpF
     beq PreviousStateIsJump
     cmpwi r3, ASID_JumpB
@@ -57,6 +59,7 @@ CheckForPreviousActionState:
     cmpwi r3, 0x159 # last(5th) aerial jump
     bgt Exit
     b PreviousStateIsDoubleJump
+
 
 PreviousStateIsJump:
     lfs f1, 0x150(playerdata)  # get jump_v_initial_velocity
@@ -77,6 +80,31 @@ CheckForCutoffFramesForOoJump:
     addi r4, r4, 0x5           # add some frames
     cmpw r7, r4
     bgt Exit
+    b CheckForPreviousFrame
+
+
+CheckForNecessarySituationForOoFall:
+    cmpwi r7, 10  # Cutoff by frames
+    bgt Exit
+    # Cutoff by action states before fall which don't need OSD
+    lhz r3, TM_TwoASAgo(playerdata)
+    cmpwi r3, ASID_JumpF
+    beq Exit
+    cmpwi r3, ASID_JumpB
+    beq Exit
+    cmpwi r3, ASID_AttackAirN
+    beq Exit
+    cmpwi r3, ASID_AttackAirF
+    beq Exit
+    cmpwi r3, ASID_AttackAirB
+    beq Exit
+    cmpwi r3, ASID_AttackAirHi
+    beq Exit
+    cmpwi r3, ASID_AttackAirLw
+    beq Exit
+    cmpwi r3, ASID_BarrelCannonWait  # for ignoring special moves mainly
+    bgt Exit
+    b CheckForPreviousFrame
 
 
 CheckForPreviousFrame:
