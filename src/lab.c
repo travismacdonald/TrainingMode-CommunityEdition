@@ -3065,7 +3065,7 @@ GOBJ *Record_Init()
     // Create GOBJ
     GOBJ *rec_gobj = GObj_Create(0, 7, 0);
     // Add per frame process
-    GObj_AddProc(rec_gobj, Record_Think, 3);
+    GObj_AddProc(rec_gobj, Record_Think, 0);
 
     // create cobj
     GOBJ *cam_gobj = GObj_Create(19, 20, 0);

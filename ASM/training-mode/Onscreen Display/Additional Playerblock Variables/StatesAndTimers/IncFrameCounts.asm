@@ -59,7 +59,7 @@ InputsShiftOld:
     branchl r6, memmove
 InputsWriteNew:
     load r3, 0x804c21cc  # engine pad array
-    lbz r4, 0x618(r31)     # ply
+    lbz r4, 0x618(r31)   # pad_index
     mulli r4, r4, 0x44   # r4 *= sizeof(HSD_Pad)
     add r3, r3, r4
     # ptr to HSD_pad now in r3
