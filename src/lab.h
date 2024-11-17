@@ -790,6 +790,7 @@ static EventOption LabOptions_General[OPTGEN_COUNT] = {
         .option_name = "Frame Advance Button",
         .desc = "Choose which button will advance the frame",
         .option_values = LabOptions_FrameAdvButton,
+        .onOptionChange = Lab_ChangeFrameAdvanceButton,
         .disable = 1,
     },
     {

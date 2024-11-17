@@ -567,6 +567,7 @@ InitSettings:
     .set OSDMaxWindows, 0x1F28
     .set CurrentEventPage, 0x1F29
     .set OSDRecommended, 0x1F2A
+    .set LabFrameAdvanceButton, 0x1F2B
 
     # Custom rtoc offsets
     .set EventCPUBackup_CharID, -0xDA5                  # byte

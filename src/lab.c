@@ -74,9 +74,9 @@ void Lab_ChangePlayerLockPercent(GOBJ *menu_gobj, int value)
 
     return;
 }
+
 void Lab_ChangeFrameAdvance(GOBJ *menu_gobj, int value)
 {
-
     // remove colanim if toggling off
     if (value == 0)
         LabOptions_General[OPTGEN_FRAMEBTN].disable = 1;
@@ -86,6 +86,12 @@ void Lab_ChangeFrameAdvance(GOBJ *menu_gobj, int value)
 
     return;
 }
+
+void Lab_ChangeFrameAdvanceButton(GOBJ *menu_gobj, int value) {
+    Memcard *memcard = R13_PTR(MEMCARD);
+    memcard->TM_LabFrameAdvanceButton = (u8)value;
+}
+
 void Lab_ChangeRandom(GOBJ *menu_gobj, int value)
 {
 
@@ -5256,6 +5262,9 @@ void Event_Init(GOBJ *gobj)
     memcpy(LabOptions_InfoDisplayCPU, LabOptions_InfoDisplayDefault, sizeof(LabOptions_InfoDisplayDefault));
     LabOptions_InfoDisplayHMN[OPTINF_PRESET].onOptionChange = Lab_ChangeInfoPresetHMN;
     LabOptions_InfoDisplayCPU[OPTINF_PRESET].onOptionChange = Lab_ChangeInfoPresetCPU;
+
+    Memcard *memcard = R13_PTR(MEMCARD);
+    LabOptions_General[OPTGEN_FRAMEBTN].option_val = memcard->TM_LabFrameAdvanceButton;
 
     // theres got to be a better way to do this...
     event_vars = *event_vars_ptr;

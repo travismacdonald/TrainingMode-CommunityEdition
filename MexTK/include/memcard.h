@@ -2027,6 +2027,7 @@ struct Memcard
     u8 TM_OSDMax;          // 0x1F28
     u8 TM_EventPage;       // 0x1F29
     u8 TM_OSDRecommended;  // 0x1F2A
+    u8 TM_LabFrameAdvanceButton;  // 0x1F2B
     int unk1995;           // 0x1F2C
     int unk1996;           // 0x1F30
     int unk1997;           // 0x1F34
