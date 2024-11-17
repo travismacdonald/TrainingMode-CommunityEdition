@@ -5182,26 +5182,10 @@ static void UpdateDataTracking(GOBJ *character) {
 }
 
 static void UpdateOverlays(GOBJ *character, EventOption *overlays) {
-    static int overlay_running = -1;
-
     FighterData *data = character->userdata;
 
-    // we do a check and early return for overlays first,
-    // so that we don't need to force the character to be visible / have no color overlays.
-    int overlays_enabled = false;
-    for (int i = 0; i < OVERLAY_COUNT; i++) {
-        if (overlays[i].option_val) {
-            overlays_enabled = true;
-            break;
-        }
-    }
-
-    if (!overlays_enabled)
-        return;
-
-    memset(&data->color[1], 0, sizeof(ColorOverlay));
-    memset(&data->color[0], 0, sizeof(ColorOverlay));
-    data->flags.invisible = 0;
+    static int overlays_running[4] = { -1, -1, -1, -1 };
+    int *overlay_running = &overlays_running[data->ply];
 
     for (OverlayGroup i = 0; i < OVERLAY_COUNT; i++)
     {
@@ -5216,10 +5200,10 @@ static void UpdateOverlays(GOBJ *character, EventOption *overlays) {
         {
             Overlay ov = LabValues_OverlayColours[color_idx];
 
-            if (ov.occur_once && overlay_running == j)
+            if (ov.occur_once && *overlay_running == j)
                 return;
 
-            overlay_running = j;
+            *overlay_running = j;
             data->color[1].hex = ov.color;
             data->color[1].color_enable = 1;
             data->flags.invisible = ov.invisible;
@@ -5231,7 +5215,12 @@ static void UpdateOverlays(GOBJ *character, EventOption *overlays) {
         }
     }
 
-    overlay_running = -1;
+    if (*overlay_running != -1) {
+        memset(&data->color[1], 0, sizeof(ColorOverlay));
+        memset(&data->color[0], 0, sizeof(ColorOverlay));
+        data->flags.invisible = 0;
+        *overlay_running = -1;
+    }
 }
 
 // Think Function that runs after the character's think functions.
