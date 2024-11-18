@@ -477,6 +477,23 @@ void InfoDisplay_Update(GOBJ *menu_gobj, EventOption menu[], GOBJ *fighter, GOBJ
                         int posStart;
                         int nameSize = 0;
                         char *symbol = action->anim_symbol;
+
+                        // extract from the opponent fighter actions if there is no symbol in the fighter action (e.g. getting Yoshi's Neutral-B, Mewtwo's Side-B, Bowser's Side-B, etc.)
+                        if (symbol == NULL) {
+                            // loop through all humans
+                            for (int i = 0; i < 6; i++) {
+                                if (i == fighter_data->ply) { continue; }
+
+                                GOBJ *other_fighter = Fighter_GetGObj(i);
+                                if (other_fighter == 0) { continue; }
+
+                                FighterData *other_fighter_data = other_fighter->userdata;
+                                action = Fighter_GetFtAction(other_fighter_data, fighter_data->action_id);
+                                symbol = action->anim_symbol;
+                                if (symbol != NULL) { break; }
+                            }
+                        }
+
                         for (int i = 0; pos < 50; pos++)
                         {
                             // search for "N_"
