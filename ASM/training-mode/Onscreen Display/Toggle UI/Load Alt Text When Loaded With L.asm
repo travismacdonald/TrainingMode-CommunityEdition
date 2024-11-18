@@ -332,7 +332,7 @@ TextASCIIRight:
     .string "" # DO NOT USE - reserved for custom events
     .string "Act OoLag"
     .string "Crouch Cancel"
-    .string "Act OoJump"
+    .string "Act OoAirborne"
     .string "Jump Cancel Timing"
     .string "Fastfall Timing"
     .string "Frame Advantage"

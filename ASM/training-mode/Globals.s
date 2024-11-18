@@ -594,7 +594,7 @@ InitSettings:
     .set OSD.Miscellaneous, 15
     .set OSD.ActOoWait, 16
     .set OSD.CrouchCancel, 17
-    .set OSD.ActOoJump, 18
+    .set OSD.ActOoAirborne, 18
     .set OSD.ActOoJumpSquat, 19
     .set OSD.Fastfall, 20
     .set OSD.FrameAdvantage, 21
