@@ -309,7 +309,7 @@ TextASCIILeft:
     .string ""
     .string "Wavedash Info"
     .string "L-Cancel"
-    .string "" # OSD ID 2
+    .string "Roll/Airdodge Interrupt"
     .string "Act OoS Frame"
     .string "" # OSD ID 4
     .string "Dashback"

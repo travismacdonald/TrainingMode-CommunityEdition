@@ -24,8 +24,6 @@
     cmpwi r3, 0x1
     beq Exit
 
-    SetBreakpoint
-
     # DISPLAY OSD
     li r3, OSD.BoostGrab 
     lbz r4, 0xC(playerdata)
