@@ -303,6 +303,8 @@ FDDRecommendedZ:
     .align 2
 
 TextASCIILeft:
+    # Aitch: There must be some mapping between the text here and the OSD ids.
+    # I would love to figure out where that is! Lmk if you have any idea.
     blrl
     .string ""
     .string "Wavedash Info"
@@ -324,7 +326,6 @@ TextASCIILeft:
 
 TextASCIIRight:
     blrl
-
     .string ""
     .string "" # OSD ID 12
     .string "" # OSD ID 13
@@ -339,7 +340,7 @@ TextASCIIRight:
     .string "Combo Counter"
     .string "" # OSD ID 0x800000 (???????????)
     .string ""
-    .string "UniversalControllerFix"
+    .string "" # OSD ID 27
     .align 2
 
 FDDTitleText:

@@ -549,8 +549,8 @@ InitSettings:
     # Enable Recommended OSDs
     li r3, 0
     stb r3, OSDRecommended(r4)
-    # Enable UCF by default
-    load r3, 0x08000000
+    # Turn off OSDs by default
+    li r3, 0
     stw r3, OSDBitfield(r4)
     .endm
     .macro OnBootup
@@ -591,11 +591,8 @@ InitSettings:
     .set OSD.Fastfall, 20
     .set OSD.FrameAdvantage, 21
     .set OSD.ComboCounter, 22
-    .set OSD_23, 23
     .set OSD.GrabBreakout, 24
-    .set OSD_25, 25
     .set OSD.Ledge, 26
-    .set OSD.UCF, 27
     .set OSD.ActOoHitstun, 28
 
     # Event OSDs
