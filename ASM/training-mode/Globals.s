@@ -578,22 +578,14 @@ InitSettings:
     # OSD IDs
     .set OSD.Wavedash, 0
     .set OSD.LCancel, 1
-    .set OSD.MissedTech, 2
     .set OSD.ActOoS, 3
-    .set OSD.MeteorCancel, 4
     .set OSD.Dashback, 5
-    .set OSD.ShieldDrop, 6
-    .set OSD.APM, 7
     .set OSD.FighterSpecificTech, 8
-    .set OSD.SDI, 10
     .set OSD.Powershield, 9
-    .set OSD.ShieldPoke, 11
-    .set OSD.HitstunLeft, 12
-    .set OSD.ShieldStun, 13
+    .set OSD.SDI, 10
     .set OSD.BoostGrab, 14
     .set OSD.Miscellaneous, 15
     .set OSD.ActOoWait, 16
-    .set OSD.CrouchCancel, 17
     .set OSD.ActOoAirborne, 18
     .set OSD.ActOoJumpSquat, 19
     .set OSD.Fastfall, 20
@@ -605,7 +597,6 @@ InitSettings:
     .set OSD.Ledge, 26
     .set OSD.UCF, 27
     .set OSD.ActOoHitstun, 28
-    .set OSD.DIDraw, 0x800000
 
     # Event OSDs
     .set EventOSD_Eggs, 0x00000000
