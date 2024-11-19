@@ -309,7 +309,7 @@ TextASCIILeft:
     .string ""
     .string "Wavedash Info"
     .string "L-Cancel"
-    .string "Roll/Airdodge Interrupt"
+    .string "" # OSD ID 2
     .string "Act OoS Frame"
     .string "" # OSD ID 4
     .string "Dashback"
@@ -328,7 +328,7 @@ TextASCIIRight:
     blrl
     .string ""
     .string "" # OSD ID 12
-    .string "" # OSD ID 13
+    .string "Item Throw Interrupts" # OSD ID 13
     .string "Boost Grab"
     .string "" # DO NOT USE - reserved for custom events
     .string "Act OoLag"

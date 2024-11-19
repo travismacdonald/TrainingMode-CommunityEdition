@@ -578,12 +578,12 @@ InitSettings:
     # OSD IDs
     .set OSD.Wavedash, 0
     .set OSD.LCancel, 1
-    .set OSD.RollAirdodgeInterrupt, 2
     .set OSD.ActOoS, 3
     .set OSD.Dashback, 5
     .set OSD.FighterSpecificTech, 8
     .set OSD.Powershield, 9
     .set OSD.SDI, 10
+    .set OSD.RollAirdodgeInterrupt, 13
     .set OSD.BoostGrab, 14
     .set OSD.Miscellaneous, 15
     .set OSD.ActOoWait, 16
