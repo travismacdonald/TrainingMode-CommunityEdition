@@ -19,12 +19,13 @@
 
 // recording
 #define REC_VERS 1
-/*
-Recording Version History:
-v0 = 3.0 Alpha 1-3.
-v1 = 3.0 Alpha 4. First version with importing UI. Added filename and match settings to metadata, menu settings and adjusted the playerblock and grab struct for the fighters.
-v2 = not released
-*/
+
+//Recording Version History:
+//v0 = 3.0 Alpha 1-3.
+//v1 = 3.0 Alpha 4. 
+//  First version with importing UI.
+//  Added filename and match settings to metadata, menu settings and adjusted the playerblock and grab struct for the fighters.
+//v2 = not released
 
 #define GXPRI_RECJOINT 80
 #define REC_GXLINK 18
@@ -269,6 +270,7 @@ typedef struct RecData
     float seek_left;
     float seek_right;
 } RecData;
+
 typedef struct RecordingSave
 {
     MatchInit match_data; // this will point to a struct containing match info
