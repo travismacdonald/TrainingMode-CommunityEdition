@@ -5371,6 +5371,12 @@ void Event_Think(GOBJ *event)
     FighterData *cpu_data = cpu->userdata;
     HSD_Pad *pad = PadGet(hmn_data->pad_index, PADGET_ENGINE);
 
+    // Disable the D-pad up button according to the OPTGEN_TAUNT value
+    if (LabOptions_General[OPTGEN_TAUNT].option_val == 1)
+    {
+      pad->held &= ~PAD_BUTTON_DPAD_UP;
+    }
+
     // lock percent if enabled
     if (LabOptions_CPU[OPTCPU_LOCKPCNT].option_val)
     {

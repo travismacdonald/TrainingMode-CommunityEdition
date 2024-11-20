@@ -764,6 +764,7 @@ enum gen_option
     OPTGEN_INPUT,
     OPTGEN_SPEED,
     OPTGEN_STALE,
+    OPTGEN_TAUNT,
 
     OPTGEN_COUNT
 };
@@ -890,6 +891,14 @@ static EventOption LabOptions_General[OPTGEN_COUNT] = {
         .option_val = 1,
         .option_name = "Move Staling",
         .desc = "Toggle the staling of moves. Attacks become \nweaker the more they are used.",
+        .option_values = LabOptions_OffOn,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = 2,
+        .option_val = 1,
+        .option_name = "Disable Taunt",
+        .desc = "Disable the taunt button (D-pad up)",
         .option_values = LabOptions_OffOn,
     },
 };
