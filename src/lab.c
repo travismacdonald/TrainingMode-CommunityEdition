@@ -5226,6 +5226,9 @@ static void UpdateOverlays(GOBJ *character, EventOption *overlays) {
             if (ov.occur_once && *overlay_running == j)
                 return;
 
+            memset(&data->color[1], 0, sizeof(ColorOverlay));
+            memset(&data->color[0], 0, sizeof(ColorOverlay));
+
             *overlay_running = j;
             data->color[1].hex = ov.color;
             data->color[1].color_enable = 1;
