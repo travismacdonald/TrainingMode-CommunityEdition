@@ -1,4 +1,4 @@
-    # To be inserted at 800db960
+    # To be inserted at 800da07c
     .include "../Globals.s"
 
     .set playerdata, 31
@@ -20,19 +20,14 @@
     cmpwi r3, 0x1
     beq Exit
 
-    SetBreakpoint
-
     # The grab timer is set at some number when initially grabbed,
-    # then decrements by 1 for each frame and each input.
+    # then decrements by 1 for each frame not being pummelled, and for each input.
     # The grab breaks when the timer reaches zero.
-    # We show this as an integer, rounded up, because the fractional part never changes and isn't important.
-    # Instead of messing with rounding modes or converting to an integer, 
-    # we simply add 0.5 then let c formatting do the rounding.
     bl Data
-    .float 0.5 # 0.5f
-    .float 1.0 # 1.0f
-    .long 0          # initial grab timer
-    .long 0          # frame counter for grab
+    .float 0.5
+    .float 1.0
+    .long 0    # initial grab timer
+    .long 0    # frame counter for grab
 Data:
     mflr r3
 
@@ -40,7 +35,7 @@ Data:
 
     lfs f1, 0x8(r3)
     fcmpo cr0, f0, f1
-    blt GrabUpdate
+    ble GrabUpdate
 
 NewGrab:
     stfs f0, 0x8(r3)
@@ -55,6 +50,9 @@ GrabUpdate:
     stfs f1, 0xC(r3)
 
     # calculate rounded timer
+    # We show the timer as an integer, rounded up, because the fractional part never changes and isn't important.
+    # Instead of messing with rounding modes or converting to an integer, 
+    # we simply add 0.5 then let c formatting do the rounding.
     lfs f2, 0x0(r3)
     fadds f1, f0, f2
 
@@ -79,4 +77,4 @@ Text:
 
 Exit:
     restoreall
-    lfs f0, 0x1A4C (r31)
+    lbz r0, 0x2226 (r31)
