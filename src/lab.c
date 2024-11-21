@@ -5358,9 +5358,9 @@ void Event_Init(GOBJ *gobj)
 
     Memcard *memcard = R13_PTR(MEMCARD);
     LabOptions_General[OPTGEN_FRAMEBTN].option_val = memcard->TM_LabFrameAdvanceButton;
-    LabOptions_General[OPTCPU_CTRGRND].option_val = memcard->TM_LabCPUCounterGround;
-    LabOptions_General[OPTCPU_CTRAIR].option_val = memcard->TM_LabCPUCounterAir;
-    LabOptions_General[OPTCPU_CTRSHIELD].option_val = memcard->TM_LabCPUCounterShield;
+    LabOptions_CPU[OPTCPU_CTRGRND].option_val = memcard->TM_LabCPUCounterGround;
+    LabOptions_CPU[OPTCPU_CTRAIR].option_val = memcard->TM_LabCPUCounterAir;
+    LabOptions_CPU[OPTCPU_CTRSHIELD].option_val = memcard->TM_LabCPUCounterShield;
     LabOptions_General[OPTGEN_INPUT].option_val = memcard->TM_LabCPUInputDisplay;
 
     int overlay_save_count = sizeof(memcard->TM_LabSavedOverlays_HMN) / sizeof(OverlaySave);
@@ -5390,7 +5390,7 @@ void Event_Init(GOBJ *gobj)
     InfoDisplay_Update(infodisp_gobj_cpu, LabOptions_InfoDisplayCPU, Fighter_GetGObj(1), infodisp_gobj_hmn);
 
     // Init DIDraw
-    //DIDraw_Init();
+    DIDraw_Init();
 
     // Init Recording
     Record_Init();
@@ -5444,7 +5444,7 @@ void Event_Update()
     }
 
     // update DI draw
-    //DIDraw_Update();
+    DIDraw_Update();
 
     // update info display
     InfoDisplay_Update(infodisp_gobj_hmn, LabOptions_InfoDisplayHMN, Fighter_GetGObj(0), NULL);
