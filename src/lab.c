@@ -51,6 +51,32 @@ static float cpu_locked_percent = 0;
 static float hmn_locked_percent = 0;
 
 // Menu Callbacks
+
+void Lab_ChangeOverlays(GOBJ *menu_gobj, int value) {
+    Memcard *memcard = R13_PTR(MEMCARD);
+
+    memset(&memcard->TM_LabSavedOverlays_HMN, 0, sizeof(memcard->TM_LabSavedOverlays_HMN));
+    memset(&memcard->TM_LabSavedOverlays_CPU, 0, sizeof(memcard->TM_LabSavedOverlays_CPU));
+
+    int overlay_save_count = sizeof(memcard->TM_LabSavedOverlays_HMN) / sizeof(OverlaySave);
+    int overlay_save_idx_hmn = 0;
+    int overlay_save_idx_cpu = 0;
+    for (u8 group = 0; group < OVERLAY_COUNT; ++group) {
+        u8 overlay_hmn = LabOptions_OverlaysHMN[group].option_val;
+        u8 overlay_cpu = LabOptions_OverlaysCPU[group].option_val;
+
+        if (overlay_hmn != 0 && overlay_save_idx_hmn < overlay_save_count) {
+            memcard->TM_LabSavedOverlays_HMN[overlay_save_idx_hmn] = (OverlaySave) { group, overlay_hmn };
+            overlay_save_idx_hmn += 1;
+        }
+
+        if (overlay_cpu != 0 && overlay_save_idx_cpu < overlay_save_count) {
+            memcard->TM_LabSavedOverlays_CPU[overlay_save_idx_cpu] = (OverlaySave) { group, overlay_cpu };
+            overlay_save_idx_cpu += 1;
+        }
+    }
+}
+
 void Lab_ChangePlayerPercent(GOBJ *menu_gobj, int value)
 {
     GOBJ *fighter = Fighter_GetGObj(0);
@@ -5285,6 +5311,18 @@ void Event_Init(GOBJ *gobj)
 
     Memcard *memcard = R13_PTR(MEMCARD);
     LabOptions_General[OPTGEN_FRAMEBTN].option_val = memcard->TM_LabFrameAdvanceButton;
+
+    int overlay_save_count = sizeof(memcard->TM_LabSavedOverlays_HMN) / sizeof(OverlaySave);
+    for (int i = 0; i < overlay_save_count; ++i) {
+        OverlaySave save_hmn = memcard->TM_LabSavedOverlays_HMN[i];
+        OverlaySave save_cpu = memcard->TM_LabSavedOverlays_CPU[i];
+
+        if (save_hmn.overlay != 0)
+            LabOptions_OverlaysHMN[save_hmn.group].option_val = save_hmn.overlay;
+
+        if (save_cpu.overlay != 0)
+            LabOptions_OverlaysCPU[save_cpu.group].option_val = save_cpu.overlay;
+    }
 
     // theres got to be a better way to do this...
     event_vars = *event_vars_ptr;

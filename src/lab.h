@@ -1915,6 +1915,7 @@ static EventOption LabOptions_OverlaysDefault[OVERLAY_COUNT] = {
         .option_name = "Actionable",
         .desc = "",
         .option_values = LabValues_OverlayNames,
+        .onOptionChange = Lab_ChangeOverlays,
     },
     {
         .option_kind = OPTKIND_STRING,
@@ -1922,6 +1923,7 @@ static EventOption LabOptions_OverlaysDefault[OVERLAY_COUNT] = {
         .option_name = "Hitstun",
         .desc = "",
         .option_values = LabValues_OverlayNames,
+        .onOptionChange = Lab_ChangeOverlays,
     },
     {
         .option_kind = OPTKIND_STRING,
@@ -1929,6 +1931,7 @@ static EventOption LabOptions_OverlaysDefault[OVERLAY_COUNT] = {
         .option_name = "Invincible",
         .desc = "",
         .option_values = LabValues_OverlayNames,
+        .onOptionChange = Lab_ChangeOverlays,
     },
     {
         .option_kind = OPTKIND_STRING,
@@ -1936,6 +1939,7 @@ static EventOption LabOptions_OverlaysDefault[OVERLAY_COUNT] = {
         .option_name = "Ledge Actionable",
         .desc = "",
         .option_values = LabValues_OverlayNames,
+        .onOptionChange = Lab_ChangeOverlays,
     },
     {
         .option_kind = OPTKIND_STRING,
@@ -1943,6 +1947,7 @@ static EventOption LabOptions_OverlaysDefault[OVERLAY_COUNT] = {
         .option_name = "Missed L-Cancel",
         .desc = "",
         .option_values = LabValues_OverlayNames,
+        .onOptionChange = Lab_ChangeOverlays,
     },
     {
         .option_kind = OPTKIND_STRING,
@@ -1950,6 +1955,7 @@ static EventOption LabOptions_OverlaysDefault[OVERLAY_COUNT] = {
         .option_name = "Can Fastfall",
         .desc = "",
         .option_values = LabValues_OverlayNames,
+        .onOptionChange = Lab_ChangeOverlays,
     },
     {
         .option_kind = OPTKIND_STRING,
@@ -1957,6 +1963,7 @@ static EventOption LabOptions_OverlaysDefault[OVERLAY_COUNT] = {
         .option_name = "Autocancel",
         .desc = "",
         .option_values = LabValues_OverlayNames,
+        .onOptionChange = Lab_ChangeOverlays,
     },
     {
         .option_kind = OPTKIND_STRING,
@@ -1964,6 +1971,7 @@ static EventOption LabOptions_OverlaysDefault[OVERLAY_COUNT] = {
         .option_name = "Crouch",
         .desc = "",
         .option_values = LabValues_OverlayNames,
+        .onOptionChange = Lab_ChangeOverlays,
     },
     {
         .option_kind = OPTKIND_STRING,
@@ -1971,6 +1979,7 @@ static EventOption LabOptions_OverlaysDefault[OVERLAY_COUNT] = {
         .option_name = "Wait",
         .desc = "",
         .option_values = LabValues_OverlayNames,
+        .onOptionChange = Lab_ChangeOverlays,
     },
     {
         .option_kind = OPTKIND_STRING,
@@ -1978,6 +1987,7 @@ static EventOption LabOptions_OverlaysDefault[OVERLAY_COUNT] = {
         .option_name = "Walk",
         .desc = "",
         .option_values = LabValues_OverlayNames,
+        .onOptionChange = Lab_ChangeOverlays,
     },
     {
         .option_kind = OPTKIND_STRING,
@@ -1985,6 +1995,7 @@ static EventOption LabOptions_OverlaysDefault[OVERLAY_COUNT] = {
         .option_name = "Dash",
         .desc = "",
         .option_values = LabValues_OverlayNames,
+        .onOptionChange = Lab_ChangeOverlays,
     },
     {
         .option_kind = OPTKIND_STRING,
@@ -1992,6 +2003,7 @@ static EventOption LabOptions_OverlaysDefault[OVERLAY_COUNT] = {
         .option_name = "Run",
         .desc = "",
         .option_values = LabValues_OverlayNames,
+        .onOptionChange = Lab_ChangeOverlays,
     },
     {
         .option_kind = OPTKIND_STRING,
@@ -1999,6 +2011,7 @@ static EventOption LabOptions_OverlaysDefault[OVERLAY_COUNT] = {
         .option_name = "Double Jump",
         .desc = "",
         .option_values = LabValues_OverlayNames,
+        .onOptionChange = Lab_ChangeOverlays,
     },
     {
         .option_kind = OPTKIND_STRING,
@@ -2006,6 +2019,7 @@ static EventOption LabOptions_OverlaysDefault[OVERLAY_COUNT] = {
         .option_name = "Full Hop",
         .desc = "",
         .option_values = LabValues_OverlayNames,
+        .onOptionChange = Lab_ChangeOverlays,
     },
     {
         .option_kind = OPTKIND_STRING,
@@ -2013,6 +2027,7 @@ static EventOption LabOptions_OverlaysDefault[OVERLAY_COUNT] = {
         .option_name = "Short Hop",
         .desc = "",
         .option_values = LabValues_OverlayNames,
+        .onOptionChange = Lab_ChangeOverlays,
     },
     {
         .option_kind = OPTKIND_STRING,
@@ -2020,6 +2035,7 @@ static EventOption LabOptions_OverlaysDefault[OVERLAY_COUNT] = {
         .option_name = "IASA",
         .desc = "",
         .option_values = LabValues_OverlayNames,
+        .onOptionChange = Lab_ChangeOverlays,
     },
 };
 

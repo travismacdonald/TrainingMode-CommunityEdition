@@ -25,6 +25,14 @@ enum LanguageKind
 };
 
 /*** Structs ***/
+
+// Aitch: This is a custom (non-melee) struct used by TM to save overlays.
+// Is there a better place to put this?
+typedef struct OverlaySave {
+    u8 group;   // OverlayGroup
+    u8 overlay; // idx into LabValues_OverlayColours
+} OverlaySave;
+
 struct Memcard
 {
     int unk0;              // 0x0
@@ -2028,14 +2036,10 @@ struct Memcard
     u8 TM_EventPage;       // 0x1F29
     u8 TM_OSDRecommended;  // 0x1F2A
     u8 TM_LabFrameAdvanceButton;  // 0x1F2B
-    int unk1995;           // 0x1F2C
-    int unk1996;           // 0x1F30
-    int unk1997;           // 0x1F34
-    int unk1998;           // 0x1F38
-    int unk1999;           // 0x1F3C
-    int unk2000;           // 0x1F40
-    int unk2001;           // 0x1F44
-    int unk2002;           // 0x1F48
+
+    // We only save a max of 8 overlays.
+    OverlaySave TM_LabSavedOverlays_HMN[8]; // 0x1F2C
+    OverlaySave TM_LabSavedOverlays_CPU[8]; // 0x1F3C
     int unk2003;           // 0x1F4C
     int unk2004;           // 0x1F50
     int unk2005;           // 0x1F54
