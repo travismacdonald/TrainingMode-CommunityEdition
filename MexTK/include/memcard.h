@@ -2035,12 +2035,15 @@ struct Memcard
     u8 TM_OSDMax;          // 0x1F28
     u8 TM_EventPage;       // 0x1F29
     u8 TM_OSDRecommended;  // 0x1F2A
-    u8 TM_LabFrameAdvanceButton;  // 0x1F2B
+    u8 TM_LabFrameAdvanceButton;    // 0x1F2B
+    u8 TM_LabCPUCounterGround;      // 0x1F2C
+    u8 TM_LabCPUCounterAir;         // 0x1F2D
+    u8 TM_LabCPUCounterShield;      // 0x1F2E
+    u8 TM_LabCPUInputDisplay;       // 0x1F2F
 
     // We only save a max of 8 overlays.
-    OverlaySave TM_LabSavedOverlays_HMN[8]; // 0x1F2C
-    OverlaySave TM_LabSavedOverlays_CPU[8]; // 0x1F3C
-    int unk2003;           // 0x1F4C
+    OverlaySave TM_LabSavedOverlays_HMN[8]; // 0x1F30
+    OverlaySave TM_LabSavedOverlays_CPU[8]; // 0x1F40
     int unk2004;           // 0x1F50
     int unk2005;           // 0x1F54
     int unk2006;           // 0x1F58

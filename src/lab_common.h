@@ -362,6 +362,10 @@ void Event_Think(GOBJ *event);
 
 void Button_Think(GOBJ *button_gobj);
 
+void Lab_ChangeInputDisplay(GOBJ *menu_gobj, int value);
+void Lab_ChangeCounterAction_Ground(GOBJ *menu_gobj, int value);
+void Lab_ChangeCounterAction_Air(GOBJ *menu_gobj, int value);
+void Lab_ChangeCounterAction_Shield(GOBJ *menu_gobj, int value);
 void Lab_ChangeOverlays(GOBJ *menu_gobj, int value);
 void Lab_StartMoveCPU(GOBJ *menu_gobj);
 void Lab_FinishMoveCPU(GOBJ *menu_gobj);

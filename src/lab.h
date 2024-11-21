@@ -882,6 +882,7 @@ static EventOption LabOptions_General[OPTGEN_COUNT] = {
         .option_name = "Input Display",
         .desc = "Display player inputs onscreen.",
         .option_values = LabOptions_ShowInputs,
+        .onOptionChange = Lab_ChangeInputDisplay,
     },
     {
         .option_kind = OPTKIND_STRING,
@@ -1364,6 +1365,7 @@ static EventOption LabOptions_CPU[OPTCPU_COUNT] = {
         .option_name = "Counter Action (Ground)",
         .desc = "Select the action to be performed after a\ngrounded CPU's hitstun ends.",
         .option_values = LabValues_CounterGround,
+        .onOptionChange = Lab_ChangeCounterAction_Ground,
     },
     {
         .option_kind = OPTKIND_STRING,
@@ -1372,6 +1374,7 @@ static EventOption LabOptions_CPU[OPTCPU_COUNT] = {
         .option_name = "Counter Action (Air)",
         .desc = "Select the action to be performed after an\nairborne CPU's hitstun ends.",
         .option_values = LabValues_CounterAir,
+        .onOptionChange = Lab_ChangeCounterAction_Air,
     },
     {
         .option_kind = OPTKIND_STRING,
@@ -1380,6 +1383,7 @@ static EventOption LabOptions_CPU[OPTCPU_COUNT] = {
         .option_name = "Counter Action (Shield)",
         .desc = "Select the action to be performed after the\nCPU's shield is hit.",
         .option_values = LabValues_CounterShield,
+        .onOptionChange = Lab_ChangeCounterAction_Shield,
     },
     {
         .option_kind = OPTKIND_INT,
