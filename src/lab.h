@@ -60,6 +60,11 @@ enum custom_asid_groups
     ASID_ANY,
 };
 
+typedef enum lab_state {
+    LabState_Normal,
+    LabState_SetCPUPosition,
+} LabState;
+
 // ACTIONS #################################################
 
 // CPU Action Definitions
@@ -1201,6 +1206,7 @@ enum cpu_option
     OPTCPU_CTRFRAMES,
     OPTCPU_CTRHITS,
     OPTCPU_SHIELDHITS,
+    OPTCPU_SET_POS,
 
     OPTCPU_COUNT
 };
@@ -1241,6 +1247,20 @@ static char *LabValues_Tech[] = {"Random", "Neutral", "Away", "Towards", "None"}
 static char *LabValues_Getup[] = {"Random", "Stand", "Away", "Towards", "Attack"};
 static char *LabValues_GrabEscape[] = {"None", "Medium", "High", "Perfect"};
 static char *LabValues_LockCPUPercent[] = {"Off", "On"};
+
+static const EventOption LabOptions_CPU_MoveCPU = {
+    .option_kind = OPTKIND_FUNC,
+    .option_name = "Move CPU",
+    .desc = "Manually set the CPU's position.",
+    .onOptionSelect = Lab_StartMoveCPU,
+};
+
+static const EventOption LabOptions_CPU_FinishMoveCPU = {
+    .option_kind = OPTKIND_FUNC,
+    .option_name = "Finish Moving CPU",
+    .desc = "Finish setting the CPU's position.",
+    .onOptionSelect = Lab_FinishMoveCPU,
+};
 
 static EventOption LabOptions_CPU[OPTCPU_COUNT] = {
     {
@@ -1384,6 +1404,9 @@ static EventOption LabOptions_CPU[OPTCPU_COUNT] = {
         .desc = "Adjust the amount of hits the CPU's shield\nwill take before they counter.",
         .option_values = "%d Hits",
     },
+
+    // swapped between LabOptions_CPU_MoveCPU and LabOptions_CPU_FinishMoveCPU
+    LabOptions_CPU_MoveCPU,
 };
 
 static EventMenu LabMenu_CPU = {
