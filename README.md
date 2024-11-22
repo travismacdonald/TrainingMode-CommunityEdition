@@ -11,7 +11,9 @@ Join [the discord](https://discord.gg/2Khb8CVP7A) to discuss changes, new featur
 ## Changes From the Original
 - Global Changes:
     - Updated to UCF 0.84 (Allows practicing with dashback out of crouch).
-    - Hitboxes are now colored by ID.
+    - Hitboxes are now colored by ID and sorted by priority.
+    - Wavedash OSD now shows if it was a short hop or full hop.
+    - Added glide toss, aerial out of double jump, special out of jump, and double jump out of jump OSDs.
 - New Training Lab Features:
     - Recording:
         - Reworked recording UI. Allows re-saveing existing recordings with different percents or positioning.
@@ -20,10 +22,12 @@ Join [the discord](https://discord.gg/2Khb8CVP7A) to discuss changes, new featur
         - Option to auto-restore state when the CPU performs a counter action.
         - Takeover HMN playback at any point.
         - Press DPad left/right when browsing savestates to quickly change pages.
+        - Taunt is disabled by default.
         - Savestates can now always be saved. (May cause crashes if you save during special moves).
     - CPU Options:
         - Random custom DI option. The CPU will pick a random option from your custom TDI.
         - CPU Shield angling options.
+        - Added Wavedash counter actions.
         - Tech animations can be set invisible after they are distinguishable.
         - Added usmash OoS and all specials moves as counter actions.
         - All special moves can be used as counter actions.
@@ -32,6 +36,7 @@ Join [the discord](https://discord.gg/2Khb8CVP7A) to discuss changes, new featur
         - SDI is now set by number of inputs rather than by chance.
         - SDI and mashing are set to none by default.
     - Other Changes:
+        - Game speed option.
         - Color overlays.
         - Lock percents.
         - Hazard toggle.
