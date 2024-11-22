@@ -100,17 +100,14 @@ Have some specific tech you want to train? Find a bug that's been annoying you? 
     - There are a lot of random loads from random offsets there. If it's not listed in the ASM readme then I don't know what it is.
 - If you want to make a new event (A little tricky):
     - Add a file and header to the `src/`.
-    - Create a dat file in `dats/`.
-        - This is a little annoying.
-        - If you don't want any fancy features, just a pause menu, copy `lcancel.dat` as your dat file.
-            - **You will need to use [HSDRaw](https://github.com/Ploaj/HSDLib) to modify the internal name.**
-        - If you want other assets, you can use HSDRaw to add new objects to the dat file, or copy them from the other events.
+    - Use HSDRaw to create an empty dat file in `dats/` with a single root.
+        - If you want other assets, you can use HSDRaw to add new objects to that root, or copy them from the other events. Peek into the other dat files to see how this is done.
     - Add the required compilation steps in `Makefile` and `build_windows.bat`. Follow the same structure as the other events. Be sure to use the evFunction mode.
     - Add the `EventDesc` and `EventMatchData` structs to `events.c` and add a reference to them in the `General_Events`, `Minigames_Events`, or `Spacie_Events` array.
     - Ask Clown in the discord on what to do when something inevitably goes wrong (work to simplify making a new event is in progress!). 
     - Implement the `Event_Init`, `Event_Update`, `Event_Think` methods and `Event_Menu` pointer in your c file. Poke around the other events to figure out how the data flows.
     - Create an `EventMatchData` and `EventDesc` struct for the new event near the top of `events.c`.
-    - Add a `.long 0` spacer word to the event jump list table for the page the event will be on in `Custom Event Code - Rewrite.asm`.
+    - Add a `.long 0` spacer word to the event jump list table (right after the `EventJumpTable` macro) for the page the event will be on in `Custom Event Code - Rewrite.asm`.
     - In `ASM/training-mode/Global.s`, increment `X.NumOfEvents` (where X is the name of the page it's on).
       Also, increment the event index for each legacy event on that page so they are pushed down in the menu.
 
@@ -119,6 +116,7 @@ Have some specific tech you want to train? Find a bug that's been annoying you? 
 ## Debugging tips
 - Set `TM_DEBUG` to 2 in events.h to get OSReport statements on the screen.
 - **Use the dolphin debugger!** Make sure you have the latest version of dolphin for debugging.
-    - Be sure to load GTME01.map with Symbols->Load Other Map File.
+    - To set a breakpoint, use the `bp()` fn call in C or the `SetBreakpoint` macro in ASM (which will clobber r3). Then when you boot up dolphin, put a breakpoint on the `bp` symbol.
+    - **Be sure to load GTME01.map with Symbols->Load Other Map File!**
 
 Feel free to DM me on discord (alex_aitch) or twitter (@rwing_aitch) for help!
