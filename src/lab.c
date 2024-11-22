@@ -3695,20 +3695,22 @@ void Record_ChangeHMNMode(GOBJ *menu_gobj, int value)
         LabOptions_Record[OPTREC_LOOP].disable = 1;
         LabOptions_Record[OPTREC_AUTORESTORE].option_val = AUTORESTORE_NONE;
         LabOptions_Record[OPTREC_AUTORESTORE].disable = 1;
-
-        int is_mirrored_playback_turned_off = LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].option_val;
-        LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].option_val = 0;
-        LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].disable = 1;
-        if (is_mirrored_playback_turned_off)
-        {
-            Record_LoadSavestate();
-        }
     }
     else
     {
-        LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].disable = 0;
         LabOptions_Record[OPTREC_LOOP].disable = 0;
         LabOptions_Record[OPTREC_AUTORESTORE].disable = 0;
+    }
+
+    // Mirrored Playback is only available in playing back and not in recording
+    if ((value == RECMODE_HMN_PLAYBACK || LabOptions_Record[OPTREC_CPUMODE].option_val == RECMODE_CPU_PLAYBACK) &&
+        (value != RECMODE_HMN_RECORD && LabOptions_Record[OPTREC_CPUMODE].option_val != RECMODE_CPU_RECORD))
+    {
+        LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].disable = 0;
+    }
+    else
+    {
+        LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].disable = 1;
     }
 
     return;
@@ -3736,21 +3738,41 @@ void Record_ChangeCPUMode(GOBJ *menu_gobj, int value)
         LabOptions_Record[OPTREC_LOOP].disable = 1;
         LabOptions_Record[OPTREC_AUTORESTORE].option_val = AUTORESTORE_NONE;
         LabOptions_Record[OPTREC_AUTORESTORE].disable = 1;
-
-        int is_mirrored_playback_turned_off = LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].option_val;
-        LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].option_val = 0;
-        LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].disable = 1;
-        if (is_mirrored_playback_turned_off)
-        {
-            Record_LoadSavestate();
-        }
     }
     else
     {
-        LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].disable = 0;
         LabOptions_Record[OPTREC_LOOP].disable = 0;
         LabOptions_Record[OPTREC_AUTORESTORE].disable = 0;
     }
+
+    // Mirrored Playback is only available in playing back and not in recording
+    if ((value == RECMODE_CPU_PLAYBACK || LabOptions_Record[OPTREC_HMNMODE].option_val == RECMODE_HMN_PLAYBACK) &&
+        (value != RECMODE_CPU_RECORD && LabOptions_Record[OPTREC_HMNMODE].option_val != RECMODE_HMN_RECORD))
+    {
+        LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].disable = 0;
+    }
+    else
+    {
+        LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].disable = 1;
+    }
+
+    return;
+}
+void Record_ChangeMirroredPlayback(GOBJ *menu_gobj, int value)
+{
+    // Cannot change HMN/CPU Mode while mirrored playback is on
+    if (value == 1)
+    {
+        LabOptions_Record[OPTREC_HMNMODE].disable = 1;
+        LabOptions_Record[OPTREC_CPUMODE].disable = 1;
+    }
+    else
+    {
+        LabOptions_Record[OPTREC_HMNMODE].disable = 0;
+        LabOptions_Record[OPTREC_CPUMODE].disable = 0;
+    }
+
+    Record_LoadSavestate();
 
     return;
 }
@@ -3777,16 +3799,6 @@ int Record_GetRandomSlot(RecInputData **input_data, EventOption slot_menu[])
     }
 
     return 0;
-}
-void Record_ChangeMirroredPlayback(GOBJ *menu_gobj, int value)
-{
-    if ((LabOptions_Record[OPTREC_HMNMODE].option_val == RECMODE_HMN_PLAYBACK || LabOptions_Record[OPTREC_CPUMODE].option_val == RECMODE_CPU_PLAYBACK) &&
-        (LabOptions_Record[OPTREC_HMNMODE].option_val != RECMODE_HMN_RECORD && LabOptions_Record[OPTREC_CPUMODE].option_val != RECMODE_CPU_RECORD))
-    {
-        Record_LoadSavestate();
-    }
-
-    return;
 }
 int Record_GetCurrFrame()
 {
@@ -3844,6 +3856,11 @@ void Record_OnSuccessfulSave(int deleteRecordings)
     // enable other options
     for (int i = 0; i < sizeof(LabOptions_Record) / sizeof(EventOption); i++)
     {
+        if (i == OPTREC_MIRRORED_PLAYBACK ||
+            (i == OPTREC_HMNMODE && LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].option_val == 1) ||
+            (i == OPTREC_CPUMODE && LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].option_val == 1))
+          continue;
+
         LabOptions_Record[i].disable = 0;
     }
 
@@ -3865,6 +3882,8 @@ void Record_OnSuccessfulSave(int deleteRecordings)
         LabOptions_Record[OPTREC_HMNSLOT].option_val = 1; // set hmn to slot 1
         LabOptions_Record[OPTREC_CPUMODE].option_val = RECMODE_CPU_OFF;
         LabOptions_Record[OPTREC_CPUSLOT].option_val = 1; // set cpu to slot 1
+        LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].option_val = 0;
+        LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].disable = 1;
     }
 
     // also save to personal savestate

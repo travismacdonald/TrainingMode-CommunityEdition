@@ -1833,7 +1833,7 @@ static EventOption LabOptions_Record[OPTREC_COUNT] = {
         .option_kind = OPTKIND_STRING,
         .value_num = sizeof(LabOptions_OffOn) / 4,
         .option_name = "Mirrored Playback",
-        .desc = "Playback with mirrored the recorded inputs, \npositions and facing directions.\n＊ This works properly only on symmetrical \nstages.",
+    	.desc = "Playback with mirrored the recorded inputs,\npositions and facing directions.\n(!) This works properly only on symmetrical \nstages.",
         .option_values = LabOptions_OffOn,
         .onOptionChange = Record_ChangeMirroredPlayback,
     },
