@@ -1758,6 +1758,7 @@ enum rec_option
    OPTREC_HMNSLOT,
    OPTREC_CPUMODE,
    OPTREC_CPUSLOT,
+   OPTREC_MIRRORED_PLAYBACK,
    OPTREC_LOOP,
    OPTREC_AUTORESTORE,
    OPTREC_RESAVE,
@@ -1827,6 +1828,14 @@ static EventOption LabOptions_Record[OPTREC_COUNT] = {
         .desc = "Toggle which recording slot to save inputs \nto. Maximum of 6 and can be set to random \nduring playback.",
         .option_values = LabValues_RecordSlot,
         .onOptionChange = Record_ChangeCPUSlot,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabOptions_OffOn) / 4,
+        .option_name = "Mirrored Playback",
+        .desc = "Playback with mirrored the recorded inputs, \npositions and facing directions.\n＊ This works properly only on symmetrical \nstages.",
+        .option_values = LabOptions_OffOn,
+        .onOptionChange = Record_ChangeMirroredPlayback,
     },
     {
         .option_kind = OPTKIND_STRING,

@@ -412,6 +412,7 @@ void Record_ChangeCPUSlot(GOBJ *menu_gobj, int value);
 void Record_ChangeHMNMode(GOBJ *menu_gobj, int value);
 void Record_ChangeCPUMode(GOBJ *menu_gobj, int value);
 void Record_ChangeSlot(GOBJ *menu_gobj, int value);
+void Record_ChangeMirroredPlayback(GOBJ *menu_gobj, int value);
 void Record_MemcardSave(GOBJ *menu_gobj);
 void Record_MemcardLoad(int slot, int file_no);
 void Record_InitState(GOBJ *menu_gobj);
