@@ -2119,37 +2119,6 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
             fighter = fighter->next;
         }
     }
-
-    // update shield deterioration
-    int infShield = LabOptions_CPU[OPTCPU_SHIELD].option_val;
-    if (infShield == 1)
-    {
-        if (eventData->cpu_hitshield == 0)
-        {
-            // inf shield
-            GOBJ *fighter = gobj_lookup[MATCHPLINK_FIGHTER];
-            while (fighter != 0)
-            {
-                FighterData *fighter_data = fighter->userdata;
-                fighter_data->shield.health = 60;
-                fighter = fighter->next;
-            }
-        }
-    }
-    else if (infShield == 2)
-    {
-        // inf shield
-        GOBJ *fighter = gobj_lookup[MATCHPLINK_FIGHTER];
-        while (fighter != 0)
-        {
-            FighterData *fighter_data = fighter->userdata;
-            fighter_data->shield.health = 60;
-
-            fighter = fighter->next;
-        }
-    }
-
-    return;
 }
 int Update_CheckPause()
 {
@@ -5488,6 +5457,9 @@ void Event_Init(GOBJ *gobj)
     {
         Record_MemcardLoad(*onload_slot, *onload_fileno);
         LabOptions_Record[OPTREC_SAVE_LOAD] = Record_Load;
+
+        // When we load rwing savestates, we don't want infinite shields by default. This would cause desyncs galore.
+        LabOptions_CPU[OPTCPU_SHIELD].option_val = CPUINFSHIELD_OFF;
     }
 
     // Aitch: VERY nice for debugging. Please don't remove.
@@ -5858,6 +5830,23 @@ void Event_Think(GOBJ *event)
                     SFX_PlayCommon(1);
             }
         }
+    }
+
+    // update shield deterioration
+    switch (LabOptions_CPU[OPTCPU_SHIELD].option_val)
+    {
+        case CPUINFSHIELD_OFF:
+            break;
+        case CPUINFSHIELD_UNTIL_HIT:
+            if (eventData->cpu_hitshield == 0) {
+                hmn_data->shield.health = 60;
+                cpu_data->shield.health = 60;
+            }
+            break;
+        case CPUINFSHIELD_ON:
+            cpu_data->shield.health = 60;
+            hmn_data->shield.health = 60;
+            break;
     }
 
     switch (lab_state) {

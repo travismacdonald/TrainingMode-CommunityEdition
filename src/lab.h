@@ -1186,6 +1186,14 @@ enum cpu_mash
     CPUMASH_COUNT
 };
 
+enum cpu_inf_shield {
+    CPUINFSHIELD_OFF,
+    CPUINFSHIELD_UNTIL_HIT,
+    CPUINFSHIELD_ON,
+
+    CPUINFSHIELD_COUNT
+};
+
 enum cpu_option
 {
     OPTCPU_PCNT,
