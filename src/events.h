@@ -347,7 +347,7 @@ typedef struct EventVars
     int game_timer;                                                                          // amount of game frames passed
     u8 hide_menu;                                                                            // enable this to hide the base menu. used for custom menus.
     int (*Savestate_Save)(Savestate *savestate);                                             // function pointer to save state
-    int (*Savestate_Load)(Savestate *savestate);                                             // function pointer to load state
+    int (*Savestate_Load)(Savestate *savestate, int is_mirrored);                            // function pointer to load state
     GOBJ *(*Message_Display)(int msg_kind, int queue_num, int msg_color, char *format, ...); // function pointer to display message
     int *(*Tip_Display)(int lifetime, char *fmt, ...);
     void (*Tip_Destroy)();      // function pointer to destroy tip
@@ -368,7 +368,7 @@ void EventMenu_Draw(GOBJ *eventMenu);
 int Text_AddSubtextManual(Text *text, char *string, int posx, int posy, int scalex, int scaley);
 EventMenu *EventMenu_GetCurrentMenu(GOBJ *gobj);
 int Savestate_Save(Savestate *savestate);
-int Savestate_Load(Savestate *savestate);
+int Savestate_Load(Savestate *savestate, int is_mirrored);
 void Update_Savestates();
 int GOBJToID(GOBJ *gobj);
 int FtDataToID(FighterData *fighter_data);
