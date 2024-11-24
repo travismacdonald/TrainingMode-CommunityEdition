@@ -257,7 +257,7 @@ static EventMatchData AttackOnShield_MatchData = {
 };
 EventDesc AttackOnShield = {
     .eventName = "Attack on Shield\n",
-    .eventDescription = "Practice attacks on a shielding opponent\nPause to change their OoS option\n",
+    .eventDescription = "Practice attacks on a shielding opponent\nPause to change their OoS option.\n",
     .eventFile = 0,
     .isChooseCPU = true,
     .isSelectStage = false,
@@ -299,7 +299,7 @@ static EventMatchData Reversal_MatchData = {
 };
 EventDesc Reversal = {
     .eventName = "Reversal Training\n",
-    .eventDescription = "Practice OoS punishes! DPad left/right\nmoves characters close and further apart.",
+    .eventDescription = "Practice OoS punishes! DPad left/right\nmoves characters closer and further apart.",
     .eventFile = 0,
     .isChooseCPU = true,
     .isSelectStage = true,
@@ -340,7 +340,7 @@ static EventMatchData SDI_MatchData = {
 };
 EventDesc SDI = {
     .eventName = "SDI Training\n",
-    .eventDescription = "Use Smash DI to escape\nFox's up-air attack!",
+    .eventDescription = "Use Smash DI to escape\nFox's up-air!",
     .eventFile = 0,
     .isChooseCPU = false,
     .isSelectStage = false,
@@ -382,7 +382,7 @@ static EventMatchData Powershield_MatchData = {
 };
 EventDesc Powershield = {
     .eventName = "Powershield Training\n",
-    .eventDescription = "Powershield Falco's laser!\nPause to change to fire-rate.",
+    .eventDescription = "Powershield Falco's laser!\nPause to change fire-rate.",
     .eventFile = 0,
     .isChooseCPU = false,
     .isSelectStage = false,
@@ -423,7 +423,7 @@ static EventMatchData Ledgetech_MatchData = {
 };
 EventDesc Ledgetech = {
     .eventName = "Ledge-Tech Training\n",
-    .eventDescription = "Practice ledge-teching\nFalco's down-smash",
+    .eventDescription = "Practice ledge-teching\nFalco's down-smash!",
     .eventFile = 0,
     .isChooseCPU = false,
     .isSelectStage = true,
@@ -1018,7 +1018,7 @@ static EventDesc *Spacie_Events[] = {
     &EscapeSheik,
 };
 static EventPage Spacie_Page = {
-    .name = "Spacie Tech",
+    .name = "Character-specific Tech",
     (sizeof(Spacie_Events) / 4) - 1,
     Spacie_Events,
 };
