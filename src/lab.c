@@ -3339,6 +3339,9 @@ void Record_Think(GOBJ *rec_gobj)
 {
     if (rec_state->is_exist != 1) return;
 
+    GOBJ *cpu = Fighter_GetGObj(1);
+    FighterData *cpu_data = cpu->userdata;
+
     // get current hmn recording slot
     int hmn_slot = LabOptions_Record[OPTREC_HMNSLOT].option_val;
     if (hmn_slot == 0) // use random slot
@@ -3408,8 +3411,10 @@ void Record_Think(GOBJ *rec_gobj)
             }
             case (AUTORESTORE_COUNTER):
             {
-                if (cpu_mode == RECMODE_CPU_OFF)
-                    restore = event_data->cpu_countering;
+                if (cpu_mode == RECMODE_CPU_OFF) {
+                    int state = cpu_data->state_id;
+                    restore = event_data->cpu_countering || (ASID_DEADDOWN <= state && state <= ASID_DEADUPFALLHITCAMERAICE);
+                }
                 break;
             }
         }
