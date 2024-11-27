@@ -79,8 +79,6 @@ void Event_Init(GOBJ *gobj)
     EventDesc *event_desc = event_data->event_desc;
     GOBJ *hmn = Fighter_GetGObj(0);
     FighterData *hmn_data = hmn->userdata;
-    //GOBJ *cpu = Fighter_GetGObj(1);
-    //FighterData *cpu_data = cpu->userdata;
 
     // theres got to be a better way to do this...
     event_vars = *event_vars_ptr;
@@ -104,118 +102,10 @@ void Event_Think(GOBJ *event)
     // get fighter data
     GOBJ *hmn = Fighter_GetGObj(0);
     FighterData *hmn_data = hmn->userdata;
-    //GOBJ *cpu = Fighter_GetGObj(1);
-    //FighterData *cpu_data = cpu->userdata;
     HSD_Pad *pad = PadGet(hmn_data->pad_index, PADGET_ENGINE);
 
-    /*
-    // give intangibility to cpu
-    cpu_data->flags.no_reaction_always = 1;
-    cpu_data->flags.nudge_disable = 1;
-    Fighter_ApplyOverlay(cpu_data, 9, 0);
-    Fighter_UpdateOverlay(cpu);
-    cpu_data->dmg.percent = 0;
-    Fighter_SetHUDDamage(cpu_data->ply, 0);
-
-
-    // Move CPU
-    if (pad->down == PAD_BUTTON_DPAD_DOWN)
-    {
-        // ensure player is grounded
-        int is_ground = 0;
-        if (hmn_data->phys.air_state == 0)
-        {
-
-            // check for ground in front of player
-            Vec3 coll_pos;
-            int line_index;
-            int line_kind;
-            Vec3 line_unk;
-            float from_x = (hmn_data->phys.pos.X) + (hmn_data->facing_direction * 16);
-            float to_x = from_x;
-            float from_y = (hmn_data->phys.pos.Y + 5);
-            float to_y = from_y - 10;
-            is_ground = GrColl_RaycastGround(&coll_pos, &line_index, &line_kind, &line_unk, -1, -1, -1, 0, from_x, from_y, to_x, to_y, 0);
-            if (is_ground == 1)
-            {
-
-                // do this for every subfighter (thanks for complicated code ice climbers)
-                int is_moved = 0;
-                for (int i = 0; i < 2; i++)
-                {
-                    GOBJ *this_fighter = Fighter_GetSubcharGObj(cpu_data->ply, i);
-
-                    if (this_fighter != 0)
-                    {
-
-                        FighterData *this_fighter_data = this_fighter->userdata;
-
-                        if ((this_fighter_data->flags.sleep == 0) && (this_fighter_data->flags.dead == 0))
-                        {
-
-                            is_moved = 1;
-
-                            // place CPU here
-                            this_fighter_data->phys.pos = coll_pos;
-                            this_fighter_data->coll_data.ground_index = line_index;
-
-                            // facing player
-                            this_fighter_data->facing_direction = hmn_data->facing_direction * -1;
-
-                            // update camera box
-                            Fighter_UpdateCameraBox(this_fighter);
-                            this_fighter_data->camera_subject->boundleft_curr = this_fighter_data->camera_subject->boundleft_proj;
-                            this_fighter_data->camera_subject->boundright_curr = this_fighter_data->camera_subject->boundright_proj;
-
-                            // set grounded
-                            this_fighter_data->phys.air_state = 0;
-                            //Fighter_SetGrounded(this_fighter);
-
-                            // kill velocity
-                            Fighter_KillAllVelocity(this_fighter);
-
-                            // enter wait
-                            Fighter_EnterWait(this_fighter);
-
-                            // update ECB
-                            this_fighter_data->coll_data.topN_Curr = this_fighter_data->phys.pos; // move current ECB location to new position
-                            Coll_ECBCurrToPrev(&this_fighter_data->coll_data);
-                            this_fighter_data->cb.Coll(this_fighter);
-
-                            // init CPU logic (for nana's popo position history...)
-                            int cpu_kind = Fighter_GetCPUKind(this_fighter_data->ply);
-                            int cpu_level = Fighter_GetCPULevel(this_fighter_data->ply);
-                            Fighter_CPUInitialize(this_fighter_data, cpu_kind, cpu_level, 0);
-
-                            // place subfighter in the Z axis
-                            if (this_fighter_data->flags.ms == 1)
-                            {
-                                ftCommonData *ft_common = *stc_ftcommon;
-                                this_fighter_data->phys.pos.Z = ft_common->ms_zjostle_max * -1;
-                            }
-                        }
-                    }
-                }
-
-                if (is_moved == 1)
-                {
-                    // savestate
-                    event_vars->Savestate_Save(event_vars->savestate);
-                }
-            }
-        }
-
-        // play SFX
-        if (is_ground == 0)
-        {
-            SFX_PlayCommon(3);
-        }
-        else
-        {
-            SFX_Play(221);
-        }
-    }
-    */
+    // set infinite shields
+    hmn_data->shield.health = 60;
 
     LCancel_Think(event_data, hmn_data);
     Barrel_Think(event_data);
@@ -258,15 +148,6 @@ void LCancel_Init(LCancelData *event_data)
     JOBJ *hud_jobj = JOBJ_LoadJoint(event_data->lcancel_assets->hud);
     GObj_AddObject(hud_gobj, 3, hud_jobj);
     GObj_AddGXLink(hud_gobj, GXLink_Common, 18, 80);
-
-    /*
-    // account for widescreen
-    float aspect = (hud_cobj->projection_param.perspective.aspect / 1.216667) - 1;
-    JOBJ *this_jobj;
-    JOBJ_GetChild(hud_jobj, &this_jobj, 1, -1);
-    this_jobj->trans.X += (this_jobj->trans.X * aspect);
-    JOBJ_SetMtxDirtySub(hud_jobj);
-    */
 
     // create text canvas
     int canvas = Text_CreateCanvas(2, hud_gobj, 14, 15, 0, 18, 81, 19);
