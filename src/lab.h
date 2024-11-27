@@ -847,13 +847,13 @@ static EventOption LabOptions_General[OPTGEN_COUNT] = {
         .option_kind = OPTKIND_MENU,
         .menu = &LabMenu_OverlaysHMN,
         .option_name = "HMN Color Overlays",
-        .desc = "Set up color indicators for\n. action states.",
+        .desc = "Set up color indicators for\n action states.",
     },
     {
         .option_kind = OPTKIND_MENU,
         .menu = &LabMenu_OverlaysCPU,
         .option_name = "CPU Color Overlays",
-        .desc = "Set up color indicators for\n. action states.",
+        .desc = "Set up color indicators for\n action states.",
     },
     {
         .option_kind = OPTKIND_STRING,
@@ -1957,7 +1957,7 @@ typedef enum overlay_type
     OVERLAY_WALK,
     OVERLAY_DASH,
     OVERLAY_RUN,
-    OVERLAY_DOUBLEJUMP,
+    OVERLAY_JUMPS_USED,
     OVERLAY_FULLHOP,
     OVERLAY_SHORTHOP,
     OVERLAY_IASA,
@@ -2069,7 +2069,7 @@ static EventOption LabOptions_OverlaysDefault[OVERLAY_COUNT] = {
     {
         .option_kind = OPTKIND_STRING,
         .value_num = OVERLAY_COLOUR_COUNT,
-        .option_name = "Double Jump",
+        .option_name = "Jumps",
         .desc = "",
         .option_values = LabValues_OverlayNames,
         .onOptionChange = Lab_ChangeOverlays,
