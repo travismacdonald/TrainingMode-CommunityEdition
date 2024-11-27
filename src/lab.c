@@ -3415,6 +3415,7 @@ void Record_Think(GOBJ *rec_gobj)
                     int state = cpu_data->state_id;
                     restore = event_data->cpu_countering
                         || (ASID_DEADDOWN <= state && state <= ASID_DEADUPFALLHITCAMERAICE)
+                        // Aitch: temporary hack to reset before we add Counter Action (Ledge) options.
                         || state == ASID_CLIFFWAIT;
                 }
                 break;
