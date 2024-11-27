@@ -3413,7 +3413,9 @@ void Record_Think(GOBJ *rec_gobj)
             {
                 if (cpu_mode == RECMODE_CPU_OFF) {
                     int state = cpu_data->state_id;
-                    restore = event_data->cpu_countering || (ASID_DEADDOWN <= state && state <= ASID_DEADUPFALLHITCAMERAICE);
+                    restore = event_data->cpu_countering
+                        || (ASID_DEADDOWN <= state && state <= ASID_DEADUPFALLHITCAMERAICE)
+                        || state == ASID_CLIFFWAIT;
                 }
                 break;
             }
