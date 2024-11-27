@@ -1,4 +1,5 @@
 #include "lab_common.h"
+#include <stddef.h>
 
 // Static Variables
 static Arch_ImportData *stc_import_assets;
@@ -13,6 +14,9 @@ static GXColor text_white = {255, 255, 255, 255};
 static GXColor text_gold = {255, 211, 0, 255};
 
 static EventDesc *event_desc;
+
+ExportHeader *GetExportHeaderFromCard(int slot, char *fileName, void *buffer);
+int GetSelectedFighterIdOnCssForHmn();
 
 // OnLoad
 void OnCSSLoad(HSD_Archive *archive)
@@ -65,10 +69,14 @@ void Read_Recordings()
 {
     // search card for save files
     import_data.file_num = 0;
+    import_data.hidden_file_num = 0;
     int slot = import_data.memcard_slot;
     char *filename[32];
     int file_size;
     s32 memSize, sectorSize;
+
+    int hmnFighterId = GetSelectedFighterIdOnCssForHmn();
+
     if (CARDProbeEx(slot, &memSize, &sectorSize) == CARD_RESULT_READY)
     {
         // mount card
@@ -86,6 +94,7 @@ void Read_Recordings()
                 s32 byteNotUsed, filesNotUsed;
                 if (CARDFreeBlocks(slot, &byteNotUsed, &filesNotUsed) == CARD_RESULT_READY)
                 {
+                    void *buffer = calloc(CARD_READ_SIZE);
 
                     // search for files with name TMREC
                     for (int i = 0; i < CARD_MAX_FILE; i++)
@@ -101,11 +110,24 @@ void Read_Recordings()
                                 strncmp("TMREC", card_stat.fileName, 5) != 0)
                             continue;
 
+                        if (hmnFighterId != -1)
+                        {
+                            ExportHeader *header = GetExportHeaderFromCard(slot, card_stat.fileName, buffer);
+                            if (header->metadata.hmn != hmnFighterId)
+                            {
+                                import_data.hidden_file_num++;
+                                continue;
+                            }
+                        }
+
                         import_data.file_info[import_data.file_num].file_size = card_stat.length;                                      // save file size
                         import_data.file_info[import_data.file_num].file_no = i;                                                       // save file no
                         memcpy(import_data.file_info[import_data.file_num].file_name, card_stat.fileName, sizeof(card_stat.fileName)); // save file name
                         import_data.file_num++;                                                                                        // increment file amount
                     }
+
+                    // free temp read buffer
+                    HSD_Free(buffer);
                 }
             }
 
@@ -287,6 +309,7 @@ GOBJ *Menu_Create()
     desc_text->viewport_scale.X = (menu_jobj->scale.X * 0.01) * 5;
     desc_text->viewport_scale.Y = (menu_jobj->scale.Y * 0.01) * 5;
     Text_AddSubtext(desc_text, 0, 0, "-");
+    Text_AddSubtext(desc_text, 0, 80, "");
     import_data.desc_text = desc_text;
 
     // disable inputs for CSS
@@ -443,10 +466,15 @@ void Menu_SelCard_Think(GOBJ *menu_gobj)
     }
     Text_SetColor(import_data.option_text, import_data.cursor, &text_gold);
 
-    if (import_data.memcard_inserted[import_data.cursor] == 0)
+    if (import_data.memcard_inserted[import_data.cursor] == 0) {
         Text_SetText(import_data.desc_text, 0, "No device is inserted in Slot %s.", slots_names[import_data.cursor]);
-    else
+    } else {
         Text_SetText(import_data.desc_text, 0, "Load recording from the memory card in Slot %s.", slots_names[import_data.cursor]);
+        int hmnFighterId = GetSelectedFighterIdOnCssForHmn();
+        if (hmnFighterId != -1) {
+            Text_SetText(import_data.desc_text, 1, "(!) Filtered to selected character on CSS.");
+        }
+    }
 
     // check for exit
     if (down & HSD_BUTTON_B)
@@ -551,6 +579,10 @@ void Menu_SelFile_Init(GOBJ *menu_gobj)
 
     // edit description
     Text_SetText(import_data.desc_text, 0, "A = Select   B = Return   X = Delete   Left/Right = Prev/Next Page");
+    if (import_data.hidden_file_num > 0)
+    {
+        Text_SetText(import_data.desc_text, 1, "(!) Filtered to selected character on CSS, %d hidden.", import_data.hidden_file_num);
+    }
 
     // init scroll bar according to import_data.file_num
     int page_total = (import_data.file_num + IMPORT_FILESPERPAGE - 1) / IMPORT_FILESPERPAGE;
@@ -709,11 +741,12 @@ void Menu_SelFile_Think(GOBJ *menu_gobj)
         Menu_Confirm_Init(menu_gobj, kind);
         SFX_PlayCommon(1);
     }
-    
+
     return;
 }
 void Menu_SelFile_Exit(GOBJ *menu_gobj)
 {
+    Text_SetText(import_data.desc_text, 1, "");
     JOBJ_SetFlagsAll(import_data.scroll_jobj, JOBJ_HIDDEN);
     JOBJ_SetFlagsAll(import_data.screenshot_jobj, JOBJ_HIDDEN);
 
@@ -838,26 +871,18 @@ int Menu_SelFile_LoadPage(GOBJ *menu_gobj, int page)
                     int file_no = import_data.file_info[this_file_index].file_no;
 
                     // get comment from card
-                    CARDFileInfo card_file_info;
                     CARDStat card_stat;
 
                     // get status
                     if (CARDGetStatus(slot, file_no, &card_stat) != CARD_RESULT_READY)
                         continue;
-                    // open card (get file info)
-                    if (CARDOpen(slot, file_name, &card_file_info) != CARD_RESULT_READY)
-                        continue;
-                    // try to get header
-                    if (CARDRead(&card_file_info, buffer, CARD_READ_SIZE, 0x1E00) == CARD_RESULT_READY)
-                    {
-                        // deobfuscate stupid melee bullshit
-                        Memcard_Deobfuscate(buffer, CARD_READ_SIZE);
-                        ExportHeader *header = buffer + 0x90; // get to header (need to find a less hardcoded way of doing this)
 
-                        memcpy(&import_data.header[i], header, sizeof(ExportHeader));
-                        Text_SetText(import_data.filename_text, i, header->metadata.filename);
-                    }
-                    CARDClose(&card_file_info);
+                    ExportHeader *header = GetExportHeaderFromCard(slot, file_name, buffer);
+                    if (!header)
+                        continue;
+
+                    memcpy(&import_data.header[i], header, sizeof(ExportHeader));
+                    Text_SetText(import_data.filename_text, i, header->metadata.filename);
                 }
             }
             // unmount
@@ -1110,7 +1135,7 @@ void Menu_Confirm_Think(GOBJ *menu_gobj)
             // HUGE HACK ALERT
             event_desc->isSelectStage = 0;
             event_desc->matchData->stage = stage_kind;
-            *onload_fileno = this_file_index;
+            *onload_fileno = import_data.file_info[this_file_index].file_no;
             *onload_slot = import_data.memcard_slot;
 
             SFX_PlayCommon(1);
@@ -1249,4 +1274,33 @@ void Memcard_Wait()
     }
 
     return;
+}
+ExportHeader *GetExportHeaderFromCard(int slot, char *fileName, void *buffer) {
+    CARDFileInfo card_file_info;
+
+    // open card (get file info)
+    if (CARDOpen(slot, fileName, &card_file_info) != CARD_RESULT_READY) {
+        return NULL;
+    }
+
+    if (CARDRead(&card_file_info, buffer, CARD_READ_SIZE, 0x1E00) != CARD_RESULT_READY) {
+        CARDClose(&card_file_info);
+        return NULL;
+    }
+
+    // deobfuscate stupid melee bullshit
+    Memcard_Deobfuscate(buffer, CARD_READ_SIZE);
+    ExportHeader *header = buffer + 0x90; // get to header (need to find a less hardcoded way of doing this)
+
+    CARDClose(&card_file_info);
+    return header;
+}
+int GetSelectedFighterIdOnCssForHmn() {
+    // Get selected fighter for hmn in CSS
+    VSMinorData *css_minorscene = *stc_css_minorscene;
+    u8 hmn_index = (*stc_css_hmnport > 0 ? 1 : 0);
+    int hmnFighterId = css_minorscene->vs_data.match_init.playerData[hmn_index].c_kind;
+
+    // When any fighters are not selected, this ID seems to be unplayable fighter's ID (26=Masterhand or 33=None basically?). 0-25 are playable fighter's ID.
+    return (hmnFighterId && hmnFighterId < 26) ? hmnFighterId : -1;
 }

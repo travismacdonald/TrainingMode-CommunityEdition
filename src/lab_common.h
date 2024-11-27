@@ -555,7 +555,8 @@ typedef struct ImportData
     Text *option_text;
     Text *filename_text;
     Text *fileinfo_text;
-    int file_num;         // number of files on card
+    int file_num;         // number of displayed files on card
+    int hidden_file_num;  // number of hidden files on card
     FileInfo *file_info;  // pointer to file info array
     ExportHeader *header; // pointer to header array for the files on the current page
     u8 page;              // file page
