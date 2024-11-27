@@ -3897,37 +3897,21 @@ void Record_MemcardLoad(int slot, int file_no)
             {
                 Memcard_Wait();
 
-                // search for nth file with name TM_DEBUG
-                int tmrec_num = 0;
-                for (int i = 0; i < CARD_MAX_FILE; i++)
+                CARDStat card_stat;
+                if (CARDGetStatus(slot, file_no, &card_stat) == CARD_RESULT_READY)
                 {
-
-                    CARDStat card_stat;
-
-                    if (CARDGetStatus(slot, i, &card_stat) == CARD_RESULT_READY)
+                    // check company code
+                    if (strncmp(os_info->company, card_stat.company, sizeof(os_info->company)) == 0)
                     {
-                        // check company code
-                        if (strncmp(os_info->company, card_stat.company, sizeof(os_info->company)) == 0)
+                        // check game name
+                        if (strncmp(os_info->gameName, card_stat.gameName, sizeof(os_info->gameName)) == 0)
                         {
-                            // check game name
-                            if (strncmp(os_info->gameName, card_stat.gameName, sizeof(os_info->gameName)) == 0)
+                            // check file name
+                            if (strncmp("TMREC", card_stat.fileName, 5) == 0)
                             {
-                                // check file name
-                                if (strncmp("TMREC", card_stat.fileName, 5) == 0)
-                                {
-
-                                    // if the desired file
-                                    if (tmrec_num == file_no)
-                                    {
-                                        file_found = 1;
-                                        memcpy(&filename, card_stat.fileName, sizeof(filename)); // copy filename to load after this
-                                        file_size = card_stat.length;
-                                        break;
-                                    }
-
-                                    // increment tmrec num
-                                    tmrec_num++;
-                                }
+                                file_found = 1;
+                                memcpy(&filename, card_stat.fileName, sizeof(filename)); // copy filename to load after this
+                                file_size = card_stat.length;
                             }
                         }
                     }
