@@ -363,41 +363,6 @@ void Ledgedash_HUDThink(LedgedashData *event_data, FighterData *hmn_data)
             // destroy any tips
             event_vars->Tip_Destroy();
 
-            // update bar colors
-            JOBJ *timingbar_jobj;
-            JOBJ_GetChild(hud_jobj, &timingbar_jobj, LCLJOBJ_BAR, -1); // get timing bar jobj
-            DOBJ *d = timingbar_jobj->dobj;
-            int count = 0;
-            while (d != 0)
-            {
-                // if a box dobj
-                if ((count >= 0) && (count < 30))
-                {
-
-                    // if mobj exists (it will)
-                    MOBJ *m = d->mobj;
-                    if (m != 0)
-                    {
-
-                        HSD_Material *mat = m->mat;
-                        int this_frame = 29 - count;
-                        GXColor *bar_color;
-
-                        // check if GALINT frame
-                        if ((this_frame >= curr_frame) && ((this_frame <= (curr_frame + hmn_data->hurt.intang_frames.ledge))))
-                            bar_color = &tmgbar_blue;
-                        else
-                            bar_color = tmgbar_colors[event_data->action_state.action_log[this_frame]];
-
-                        mat->diffuse = *bar_color;
-                    }
-                }
-
-                // inc
-                count++;
-                d = d->next;
-            }
-
             // output remaining airdodge angle
             if (event_data->action_state.is_airdodge == 1)
                 Text_SetText(event_data->hud.text_angle, 0, "%.2f", fabs(event_data->hud.airdodge_angle / M_1DEGREE));
@@ -432,6 +397,41 @@ void Ledgedash_HUDThink(LedgedashData *event_data, FighterData *hmn_data)
             JOBJ_RemoveAnimAll(hud_jobj);
             JOBJ_AddAnimAll(hud_jobj, 0, matanim, 0);
             JOBJ_ReqAnimAll(hud_jobj, 0);
+        }
+
+        // update bar colors
+        JOBJ *timingbar_jobj;
+        JOBJ_GetChild(hud_jobj, &timingbar_jobj, LCLJOBJ_BAR, -1); // get timing bar jobj
+        DOBJ *d = timingbar_jobj->dobj;
+        int count = 0;
+        while (d != 0)
+        {
+            // if a box dobj
+            if ((count >= 0) && (count < 30))
+            {
+
+                // if mobj exists (it will)
+                MOBJ *m = d->mobj;
+                if (m != 0)
+                {
+
+                    HSD_Material *mat = m->mat;
+                    int this_frame = 29 - count;
+                    GXColor *bar_color;
+
+                    // check if GALINT frame
+                    if ((this_frame >= curr_frame) && ((this_frame <= (curr_frame + hmn_data->hurt.intang_frames.ledge))))
+                        bar_color = &tmgbar_blue;
+                    else
+                        bar_color = tmgbar_colors[event_data->action_state.action_log[this_frame]];
+
+                    mat->diffuse = *bar_color;
+                }
+            }
+
+            // inc
+            count++;
+            d = d->next;
         }
     }
 
