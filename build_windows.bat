@@ -86,8 +86,15 @@ copy "Additional ISO Files\opening.bnr" "build\"
 
 echo BUILD START.DOL --------------------------------------------------------
 
+for /f "delims=" %%A in ('gc_fst get-header "%ISO%"') do set "GAME_ID=%%A"
+if "%GAME_ID%" == "GALJ01" (
+	set "PATCH_FILENAME=patch_jp.xdelta"
+) else (
+	set "PATCH_FILENAME=patch.xdelta"
+)
+
 gc_fst read %ISO% "Start.dol" "Start.dol"
-"Build TM Start.dol\xdelta.exe" -d -f -s "Start.dol" "Build TM Start.dol\patch.xdelta" "build\Start.dol" || ( echo ERROR: Failed to patch Start.dol & goto cleanup )
+"Build TM Start.dol\xdelta.exe" -d -f -s "Start.dol" "Build TM Start.dol\%PATCH_FILENAME%" "build\Start.dol" || ( echo ERROR: Failed to patch Start.dol & goto cleanup )
 del Start.dol
 
 echo BUILD ISO --------------------------------------------------------
