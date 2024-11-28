@@ -57,7 +57,7 @@ build/codes.gct: Additional\ ISO\ Files/opening.bnr $(ASM_FILES)
 
 build/Start.dol: | build
 	./gc_fst read ${iso} Start.dol build/Start.dol
-	xdelta3 -d -f -s build/Start.dol "Build TM Start.dol/$(PATCH)" build/Start.dol;
+	xdelta3 -d -f -s build/Start.dol "Build TM Start.dol/$(PATCH)" build/Start.dol
 
 TM-CE.iso: build/Start.dol build/codes.gct $(dats)
 	if [[ ! -f TM-CE.iso ]]; then cp ${iso} TM-CE.iso; fi
