@@ -5438,8 +5438,8 @@ void Event_Init(GOBJ *gobj)
 
     // determine controllers
     stc_hmn_controller = Fighter_GetControllerPort(hmn_data->ply);
-    stc_cpu_controller = 4;
-    stc_null_controller = 5;
+    stc_cpu_controller = (stc_hmn_controller+1) % 4;
+    stc_null_controller = (stc_cpu_controller+1) % 4;
 
     // set CPU AI to no_act 15
     cpu_data->cpu.ai = 0;
