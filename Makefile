@@ -8,6 +8,21 @@ SHELL := /bin/bash
 
 MEX_BUILD=mono MexTK/MexTK.exe -ff -b "build" -q -ow -l "MexTK/melee.link" -op 2
 
+ifndef iso
+$(error Error: INVALID ISO - run `make iso=path/to/vanilla/melee iso`)
+endif
+
+HEADER := $(shell gc_fst get-header ${iso})
+ifeq ($(HEADER), GALE01)
+PATCH := patch.xdelta
+else
+ifeq ($(HEADER), GALJ01)
+PATCH := patch_jp.xdelta
+else
+$(error Error: INVALID ISO - run `make iso=path/to/vanilla/melee iso`)
+endif
+endif
+
 clean:
 	rm -rf TM-CE.iso
 	rm -rf ./build/
@@ -42,7 +57,7 @@ build/codes.gct: Additional\ ISO\ Files/opening.bnr $(ASM_FILES)
 
 build/Start.dol: | build
 	./gc_fst read ${iso} Start.dol build/Start.dol
-	xdelta3 -d -f -s build/Start.dol "Build TM Start.dol/patch.xdelta" build/Start.dol
+	xdelta3 -d -f -s build/Start.dol "Build TM Start.dol/$(PATCH)" build/Start.dol;
 
 TM-CE.iso: build/Start.dol build/codes.gct $(dats)
 	if [[ ! -f TM-CE.iso ]]; then cp ${iso} TM-CE.iso; fi
