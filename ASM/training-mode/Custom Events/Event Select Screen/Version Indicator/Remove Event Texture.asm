@@ -73,9 +73,17 @@
     load r4, 0x1e754
     add r4, r4, r5
     stw r3, 0xC(r4)
+    # Make Background Texture (Lang:JP) Transparent
+    load r4, 0x1e755
+    add r4, r4, r5
+    stw r3, 0xC(r4)
 
     # Make Subject Table Texture Transparent
     load r4, 0x1ec88
+    add r4, r4, r5
+    stw r3, 0xC(r4)
+    # Make Subject Table Texture (Lang:JP) Transparent
+    load r4, 0x1ec89
     add r4, r4, r5
     stw r3, 0xC(r4)
 
