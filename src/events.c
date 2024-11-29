@@ -1064,7 +1064,7 @@ static TipMgr stc_tipmgr;
 void EventInit(int page, int eventID, MatchInit *matchData)
 {
 
-    /* 
+    /*
     This function runs when leaving the main menu/css and handles
     setting up the match information, such as rules, players, stage.
     All of this data comes from the EventDesc in events.c
@@ -1449,7 +1449,7 @@ int Savestate_Save(Savestate *savestate)
     // I much prefer people to be able to make buggy savestates.
     // They can only report issues if they can encounter them.
     //
-    // These incredibly conservative checks are not helpful to the people using training mode, 
+    // These incredibly conservative checks are not helpful to the people using training mode,
     // nor are they to the people fixing the bugs.
     // To solve the issues, we should not be preventing savestates, but instead saving the necessary state.
     //
@@ -3206,9 +3206,7 @@ void EventMenu_TextGX(GOBJ *gobj, int pass)
     return;
 }
 
-void EventMenu_MenuThink(GOBJ *gobj, EventMenu *currMenu)
-{
-
+void EventMenu_MenuThink(GOBJ *gobj, EventMenu *currMenu) {
     MenuData *menuData = gobj->userdata;
     EventDesc *event_desc = menuData->event_desc;
 
@@ -3216,7 +3214,7 @@ void EventMenu_MenuThink(GOBJ *gobj, EventMenu *currMenu)
     u8 pauser = menuData->controller_index;
     // get their  inputs
     HSD_Pad *pad = PadGet(pauser, PADGET_MASTER);
-    int inputs_rapid = Pad_GetRapidHeld(pauser); //pad->rapidFire;
+    int inputs_rapid = Pad_GetRapidHeld(pauser); // pad->rapidFire;
     int inputs_held = pad->held;
     int inputs = inputs_rapid;
     if ((inputs_held & HSD_TRIGGER_R) != 0)
@@ -3227,11 +3225,9 @@ void EventMenu_MenuThink(GOBJ *gobj, EventMenu *currMenu)
     s32 cursor = currMenu->cursor;
     s32 scroll = currMenu->scroll;
     EventOption *currOption = &currMenu->options[cursor + scroll];
-    s32 cursor_min = 0;
     s32 option_num = currMenu->option_num;
-    s32 cursor_max = option_num;
-    if (cursor_max > MENU_MAXOPTION)
-        cursor_max = MENU_MAXOPTION;
+    s32 cursor_min = 0;
+    s32 cursor_max = ((option_num > MENU_MAXOPTION) ? MENU_MAXOPTION : option_num) - 1;
 
     // get option variables
     s16 option_val = currOption->option_val;
@@ -3239,114 +3235,94 @@ void EventMenu_MenuThink(GOBJ *gobj, EventMenu *currMenu)
     s16 value_max = currOption->value_num;
 
     // check for dpad down
-    if (((inputs & HSD_BUTTON_DOWN) != 0) || ((inputs & HSD_BUTTON_DPAD_DOWN) != 0))
-    {
-
+    if (((inputs & HSD_BUTTON_DOWN) != 0) || ((inputs & HSD_BUTTON_DPAD_DOWN) != 0)) {
         // loop to find next option
-        int count = 1;       //
         int cursor_next = 0; // how much to move the cursor by
-        while (((cursor + count + scroll) < option_num))
-        {
-            // option exists, check if its enabled
-            if (currMenu->options[cursor + count + scroll].disable == 0)
-            {
-                cursor_next = count;
+        for (int i = 1; (cursor + scroll + i) < option_num; i++) {
+            // option exists, check if it's enabled
+            if (currMenu->options[cursor + scroll + i].disable == 0) {
+                cursor_next = i;
                 break;
             }
-
-            // option is disabled, loop
-            count++;
         }
 
         // if another option exists, move down
-        if (cursor_next > 0)
-        {
+        if (cursor_next > 0) {
             cursor += cursor_next;
 
-            // cursor is in bounds, move down
-            if (cursor < cursor_max)
-            {
-                isChanged = 1;
-
-                // update cursor
-                currMenu->cursor = cursor;
-
-                // also play sfx
-                SFX_PlayCommon(2);
-            }
-
             // cursor overflowed, correct it
-            else
-            {
-
-                // adjust
-                scroll -= (cursor_max - (cursor + 1));
-                cursor = (cursor_max - 1);
-
-                // update cursor
-                currMenu->cursor = cursor;
-                currMenu->scroll = scroll;
-
-                isChanged = 1;
-
-                // also play sfx
-                SFX_PlayCommon(2);
+            if (cursor > cursor_max) {
+                scroll += (cursor - cursor_max);
+                cursor = cursor_max;
             }
         }
+        // if no more options, move to the top
+        else {
+            // * This implementation assumes that the top option will never be disabled.
+            // * Otherwise, we need to search `enabled_option_min_index` and adjust cursor/scroll to the option.
+            cursor = cursor_min;
+            scroll = 0;
+        }
+
+        if (currMenu->cursor != cursor || currMenu->scroll != scroll) {
+            isChanged = 1;
+
+            // update cursor
+            currMenu->cursor = cursor;
+            currMenu->scroll = scroll;
+
+            // also play sfx
+            SFX_PlayCommon(2);
+        }
     }
+
     // check for dpad up
-    else if (((inputs & HSD_BUTTON_UP) != 0) || ((inputs & HSD_BUTTON_DPAD_UP) != 0))
-    {
+    else if (((inputs & HSD_BUTTON_UP) != 0) || ((inputs & HSD_BUTTON_DPAD_UP) != 0)) {
         // loop to find next option
-        int count = 1;       //
         int cursor_next = 0; // how much to move the cursor by
-        while (((cursor + scroll - count) >= 0))
-        {
-            // option exists, check if its enabled
-            if (currMenu->options[cursor + scroll - count].disable == 0)
-            {
-                cursor_next = count;
+        for (int i = 1; (cursor + scroll - i) >= 0; i++) {
+            // option exists, check if it's enabled
+            if (currMenu->options[cursor + scroll - i].disable == 0) {
+                cursor_next = i;
                 break;
             }
-
-            // option is disabled, loop
-            count++;
         }
 
         // if another option exists, move up
-        if (cursor_next > 0)
-        {
+        if (cursor_next > 0) {
             cursor -= cursor_next;
 
-            // cursor is in bounds, move up
-            if (cursor >= 0)
-            {
-                isChanged = 1;
-
-                // update cursor
-                currMenu->cursor = cursor;
-
-                // also play sfx
-                SFX_PlayCommon(2);
-            }
-
             // cursor overflowed, correct it
-            else
-            {
-
-                // adjust
+            if (cursor < 0) {
                 scroll += cursor; // effectively scroll up by adding a negative number
                 cursor = 0;       // cursor is positioned at 0
-
-                // update cursor
-                currMenu->cursor = cursor;
-                currMenu->scroll = scroll;
-
-                isChanged = 1;
-
-                // also play sfx
-                SFX_PlayCommon(2);
             }
+        }
+        // if no more options, move to the bottom
+        else {
+            int enabled_option_max_index = -1;
+            for (int i = (option_num - 1); i >= 0; i--) {
+                if (currMenu->options[i].disable == 0) {
+                    enabled_option_max_index = i;
+                    break;
+                }
+            }
+
+            if (enabled_option_max_index != -1) {
+                cursor = (enabled_option_max_index >= cursor_max) ? cursor_max : enabled_option_max_index;
+                scroll = (enabled_option_max_index >= cursor_max) ? (enabled_option_max_index - cursor_max) : 0;
+            }
+        }
+
+        if (currMenu->cursor != cursor || currMenu->scroll != scroll) {
+            isChanged = 1;
+
+            // update cursor
+            currMenu->cursor = cursor;
+            currMenu->scroll = scroll;
+
+            // also play sfx
+            SFX_PlayCommon(2);
         }
     }
 
@@ -4033,7 +4009,7 @@ void EventMenu_UpdateText(GOBJ *gobj, EventMenu *menu)
         Text_AddSubtext(text, 0, y_delta, msg_line);
     }
 
-    /* 
+    /*
     Update Names
     */
 
@@ -4067,7 +4043,7 @@ void EventMenu_UpdateText(GOBJ *gobj, EventMenu *menu)
         Text_SetColor(text, i, &color);
     }
 
-    /* 
+    /*
     Update Values
     */
 
