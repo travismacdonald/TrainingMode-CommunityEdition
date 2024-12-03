@@ -3211,11 +3211,12 @@ GOBJ *Record_Init()
     for (int i = 0; i < REC_SLOTS; i++)
     {
         rec_data.hmn_inputs[i] = calloc(sizeof(RecInputData));
-        rec_data.cpu_inputs[i] = calloc(sizeof(RecInputData));
-
-        // init frame this recording starts on
         rec_data.hmn_inputs[i]->start_frame = -1;
+        rec_data.hmn_inputs[i]->num = 0;
+
+        rec_data.cpu_inputs[i] = calloc(sizeof(RecInputData));
         rec_data.cpu_inputs[i]->start_frame = -1;
+        rec_data.cpu_inputs[i]->num = 0;
     }
 
     // init memcard stuff
@@ -3583,6 +3584,32 @@ void Record_ResaveState(GOBJ *menu_gobj)
     stc_playback_cancelled_cpu = false;
     if (event_vars->Savestate_Save(rec_state))
         Record_OnSuccessfulSave(0);
+
+    // If we re-save during mirroring, then we NEED to show the new savestate as unmirrored.
+    // That's just how savestates work. So to use old, unmirrored inputs, we need to reverse them in place.
+    if (LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].option_val) {
+        // need to disable mirroring, as the new savestate is inherently unmirrored.
+        LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].option_val = 0;
+        LabOptions_Record[OPTREC_HMNMODE].disable = 0;
+        LabOptions_Record[OPTREC_CPUMODE].disable = 0;
+
+        for (int ply = 0; ply < 2; ++ply) {
+            for (int slot = 0; slot < REC_SLOTS; ++slot) {
+                RecInputData *input_data;
+                if (ply == 0)
+                    input_data = rec_data.hmn_inputs[slot];
+                else
+                    input_data = rec_data.cpu_inputs[slot];
+
+                int input_num = input_data->num;
+                for (int input = 0; input <= input_num; ++input) {
+                    RecInputs *inputs = &input_data->inputs[input];
+                    inputs->stickX *= -1;
+                    inputs->substickX *= -1;
+                }
+            }
+        }
+    }
 }
 void Record_DeleteState(GOBJ *menu_gobj)
 {
@@ -3604,6 +3631,11 @@ void Record_DeleteState(GOBJ *menu_gobj)
         LabOptions_SlotChancesCPU[i].option_val = 0;
         LabOptions_SlotChancesHMN[i].disable = 1;
         LabOptions_SlotChancesCPU[i].disable = 1;
+
+        rec_data.hmn_inputs[i]->start_frame = -1;
+        rec_data.hmn_inputs[i]->num = 0;
+        rec_data.cpu_inputs[i]->start_frame = -1;
+        rec_data.cpu_inputs[i]->num = 0;
     }
 
     LabMenu_Record.scroll = 0;
@@ -3742,20 +3774,15 @@ void Record_ChangeCPUMode(GOBJ *menu_gobj, int value)
 void Record_ChangeMirroredPlayback(GOBJ *menu_gobj, int value)
 {
     // Cannot change HMN/CPU Mode while mirrored playback is on.
-    //
-    // Re-save positions does technically work, but inputs don't as expected, so we disable it.
-    // This shouldn't prevent any labbing, you just need to unmirror, save, then remirror.
     if (value == 1)
     {
         LabOptions_Record[OPTREC_HMNMODE].disable = 1;
         LabOptions_Record[OPTREC_CPUMODE].disable = 1;
-        LabOptions_Record[OPTREC_RESAVE].disable = 1;
     }
     else
     {
         LabOptions_Record[OPTREC_HMNMODE].disable = 0;
         LabOptions_Record[OPTREC_CPUMODE].disable = 0;
-        LabOptions_Record[OPTREC_RESAVE].disable = 0;
     }
 
     Record_LoadSavestate();
