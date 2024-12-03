@@ -3741,16 +3741,21 @@ void Record_ChangeCPUMode(GOBJ *menu_gobj, int value)
 }
 void Record_ChangeMirroredPlayback(GOBJ *menu_gobj, int value)
 {
-    // Cannot change HMN/CPU Mode while mirrored playback is on
+    // Cannot change HMN/CPU Mode while mirrored playback is on.
+    //
+    // Re-save positions does technically work, but inputs don't as expected, so we disable it.
+    // This shouldn't prevent any labbing, you just need to unmirror, save, then remirror.
     if (value == 1)
     {
         LabOptions_Record[OPTREC_HMNMODE].disable = 1;
         LabOptions_Record[OPTREC_CPUMODE].disable = 1;
+        LabOptions_Record[OPTREC_RESAVE].disable = 1;
     }
     else
     {
         LabOptions_Record[OPTREC_HMNMODE].disable = 0;
         LabOptions_Record[OPTREC_CPUMODE].disable = 0;
+        LabOptions_Record[OPTREC_RESAVE].disable = 0;
     }
 
     Record_LoadSavestate();
