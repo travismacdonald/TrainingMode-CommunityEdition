@@ -2974,7 +2974,30 @@ void CustomTDI_Destroy(GOBJ *gobj)
 void Inputs_Think(GOBJ *gobj)
 {
     Controller *controllers = gobj->userdata;
-    int hide_rest = false;
+    bool show[4] = {false};
+
+    if (Pause_CheckStatus(1) != 2) {
+        switch (LabOptions_General[OPTGEN_INPUT].option_val) {
+        case INPUTDISPLAY_OFF:
+            break;
+        case INPUTDISPLAY_HMN:
+            show[0] = true;
+            break;
+        case INPUTDISPLAY_CPU:
+            show[1] = true;
+            break;
+        case INPUTDISPLAY_HMN_AND_CPU:
+            show[0] = true;
+            show[1] = true;
+            break;
+        }
+    }
+
+    bool input_display = false;
+    for (int i = 0; i < 4; i++) input_display |= show[i];
+    if (!input_display) {
+        Match_ShowTimer();
+    }
 
     // update controllers
     for (int i = 0; i < 4; i++)
@@ -2983,6 +3006,18 @@ void Inputs_Think(GOBJ *gobj)
         JOBJ *controller_jobj = controller->jobj;
 
         if (controller_jobj == NULL) continue;
+        if (!show[i]) {
+            // Aitch: I would LOVE to set the hidden flag instead of abusing the Z axis.
+            // But for some reason it doesn't work! Lmk if you have a better idea.
+
+            controller_jobj->trans.Z = -99999.0;
+            //JOBJ_SetFlags(controller_jobj, JOBJ_HIDDEN);
+
+            JOBJ_SetMtxDirtySub(controller_jobj);
+            continue;
+        }
+
+        controller_jobj->trans.Z = 0.0;
 
         // get port and controller data
         GOBJ *fighter = Fighter_GetGObj(i);
@@ -3038,29 +3073,6 @@ void Inputs_Think(GOBJ *gobj)
         }
 
         JOBJ_SetMtxDirtySub(controller_jobj);
-
-        int input_option = LabOptions_General[OPTGEN_INPUT].option_val;
-        int paused = Pause_CheckStatus(1) == 2;
-
-        // Aitch: I would LOVE to set the hidden flag instead of abusing the Z axis.
-        // But for some reason, it doesn't work! Lmk if you have a better idea.
-        if (paused || input_option == 0) {
-            Match_ShowTimer();
-            controller_jobj->trans.Z = -99999.0;
-            //JOBJ_SetFlags(controller_jobj, JOBJ_HIDDEN);
-        } else if (hide_rest) {
-            controller_jobj->trans.Z = -99999.0;
-            //JOBJ_SetFlags(controller_jobj, JOBJ_HIDDEN);
-        } else if (input_option == 1) {
-            Match_HideTimer();
-            controller_jobj->trans.Z = 0.0;
-            //JOBJ_ClearFlags(controller_jobj, JOBJ_HIDDEN);
-            hide_rest = true;
-        } else {
-            Match_HideTimer();
-            controller_jobj->trans.Z = 0.0;
-            //JOBJ_ClearFlags(controller_jobj, JOBJ_HIDDEN);
-        }
     }
 }
 

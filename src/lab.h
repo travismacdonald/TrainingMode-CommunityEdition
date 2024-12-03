@@ -747,6 +747,13 @@ static EventMenu LabMenu_Main = {
 
 // GENERAL MENU --------------------------------------------------------------
 
+enum input_display_mode {
+    INPUTDISPLAY_OFF,
+    INPUTDISPLAY_HMN,
+    INPUTDISPLAY_CPU,
+    INPUTDISPLAY_HMN_AND_CPU,
+};
+
 enum gen_option
 {
     OPTGEN_FRAME,
@@ -770,7 +777,7 @@ enum gen_option
 };
 
 static char *LabOptions_CamMode[] = {"Normal", "Zoom", "Fixed", "Advanced"};
-static char *LabOptions_ShowInputs[] = {"Off", "HMN", "HMN and CPU"};
+static char *LabOptions_ShowInputs[] = {"Off", "HMN", "CPU", "HMN and CPU"};
 static char *LabOptions_FrameAdvButton[] = {"L", "Z", "X", "Y"};
 
 static float LabOptions_GameSpeeds[] = {1.0, 2.0/3.0, 1.0/2.0, 1.0/4.0};
