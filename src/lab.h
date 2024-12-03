@@ -1784,6 +1784,7 @@ enum rec_option
    OPTREC_CPUMODE,
    OPTREC_CPUSLOT,
    OPTREC_MIRRORED_PLAYBACK,
+   OPTREC_PLAYBACK_COUNTER,
    OPTREC_LOOP,
    OPTREC_AUTORESTORE,
    OPTREC_RESAVE,
@@ -1795,12 +1796,20 @@ enum rec_option
    OPTREC_COUNT
 };
 
+enum rec_playback_counter
+{
+    PLAYBACKCOUNTER_OFF,
+    PLAYBACKCOUNTER_ENDS,
+    PLAYBACKCOUNTER_ON_HIT,
+};
+
 // Aitch: Please be aware that the order of these options is important.
 // The option idx will be serialized when exported, so loading older replays could load the wrong option if we reorder/remove options.
 static char *LabValues_RecordSlot[] = {"Random", "Slot 1", "Slot 2", "Slot 3", "Slot 4", "Slot 5", "Slot 6"};
 static char *LabValues_HMNRecordMode[] = {"Off", "Record", "Playback"};
 static char *LabValues_CPURecordMode[] = {"Off", "Control", "Record", "Playback"};
 static char *LabValues_AutoRestore[] = {"Off", "Playback Ends", "CPU Counters"};
+static char *LabValues_PlaybackCounterActions[] = {"Off", "After Playback Ends", "On Hit"};
 
 static const EventOption Record_Save = {
     .option_kind = OPTKIND_FUNC,
@@ -1861,6 +1870,14 @@ static EventOption LabOptions_Record[OPTREC_COUNT] = {
     	.desc = "Playback with mirrored the recorded inputs,\npositions and facing directions.\n(!) This works properly only on symmetrical \nstages.",
         .option_values = LabOptions_OffOn,
         .onOptionChange = Record_ChangeMirroredPlayback,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_PlaybackCounterActions) / 4,
+        .option_name = "CPU Counter",
+        .option_val = 1,
+        .desc = "Choose when CPU will start performing\ncounter actions during playback.",
+        .option_values = LabValues_PlaybackCounterActions,
     },
     {
         .option_kind = OPTKIND_STRING,
