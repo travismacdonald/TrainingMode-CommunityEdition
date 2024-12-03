@@ -1982,11 +1982,12 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
     case (CPUSTATE_COUNTER):
     CPULOGIC_COUNTER:
     {
+        int actionable_this_frame = CPUAction_CheckASID(cpu, ASID_ACTIONABLE);
+
         // check if the CPU has been actionable yet
         if (eventData->cpu_isactionable == 0)
         {
-            if (!CPUAction_CheckASID(cpu, ASID_ACTIONABLE))
-                break;
+            if (!actionable_this_frame) break;
 
             eventData->cpu_isactionable = 1;                       // set actionable flag to begin running code
             eventData->cpu_groundstate = cpu_data->phys.air_state; // remember initial ground state
@@ -1996,8 +1997,14 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         if ((eventData->cpu_groundstate == 1) && (cpu_data->phys.air_state == 0))
             eventData->cpu_groundstate = 0;
 
-        // increment frames since actionable
-        eventData->cpu_sincehit++;
+        // We need to reset the counter whenever the CPU is inactionable.
+        // Otherwise, if the cpu is actionable in the air before landing,
+        // then the sincehit value will increment even during tech options.
+        if (actionable_this_frame) {
+            eventData->cpu_sincehit++;
+        } else {
+            eventData->cpu_sincehit = 0;
+        }
 
         // ensure hit count and frame count criteria are met
         int action_id;
