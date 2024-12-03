@@ -3894,6 +3894,7 @@ void Record_OnSuccessfulSave(int deleteRecordings)
 
     // also save to personal savestate
     event_vars->Savestate_Save(event_vars->savestate);
+    event_vars->savestate_saved_while_mirrored = LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].option_val;
 
     // take screenshot
     snap_status = 1;
@@ -4003,6 +4004,7 @@ void Record_MemcardLoad(int slot, int file_no)
 
             // copy buffer to savestate
             memcpy(rec_state, &loaded_recsave->savestate, sizeof(Savestate));
+            event_vars->savestate_saved_while_mirrored = false;
 
             // restore controller indices
             rec_state->ft_state[0].player_block.controller = stc_hmn_controller;
@@ -4041,6 +4043,7 @@ void Record_MemcardLoad(int slot, int file_no)
 
             // save to personal savestate
             event_vars->Savestate_Save(event_vars->savestate);
+            event_vars->savestate_saved_while_mirrored = LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].option_val;
         }
 
         HSD_Free(memcard_save.data);
@@ -4074,11 +4077,7 @@ void Record_StartExport(GOBJ *menu_gobj)
 void Record_LoadSavestate() {
     event_vars->Savestate_Load(
         rec_state,
-        (
-            LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].option_val &&
-            (LabOptions_Record[OPTREC_HMNMODE].option_val == RECMODE_HMN_PLAYBACK || LabOptions_Record[OPTREC_CPUMODE].option_val == RECMODE_CPU_PLAYBACK) &&
-            (LabOptions_Record[OPTREC_HMNMODE].option_val != RECMODE_HMN_RECORD && LabOptions_Record[OPTREC_CPUMODE].option_val != RECMODE_CPU_RECORD)
-        )
+        LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].option_val
     );
     stc_playback_cancelled_hmn = false;
     stc_playback_cancelled_cpu = false;
@@ -4130,6 +4129,7 @@ void Savestates_Update()
                     {
                         // save state
                         event_vars->Savestate_Save(event_vars->savestate);
+                        event_vars->savestate_saved_while_mirrored = LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].option_val;
                         save_timer[port] = 0; // Reset timer after saving
                         lockout_timer = LOCKOUT_DURATION;
                     }
@@ -4143,13 +4143,10 @@ void Savestates_Update()
                 if ((pad->down & HSD_BUTTON_DPAD_LEFT) && !(pad->held & blacklist))
                 {
                     // load state
+                    int mirror = LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].option_val;
                     event_vars->Savestate_Load(
                         event_vars->savestate,
-                        (
-                            LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].option_val &&
-                            (LabOptions_Record[OPTREC_HMNMODE].option_val == RECMODE_HMN_PLAYBACK || LabOptions_Record[OPTREC_CPUMODE].option_val == RECMODE_CPU_PLAYBACK) &&
-                            (LabOptions_Record[OPTREC_HMNMODE].option_val != RECMODE_HMN_RECORD && LabOptions_Record[OPTREC_CPUMODE].option_val != RECMODE_CPU_RECORD)
-                        )
+                        !(mirror == event_vars->savestate_saved_while_mirrored)
                     );
                     stc_playback_cancelled_hmn = false;
                     stc_playback_cancelled_cpu = false;
