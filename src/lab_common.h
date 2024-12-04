@@ -188,7 +188,9 @@ typedef struct LabData
     u8 cpu_hitnum;
     u8 cpu_sdinum;
     u8 cpu_sdidir;
-    u8 cpu_sincehit;
+
+    // Delay timer for "Counter After Frames" Option
+    u8 cpu_countertimer;
 
     // Aitch: We set this flag if the CPU performs a counter action on this frame.
     // Occasionally we need to determine if the CPU is countering (such as AUTORESTORE_COUNTER).

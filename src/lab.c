@@ -1442,7 +1442,7 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         // update move instance
         if (eventData->cpu_lasthit != cpu_data->dmg.atk_instance_hurtby)
         {
-            eventData->cpu_sincehit = 0;
+            eventData->cpu_countertimer = 0;
             eventData->cpu_hitnum++;
             eventData->cpu_lasthit = cpu_data->dmg.atk_instance_hurtby;
 
@@ -1997,20 +1997,11 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         if ((eventData->cpu_groundstate == 1) && (cpu_data->phys.air_state == 0))
             eventData->cpu_groundstate = 0;
 
-        // We need to reset the counter whenever the CPU is inactionable.
-        // Otherwise, if the cpu is actionable in the air before landing,
-        // then the sincehit value will increment even during tech options.
-        if (actionable_this_frame) {
-            eventData->cpu_sincehit++;
-        } else {
-            eventData->cpu_sincehit = 0;
-        }
-
         // ensure hit count and frame count criteria are met
         int action_id;
         if (eventData->cpu_hitkind == HITKIND_DAMAGE)
         {
-            if ((eventData->cpu_hitnum < LabOptions_CPU[OPTCPU_CTRHITS].option_val) || (eventData->cpu_sincehit < LabOptions_CPU[OPTCPU_CTRFRAMES].option_val))
+            if ((eventData->cpu_hitnum < LabOptions_CPU[OPTCPU_CTRHITS].option_val) || (eventData->cpu_countertimer < LabOptions_CPU[OPTCPU_CTRFRAMES].option_val))
             {
                 break;
             }
@@ -2039,7 +2030,7 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
             }
 
             // if this isnt the frame to counter, keep holding shield
-            if (eventData->cpu_sincehit < LabOptions_CPU[OPTCPU_CTRFRAMES].option_val)
+            if (eventData->cpu_countertimer < LabOptions_CPU[OPTCPU_CTRFRAMES].option_val)
             {
                 cpu_data->cpu.held = PAD_TRIGGER_R;
                 break;
@@ -2084,7 +2075,7 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
             eventData->cpu_state = CPUSTATE_START;
             eventData->cpu_hitshield = 0;
             eventData->cpu_hitnum = 0;
-            eventData->cpu_sincehit = 0;
+            eventData->cpu_countertimer = 0;
             eventData->cpu_hitshield = 0;
             eventData->cpu_lasthit = -1;
             eventData->cpu_lastshieldstun = -1;
@@ -2100,6 +2091,15 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
 
         break;
     }
+    }
+
+    // We need to reset the counter whenever the CPU is inactionable.
+    // Otherwise, if the cpu is actionable in the air before landing,
+    // then the countertimer value will increment even during tech options.
+    if (CPUAction_CheckASID(cpu, ASID_ACTIONABLE) || eventData->cpu_countering) {
+        eventData->cpu_countertimer++;
+    } else {
+        eventData->cpu_countertimer = 0;
     }
 
     // update isthrown
@@ -5676,7 +5676,7 @@ void Event_Think_LabState_Normal(GOBJ *event) {
                                 eventData->cpu_state = CPUSTATE_START;
                                 eventData->cpu_hitshield = 0;
                                 eventData->cpu_hitnum = 0;
-                                eventData->cpu_sincehit = 0;
+                                eventData->cpu_countertimer = 0;
                                 eventData->cpu_hitshield = 0;
                                 eventData->cpu_lasthit = -1;
                                 eventData->cpu_lastshieldstun = -1;
