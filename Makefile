@@ -12,7 +12,7 @@ ifndef iso
 $(error Error: INVALID ISO - run `make iso=path/to/vanilla/melee iso`)
 endif
 
-HEADER := $(shell /bin/bash -c 'gc_fst get-header ${iso}')
+HEADER := $(shell ./gc_fst get-header ${iso})
 ifeq ($(HEADER), GALE01)
 PATCH := patch.xdelta
 else
