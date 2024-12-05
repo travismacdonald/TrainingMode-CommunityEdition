@@ -5442,7 +5442,6 @@ void Event_Init(GOBJ *gobj)
     FighterData *hmn_data = hmn->userdata;
     GOBJ *cpu = Fighter_GetGObj(1);
     FighterData *cpu_data = cpu->userdata;
-    cpu_data->cpu.ai = 0;
     GObj_AddProc(gobj, Event_PostThink, 20);
 
     memcpy(LabOptions_OverlaysHMN, LabOptions_OverlaysDefault, sizeof(LabOptions_OverlaysDefault));
@@ -5506,7 +5505,7 @@ void Event_Init(GOBJ *gobj)
     stc_null_controller = (stc_cpu_controller+1) % 4;
 
     // set CPU AI to no_act 15
-    cpu_data->cpu.ai = 0;
+    cpu_data->cpu.ai = 15;
 
     // change team - homing missiles don't move towards characters on same team
     hmn_data->team = 0;
