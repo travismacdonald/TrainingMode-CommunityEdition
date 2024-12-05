@@ -5442,6 +5442,7 @@ void Event_Init(GOBJ *gobj)
     FighterData *hmn_data = hmn->userdata;
     GOBJ *cpu = Fighter_GetGObj(1);
     FighterData *cpu_data = cpu->userdata;
+    cpu_data->cpu.ai = 0;
     GObj_AddProc(gobj, Event_PostThink, 20);
 
     memcpy(LabOptions_OverlaysHMN, LabOptions_OverlaysDefault, sizeof(LabOptions_OverlaysDefault));
