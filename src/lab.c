@@ -2249,10 +2249,9 @@ void DIDraw_Update()
     // if enabled and pause menu isnt shown, update di draw
     if ((LabOptions_General[OPTGEN_DI].option_val == 1)) //  && (Pause_CheckStatus(1) != 2)
     {
-        // loop through all fighters
-        GOBJ *fighter = (*stc_gobj_lookup)[MATCHPLINK_FIGHTER];
-        while (fighter != 0)
-        {
+        for (int i = 0; i < 4; ++i) {
+            GOBJ *fighter = Fighter_GetGObj(i);
+            if (fighter == 0) continue;
 
             FighterData *fighter_data = fighter->userdata;
             int ply = fighter_data->ply;
@@ -2618,8 +2617,6 @@ void DIDraw_Update()
                     didraw->vertices[ply] = 0;
                 }
             }
-
-            fighter = fighter->next;
         }
     }
 
