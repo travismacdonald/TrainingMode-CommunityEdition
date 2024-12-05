@@ -31,23 +31,23 @@ build/eventMenu.dat: src/events.c src/events.h
 	cp "dats/eventMenu.dat" "build/eventMenu.dat" 
 	$(MEX_BUILD) -i "src/events.c" -s "tmFunction" -dat "build/eventMenu.dat" -t "MexTK/tmFunction.txt"
 
-build/lab.dat: src/lab.c src/lab.h src/lab_common.h
+build/lab.dat: src/lab.c src/lab.h src/lab_common.h src/events.h
 	cp "dats/lab.dat" "build/lab.dat"
 	$(MEX_BUILD) -i "src/lab.c" -s "evFunction" -dat "build/lab.dat" -t "MexTK/evFunction.txt"
 
-build/labCSS.dat: src/lab_css.c src/lab_common.h
+build/labCSS.dat: src/lab_css.c src/lab_common.h src/events.h
 	cp "dats/labCSS.dat" "build/labCSS.dat"
 	$(MEX_BUILD) -i "src/lab_css.c" -s "cssFunction" -dat "build/labCSS.dat" -t "MexTK/cssFunction.txt"
 
-build/lcancel.dat: src/lcancel.c src/lcancel.h
+build/lcancel.dat: src/lcancel.c src/lcancel.h src/events.h
 	cp "dats/lcancel.dat" "build/lcancel.dat"
 	$(MEX_BUILD) -i "src/lcancel.c" -s "evFunction" -dat "build/lcancel.dat" -t "MexTK/evFunction.txt"
 
-build/ledgedash.dat: src/ledgedash.c src/ledgedash.h
+build/ledgedash.dat: src/ledgedash.c src/ledgedash.h src/events.h
 	cp "dats/ledgedash.dat" "build/ledgedash.dat"
 	$(MEX_BUILD) -i "src/ledgedash.c" -s "evFunction" -dat "build/ledgedash.dat" -t "MexTK/evFunction.txt"
 
-build/wavedash.dat: src/wavedash.c src/wavedash.h
+build/wavedash.dat: src/wavedash.c src/wavedash.h src/events.h
 	cp "dats/wavedash.dat" "build/wavedash.dat"
 	$(MEX_BUILD) -i "src/wavedash.c" -s "evFunction" -dat "build/wavedash.dat" -t "MexTK/evFunction.txt"
 
