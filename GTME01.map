@@ -10526,11 +10526,11 @@
 801d0d24 00000060 801d0d24 0 zz_01d0d24_
 801d0d84 0000026c 801d0d84 0 zz_01d0d84_
 801d0ff0 00000028 801d0ff0 0 zz_01d0ff0_
-801d1018 00000004 801d1018 0 zz_01d1018_
+801d1018 00000004 801d1018 0 StageUnk1_PokemonStadium
 801d101c 000000ac 801d101c 0 StageInitialization_PokemonStadium
-801d10c8 00000004 801d10c8 0 zz_01d10c8_
-801d10cc 00000024 801d10cc 0 zz_01d10cc_
-801d10f0 00000008 801d10f0 0 zz_01d10f0_
+801d10c8 00000004 801d10c8 0 StageLoad_PokemonStadium
+801d10cc 00000024 801d10cc 0 StageGo_PokemonStadium
+801d10f0 00000008 801d10f0 0 StageUnk2_PokemonStadium
 801d10f8 000000ec 801d10f8 0 PokemonStadium_Create_map_gobj
 801d11e4 000000ac 801d11e4 0 PokemonStadium_InitMonitorCamera
 801d1290 000000f8 801d1290 0 PokemonStadium_OnStageLoad
@@ -10605,8 +10605,8 @@
 801d4b08 000004f0 801d4b08 0 PokemonStadium_TransformationDecide
 801d4ff8 0000007c 801d4ff8 0 PokemonStadium_CheckIfMonitorIsZoomedOnPlayer
 801d5074 00000044 801d5074 0 Textures_PokemonStadium
-801d50b8 00000008 801d50b8 0 zz_01d50b8_
-801d50c0 0000005c 801d50c0 0 zz_01d50c0_
+801d50b8 00000008 801d50b8 0 StageUnk3_PokemonStadium
+801d50c0 0000005c 801d50c0 0 StageUnk4_PokemonStadium
 801d5118 00000004 801d5118 0 zz_01d5118_
 801d511c 0000011c 801d511c 0 PokemonStadium_AllocateGXTex
 801d5238 00000004 801d5238 0 zz_01d5238_
