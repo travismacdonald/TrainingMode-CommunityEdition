@@ -153,6 +153,7 @@ typedef struct FtSaveStateData
     float state_frame;
     float state_rate;
     float state_blend;
+    // Legacy - no longer used now that we update the animation when restoring state.
     Vec4 XRotN_rot; // XRotN
     struct phys phys;
     ColorOverlay color[3];

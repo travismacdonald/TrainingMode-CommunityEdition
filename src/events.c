@@ -1862,13 +1862,6 @@ int Savestate_Load(Savestate *savestate, int is_mirrored)
                         fighter_data->phys.nudge_vel.X *= -1;
                     }
 
-                    // restore XRotN rotation
-                    s8 XRotN_id = Fighter_BoneLookup(fighter_data, XRotN);
-                    if (XRotN_id != -1)
-                    {
-                        fighter_data->bones[XRotN_id].joint->rot = ft_data->XRotN_rot;
-                    }
-
                     // restore state variables
                     memcpy(&fighter_data->state_var, &ft_data->state_var, sizeof(fighter_data->state_var)); // copy hitbox
 
