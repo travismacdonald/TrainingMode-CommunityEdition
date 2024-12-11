@@ -830,7 +830,7 @@ static EventOption LabOptions_General[OPTGEN_COUNT] = {
         .option_kind = OPTKIND_STRING,
         .value_num = 2,
         .option_name = "Fighter Collision",
-        .desc = "Toggle hitbox and hurtbox visualization.\nHurtboxes: yellow=hurt, purple=grab, blue=shield.\nHitboxes: (by priority) red, green, blue, purple.",
+        .desc = "Toggle hitbox and hurtbox visualization.\nHurtboxes: yellow=hurt, purple=ungrabbable, blue=shield.\nHitboxes: (by priority) red, green, blue, purple.",
         .option_values = LabOptions_OffOn,
         .onOptionChange = Lab_ChangeHitDisplay,
     },
