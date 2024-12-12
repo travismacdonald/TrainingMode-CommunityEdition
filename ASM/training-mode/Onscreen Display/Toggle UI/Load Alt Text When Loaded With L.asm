@@ -87,85 +87,6 @@ IncLoopLeft:
     stw r6, 0x0(r5)
     branchl r12, 0x803a74f0
 
-#####################
-## Recommended OSD ##
-#####################
-
-    # Get Options String
-    lwz r3, -0x77C0(r13)    # Get Memcard Data
-    lbz r3, OSDRecommended(r3)
-    bl FDDRecommendedOptions
-    mflr r4
-    branchl r12, SearchStringTable
-
-    # Create Text
-    mr r5, r3
-    mr r3, r30
-    bl FDDRecommended
-    mflr r4
-    lfs f1, RecommendedX(TextProp)
-    lfs f2, RecommendedY(TextProp)
-    branchl r12, Text_InitializeSubtext
-    stb r3, 0x49(r31)       # Store Subtext ID
-
-    # Change Color
-    mr r4, r3
-    mr r3, r30
-    addi r5, TextProp, RecommendedColor
-    branchl r12, Text_ChangeTextColor
-
-    # Create Z Text
-    mr r3, r30
-    bl FDDRecommendedZ
-    mflr r4
-    lfs f1, RecommendedZX(TextProp)
-    lfs f2, 0x28(TextProp)
-    branchl r12, Text_InitializeSubtext
-
-    # Change Color
-    mr r4, r3
-    mr r3, r30
-    addi r5, TextProp, RecommendedColor
-    branchl r12, Text_ChangeTextColor
-
-#########################
-## Write Max OSD Count ##
-#########################
-
-    # Create Text
-    mr r3, r30
-    bl MaxOSDText
-    mflr r4
-    lwz r5, -0x77C0(r13)
-    lbz r5, 0x1F28(r5)
-    addi r5, r5, 1
-    lfs f1, 0x1C(TextProp)
-    lfs f2, 0x20(TextProp)
-    branchl r12, 0x803a6b98
-    stb r3, 0x48(r31)
-
-    # Change Color
-    mr r4, r3
-    mr r3, r30
-    addi r5, sp, 0xF0
-    load r6, 0x8dff6eff
-    stw r6, 0x0(r5)
-    branchl r12, 0x803a74f0
-
-    # Create XY Text
-    mr r3, r30
-    bl XYText
-    mflr r4
-    lfs f1, 0x24(TextProp)
-    lfs f2, 0x28(TextProp)
-    branchl r12, 0x803a6b98
-
-    # Change Color
-    mr r4, r3
-    mr r3, r30
-    addi r5, sp, 0xF0
-    branchl r12, 0x803a74f0
-
 ###########################
 ## Write Right Side Text ##
 ###########################
@@ -347,19 +268,6 @@ FDDTitleText:
     blrl
     .long 0x4f534420
     .long 0x4d656e75
-    .long 0x00000000
-
-MaxOSDText:
-    blrl
-    .long 0x4d617820
-    .long 0x4f534427
-    .long 0x733a2025
-    .long 0x64000000
-
-XYText:
-    blrl
-    .long 0x81695881
-    .long 0x5e59816A
     .long 0x00000000
 
 original:
