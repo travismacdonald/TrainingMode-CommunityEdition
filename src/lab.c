@@ -58,21 +58,6 @@ void Lab_ChangeInputDisplay(GOBJ *menu_gobj, int value) {
     memcard->TM_LabCPUInputDisplay = value;
 }
 
-void Lab_ChangeCounterAction_Ground(GOBJ *menu_gobj, int value) {
-    Memcard *memcard = R13_PTR(MEMCARD);
-    memcard->TM_LabCPUCounterGround = value;
-}
-
-void Lab_ChangeCounterAction_Air(GOBJ *menu_gobj, int value) {
-    Memcard *memcard = R13_PTR(MEMCARD);
-    memcard->TM_LabCPUCounterAir = value;
-}
-
-void Lab_ChangeCounterAction_Shield(GOBJ *menu_gobj, int value) {
-    Memcard *memcard = R13_PTR(MEMCARD);
-    memcard->TM_LabCPUCounterShield = value;
-}
-
 void Lab_ChangeOverlays(GOBJ *menu_gobj, int value) {
     Memcard *memcard = R13_PTR(MEMCARD);
 
@@ -5454,9 +5439,6 @@ void Event_Init(GOBJ *gobj)
 
     Memcard *memcard = R13_PTR(MEMCARD);
     LabOptions_General[OPTGEN_FRAMEBTN].option_val = memcard->TM_LabFrameAdvanceButton;
-    LabOptions_CPU[OPTCPU_CTRGRND].option_val = memcard->TM_LabCPUCounterGround;
-    LabOptions_CPU[OPTCPU_CTRAIR].option_val = memcard->TM_LabCPUCounterAir;
-    LabOptions_CPU[OPTCPU_CTRSHIELD].option_val = memcard->TM_LabCPUCounterShield;
     LabOptions_General[OPTGEN_INPUT].option_val = memcard->TM_LabCPUInputDisplay;
 
     int overlay_save_count = sizeof(memcard->TM_LabSavedOverlays_HMN) / sizeof(OverlaySave);
