@@ -779,7 +779,7 @@ enum gen_option
 
 static char *LabOptions_CamMode[] = {"Normal", "Zoom", "Fixed", "Advanced"};
 static char *LabOptions_ShowInputs[] = {"Off", "HMN", "CPU", "HMN and CPU"};
-static char *LabOptions_FrameAdvButton[] = {"L", "Z", "X", "Y"};
+static char *LabOptions_FrameAdvButton[] = {"L", "Z", "X", "Y", "R"};
 
 static float LabOptions_GameSpeeds[] = {1.0, 2.0/3.0, 1.0/2.0, 1.0/4.0};
 static char *LabOptions_GameSpeedText[] = {"1", "2/3", "1/2", "1/4"};

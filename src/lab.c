@@ -2165,7 +2165,7 @@ int Update_CheckAdvance()
     HSD_Pad *engine_pad = PadGet(controller, PADGET_ENGINE);
 
     // get their advance input
-    static int stc_advance_btns[] = {HSD_TRIGGER_L, HSD_TRIGGER_Z, HSD_BUTTON_X, HSD_BUTTON_Y};
+    static int stc_advance_btns[] = {HSD_TRIGGER_L, HSD_TRIGGER_Z, HSD_BUTTON_X, HSD_BUTTON_Y, HSD_TRIGGER_R};
     int advance_btn = stc_advance_btns[LabOptions_General[OPTGEN_FRAMEBTN].option_val];
 
     // check if holding L
@@ -2191,6 +2191,13 @@ int Update_CheckAdvance()
                 pad->ftriggerLeft = 0;
                 engine_pad->triggerLeft = 0;
                 engine_pad->ftriggerLeft = 0;
+            }
+            else if (advance_btn == HSD_TRIGGER_R)
+            {
+                pad->triggerRight = 0;
+                pad->ftriggerRight = 0;
+                engine_pad->triggerRight = 0;
+                engine_pad->ftriggerRight = 0;
             }
         }
     }
