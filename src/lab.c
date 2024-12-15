@@ -1627,6 +1627,7 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         switch (tdi_kind)
         {
             case (CPUTDI_RANDOM):
+            TDI_RANDOM:
             {
                 switch (HSD_Randi(3)) {
                     case 0: goto TDI_IN;
@@ -1685,6 +1686,8 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
                     cpu_data->cpu.cstickY = ((float)cstickY / 80) * 127.0;
 
                     // increment
+                } else {
+                    goto TDI_RANDOM;
                 }
 
                 break;
