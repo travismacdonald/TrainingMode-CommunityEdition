@@ -866,8 +866,6 @@ static int CheckOverlay(GOBJ *character, OverlayGroup overlay)
             if (ASID_JUMPF <= state && state <= ASID_FALLAERIALB) return true;
 
             return state == ASID_TURN
-                || state == ASID_DASH
-                || state == ASID_RUN
                 || state == ASID_PASS
                 || state == ASID_SQUATWAIT
                 || state == ASID_OTTOTTOWAIT;
