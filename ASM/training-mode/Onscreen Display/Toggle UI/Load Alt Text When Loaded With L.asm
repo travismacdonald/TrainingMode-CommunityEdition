@@ -248,7 +248,7 @@ TextASCIILeft:
 TextASCIIRight:
     blrl
     .string ""
-    .string "" # OSD ID 12
+    .string "Lockout Timers" # OSD ID 12
     .string "Item Throw Interrupts" # OSD ID 13
     .string "Boost Grab"
     .string "" # DO NOT USE - reserved for custom events

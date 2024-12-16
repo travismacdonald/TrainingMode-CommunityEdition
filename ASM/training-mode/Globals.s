@@ -583,6 +583,7 @@ InitSettings:
     .set OSD.FighterSpecificTech, 8
     .set OSD.Powershield, 9
     .set OSD.SDI, 10
+    .set OSD.LockoutTimers, 12
     .set OSD.RollAirdodgeInterrupt, 13
     .set OSD.BoostGrab, 14
     .set OSD.Miscellaneous, 15
@@ -1511,6 +1512,11 @@ InitSettings:
     .macro Message_Display
     crset 6
     rtocbl r12, TM_MessageDisplay
+    .endm
+
+    .macro Message_Destroy
+    crset 6
+    rtocbl r12, TM_MessageDestroy
     .endm
 
     .set MsgData_Text, 0x0

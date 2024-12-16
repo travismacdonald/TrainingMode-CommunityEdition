@@ -2413,6 +2413,21 @@ GOBJ *Message_Display(int msg_kind, int queue_num, int msg_color, char *format, 
 
     MsgMngrData *mgr_data = stc_msgmgr->userdata;
 
+    // delete previous message if format is a null ptr
+    if (format == 0) {
+        GOBJ **msg_queue = &mgr_data->msg_queue[queue_num];
+        for (int j = 0; j < MSGQUEUE_SIZE; j++) {
+            GOBJ *msg_gobj = msg_queue[j];
+            if (msg_gobj == 0) continue;
+            MsgData *this_msg_data = msg_gobj->userdata;
+
+            if (this_msg_data->kind == msg_kind)
+                Message_Destroy(msg_queue, j);
+        }
+
+        return;
+    }
+
     // Create GOBJ
     GOBJ *msg_gobj = GObj_Create(0, 7, 0);
     MsgData *msg_data = calloc(sizeof(MsgData));
