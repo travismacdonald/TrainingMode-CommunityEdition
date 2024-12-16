@@ -204,6 +204,8 @@ void LCancel_Think(LCancelData *event_data, FighterData *hmn_data)
 
     JOBJ *hud_jobj = event_data->hud.gobj->hsd_object;
 
+    bool should_update_fastfall_hud = false;
+
     // log fastfall frame
     // if im in a fastfall-able state
     int state = hmn_data->state_id;
@@ -266,12 +268,7 @@ void LCancel_Think(LCancelData *event_data, FighterData *hmn_data)
         JOBJ_ClearFlags(arrow_jobj, JOBJ_HIDDEN);
         event_data->hud.arrow_timer = LCLARROW_ANIMFRAMES;
 
-        // Print airborne frames
-        if (event_data->is_fastfall)
-            Text_SetText(event_data->hud.text_air, 0, "%df", event_data->fastfall_frame - 1);
-        else
-            Text_SetText(event_data->hud.text_air, 0, "-");
-        event_data->is_fastfall = 0; // reset fastfall bool
+        should_update_fastfall_hud = true;
 
         // Print succession
         float succession = ((float)event_data->hud.lcl_success / (float)event_data->hud.lcl_total) * 100.0;
@@ -289,6 +286,8 @@ void LCancel_Think(LCancelData *event_data, FighterData *hmn_data)
     {
         // state as autocancelled
         Text_SetText(event_data->hud.text_time, 0, "Auto-canceled");
+
+        should_update_fastfall_hud = true;
 
         // Play HUD anim
         JOBJ_RemoveAnimAll(hud_jobj);
@@ -311,6 +310,15 @@ void LCancel_Think(LCancelData *event_data, FighterData *hmn_data)
         JOBJ_GetChild(hud_jobj, &arrow_jobj, LCLARROW_JOBJ, -1); // get timing bar jobj
         arrow_jobj->trans.X = xpos;
         JOBJ_SetMtxDirtySub(arrow_jobj);
+    }
+
+    if (should_update_fastfall_hud) {
+        // Print airborne frames
+        if (event_data->is_fastfall)
+            Text_SetText(event_data->hud.text_air, 0, "%df", event_data->fastfall_frame - 1);
+        else
+            Text_SetText(event_data->hud.text_air, 0, "-");
+        event_data->is_fastfall = 0; // reset fastfall bool
     }
 
     // update HUD anim
