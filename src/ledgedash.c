@@ -19,7 +19,19 @@ static GXColor *tmgbar_colors[] = {
     &tmgbar_red,
 };
 
+enum menu_options
+{
+    OPT_POS,
+    OPT_RESET,
+    OPT_HUD,
+    OPT_TIPS,
+    OPT_CAM,
+    OPT_ABOUT,
+    OPT_EXIT,
+};
+
 // Main Menu
+static char **LdshOptions_CamMode[] = {"Normal", "Zoom", "Fixed", "Advanced"};
 static char **LdshOptions_Start[] = {"Ledge", "Falling", "Stage", "Respawn Platform"};
 static char **LdshOptions_Reset[] = {"On", "Off"};
 static char **LdshOptions_HUD[] = {"On", "Off"};
@@ -67,6 +79,14 @@ static EventOption LdshOptions_Main[] = {
         .desc = "Toggle the onscreen display of tips.", // string describing what this option does
         .option_values = LdshOptions_HUD,               // pointer to an array of strings
         .onOptionChange = Tips_Toggle,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LdshOptions_CamMode) / 4,
+        .option_name = "Camera Mode",
+        .desc = "Adjust the camera's behavior.\nIn advanced mode, use C-Stick while holding\nA/B/Y to pan, rotate and zoom, respectively.",
+        .option_values = LdshOptions_CamMode,
+        .onOptionChange = Ledgedash_ChangeCamMode,
     },
     // Help
     {
@@ -444,7 +464,7 @@ void Ledgedash_HUDCamThink(GOBJ *gobj)
 {
 
     // if HUD enabled and not paused
-    if ((LdshOptions_Main[2].option_val == 0) && (Pause_CheckStatus(1) != 2))
+    if ((LdshOptions_Main[OPT_HUD].option_val == 0) && (Pause_CheckStatus(1) != 2))
     {
         CObjThink_Common(gobj);
     }
@@ -458,7 +478,7 @@ void Ledgedash_ResetThink(LedgedashData *event_data, GOBJ *hmn)
     JOBJ *hud_jobj = event_data->hud.gobj->hsd_object;
 
     // check if enabled and ledge exists
-    if ((LdshOptions_Main[1].option_val == 0) && (event_data->ledge_line != -1))
+    if ((LdshOptions_Main[OPT_RESET].option_val == 0) && (event_data->ledge_line != -1))
     {
 
         // check if reset timer is set
@@ -689,6 +709,92 @@ void Ledgedash_FtInit(LedgedashData *event_data)
 
     return;
 }
+
+void Ledgedash_ChangeCamMode(GOBJ *menu_gobj, int value)
+{
+    MatchCamera *cam = MATCH_CAM;
+
+    // normal cam
+    if (value == 0)
+    {
+        Match_SetNormalCamera();
+    }
+    // zoom cam
+    else if (value == 1)
+    {
+        Match_SetFreeCamera(0, 3);
+        cam->freecam_fov.X = 140;
+        cam->freecam_rotate.Y = 10;
+    }
+    // fixed
+    else if (value == 2)
+    {
+        Match_SetFixedCamera();
+    }
+    else if (value == 3)
+    {
+        Match_SetDevelopCamera();
+    }
+    Match_CorrectCamera();
+
+    return;
+}
+
+void Event_Update()
+{
+    Update_Camera();
+}
+
+void Update_Camera()
+{
+    // if camera is set to advanced
+    if (LdshOptions_Main[OPT_CAM].option_val == 3)
+    {
+
+        // Get player gobj
+        GOBJ *fighter = Fighter_GetGObj(0);
+        if (fighter != 0)
+        {
+
+            // get players inputs
+            FighterData *fighter_data = fighter->userdata;
+            HSD_Pad *pad = PadGet(fighter_data->pad_index, PADGET_MASTER);
+            int held = pad->held;
+            float stickX = pad->fsubstickX;
+            float stickY = pad->fsubstickY;
+
+            if (fabs(stickX) < STICK_DEADZONE)
+                stickX = 0;
+            if (fabs(stickY) < STICK_DEADZONE)
+                stickY = 0;
+
+            if (stickX != 0 || stickY != 0)
+            {
+                COBJ *cobj = Match_GetCObj();
+
+                // adjust pan
+                if ((held & HSD_BUTTON_A) != 0)
+                {
+                    DevCam_AdjustPan(cobj, stickX * -1, stickY * -1);
+                }
+                // adjust zoom
+                else if ((held & HSD_BUTTON_Y) != 0)
+                {
+                    DevCam_AdjustZoom(cobj, stickY);
+                }
+                // adjust rotate
+                else if ((held & HSD_BUTTON_B) != 0)
+                {
+                    MatchCamera *matchCam = MATCH_CAM;
+                    DevCam_AdjustRotate(cobj, &matchCam->devcam_rot, &matchCam->devcam_pos, stickX, stickY);
+                }
+            }
+        }
+    }
+
+    return;
+}
+
 void Ledgedash_ChangeLedgeThink(LedgedashData *event_data, GOBJ *hmn)
 {
     FighterData *hmn_data = hmn->userdata;
@@ -1172,7 +1278,7 @@ void Tips_Toggle(GOBJ *menu_gobj, int value)
 void Tips_Think(LedgedashData *event_data, FighterData *hmn_data)
 {
     // skip if tips turned off
-    if (LdshOptions_Main[3].option_val == 1)
+    if (LdshOptions_Main[OPT_TIPS].option_val == 1)
         return;
 
     // check for early fall input in cliffcatch

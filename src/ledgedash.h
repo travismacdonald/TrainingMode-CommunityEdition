@@ -10,6 +10,7 @@ typedef struct LdshHitboxData LdshHitboxData;
 #define LDSH_HITBOXNUM 30 * 4
 #define LCLTEXT_SCALE 4.5
 #define LCLJOBJ_BAR 4
+#define STICK_DEADZONE 0.2
 
 struct LedgedashData
 {
@@ -80,10 +81,12 @@ typedef enum LDSH_ACTION
 };
 
 void Event_Exit();
+void Event_Update();
 void Tips_Toggle(GOBJ *menu_gobj, int value);
 void Ledgedash_ToggleStartPosition(GOBJ *menu_gobj, int value);
 void Ledgedash_ToggleAutoReset(GOBJ *menu_gobj, int value);
 void Ledgedash_HUDCamThink(GOBJ *gobj);
+void Ledgedash_ChangeCamMode(GOBJ *gobj, int value);
 GOBJ *Ledgedash_HitLogInit();
 void Ledgedash_HitLogGX(GOBJ *gobj, int pass);
 void RebirthWait_Phys(GOBJ *fighter);
