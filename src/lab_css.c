@@ -16,6 +16,7 @@ static GXColor text_gold = {255, 211, 0, 255};
 static EventDesc *event_desc;
 
 ExportHeader *GetExportHeaderFromCard(int slot, char *fileName, void *buffer);
+int CSS_ID(int ext_id);
 int GetSelectedFighterIdOnCssForHmn();
 
 // OnLoad
@@ -75,7 +76,7 @@ void Read_Recordings()
     int file_size;
     s32 memSize, sectorSize;
 
-    int hmnFighterId = GetSelectedFighterIdOnCssForHmn();
+    int hmnCSSId = CSS_ID(GetSelectedFighterIdOnCssForHmn());
 
     if (CARDProbeEx(slot, &memSize, &sectorSize) == CARD_RESULT_READY)
     {
@@ -110,10 +111,11 @@ void Read_Recordings()
                                 strncmp("TMREC", card_stat.fileName, 5) != 0)
                             continue;
 
-                        if (hmnFighterId != -1)
+                        if (hmnCSSId != -1)
                         {
                             ExportHeader *header = GetExportHeaderFromCard(slot, card_stat.fileName, buffer);
-                            if (header->metadata.hmn != hmnFighterId)
+
+                            if (CSS_ID(header->metadata.hmn) != hmnCSSId)
                             {
                                 import_data.hidden_file_num++;
                                 continue;
@@ -1295,6 +1297,14 @@ ExportHeader *GetExportHeaderFromCard(int slot, char *fileName, void *buffer) {
     CARDClose(&card_file_info);
     return header;
 }
+
+// converts from external character IDs to CSSs idx - i.e. sheik/zelda popo/nana become the same.
+int CSS_ID(int ext_id) {
+    if (ext_id == CKIND_SHEIK) return CKIND_ZELDA;
+    if (ext_id == CKIND_POPO) return CKIND_ICECLIMBERS;
+    return ext_id;
+}
+
 int GetSelectedFighterIdOnCssForHmn() {
     // Get selected fighter for hmn in CSS
     VSMinorData *css_minorscene = *stc_css_minorscene;

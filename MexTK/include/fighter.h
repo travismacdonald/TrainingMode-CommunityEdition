@@ -11,6 +11,7 @@
 #include "collision.h"
 #include "dynamics.h"
 
+// Internal IDs
 typedef enum FighterKind
 {
     FTKIND_MARIO,
@@ -47,6 +48,8 @@ typedef enum FighterKind
     FTKIND_GIGABOWSER,
     FTKIND_SANDBAG,
 } FighterKind;
+
+// External IDs
 typedef enum CharacterKind
 {
     CKIND_FALCON,
