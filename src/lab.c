@@ -5433,6 +5433,9 @@ static void UpdateOverlays(GOBJ *character, EventOption *overlays) {
             data->color[1].color_enable = 1;
             data->flags.invisible = ov.invisible;
 
+            if (ov.show_collision)
+                data->show_hit = 1;
+
             if (ov.play_sound)
                 SFX_PlayCommon(2);
 
@@ -5444,6 +5447,7 @@ static void UpdateOverlays(GOBJ *character, EventOption *overlays) {
         memset(&data->color[1], 0, sizeof(ColorOverlay));
         memset(&data->color[0], 0, sizeof(ColorOverlay));
         data->flags.invisible = 0;
+        data->show_hit = LabOptions_General[OPTGEN_HIT].option_val;
         *overlay_running = -1;
     }
 }

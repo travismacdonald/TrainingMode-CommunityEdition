@@ -1956,16 +1956,17 @@ static EventMenu LabMenu_Record = {
 
 // OVERLAY MENU --------------------------------------------------------------
 
-#define OVERLAY_COLOUR_COUNT 10
+#define OVERLAY_COLOUR_COUNT 11
 static char *LabValues_OverlayNames[OVERLAY_COLOUR_COUNT] = { 
     "None", "Red", "Green", "Blue", "Yellow", "White", "Black", 
-    "Remove Overlay", "Invisible", "Play Sound" 
+    "Remove Overlay", "Show Collision", "Invisible", "Play Sound"
 };
 
 typedef struct Overlay {
     u32 invisible : 1;
     u32 play_sound : 1;
     u32 occur_once : 1;
+    u32 show_collision : 1;
     GXColor color;
 } Overlay;
 
@@ -1979,6 +1980,7 @@ static Overlay LabValues_OverlayColours[OVERLAY_COLOUR_COUNT] = {
     { .color = { 20 , 20 , 20 , 180 } },
 
     { .color = { 0  , 0  , 0  , 0   } },
+    { .show_collision = 1 },
     { .invisible = 1 },
     { .play_sound = 1, .occur_once = 1 }
 };
