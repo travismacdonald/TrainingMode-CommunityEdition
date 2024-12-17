@@ -1189,6 +1189,14 @@ enum cpu_mash
     CPUMASH_COUNT
 };
 
+enum cpu_grab_release
+{
+    CPUGRABRELEASE_GROUNDED,
+    CPUGRABRELEASE_AIRBORN,
+
+    CPUGRABRELEASE_COUNT
+};
+
 enum cpu_inf_shield {
     CPUINFSHIELD_OFF,
     CPUINFSHIELD_UNTIL_HIT,
@@ -1248,6 +1256,7 @@ enum cpu_option
     OPTCPU_SHIELDDIR,
     OPTCPU_INTANG,
     OPTCPU_MASH,
+    OPTCPU_GRABRELEASE,
     OPTCPU_BEHAVE,
     OPTCPU_CTRGRND,
     OPTCPU_CTRAIR,
@@ -1270,6 +1279,7 @@ static char *LabValues_SDIDir[] = {"Random", "Away", "Towards", "Up", "Down", "L
 static char *LabValues_Tech[] = {"Random", "Neutral", "Away", "Towards", "None"};
 static char *LabValues_Getup[] = {"Random", "Stand", "Away", "Towards", "Attack"};
 static char *LabValues_GrabEscape[] = {"None", "Medium", "High", "Perfect"};
+static char *LabValues_GrabRelease[] = {"Grounded", "Airborn"};
 static char *LabValues_LockCPUPercent[] = {"Off", "On"};
 static char *LabValues_CPUControlledBy[] = {"None", "Port 1", "Port 2", "Port 3", "Port 4"};
 
@@ -1374,6 +1384,14 @@ static EventOption LabOptions_CPU[OPTCPU_COUNT] = {
         .option_name = "Grab Escape",
         .desc = "Adjust how the CPU will attempt to escape\ngrabs.",
         .option_values = LabValues_GrabEscape,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_GrabRelease) / 4,
+        .option_val = CPUGRABRELEASE_GROUNDED,
+        .option_name = "Grab Release",
+        .desc = "Adjust how the CPU will escape grabs.",
+        .option_values = LabValues_GrabRelease,
     },
     {
         .option_kind = OPTKIND_STRING,
