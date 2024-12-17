@@ -3249,13 +3249,6 @@ void EventMenu_MenuThink(GOBJ *gobj, EventMenu *currMenu) {
                 cursor = cursor_max;
             }
         }
-        // if no more options, move to the top if not in rapid mode
-        else if (inputs_rapid) {
-            // * This implementation assumes that the top option will never be disabled.
-            // * Otherwise, we need to search `enabled_option_min_index` and adjust cursor/scroll to the option.
-            cursor = cursor_min;
-            scroll = 0;
-        }
 
         if (currMenu->cursor != cursor || currMenu->scroll != scroll) {
             isChanged = 1;
@@ -3289,21 +3282,6 @@ void EventMenu_MenuThink(GOBJ *gobj, EventMenu *currMenu) {
             if (cursor < 0) {
                 scroll += cursor; // effectively scroll up by adding a negative number
                 cursor = 0;       // cursor is positioned at 0
-            }
-        }
-        // if no more options, move to the bottom if not in rapid mode
-        else if (inputs_rapid) {
-            int enabled_option_max_index = -1;
-            for (int i = (option_num - 1); i >= 0; i--) {
-                if (currMenu->options[i].disable == 0) {
-                    enabled_option_max_index = i;
-                    break;
-                }
-            }
-
-            if (enabled_option_max_index != -1) {
-                cursor = (enabled_option_max_index >= cursor_max) ? cursor_max : enabled_option_max_index;
-                scroll = (enabled_option_max_index >= cursor_max) ? (enabled_option_max_index - cursor_max) : 0;
             }
         }
 
