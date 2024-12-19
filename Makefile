@@ -24,6 +24,7 @@ endif
 endif
 
 clean:
+	rm -rf TM-CE/patch.xdelta
 	rm -rf TM-CE.iso
 	rm -rf ./build/
 
@@ -82,7 +83,8 @@ build:
 iso: TM-CE.iso
 
 TM-CE.zip: TM-CE.iso
-	zip TM-CE.zip TM-CE.iso
+	xdelta3 -f -s ${iso} -e TM-CE.iso TM-CE/patch.xdelta
+	zip -r TM-CE.zip TM-CE/
 
 release: TM-CE.zip
 
