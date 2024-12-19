@@ -83,6 +83,7 @@ build:
 iso: TM-CE.iso
 
 TM-CE.zip: TM-CE.iso
+	cp Build\ TM\ Start.dol/xdelta.exe TM-CE/
 	xdelta3 -f -s ${iso} -e TM-CE.iso TM-CE/patch.xdelta
 	zip -r TM-CE.zip TM-CE/
 
