@@ -583,6 +583,7 @@ InitSettings:
     .set OSD.FighterSpecificTech, 8
     .set OSD.Powershield, 9
     .set OSD.SDI, 10
+    .set OSD.LockoutTimers, 12
     .set OSD.RollAirdodgeInterrupt, 13
     .set OSD.BoostGrab, 14
     .set OSD.Miscellaneous, 15
