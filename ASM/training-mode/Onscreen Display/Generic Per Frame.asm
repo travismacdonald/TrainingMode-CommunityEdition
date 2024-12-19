@@ -285,15 +285,6 @@ OSD_Lockout:
     and. r0, r0, r4
     beq Exit
 
-#GetPrevLockout:
-#    bl GetPrevLockoutEnd
-#    .long 0
-#GetPrevLockoutEnd:
-#    mflr r3
-#    lwz r8, 0x0(r3)
-#    lbz r7, 0x674(playerdata) # timer_lstick_smash_y
-#    stw r7, 0x0(r3)
-
     # dont show if in the air
     lwz r3, 0xE0(playerdata) # air_state
     cmpwi r3, 1
@@ -324,12 +315,7 @@ Lockout_InLockout:
     addi r7, r7, 1 # 1-index timer
     bl LockoutText
     mflr r6
-    b Lockout_Message_Display
 
-Lockout_LockoutEnded:
-    li r6, 0 # setting format string to null deletes message
-
-Lockout_Message_Display:
     li r3, OSD.LockoutTimers        # ID
     lbz r4, 0xC(playerdata)         # queue
     Message_Display

@@ -1514,11 +1514,6 @@ InitSettings:
     rtocbl r12, TM_MessageDisplay
     .endm
 
-    .macro Message_Destroy
-    crset 6
-    rtocbl r12, TM_MessageDestroy
-    .endm
-
     .set MsgData_Text, 0x0
 
     .set MSGCOLOR_WHITE, 0
