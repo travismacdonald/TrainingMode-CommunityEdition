@@ -496,7 +496,7 @@ void Ledgedash_ResetThink(LedgedashData *event_data, GOBJ *hmn)
         // check to set reset timner
         else if (event_data->action_state.is_actionable)
         {
-            event_data->reset_timer = 30;
+            event_data->reset_timer = 60;
         }
         else
         {
@@ -511,7 +511,7 @@ void Ledgedash_ResetThink(LedgedashData *event_data, GOBJ *hmn)
                  (hmn_data->TM.state_frame >= 12)))
             {
                 // reset and play sfx
-                Fighter_PlaceOnLedge(event_data, hmn, event_data->ledge_line, (float)event_data->ledge_dir);
+                event_data->reset_timer = 20;
                 SFX_PlayCommon(3);
             }
         }
