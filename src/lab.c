@@ -983,7 +983,10 @@ int CPUAction_CheckASID(GOBJ *cpu, int asid_kind)
     {
         // check custom ASID groups
         case (ASID_ANY): return true;
-        case (ASID_DAMAGEAIR): return in_air && in_hitstun_anim(cpu) && hitstun_ended(cpu);
+        case (ASID_DAMAGEAIR):
+            return in_air
+                && (in_hitstun_anim(cpu) || cpu_state == ASID_DAMAGEFALL)
+                && hitstun_ended(cpu);
 
         case (ASID_ACTIONABLE):
         {
