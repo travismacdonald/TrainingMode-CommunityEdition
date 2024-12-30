@@ -26,6 +26,7 @@ enum menu_options
     OPT_HUD,
     OPT_TIPS,
     OPT_CAM,
+    OPT_INV,
     OPT_ABOUT,
     OPT_EXIT,
 };
@@ -35,6 +36,7 @@ static char **LdshOptions_CamMode[] = {"Normal", "Zoom", "Fixed", "Advanced"};
 static char **LdshOptions_Start[] = {"Ledge", "Falling", "Stage", "Respawn Platform"};
 static char **LdshOptions_Reset[] = {"On", "Off"};
 static char **LdshOptions_HUD[] = {"On", "Off"};
+static char **LdshOptions_Inv[] = {"Off", "On"};
 static EventOption LdshOptions_Main[] = {
     // Position
     {
@@ -87,6 +89,13 @@ static EventOption LdshOptions_Main[] = {
         .desc = "Adjust the camera's behavior.\nIn advanced mode, use C-Stick while holding\nA/B/Y to pan, rotate and zoom, respectively.",
         .option_values = LdshOptions_CamMode,
         .onOptionChange = Ledgedash_ChangeCamMode,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LdshOptions_Inv) / 4,
+        .option_name = "Keep Ledge Invincibility",
+        .desc = "Keep maximum invincibility while on the ledge\nto practice the ledgedash inputs.",
+        .option_values = LdshOptions_Inv,
     },
     // Help
     {
@@ -168,6 +177,13 @@ void Event_Think(GOBJ *event)
     FtCliffCatch *ft_state = &hmn_data->state_var;
     if (hmn_data->state_id == ASID_CLIFFWAIT)
         ft_state->fall_timer = 2;
+
+    if (LdshOptions_Main[OPT_INV].option_val == 1) {
+        if (hmn_data->state_id == ASID_CLIFFWAIT) {
+            hmn_data->hurt.intang_frames.ledge = 30;
+            hmn_data->TM.state_frame = 1;
+        }
+    }
 
     Ledgedash_HUDThink(event_data, hmn_data);
     Ledgedash_HitLogThink(event_data, hmn);
@@ -419,39 +435,41 @@ void Ledgedash_HUDThink(LedgedashData *event_data, FighterData *hmn_data)
             JOBJ_ReqAnimAll(hud_jobj, 0);
         }
 
-        // update bar colors
-        JOBJ *timingbar_jobj;
-        JOBJ_GetChild(hud_jobj, &timingbar_jobj, LCLJOBJ_BAR, -1); // get timing bar jobj
-        DOBJ *d = timingbar_jobj->dobj;
-        int count = 0;
-        while (d != 0)
-        {
-            // if a box dobj
-            if ((count >= 0) && (count < 30))
+        if (event_data->action_state.is_actionable == 0) {
+            // update bar colors
+            JOBJ *timingbar_jobj;
+            JOBJ_GetChild(hud_jobj, &timingbar_jobj, LCLJOBJ_BAR, -1); // get timing bar jobj
+            DOBJ *d = timingbar_jobj->dobj;
+            int count = 0;
+            while (d != 0)
             {
-
-                // if mobj exists (it will)
-                MOBJ *m = d->mobj;
-                if (m != 0)
+                // if a box dobj
+                if ((count >= 0) && (count < 30))
                 {
 
-                    HSD_Material *mat = m->mat;
-                    int this_frame = 29 - count;
-                    GXColor *bar_color;
+                    // if mobj exists (it will)
+                    MOBJ *m = d->mobj;
+                    if (m != 0)
+                    {
 
-                    // check if GALINT frame
-                    if ((this_frame >= curr_frame) && ((this_frame <= (curr_frame + hmn_data->hurt.intang_frames.ledge))))
-                        bar_color = &tmgbar_blue;
-                    else
-                        bar_color = tmgbar_colors[event_data->action_state.action_log[this_frame]];
+                        HSD_Material *mat = m->mat;
+                        int this_frame = 29 - count;
+                        GXColor *bar_color;
 
-                    mat->diffuse = *bar_color;
+                        // check if GALINT frame
+                        if ((this_frame >= curr_frame) && ((this_frame <= (curr_frame + hmn_data->hurt.intang_frames.ledge))))
+                            bar_color = &tmgbar_blue;
+                        else
+                            bar_color = tmgbar_colors[event_data->action_state.action_log[this_frame]];
+
+                        mat->diffuse = *bar_color;
+                    }
                 }
-            }
 
-            // inc
-            count++;
-            d = d->next;
+                // inc
+                count++;
+                d = d->next;
+            }
         }
     }
 
