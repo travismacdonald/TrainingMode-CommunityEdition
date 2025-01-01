@@ -1725,9 +1725,7 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         {
             case (ASDI_AUTO):
             {
-                // follow TDI
-                cpu_data->cpu.cstickX = 0.0;
-                cpu_data->cpu.cstickY = 0.0;
+                // follow TDI, or custom SDI
                 break;
             }
             case (ASDI_AWAY):
