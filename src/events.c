@@ -2704,7 +2704,8 @@ void Message_Destroy(GOBJ **msg_queue, int msg_num)
         if (this_msg_gobj != 0)
         {
             MsgData *this_msg_data = this_msg_gobj->userdata;
-            this_msg_data->prev_index = i + 1; // prev position
+            if (this_msg_data != 0)
+                this_msg_data->prev_index = i + 1; // prev position
         }
     }
 
