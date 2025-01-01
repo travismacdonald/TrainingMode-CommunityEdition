@@ -882,8 +882,8 @@ static int CheckOverlay(GOBJ *character, OverlayGroup overlay)
             if (state < ASID_LANDINGAIRN || ASID_LANDINGAIRLW < state)
                 return false;
 
-            int frames_from_first_l = data->TM.state_frame + 7;
-            return data->input.timer_trigger_any_ignore_hitlag > frames_from_first_l;
+            int frames_from_first_possible_l = data->TM.state_frame + 7;
+            return (data->input.timer_trigger_any_ignore_hitlag + 1) > frames_from_first_possible_l;
         }
 
         case (OVERLAY_CAN_FASTFALL):
