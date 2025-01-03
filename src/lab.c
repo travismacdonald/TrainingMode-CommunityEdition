@@ -883,7 +883,7 @@ static int CheckOverlay(GOBJ *character, OverlayGroup overlay)
                 return false;
 
             int frames_from_first_possible_l = data->TM.state_frame + 7;
-            return (data->input.timer_trigger_any_ignore_hitlag + 1) > frames_from_first_possible_l;
+            return data->input.timer_trigger_any_ignore_hitlag >= frames_from_first_possible_l;
         }
 
         case (OVERLAY_CAN_FASTFALL):
