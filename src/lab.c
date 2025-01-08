@@ -3450,13 +3450,11 @@ void Record_Think(GOBJ *rec_gobj)
             }
             case (AUTORESTORE_COUNTER):
             {
-                if (cpu_mode == RECMODE_CPU_OFF) {
-                    int state = cpu_data->state_id;
-                    restore = event_data->cpu_countering
-                        || (ASID_DEADDOWN <= state && state <= ASID_DEADUPFALLHITCAMERAICE)
-                        // Aitch: temporary hack to reset before we add Counter Action (Ledge) options.
-                        || state == ASID_CLIFFWAIT;
-                }
+                int state = cpu_data->state_id;
+                restore = event_data->cpu_countering
+                    || (ASID_DEADDOWN <= state && state <= ASID_DEADUPFALLHITCAMERAICE)
+                    // Aitch: temporary hack to reset before we add Counter Action (Ledge) options.
+                    || state == ASID_CLIFFWAIT;
                 break;
             }
         }
@@ -5752,8 +5750,6 @@ void Event_Think_LabState_Normal(GOBJ *event) {
     }
     case (RECMODE_CPU_PLAYBACK):
     {
-        int countering = stc_playback_cancelled_cpu;
-
         switch (LabOptions_Record[OPTREC_PLAYBACK_COUNTER].option_val) {
         case PLAYBACKCOUNTER_OFF:
             break;
