@@ -53,6 +53,23 @@ static float hmn_locked_percent = 0;
 
 // Menu Callbacks
 
+void Lab_ChangeStadiumTransformation(GOBJ *menu_gobj, int value) {
+    if (value == 0) return; // TODO
+
+    GOBJ *gobj = Stage_GetMapGObj(2);
+
+    u8 *tform_data = gobj->userdata;
+    *(u32*)(tform_data + 0xD8) = -1; // set transformation timer
+
+    s32 *timers = *TRANSFORMATION_TIMER_PTR;
+    timers[2] = 0x1000001; // max transformation length
+    timers[3] = 0x1000000; // default transformation length
+    timers[4] = 0;         // screen flash length
+
+    int transformation_id = value - 1;
+    *TRANSFORMATION_ID_PTR = transformation_id;
+}
+
 void Lab_ChangeInputDisplay(GOBJ *menu_gobj, int value) {
     Memcard *memcard = R13_PTR(MEMCARD);
     memcard->TM_LabCPUInputDisplay = value;
@@ -5451,8 +5468,30 @@ static void UpdateOverlays(GOBJ *character, EventOption *overlays) {
     }
 }
 
-// Think Function that runs after the character's think functions.
-// Needed to prevent color overlays from being overwritten
+static void Stage_SetFODPlatformHeight(int side) {
+    int option_idx = side == 0 ? OPTSTAGE_FOD_PLAT_HEIGHT_LEFT : OPTSTAGE_FOD_PLAT_HEIGHT_RIGHT;
+    int idx = LabOptions_Stage_FOD[option_idx].option_val;
+    if (idx == 0) return; // random default
+    float height = LabValues_FODPlatformHeights[idx];
+    GOBJ *gobj = Stage_GetMapGObj(3);
+    JOBJ *stage_jobj = gobj->hsd_object;
+    JOBJ *plat_jobj = stage_jobj->child->child;
+    if (side != 0)
+        plat_jobj = plat_jobj->sibling;
+    plat_jobj->trans.Y = height * 1.21875;
+    JOBJ_SetMtxDirtySub(plat_jobj);
+}
+
+static void Stage_Think(void) {
+    GrExternal stage_kind = Stage_GetExternalID();
+    if (stage_kind == GRKINDEXT_IZUMI) {
+        Stage_SetFODPlatformHeight(0);
+        Stage_SetFODPlatformHeight(1);
+    }
+}
+
+// Think Function that runs after the stage and character's think functions.
+// Needed to prevent data from overwritten by the native think functions.
 void Event_PostThink(GOBJ *gobj)
 {
     GOBJ *hmn = Fighter_GetGObj(0);
@@ -5464,6 +5503,8 @@ void Event_PostThink(GOBJ *gobj)
 
     UpdateOverlays(hmn, LabOptions_OverlaysHMN);
     UpdateOverlays(cpu, LabOptions_OverlaysCPU);
+
+    Stage_Think();
 }
 
 // Init Function
@@ -5477,14 +5518,19 @@ void Event_Init(GOBJ *gobj)
     FighterData *cpu_data = cpu->userdata;
     GObj_AddProc(gobj, Event_PostThink, 20);
 
+    // Init runtime options...
+
+    // overlays
     memcpy(LabOptions_OverlaysHMN, LabOptions_OverlaysDefault, sizeof(LabOptions_OverlaysDefault));
     memcpy(LabOptions_OverlaysCPU, LabOptions_OverlaysDefault, sizeof(LabOptions_OverlaysDefault));
 
+    // info display
     memcpy(LabOptions_InfoDisplayHMN, LabOptions_InfoDisplayDefault, sizeof(LabOptions_InfoDisplayDefault));
     memcpy(LabOptions_InfoDisplayCPU, LabOptions_InfoDisplayDefault, sizeof(LabOptions_InfoDisplayDefault));
     LabOptions_InfoDisplayHMN[OPTINF_PRESET].onOptionChange = Lab_ChangeInfoPresetHMN;
     LabOptions_InfoDisplayCPU[OPTINF_PRESET].onOptionChange = Lab_ChangeInfoPresetCPU;
 
+    // saved options
     Memcard *memcard = R13_PTR(MEMCARD);
     LabOptions_General[OPTGEN_FRAMEBTN].option_val = memcard->TM_LabFrameAdvanceButton;
     LabOptions_General[OPTGEN_INPUT].option_val = memcard->TM_LabCPUInputDisplay;
@@ -5500,6 +5546,20 @@ void Event_Init(GOBJ *gobj)
         if (save_cpu.overlay != 0)
             LabOptions_OverlaysCPU[save_cpu.group].option_val = save_cpu.overlay;
     }
+
+    // stage options
+    EventMenu *stage_menu = stage_menus[Stage_GetExternalID()];
+    if (stage_menu != NULL) {
+        LabOptions_Main[OPTLAB_STAGE].disable = 0;
+        LabOptions_Main[OPTLAB_STAGE].menu = stage_menu;
+    }
+
+    // Aitch: replace HSD_Randi call in stadium transformation code with lwz r3, TRANSFORMATION_ID_PTR
+    // No way around this hack really, we can't fake the transformation well because loading is done immediately after
+    // the randi call, so we would have to decompile the entire 50k asm line function and reverse engineer the state machine.
+    // Directly overwriting the asm is the best call for now imo.
+    // This needs to be done here in init, as dolphin will jit the function when it runs and overwriting won't do anything.
+    *(u32*)(0x801d463c) = 0x806d3778;
 
     // theres got to be a better way to do this...
     event_vars = *event_vars_ptr;
@@ -5556,6 +5616,7 @@ void Event_Init(GOBJ *gobj)
 
     return;
 }
+
 // Update Function
 void Event_Update()
 {

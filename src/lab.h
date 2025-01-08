@@ -12,6 +12,7 @@ static EventMenu LabMenu_InfoDisplayCPU;
 static EventMenu LabMenu_CPU;
 static EventMenu LabMenu_Record;
 static EventMenu LabMenu_Tech;
+static EventMenu LabMenu_Stage_FOD;
 
 #define AUTORESTORE_DELAY 20
 #define INTANG_COLANIM 10
@@ -688,6 +689,7 @@ enum lab_option
     OPTLAB_RECORD_OPTIONS,
     OPTLAB_INFODISP_HMN,
     OPTLAB_INFODISP_CPU,
+    OPTLAB_STAGE,
     OPTLAB_HELP,
     OPTLAB_EXIT,
 
@@ -725,6 +727,13 @@ static EventOption LabOptions_Main[OPTLAB_COUNT] = {
         .menu = &LabMenu_InfoDisplayCPU,
         .option_name = "CPU Info Display",
         .desc = "Display various game information onscreen.",
+    },
+    {
+        .option_kind = OPTKIND_MENU,
+        .disable = 1,
+        //.menu and .disable are set in Event_Init depending on stage
+        .option_name = "Stage Options",
+        .desc = "Configure stage behavior.",
     },
     {
         .option_kind = OPTKIND_FUNC,
@@ -1097,6 +1106,111 @@ static EventMenu LabMenu_InfoDisplayCPU = {
     .name = "CPU Info Display",
     .option_num = sizeof(LabOptions_InfoDisplayCPU) / sizeof(EventOption),
     .options = &LabOptions_InfoDisplayCPU,
+};
+
+// STAGE MENUS -----------------------------------------------------------
+
+// STAGE MENU STADIUM --------------------------------------------------------
+
+#define TRANSFORMATION_TIMER_PTR ((s32**)(R13 - 0x4D28))
+#define TRANSFORMATION_ID_PTR ((int*)(R13 + 14200))
+
+enum stage_stadium_option
+{
+    OPTSTAGE_STADIUM_TRANSFORMATION,
+    OPTSTAGE_STADIUM_COUNT,
+};
+
+static char *LabValues_StadiumTransformation[] = { "Normal", "Fire", "Grass", "Rock", "Water" };
+
+static EventOption LabOptions_Stage_Stadium[OPTSTAGE_STADIUM_COUNT] = {
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_StadiumTransformation)/sizeof(*LabValues_StadiumTransformation),
+        .option_name = "Transformation",
+        .desc = "Set the current Pokemon Stadium transformation.\nRequires Stage Hazards to be on.\nTHIS OPTION IS EXPERMIMENTAL AND HAS ISSUES.",
+        .option_values = LabValues_StadiumTransformation,
+        .onOptionChange = Lab_ChangeStadiumTransformation,
+    }
+};
+
+static EventMenu LabMenu_Stage_Stadium = {
+    .name = "Stage Options",
+    .option_num = sizeof(LabOptions_Stage_Stadium) / sizeof(EventOption),
+    .options = &LabOptions_Stage_Stadium,
+};
+
+// STAGE MENU FOD --------------------------------------------------------
+
+enum stage_fod_option
+{
+    OPTSTAGE_FOD_PLAT_HEIGHT_LEFT,
+    OPTSTAGE_FOD_PLAT_HEIGHT_RIGHT,
+    OPTSTAGE_FOD_COUNT,
+};
+
+static const char *LabValues_FODPlatform[] = {"Random", "Hidden", "Lowest", "Left Default", "Average", "Right Default", "Highest"};
+static const float LabValues_FODPlatformHeights[] = { 0.0f, -3.25f, 15.f, 20.f, 25.f, 28.f, 35.f };
+
+static EventOption LabOptions_Stage_FOD[OPTSTAGE_FOD_COUNT] = {
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_FODPlatformHeights)/sizeof(*LabValues_FODPlatformHeights),
+        .option_name = "Left Platform Height",
+        .desc = "Adjust the left platform's distance from the ground.",
+        .option_values = LabValues_FODPlatform,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_FODPlatformHeights)/sizeof(*LabValues_FODPlatformHeights),
+        .option_name = "Right Platform Height",
+        .desc = "Adjust the right platform's distance from the ground.",
+        .option_values = LabValues_FODPlatform,
+    }
+};
+
+static EventMenu LabMenu_Stage_FOD = {
+    .name = "Stage Options",
+    .option_num = sizeof(LabOptions_Stage_FOD) / sizeof(EventOption),
+    .options = &LabOptions_Stage_FOD,
+};
+
+// STAGE MENU TABLE --------------------------------------------------------
+
+static const EventMenu *stage_menus[] = {
+    0,                          // GRKINDEXT_DUMMY,
+    0,                          // GRKINDEXT_TEST,
+    &LabMenu_Stage_FOD,         // GRKINDEXT_IZUMI,
+    &LabMenu_Stage_Stadium,     // GRKINDEXT_PSTAD,
+    0,                          // GRKINDEXT_CASTLE,
+    0,                          // GRKINDEXT_KONGO,
+    0,                          // GRKINDEXT_ZEBES,
+    0,                          // GRKINDEXT_CORNERIA,
+    0,                          // GRKINDEXT_STORY,
+    0,                          // GRKINDEXT_ONETT,
+    0,                          // GRKINDEXT_MUTECITY,
+    0,                          // GRKINDEXT_RCRUISE,
+    0,                          // GRKINDEXT_GARDEN,
+    0,                          // GRKINDEXT_GREATBAY,
+    0,                          // GRKINDEXT_SHRINE,
+    0,                          // GRKINDEXT_KRAID,
+    0,                          // GRKINDEXT_YOSTER,
+    0,                          // GRKINDEXT_GREENS,
+    0,                          // GRKINDEXT_FOURSIDE,
+    0,                          // GRKINDEXT_MK1,
+    0,                          // GRKINDEXT_MK2,
+    0,                          // GRKINDEXT_AKANEIA,
+    0,                          // GRKINDEXT_VENOM,
+    0,                          // GRKINDEXT_PURA,
+    0,                          // GRKINDEXT_BIGBLUE,
+    0,                          // GRKINDEXT_ICEMT,
+    0,                          // GRKINDEXT_ICETOP,
+    0,                          // GRKINDEXT_FLATZONE,
+    0,                          // GRKINDEXT_OLDPU,
+    0,                          // GRKINDEXT_OLDSTORY,
+    0,                          // GRKINDEXT_OLDKONGO,
+    0,                          // GRKINDEXT_BATTLE,
+    0,                          // GRKINDEXT_FD,
 };
 
 // CPU MENU --------------------------------------------------------------
