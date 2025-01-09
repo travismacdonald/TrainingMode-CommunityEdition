@@ -54,6 +54,11 @@ static float hmn_locked_percent = 0;
 // Menu Callbacks
 
 void Lab_ChangeStadiumTransformation(GOBJ *menu_gobj, int value) {
+    // Transformation decision making is entirely located in one HUGE function (PokemonStadium_TransformationDecide),
+    // so instead of just having a simple "SetTransformation(Fire)" function call,
+    // we need to directly set the timers and overwrite the randomness call to set the transformation.
+    // Incredibly hacky, but no better way I can think of.
+
     if (value == 0) return; // TODO
 
     GOBJ *gobj = Stage_GetMapGObj(2);
@@ -66,6 +71,9 @@ void Lab_ChangeStadiumTransformation(GOBJ *menu_gobj, int value) {
     timers[3] = 0x1000000; // default transformation length
     timers[4] = 0;         // screen flash length
 
+    // We overwrite the HSD_Randi call in Event_Init before PokemonStadium_TransformationDecide is run
+    // to prevent dolphin from jitting before we run the modified asm. It's overwritten to instead read
+    // from the global address modified here.
     int transformation_id = value - 1;
     *TRANSFORMATION_ID_PTR = transformation_id;
 }
