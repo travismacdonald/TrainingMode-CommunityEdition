@@ -13141,13 +13141,6 @@ AdjustResetDistance_CheckRightDPad:
     fneg P2Direction, P2Direction
     fmuls f1, f1, P2Direction
     fadds P2X, f1, PlayerX                              # New P2 X
-    # Check if already 30 Mm apart
-    fsubs f2, P1X, P2X
-    fabs f2, f2                                         # get abs distance from each other in f2
-    li r3, 30
-    bl IntToFloat
-    fcmpo cr0, f2, f1
-    bge AdjustResetDistance_NoPress
     # Store Back To PlayerBlock
     stfs P1X, 0xB0(r20)
     stfs P2X, 0xB0(r21)
