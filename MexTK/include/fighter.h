@@ -1254,8 +1254,8 @@ struct CPU
     s8 lstickY;                  // 0x5
     s8 cstickX;                  // 0x6
     s8 cstickY;                  // 0x7
-    s8 ltrigger;                 // 0x8
-    s8 rtrigger;                 // 0x9
+    u8 ltrigger;                 // 0x8
+    u8 rtrigger;                 // 0x9
     int ai;                      // 0xc, 25 of these, function table at 800a1090
     int level;                   // 0x10
     int x14;                     // 0x14

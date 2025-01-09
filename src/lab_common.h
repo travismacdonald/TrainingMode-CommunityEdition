@@ -199,6 +199,9 @@ typedef struct LabData
     // This flag is only set if the CPU has counter acted this frame.
     u8 cpu_countering;
 
+    // We need a place to store the current playback frame when the cpu is set to use a slot as a counter action.
+    u16 counter_slot_frame;
+
     s16 cpu_lasthit;
     s16 cpu_lastshieldstun; // last move instance of the opponent in shield stun. used to tell how many times the shield was hit
     s8 cpu_hitkind;         // how the CPU was hit, damage or shield
@@ -423,6 +426,8 @@ void Record_CObjThink(GOBJ *gobj);
 void Record_GX(GOBJ *gobj, int pass);
 void Record_Think(GOBJ *rec_gobj);
 void Record_Update(int ply, RecInputData *inputs, int rec_mode);
+void Record_SetInputs(GOBJ *fighter, RecInputs *inputs, bool mirror);
+int Record_RearrangeButtons(RecInputs *inputs);
 void Record_LoadSavestate();
 int Record_MenuThink(GOBJ *menu_gobj);
 int Record_OptimizedSave(Savestate *savestate);

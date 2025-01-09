@@ -1120,6 +1120,33 @@ int Lab_CPUPerformAction(GOBJ *cpu, int action_id, GOBJ *hmn)
     // get CPU action
     int action_done = 0;
     CPUAction *action_list = Lab_CPUActions[action_id];
+
+    int recSlot = action_list[0].recSlot;
+    if (recSlot != 0) {
+        LabData *eventData = event_vars->event_gobj->userdata;
+        int frame = eventData->counter_slot_frame;
+        if (frame == 0 && !CPUAction_CheckASID(cpu, ASID_ACTIONABLE)) return false; // wait until actionable
+        RecInputData *data = rec_data.cpu_inputs[recSlot-1];
+
+        if (data->start_frame < 0) return true;
+        if (frame >= data->num) {
+            eventData->counter_slot_frame = 0;
+            return true;
+        }
+
+        // cpu inputs have a different range than normal inputs, so we need to convert them.
+        // This will be slightly lossy, but there's not much we can do.
+        RecInputs *inputs = &data->inputs[frame];
+        cpu_data->cpu.lstickX = (s8)((float)inputs->stickX * 1.5875f);
+        cpu_data->cpu.lstickY = (s8)((float)inputs->stickY * 1.5875f);
+        cpu_data->cpu.cstickX = (s8)((float)inputs->substickX * 1.5875f);
+        cpu_data->cpu.cstickY = (s8)((float)inputs->substickY * 1.5875f);
+        cpu_data->cpu.ltrigger = (u8)((float)inputs->trigger / 140.f * 255.f);
+        cpu_data->cpu.held = Record_RearrangeButtons(inputs);
+        eventData->counter_slot_frame = frame + 1;
+        return false;
+    }
+
     int cpu_state = cpu_data->state_id;
     s16 cpu_frame = cpu_data->state.frame;
     if (cpu_frame == -1)
@@ -3494,6 +3521,47 @@ void Record_Think(GOBJ *rec_gobj)
     }
 }
 
+int Record_RearrangeButtons(RecInputs *inputs) {
+    int held = 0;
+    held |= inputs->btn_a << 8;
+    held |= inputs->btn_b << 9;
+    held |= inputs->btn_x << 10;
+    held |= inputs->btn_y << 11;
+    held |= inputs->btn_L << 6;
+    held |= inputs->btn_R << 5;
+    held |= inputs->btn_Z << 4;
+    held |= inputs->btn_dpadup << 3;
+    return held;
+}
+
+void Record_SetInputs(GOBJ *fighter, RecInputs *inputs, bool mirror) {
+    FighterData *fighter_data = fighter->userdata;
+    HSD_Pad *pad = PadGet(fighter_data->pad_index, PADGET_ENGINE);
+
+    // read inputs
+    pad->held = Record_RearrangeButtons(inputs);
+
+    // stick signed bytes
+    pad->stickX = inputs->stickX * (mirror ? -1 : 1);
+    pad->stickY = inputs->stickY;
+    pad->substickX = inputs->substickX * (mirror ? -1 : 1);
+    pad->substickY = inputs->substickY;
+
+    // stick floats
+    pad->fstickX = ((float)inputs->stickX / 80) * (mirror ? -1 : 1);
+    pad->fstickY = ((float)inputs->stickY / 80);
+    pad->fsubstickX = ((float)inputs->substickX / 80) * (mirror ? -1 : 1);
+    pad->fsubstickY = ((float)inputs->substickY / 80);
+
+    // trigger byte
+    pad->triggerRight = inputs->trigger;
+    pad->triggerLeft = 0;
+
+    // trigger float
+    pad->ftriggerRight = ((float)inputs->trigger / 140);
+    pad->ftriggerLeft = 0;
+}
+
 // assumes rec_mode_cpu
 void Record_Update(int ply, RecInputData *input_data, int rec_mode)
 {
@@ -3578,42 +3646,12 @@ void Record_Update(int ply, RecInputData *input_data, int rec_mode)
             if (curr_frame < rec_start || (curr_frame - rec_start) > (input_data->num))
                 return;
 
-            int held = 0;
             int mirrored_playback = (
                 LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].option_val &&
                 (LabOptions_Record[OPTREC_HMNMODE].option_val != RECMODE_HMN_RECORD && LabOptions_Record[OPTREC_CPUMODE].option_val != RECMODE_CPU_RECORD)
             );
             RecInputs *inputs = &input_data->inputs[curr_frame - 1];
-            // read inputs
-            held |= inputs->btn_a << 8;
-            held |= inputs->btn_b << 9;
-            held |= inputs->btn_x << 10;
-            held |= inputs->btn_y << 11;
-            held |= inputs->btn_L << 6;
-            held |= inputs->btn_R << 5;
-            held |= inputs->btn_Z << 4;
-            held |= inputs->btn_dpadup << 3;
-            pad->held = held;
-
-            // stick signed bytes
-            pad->stickX = inputs->stickX * (mirrored_playback ? -1 : 1);
-            pad->stickY = inputs->stickY;
-            pad->substickX = inputs->substickX * (mirrored_playback ? -1 : 1);
-            pad->substickY = inputs->substickY;
-
-            // stick floats
-            pad->fstickX = ((float)inputs->stickX / 80) * (mirrored_playback ? -1 : 1);
-            pad->fstickY = ((float)inputs->stickY / 80);
-            pad->fsubstickX = ((float)inputs->substickX / 80) * (mirrored_playback ? -1 : 1);
-            pad->fsubstickY = ((float)inputs->substickY / 80);
-
-            // trigger byte
-            pad->triggerRight = inputs->trigger;
-            pad->triggerLeft = 0;
-
-            // trigger float
-            pad->ftriggerRight = ((float)inputs->trigger / 140);
-            pad->ftriggerLeft = 0;
+            Record_SetInputs(fighter, inputs, mirrored_playback);
             break;
         }
         }
