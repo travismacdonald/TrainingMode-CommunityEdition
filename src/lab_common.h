@@ -361,6 +361,8 @@ typedef struct ExportHeader
     } lookup;
 } ExportHeader;
 
+// TODO move these to lab.h
+
 void Event_Init(GOBJ *gobj);
 void Event_Update();
 void Event_Think(GOBJ *event);
@@ -447,8 +449,6 @@ void Export_Destroy(GOBJ *export_gobj);
 void Export_SelCardInit(GOBJ *export_gobj);
 int Export_SelCardThink(GOBJ *export_gobj);
 int Export_Compress(u8 *dest, u8 *source, u32 size);
-void CustomTDI_Update(GOBJ *gobj);
-void CustomTDI_Destroy(GOBJ *gobj);
 void Lab_Exit(int value);
 void InfoDisplay_Update(GOBJ *menu_gobj, EventOption menu[], GOBJ *fighter, GOBJ *below);
 

@@ -36,6 +36,15 @@ typedef struct CPUAction {
     unsigned char recSlot  : 3; // 0 = none, 1 = slot 1, ..., 6 = slot 6
 } CPUAction;
 
+typedef struct CustomTDI {
+    float lstickX;
+    float lstickY;
+    float cstickX;
+    float cstickY;
+    u32 reversing: 1;
+    u32 direction: 1; // 0 = left of player, 1 = right of player
+} CustomTDI;
+
 enum stick_dir
 {
     STCKDIR_NONE,
@@ -2298,3 +2307,7 @@ static void distribute_chances(u16 *chances[], unsigned int chance_count);
 static void rebound_chances(u16 *chances[], unsigned int chance_count, int just_changed_option);
 static int is_tech_anim(int state);
 static bool can_walljump(GOBJ* fighter);
+
+void CustomTDI_Update(GOBJ *gobj);
+void CustomTDI_Destroy(GOBJ *gobj);
+void CustomTDI_Apply(GOBJ *cpu, GOBJ *hmn, CustomTDI *di);

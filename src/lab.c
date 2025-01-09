@@ -33,7 +33,7 @@ static int stc_playback_cancelled_hmn = false;
 static int stc_playback_cancelled_cpu = false;
 
 static u8 stc_tdi_val_num;                // number of custom tdi values set
-static s8 stc_tdi_vals[TDI_HITNUM][2][2]; // contains the custom tdi values
+static CustomTDI stc_tdi_vals[TDI_HITNUM]; // contains the custom tdi values
 
 // Static Export Variables
 static RecordingSave *stc_rec_save;
@@ -1743,16 +1743,7 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
                 {
                     // get the stick values for this hit num
                     cpu_hitnum--;
-
-                    s8 lstickX = stc_tdi_vals[cpu_hitnum][0][0];
-                    s8 lstickY = stc_tdi_vals[cpu_hitnum][0][1];
-                    s8 cstickX = stc_tdi_vals[cpu_hitnum][1][0];
-                    s8 cstickY = stc_tdi_vals[cpu_hitnum][1][1];
-
-                    cpu_data->cpu.lstickX = ((float)lstickX / 80) * 127.0;
-                    cpu_data->cpu.lstickY = ((float)lstickY / 80) * 127.0;
-                    cpu_data->cpu.cstickX = ((float)cstickX / 80) * 127.0;
-                    cpu_data->cpu.cstickY = ((float)cstickY / 80) * 127.0;
+                    CustomTDI_Apply(cpu, hmn, &stc_tdi_vals[cpu_hitnum]);
 
                     // increment
                 } else {
@@ -1765,14 +1756,7 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
             {
                 int i = HSD_Randi(stc_tdi_val_num);
 
-                s8 lstickX = stc_tdi_vals[i][0][0];
-                s8 lstickY = stc_tdi_vals[i][0][1];
-                s8 cstickX = stc_tdi_vals[i][1][0];
-                s8 cstickY = stc_tdi_vals[i][1][1];
-                cpu_data->cpu.lstickX = ((float)lstickX / 80) * 127.0;
-                cpu_data->cpu.lstickY = ((float)lstickY / 80) * 127.0;
-                cpu_data->cpu.cstickX = ((float)cstickX / 80) * 127.0;
-                cpu_data->cpu.cstickY = ((float)cstickY / 80) * 127.0;
+                CustomTDI_Apply(cpu, hmn, &stc_tdi_vals[i]);
 
                 break;
             }
@@ -2823,6 +2807,21 @@ void Update_Camera()
     return;
 }
 
+void CustomTDI_Apply(GOBJ *cpu, GOBJ *hmn, CustomTDI *di)
+{
+    FighterData *hmn_data = hmn->userdata;
+    FighterData *cpu_data = cpu->userdata;
+
+    float direction = 1.f;
+    if (di->reversing && (cpu_data->phys.pos.X < hmn_data->phys.pos.X) != di->direction)
+        direction = -1.f;
+
+    cpu_data->cpu.lstickX = di->lstickX * 127.f * direction;
+    cpu_data->cpu.lstickY = di->lstickY * 127.f;
+    cpu_data->cpu.cstickX = di->cstickX * 127.f * direction;
+    cpu_data->cpu.cstickY = di->cstickY * 127.f;
+}
+
 void Lab_SelectCustomTDI(GOBJ *menu_gobj)
 {
     MenuData *menu_data = menu_gobj->userdata;
@@ -2922,6 +2921,7 @@ void Lab_SelectCustomTDI(GOBJ *menu_gobj)
     // create description text
     Text_AddSubtext(text_curr, -460, 240, "Input TDI angles for the CPU to use.");
     Text_AddSubtext(text_curr, -460, 285, "A = Save Input  X = Delete Input  B = Return");
+    Text_AddSubtext(text_curr, -460, 320, "Z = Reversible");
 
     // hide original menu
     event_vars->hide_menu = 1;
@@ -2950,27 +2950,33 @@ void CustomTDI_Update(GOBJ *gobj)
     int inputs = pad->down;
 
     // if press A, save stick
-    if ((inputs & HSD_BUTTON_A) != 0)
-    {
-        if (stc_tdi_val_num < TDI_HITNUM)
-        {
-            stc_tdi_vals[stc_tdi_val_num][0][0] = (pad->fstickX * 80);
-            stc_tdi_vals[stc_tdi_val_num][0][1] = (pad->fstickY * 80);
-            stc_tdi_vals[stc_tdi_val_num][1][0] = (pad->fsubstickX * 80);
-            stc_tdi_vals[stc_tdi_val_num][1][1] = (pad->fsubstickY * 80);
-            stc_tdi_val_num++;
-            SFX_PlayCommon(1);
-        }
+    if ((inputs & HSD_BUTTON_A) != 0 && stc_tdi_val_num < TDI_HITNUM) {
+        GOBJ *hmn = Fighter_GetGObj(0);
+        GOBJ *cpu = Fighter_GetGObj(1);
+        FighterData *hmn_data = hmn->userdata;
+        FighterData *cpu_data = cpu->userdata;
+        int direction = cpu_data->phys.pos.X < hmn_data->phys.pos.X;
+
+        stc_tdi_vals[stc_tdi_val_num++] = (CustomTDI) {
+            .lstickX = pad->fstickX,
+            .lstickY = pad->fstickY,
+            .cstickX = pad->fsubstickX,
+            .cstickY = pad->fsubstickY,
+            .reversing = false,
+            .direction = direction,
+        };
+        SFX_PlayCommon(1);
+    }
+
+    if ((inputs & HSD_TRIGGER_Z) != 0 && stc_tdi_val_num > 0) {
+        stc_tdi_vals[stc_tdi_val_num-1].reversing ^= 1;
+        SFX_PlayCommon(1);
     }
 
     // if press X, go back a hit
-    if ((inputs & HSD_BUTTON_X) != 0)
-    {
-        if (stc_tdi_val_num > 0)
-        {
-            stc_tdi_val_num--;
-            SFX_PlayCommon(0);
-        }
+    if ((inputs & HSD_BUTTON_X) != 0 && stc_tdi_val_num > 0) {
+        stc_tdi_val_num--;
+        SFX_PlayCommon(0);
     }
 
     // if press B, exit
@@ -3014,13 +3020,15 @@ void CustomTDI_Update(GOBJ *gobj)
             JOBJ_ClearFlags(cstick_prev, JOBJ_HIDDEN);
 
             // update rotation
-            lstick_prev->rot.Y = ((float)(stc_tdi_vals[this_hit][0][0]) * 1 / 80) * 0.75;
-            lstick_prev->rot.X = ((float)(stc_tdi_vals[this_hit][0][1]) * 1 / 80) * 0.75 * -1;
-            cstick_prev->rot.Y = ((float)(stc_tdi_vals[this_hit][1][0]) * 1 / 80) * 0.75;
-            cstick_prev->rot.X = ((float)(stc_tdi_vals[this_hit][1][1]) * 1 / 80) * 0.75 * -1;
+            CustomTDI di = stc_tdi_vals[this_hit];
+            lstick_prev->rot.Y = di.lstickX * 0.75;
+            lstick_prev->rot.X = di.lstickY * -0.75;
+            cstick_prev->rot.Y = di.cstickX * 0.75;
+            cstick_prev->rot.X = di.cstickY * -0.75;
 
             // update text
-            Text_SetText(text_curr, i + 5, "TDI %d", this_hit + 1);
+            const char *str = di.reversing ? "TDI %d R" : "TDI %d";
+            Text_SetText(text_curr, i + 5, str, this_hit + 1);
         }
         // hide stick
         else
