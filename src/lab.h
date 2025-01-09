@@ -973,6 +973,7 @@ enum infdisp_rows
     INFDISP_ECBBOT,
     INFDISP_JUMPS,
     INFDISP_WALLJUMPS,
+    INFDISP_CANWALLJUMP,
     INFDISP_JAB,
     INFDISP_LINE,
     INFDISP_BLASTLR,
@@ -999,7 +1000,7 @@ enum info_disp_option
 
 #define OPTINF_ROW_COUNT (OPTINF_COUNT - OPTINF_ROW1)
 
-static char *LabValues_InfoDisplay[INFDISP_COUNT] = {"None", "Position", "State Name", "State Frame", "Velocity - Self", "Velocity - KB", "Velocity - Total", "Engine LStick", "System LStick", "Engine CStick", "System CStick", "Engine Trigger", "System Trigger", "Ledgegrab Timer", "Intangibility Timer", "Hitlag", "Hitstun", "Shield Health", "Shield Stun", "Grip Strength", "ECB Lock", "ECB Bottom", "Jumps", "Walljumps", "Jab Counter", "Line Info", "Blastzone Left/Right", "Blastzone Up/Down"};
+static char *LabValues_InfoDisplay[INFDISP_COUNT] = {"None", "Position", "State Name", "State Frame", "Velocity - Self", "Velocity - KB", "Velocity - Total", "Engine LStick", "System LStick", "Engine CStick", "System CStick", "Engine Trigger", "System Trigger", "Ledgegrab Timer", "Intangibility Timer", "Hitlag", "Hitstun", "Shield Health", "Shield Stun", "Grip Strength", "ECB Lock", "ECB Bottom", "Jumps", "Walljumps", "Can Walljump", "Jab Counter", "Line Info", "Blastzone Left/Right", "Blastzone Up/Down"};
 
 static char *LabValues_InfoSizeText[] = {"Small", "Medium", "Large"};
 static float LabValues_InfoSizes[] = {0.7, 0.85, 1.0};
@@ -2296,3 +2297,4 @@ static float get_angle_out_of_deadzone(float angle, int lastSDIWasCardinal);
 static void distribute_chances(u16 *chances[], unsigned int chance_count);
 static void rebound_chances(u16 *chances[], unsigned int chance_count, int just_changed_option);
 static int is_tech_anim(int state);
+static bool can_walljump(GOBJ* fighter);

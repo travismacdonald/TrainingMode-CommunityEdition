@@ -764,6 +764,17 @@ void InfoDisplay_Update(GOBJ *menu_gobj, EventOption menu[], GOBJ *fighter, GOBJ
                     Text_SetText(text, i, "Walljumps: %d", fighter_data->jump.walljumps_used);
                     break;
                 }
+                case (INFDISP_CANWALLJUMP):
+                {
+                    // no boolean specifier in c
+                    const char *str;
+                    if (can_walljump(fighter))
+                        str = "Can Walljump: true";
+                    else
+                        str = "Can Walljump: false";
+                    Text_SetText(text, i, str);
+                    break;
+                }
                 case (INFDISP_JAB):
                 {
                     Text_SetText(text, i, "Jab Counter: IDK");
@@ -6290,4 +6301,12 @@ static u32 lz77_decompress(u8 *compressed_text, u8 *uncompressed_text)
     }
 
     return coding_pos;
+}
+
+// adapted from decomp github.com/doldecomp/melee/blob/7f0e2ddb83fa974b64b05d0a7e5b374cf12c0541/src/melee/ft/ftwalljump.c
+static bool can_walljump(GOBJ* fighter) {
+    FighterData *fighter_data = fighter->userdata;
+    CollData* coll_data = &fighter_data->coll_data;
+
+    return fighter_data->flags.can_walljump && (coll_data->envFlags & ((1u << 11) | (1u << 5))) != 0;
 }
