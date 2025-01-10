@@ -13,6 +13,7 @@ static EventMenu LabMenu_CPU;
 static EventMenu LabMenu_Record;
 static EventMenu LabMenu_Tech;
 static EventMenu LabMenu_Stage_FOD;
+static EventMenu LabMenu_CustomOSDs;
 
 #define AUTORESTORE_DELAY 20
 #define INTANG_COLANIM 10
@@ -810,6 +811,7 @@ enum gen_option
     OPTGEN_SPEED,
     OPTGEN_STALE,
     OPTGEN_TAUNT,
+    OPTGEN_CUSTOM_OSD,
 
     OPTGEN_COUNT
 };
@@ -946,6 +948,12 @@ static EventOption LabOptions_General[OPTGEN_COUNT] = {
         .option_name = "Disable Taunt",
         .desc = "Disable the taunt button (D-pad up)",
         .option_values = LabOptions_OffOn,
+    },
+    {
+        .option_kind = OPTKIND_MENU,
+        .menu = &LabMenu_CustomOSDs,
+        .option_name = "Custom OSDs",
+        .desc = "Set up a display for any action state.",
     },
 };
 static EventMenu LabMenu_General = {
@@ -1240,6 +1248,40 @@ static const EventMenu *stage_menus[] = {
     0,                          // GRKINDEXT_OLDKONGO,
     0,                          // GRKINDEXT_BATTLE,
     0,                          // GRKINDEXT_FD,
+};
+
+// CUSTOM OSDS MENU --------------------------------------------------------------
+
+enum custom_osds_option
+{
+    OPTCUSTOMOSD_ADD,
+
+    OPTCUSTOMOSD_FIRST_CUSTOM,
+    OPTCUSTOMOSD_MAX_ADDED = 8,
+    OPTCUSTOMOSD_MAX_COUNT = OPTCUSTOMOSD_FIRST_CUSTOM + OPTCUSTOMOSD_MAX_ADDED,
+};
+
+static EventOption LabOptions_CustomOSDs[OPTCUSTOMOSD_MAX_COUNT] = {
+    {
+        .option_kind = OPTKIND_FUNC,
+        .option_name = "Add Row",
+        .desc = "Add a new OSD based on the player's\ncurrent action state.",
+        .onOptionSelect = Lab_AddCustomOSD,
+    },
+    { .disable = true },
+    { .disable = true },
+    { .disable = true },
+    { .disable = true },
+    { .disable = true },
+    { .disable = true },
+    { .disable = true },
+    { .disable = true },
+};
+
+static EventMenu LabMenu_CustomOSDs = {
+    .name = "Custom OSDs",
+    .option_num = OPTCUSTOMOSD_MAX_COUNT,
+    .options = &LabOptions_CustomOSDs,
 };
 
 // CPU MENU --------------------------------------------------------------
@@ -2307,7 +2349,7 @@ static void distribute_chances(u16 *chances[], unsigned int chance_count);
 static void rebound_chances(u16 *chances[], unsigned int chance_count, int just_changed_option);
 static int is_tech_anim(int state);
 static bool can_walljump(GOBJ* fighter);
-
+static int GetCurrentStateName(GOBJ *fighter, char *buf);
 void CustomTDI_Update(GOBJ *gobj);
 void CustomTDI_Destroy(GOBJ *gobj);
 void CustomTDI_Apply(GOBJ *cpu, GOBJ *hmn, CustomTDI *di);

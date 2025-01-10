@@ -3994,7 +3994,8 @@ void EventMenu_UpdateText(GOBJ *gobj, EventMenu *menu)
 
         // output option name
         int optionVal = currOption->option_val;
-        Text_SetText(text, i, currOption->option_name);
+        char *str = currOption->option_name ? currOption->option_name : "";
+        Text_SetText(text, i, str);
 
         // output color
         GXColor color;

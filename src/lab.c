@@ -34,6 +34,8 @@ static int stc_playback_cancelled_cpu = false;
 
 static u8 stc_tdi_val_num;                // number of custom tdi values set
 static CustomTDI stc_tdi_vals[TDI_HITNUM]; // contains the custom tdi values
+static u8 stc_custom_osd_state_num = 0;
+static int stc_custom_osd_states[OPTCUSTOMOSD_MAX_ADDED]; // contains the custom osd action states
 
 // Static Export Variables
 static RecordingSave *stc_rec_save;
@@ -52,6 +54,69 @@ static float cpu_locked_percent = 0;
 static float hmn_locked_percent = 0;
 
 // Menu Callbacks
+
+void Lab_AddCustomOSD(GOBJ *menu_gobj) {
+    int row = OPTCUSTOMOSD_FIRST_CUSTOM + stc_custom_osd_state_num;
+    if (row == OPTCUSTOMOSD_MAX_COUNT) {
+        SFX_PlayCommon(3);
+        return;
+    }
+
+    char state_buf[64];
+    GOBJ *hmn = Fighter_GetGObj(0);
+    FighterData *hmn_data = hmn->userdata;
+    stc_custom_osd_states[stc_custom_osd_state_num++] = hmn_data->state_id;
+    int found = GetCurrentStateName(hmn, state_buf);
+    if (!found) strcpy(state_buf, "Unknown");
+
+    char *row_text = HSD_MemAlloc(128);
+    sprintf(row_text, "Remove OSD: %s", state_buf);
+
+    LabOptions_CustomOSDs[row]= (EventOption) {
+        .option_kind = OPTKIND_FUNC,
+        .option_name = row_text,
+        .desc = "Remove this Custom OSD.",
+        .onOptionSelect = Lab_RemoveCustomOSD,
+    };
+}
+
+void Lab_RemoveCustomOSD(GOBJ *menu_gobj) {
+    int remove_idx = LabMenu_CustomOSDs.cursor;
+    int osd_idx = remove_idx - OPTCUSTOMOSD_FIRST_CUSTOM;
+    HSD_Free(LabOptions_CustomOSDs[remove_idx].option_name);
+    int move_count = OPTCUSTOMOSD_MAX_COUNT - remove_idx - 1;
+    memmove(&LabOptions_CustomOSDs[remove_idx], &LabOptions_CustomOSDs[remove_idx+1], move_count * sizeof(EventOption));
+    memmove(&stc_custom_osd_states[osd_idx], &stc_custom_osd_states[osd_idx+1], move_count * sizeof(*stc_custom_osd_states));
+    LabOptions_CustomOSDs[OPTCUSTOMOSD_MAX_COUNT-1] = (EventOption) { .option_name = 0, .disable = true };
+    stc_custom_osd_state_num--;
+    if (LabMenu_CustomOSDs.cursor - OPTCUSTOMOSD_FIRST_CUSTOM >= stc_custom_osd_state_num)
+        LabMenu_CustomOSDs.cursor = OPTCUSTOMOSD_FIRST_CUSTOM + stc_custom_osd_state_num - 1;
+
+    SFX_PlayCommon(0);
+}
+
+void Lab_CustomOSDsThink(void) {
+    GOBJ *hmn = Fighter_GetGObj(0);
+    FighterData *hmn_data = hmn->userdata;
+
+    for (int i = 0; i < stc_custom_osd_state_num; ++i) {
+        int state_id = stc_custom_osd_states[i];
+        EventOption *option = &LabOptions_CustomOSDs[i + OPTCUSTOMOSD_FIRST_CUSTOM];
+
+        if (hmn_data->state_id == state_id) {
+            char *state_buf[128];
+            int found = GetCurrentStateName(hmn, state_buf);
+            if (!found) strcpy(state_buf, "Unknown");
+
+            ((*event_vars_ptr)->Message_Display)(
+                15, hmn_data->ply, 0, 
+                "%s:\n%i Frames", state_buf, hmn_data->TM.state_frame
+            );
+
+            break;
+        }
+    }
+}
 
 void Lab_ChangeStadiumTransformation(GOBJ *menu_gobj, int value) {
     // Transformation decision making is entirely located in one HUGE function (PokemonStadium_TransformationDecide),
@@ -496,6 +561,67 @@ GOBJ *InfoDisplay_Init(int ply)
     return idGOBJ;
 }
 
+// Returns length of string, including null terminator. Zero if not found.
+static int GetCurrentStateName(GOBJ *fighter, char *buf) {
+    FighterData *fighter_data = fighter->userdata;
+
+    if (fighter_data->action_id == -1) return 0;
+
+    FtAction *action = Fighter_GetFtAction(fighter_data, fighter_data->action_id);
+    // extract state name from symbol
+    char *symbol = action->anim_symbol;
+
+    // extract from the opponent fighter actions if there is no symbol in the fighter action
+    // (e.g. getting Yoshi's Neutral-B, Mewtwo's Side-B, Bowser's Side-B, etc.)
+    if (symbol == NULL) {
+        // loop through all humans
+        for (int i = 0; i < 6; i++) {
+            if (i == fighter_data->ply) { continue; }
+
+            GOBJ *other_fighter = Fighter_GetGObj(i);
+            if (other_fighter == 0) { continue; }
+
+            FighterData *other_fighter_data = other_fighter->userdata;
+            action = Fighter_GetFtAction(other_fighter_data, fighter_data->action_id);
+            symbol = action->anim_symbol;
+            if (symbol != NULL) { break; }
+        }
+    }
+
+    if (symbol == NULL) return 0;
+
+    // remove mangling
+    int pos = 0;
+    int posStart;
+    int nameSize = 0;
+    for (; pos < 50; pos++)
+    {
+        // search for "N_"
+        if ((symbol[pos] == 'N') && (symbol[pos + 1] == '_'))
+        {
+            // posStart = beginning of state name
+            pos++;
+            posStart = pos + 1;
+            break;
+        }
+    }
+
+    // search for "_"
+    for (pos = posStart+1; pos < 50; pos++)
+    {
+        if (symbol[pos] == '_')
+        {
+            nameSize = pos - posStart;
+            break;
+        }
+    }
+
+    memcpy(buf, &symbol[posStart], nameSize);
+    buf[nameSize] = 0;
+
+    return nameSize + 1;
+}
+
 void InfoDisplay_Update(GOBJ *menu_gobj, EventOption menu[], GOBJ *fighter, GOBJ *below)
 {
     InfoDisplayData *idData = menu_gobj->userdata;
@@ -549,62 +675,14 @@ void InfoDisplay_Update(GOBJ *menu_gobj, EventOption menu[], GOBJ *fighter, GOBJ
                 }
                 case (INFDISP_STATE):
                 {
-                    if (fighter_data->action_id != -1)
-                    {
-                        FtAction *action = Fighter_GetFtAction(fighter_data, fighter_data->action_id);
-                        // extract state name from symbol
-                        int pos = 0;
-                        int posStart;
-                        int nameSize = 0;
-                        char *symbol = action->anim_symbol;
-
-                        // extract from the opponent fighter actions if there is no symbol in the fighter action (e.g. getting Yoshi's Neutral-B, Mewtwo's Side-B, Bowser's Side-B, etc.)
-                        if (symbol == NULL) {
-                            // loop through all humans
-                            for (int i = 0; i < 6; i++) {
-                                if (i == fighter_data->ply) { continue; }
-
-                                GOBJ *other_fighter = Fighter_GetGObj(i);
-                                if (other_fighter == 0) { continue; }
-
-                                FighterData *other_fighter_data = other_fighter->userdata;
-                                action = Fighter_GetFtAction(other_fighter_data, fighter_data->action_id);
-                                symbol = action->anim_symbol;
-                                if (symbol != NULL) { break; }
-                            }
-                        }
-
-                        for (int i = 0; pos < 50; pos++)
-                        {
-                            // search for "N_"
-                            if ((symbol[pos] == 'N') && (symbol[pos + 1] == '_'))
-                            {
-                                // posStart = beginning of state name
-                                pos++;
-                                posStart = pos + 1;
-
-                                // search for "_"
-                                for (int i = 0; pos < 50; pos++)
-                                {
-                                    if (symbol[pos] == '_')
-                                    {
-                                        nameSize = pos - posStart;
-                                    }
-                                }
-                            }
-                        }
-                        if (nameSize != 0)
-                        {
-                            // copy string
-                            char stateNameBuffer[50];
-                            memcpy(&stateNameBuffer, &symbol[posStart], nameSize);
-                            stateNameBuffer[nameSize] = 0;
-                            Text_SetText(text, i, "State: %s", &stateNameBuffer);
-                        }
+                    char buf[64];
+                    int found = GetCurrentStateName(fighter, buf);
+                    if (found) {
+                        Text_SetText(text, i, "State: %s", buf);
+                    } else {
+                        Text_SetText(text, i, "State: Unknown");
                     }
 
-                    else
-                        Text_SetText(text, i, "State: %s", "Unknown");
                     break;
                 }
                 case (INFDISP_FRAME):
@@ -5973,6 +6051,8 @@ void Event_Think_LabState_Normal(GOBJ *event) {
 void Event_Think(GOBJ *event)
 {
     LabData *eventData = event->userdata;
+
+    Lab_CustomOSDsThink();
 
     // get fighter data
     GOBJ *hmn = Fighter_GetGObj(0);

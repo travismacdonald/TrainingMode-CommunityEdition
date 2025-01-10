@@ -369,6 +369,9 @@ void Event_Think(GOBJ *event);
 
 void Button_Think(GOBJ *button_gobj);
 
+void Lab_CustomOSDsThink(void);
+void Lab_RemoveCustomOSD(GOBJ *menu_gobj);
+void Lab_AddCustomOSD(GOBJ *menu_gobj);
 void Lab_ChangeStadiumTransformation(GOBJ *menu_gobj, int value);
 void Lab_ChangeInputDisplay(GOBJ *menu_gobj, int value);
 void Lab_ChangeOverlays(GOBJ *menu_gobj, int value);
