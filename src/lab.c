@@ -1256,91 +1256,86 @@ int Lab_CPUPerformAction(GOBJ *cpu, int action_id, GOBJ *hmn)
 
     // perform command
     // loop through all inputs
-    int action_parse = 0;
-    CPUAction *action_input = &action_list[action_parse];
-    while ((action_input != 0) && (action_input->state != 0xFFFF))
+    for (int action_i = 0; ; action_i++)
     {
-        // check if this is the current state
-        if (CPUAction_CheckASID(cpu, action_input->state))
+        CPUAction *action_input = &action_list[action_i];
+        if (action_input->state == 0xFFFF)
+            break;
+
+        if (!CPUAction_CheckASID(cpu, action_input->state))
+            continue;
+
+        if (action_input->custom_check != 0 && !action_input->custom_check(cpu))
+            continue;
+
+        // check if im on the right frame
+        if (cpu_frame < action_input->frameLow)
+            continue;
+
+        // perform this action
+        int held = action_input->input;
+        s8 lstickX = action_input->stickX;
+        s8 lstickY = action_input->stickY;
+        s8 cstickX = action_input->cstickX;
+        s8 cstickY = action_input->cstickY;
+
+        // stick direction
+        switch (action_input->stickDir)
         {
-            // check if im on the right frame
-            if (cpu_frame >= action_input->frameLow)
-            {
-                // perform this action
-                s8 dir;
-                int held = action_input->input;
-                s8 lstickX = action_input->stickX;
-                s8 lstickY = action_input->stickY;
-                s8 cstickX = action_input->cstickX;
-                s8 cstickY = action_input->cstickY;
-
-                // stick direction
-                switch (action_input->stickDir)
-                {
-                case (STCKDIR_NONE):
-                {
-                    break;
-                }
-                case (STCKDIR_TOWARD):
-                {
-                    dir = Fighter_GetOpponentDir(cpu_data, hmn_data);
-                    lstickX *= dir;
-                    cstickX *= dir;
-                    break;
-                }
-                case (STCKDIR_AWAY):
-                {
-                    dir = Fighter_GetOpponentDir(cpu_data, hmn_data) * -1;
-                    lstickX *= dir;
-                    cstickX *= dir;
-                    break;
-                }
-                case (STCKDIR_FRONT):
-                {
-                    dir = cpu_data->facing_direction;
-                    lstickX *= dir;
-                    cstickX *= dir;
-                    break;
-                }
-                case (STCKDIR_BACK):
-                {
-                    dir = cpu_data->facing_direction;
-                    lstickX *= (dir * -1);
-                    cstickX *= (dir * -1);
-                    break;
-                }
-                case (STICKDIR_RDM):
-                {
-                    // random direction
-                    if (HSD_Randi(2) == 0)
-                        dir = 1;
-                    else
-                        dir = -1;
-
-                    lstickX *= dir;
-                    cstickX *= dir;
-                    break;
-                }
-                }
-
-                // perform this action
-                cpu_data->cpu.held = held;
-                cpu_data->cpu.lstickX = lstickX;
-                cpu_data->cpu.lstickY = lstickY;
-                cpu_data->cpu.cstickX = cstickX;
-                cpu_data->cpu.cstickY = cstickY;
-
-                // check if this was the last action
-                if (action_input->isLast == 1)
-                    action_done = 1;
-
-                break;
-            }
+        case (STCKDIR_NONE):
+        {
+            break;
+        }
+        case (STCKDIR_TOWARD):
+        {
+            s8 dir = Fighter_GetOpponentDir(cpu_data, hmn_data);
+            lstickX *= dir;
+            cstickX *= dir;
+            break;
+        }
+        case (STCKDIR_AWAY):
+        {
+            s8 dir = Fighter_GetOpponentDir(cpu_data, hmn_data) * -1;
+            lstickX *= dir;
+            cstickX *= dir;
+            break;
+        }
+        case (STCKDIR_FRONT):
+        {
+            s8 dir = cpu_data->facing_direction;
+            lstickX *= dir;
+            cstickX *= dir;
+            break;
+        }
+        case (STCKDIR_BACK):
+        {
+            s8 dir = cpu_data->facing_direction;
+            lstickX *= (dir * -1);
+            cstickX *= (dir * -1);
+            break;
+        }
+        case (STICKDIR_RDM):
+        {
+            // random direction
+            s8 dir = HSD_Randi(2) == 0 ? 1 : -1;
+            lstickX *= dir;
+            cstickX *= dir;
+            break;
+        }
         }
 
-        // get next input
-        action_parse++;
-        action_input = &action_list[action_parse];
+        // perform this action
+        cpu_data->cpu.held = held;
+        cpu_data->cpu.lstickX = lstickX;
+        cpu_data->cpu.lstickY = lstickY;
+        cpu_data->cpu.cstickX = cstickX;
+        cpu_data->cpu.cstickY = cstickY;
+
+        // check if this was the last action
+        if (action_input->isLast == 1)
+            action_done = 1;
+
+        break;
     }
 
     return action_done;
@@ -2110,8 +2105,6 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
     CPULOGIC_COUNTER:
     {
         int actionable_this_frame = CPUAction_CheckASID(cpu, ASID_ACTIONABLE);
-
-        OSReport("actionable %i\n", actionable_this_frame);
 
         // check if the CPU has been actionable yet
         if (eventData->cpu_isactionable == 0)
@@ -6403,4 +6396,12 @@ static bool can_walljump(GOBJ* fighter) {
     CollData* coll_data = &fighter_data->coll_data;
 
     return fighter_data->flags.can_walljump && (coll_data->envFlags & ((1u << 11) | (1u << 5))) != 0;
+}
+
+static bool check_has_jump(GOBJ *g) {
+    FighterData *data = g->userdata;
+    int max_jumps = data->attr.max_jumps;
+    int jumps_used = data->jump.jumps_used;
+
+    return jumps_used < max_jumps;
 }
