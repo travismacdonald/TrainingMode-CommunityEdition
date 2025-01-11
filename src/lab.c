@@ -2111,6 +2111,8 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
     {
         int actionable_this_frame = CPUAction_CheckASID(cpu, ASID_ACTIONABLE);
 
+        OSReport("actionable %i\n", actionable_this_frame);
+
         // check if the CPU has been actionable yet
         if (eventData->cpu_isactionable == 0)
         {
@@ -2123,6 +2125,10 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         // if started in the air, didnt finish action, but now grounded, perform ground action
         if ((eventData->cpu_groundstate == 1) && (cpu_data->phys.air_state == 0))
             eventData->cpu_groundstate = 0;
+
+        // if started on the ground, didnt finish action, but now airborne, perform air action
+        if ((eventData->cpu_groundstate == 0) && (cpu_data->phys.air_state == 1))
+            eventData->cpu_groundstate = 1;
 
         // ensure hit count and frame count criteria are met
         int action_id;
