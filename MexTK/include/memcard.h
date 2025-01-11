@@ -2036,7 +2036,7 @@ struct Memcard
     u8 TM_EventPage;       // 0x1F29
     u8 TM_OSDRecommended;  // 0x1F2A
     u8 TM_LabFrameAdvanceButton;    // 0x1F2B
-    u8 unused1F2C;         // 0x1F2C
+    u8 TM_LabTauntEnabled;          // 0x1F2C
     u8 unused1F2D;         // 0x1F2D
     u8 unused1F2E;         // 0x1F2E
     u8 TM_LabCPUInputDisplay;       // 0x1F2F

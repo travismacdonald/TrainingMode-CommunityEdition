@@ -148,6 +148,11 @@ void Lab_ChangeInputDisplay(GOBJ *menu_gobj, int value) {
     memcard->TM_LabCPUInputDisplay = value;
 }
 
+void Lab_ChangeTauntEnabled(GOBJ *menu_gobj, int value) {
+    Memcard *memcard = R13_PTR(MEMCARD);
+    memcard->TM_LabTauntEnabled = value;
+}
+
 void Lab_ChangeOverlays(GOBJ *menu_gobj, int value) {
     Memcard *memcard = R13_PTR(MEMCARD);
 
@@ -5677,6 +5682,7 @@ void Event_Init(GOBJ *gobj)
     Memcard *memcard = R13_PTR(MEMCARD);
     LabOptions_General[OPTGEN_FRAMEBTN].option_val = memcard->TM_LabFrameAdvanceButton;
     LabOptions_General[OPTGEN_INPUT].option_val = memcard->TM_LabCPUInputDisplay;
+    LabOptions_General[OPTGEN_TAUNT].option_val = memcard->TM_LabTauntEnabled;
 
     int overlay_save_count = sizeof(memcard->TM_LabSavedOverlays_HMN) / sizeof(OverlaySave);
     for (int i = 0; i < overlay_save_count; ++i) {
