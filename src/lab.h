@@ -35,6 +35,7 @@ typedef struct CPUAction {
     unsigned char isLast : 1;   // flag to indicate this was the final input
     unsigned char stickDir : 3; // 0 = none, 1 = towards opponent, 2 = away from opponent, 3 = forward, 4 = backward
     unsigned char recSlot  : 3; // 0 = none, 1 = slot 1, ..., 6 = slot 6
+    bool (*custom_check)(GOBJ *);
 } CPUAction;
 
 typedef struct CustomTDI {
@@ -71,6 +72,21 @@ enum custom_asid_groups
     ASID_CROUCH,
     ASID_ANY,
 };
+
+// FUNCTION PROTOTYPES ##############################################################
+
+static u32 lz77_compress(u8 *uncompressed_text, u32 uncompressed_size, u8 *compressed_text, u8 pointer_length_width);
+static u32 lz77_decompress(u8 *compressed_text, u8 *uncompressed_text);
+static float get_angle_out_of_deadzone(float angle, int lastSDIWasCardinal);
+static void distribute_chances(u16 *chances[], unsigned int chance_count);
+static void rebound_chances(u16 *chances[], unsigned int chance_count, int just_changed_option);
+static int is_tech_anim(int state);
+static bool can_walljump(GOBJ* fighter);
+static int GetCurrentStateName(GOBJ *fighter, char *buf);
+static bool check_has_jump(GOBJ *g);
+void CustomTDI_Update(GOBJ *gobj);
+void CustomTDI_Destroy(GOBJ *gobj);
+void CustomTDI_Apply(GOBJ *cpu, GOBJ *hmn, CustomTDI *di);
 
 // ACTIONS #################################################
 
@@ -429,6 +445,15 @@ static CPUAction Lab_CPUActionJumpNeutral[] = {
     {
         .state     = ASID_ACTIONABLEAIR,
         .input     = PAD_BUTTON_X,
+        .isLast    = 1,
+        .stickDir  = STCKDIR_NONE,
+        .custom_check = check_has_jump,
+    },
+
+    // wiggle out if we can't jump
+    {
+        .state     = ASID_ACTIONABLEAIR,
+        .stickX    = 127,
         .isLast    = 1,
         .stickDir  = STCKDIR_NONE,
     },
@@ -2339,18 +2364,3 @@ static EventMenu LabMenu_OverlaysCPU = {
     .option_num = sizeof(LabOptions_OverlaysCPU) / sizeof(EventOption),
     .options = &LabOptions_OverlaysCPU,
 };
-
-
-// FUNCTION PROTOTYPES ##############################################################
-
-static u32 lz77_compress(u8 *uncompressed_text, u32 uncompressed_size, u8 *compressed_text, u8 pointer_length_width);
-static u32 lz77_decompress(u8 *compressed_text, u8 *uncompressed_text);
-static float get_angle_out_of_deadzone(float angle, int lastSDIWasCardinal);
-static void distribute_chances(u16 *chances[], unsigned int chance_count);
-static void rebound_chances(u16 *chances[], unsigned int chance_count, int just_changed_option);
-static int is_tech_anim(int state);
-static bool can_walljump(GOBJ* fighter);
-static int GetCurrentStateName(GOBJ *fighter, char *buf);
-void CustomTDI_Update(GOBJ *gobj);
-void CustomTDI_Destroy(GOBJ *gobj);
-void CustomTDI_Apply(GOBJ *cpu, GOBJ *hmn, CustomTDI *di);
