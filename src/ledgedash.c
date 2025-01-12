@@ -27,6 +27,7 @@ enum menu_options
     OPT_TIPS,
     OPT_CAM,
     OPT_INV,
+    OPT_SPEED,
     OPT_ABOUT,
     OPT_EXIT,
 };
@@ -37,6 +38,9 @@ static char **LdshOptions_Start[] = {"Ledge", "Falling", "Stage", "Respawn Platf
 static char **LdshOptions_Reset[] = {"On", "Off"};
 static char **LdshOptions_HUD[] = {"On", "Off"};
 static char **LdshOptions_Inv[] = {"Off", "On"};
+static float LdshOptions_GameSpeeds[] = {1.0, 2.0/3.0, 1.0/2.0, 1.0/4.0};
+static char *LdshOptions_GameSpeedText[] = {"1", "2/3", "1/2", "1/4"};
+
 static EventOption LdshOptions_Main[] = {
     // Position
     {
@@ -96,6 +100,13 @@ static EventOption LdshOptions_Main[] = {
         .option_name = "Keep Ledge Invincibility",
         .desc = "Keep maximum invincibility while on the ledge\nto practice the ledgedash inputs.",
         .option_values = LdshOptions_Inv,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LdshOptions_GameSpeedText) / sizeof(*LdshOptions_GameSpeedText),
+        .option_name = "Game Speed",
+        .desc = "Change how fast the game engine runs.",
+        .option_values = LdshOptions_GameSpeedText,
     },
     // Help
     {
@@ -760,6 +771,13 @@ void Ledgedash_ChangeCamMode(GOBJ *menu_gobj, int value)
 
 void Event_Update()
 {
+    if (Pause_CheckStatus(1) != 2) {
+        float speed = LdshOptions_GameSpeeds[LdshOptions_Main[OPT_SPEED].option_val];
+        HSD_SetSpeedEasy(speed);
+    } else {
+        HSD_SetSpeedEasy(1.0);
+    }
+
     Update_Camera();
 }
 
