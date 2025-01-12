@@ -6140,7 +6140,8 @@ void Event_Think(GOBJ *event)
 
             // apply if tech anim is after distinguishable frame and invulnerable
             if (frame_distinguishable != -1) {
-                int state_frame = cpu_data->TM.state_frame;
+                // state frame is 0-indexed but frame distinguishable is 1-indexed, so add 1
+                int state_frame = cpu_data->TM.state_frame + 1;
 
                 int after = state_frame > frame_distinguishable;
                 int vuln = cpu_data->TM.state_frame >= 19;

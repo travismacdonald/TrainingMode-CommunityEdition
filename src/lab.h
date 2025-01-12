@@ -1681,33 +1681,33 @@ static EventMenu LabMenu_CPU = {
 // TECH MENU --------------------------------------------------------------
 
 static int tech_frame_distinguishable[27] = {
-    -1, // Mario
+     8, // Mario
      4, // Fox
      6, // Captain Falcon
-    -1, // Donkey Kong
-    -1, // Kirby
-    -1, // Bowser
-    -1, // Link
-    -1, // Sheik
-    -1, // Ness
+     9, // Donkey Kong
+     3, // Kirby
+     1, // Bowser
+     6, // Link
+     8, // Sheik
+     8, // Ness
      3, // Peach
-     6, // Popo (Ice Climbers)
-     6, // Nana (Ice Climbers)
+     9, // Popo (Ice Climbers)
+     9, // Nana (Ice Climbers)
      7, // Pikachu
-    -1, // Samus
-    -1, // Yoshi
-    -1, // Jigglypuff
-    -1, // Mewtwo
-    -1, // Luigi
-     6, // Marth
-    -1, // Zelda
-    -1, // Young Link
-    -1, // Dr. Mario
+     6, // Samus
+     9, // Yoshi
+     3, // Jigglypuff
+    16, // Mewtwo
+     8, // Luigi
+     7, // Marth
+     6, // Zelda
+     6, // Young Link
+     8, // Dr. Mario
      4, // Falco
-    -1, // Pichu
-    -1, // Game & Watch
-    -1, // Ganondorf
-    -1, // Roy
+     8, // Pichu
+     3, // Game & Watch
+     6, // Ganondorf
+     7, // Roy
 };
 
 enum tech_option
