@@ -1290,7 +1290,7 @@ enum custom_osds_option
 static EventOption LabOptions_CustomOSDs[OPTCUSTOMOSD_MAX_COUNT] = {
     {
         .option_kind = OPTKIND_FUNC,
-        .option_name = "Add Row",
+        .option_name = "Add Custom OSD",
         .desc = "Add a new OSD based on the player's\ncurrent action state.",
         .onOptionSelect = Lab_AddCustomOSD,
     },
