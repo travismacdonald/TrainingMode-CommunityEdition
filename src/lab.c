@@ -6142,11 +6142,12 @@ void Event_Think(GOBJ *event)
             if (frame_distinguishable != -1) {
                 // state frame is 0-indexed but frame distinguishable is 1-indexed, so add 1
                 int state_frame = cpu_data->TM.state_frame + 1;
+                int delay = LabOptions_Tech[OPTTECH_INVISIBLE_DELAY].option_val;
 
-                int after = state_frame > frame_distinguishable;
+                int after = state_frame > frame_distinguishable + delay;
                 int vuln = cpu_data->TM.state_frame >= 19;
 
-                cpu_data->flags.invisible = frame_distinguishable < state_frame && state_frame < 20;
+                cpu_data->flags.invisible = after && state_frame < 20;
 
                 int sound = LabOptions_Tech[OPTTECH_SOUND].option_val;
                 if (sound && state_frame == frame_distinguishable)

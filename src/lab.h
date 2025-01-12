@@ -1713,6 +1713,7 @@ static int tech_frame_distinguishable[27] = {
 enum tech_option
 {
     OPTTECH_INVISIBLE,
+    OPTTECH_INVISIBLE_DELAY,
     OPTTECH_SOUND,
     OPTTECH_TECH,
     OPTTECH_TECHINPLACECHANCE,
@@ -1736,6 +1737,13 @@ static EventOption LabOptions_Tech[OPTTECH_COUNT] = {
         .option_name = "Tech Invisibility",
         .desc = "Toggle the CPU turning invisible during tech\nanimations.",
         .option_values = LabOptions_OffOn,
+    },
+    {
+        .option_kind = OPTKIND_INT,
+        .value_num = 16,
+        .option_name = "Tech Invisibility Delay",
+        .option_values = "%d Frames",
+        .desc = "Set the delay in frames on tech invisibility.",
     },
     {
         .option_kind = OPTKIND_STRING,
