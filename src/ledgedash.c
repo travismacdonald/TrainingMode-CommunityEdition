@@ -196,9 +196,9 @@ void Event_Think(GOBJ *event)
         }
     }
 
+    Ledgedash_ResetThink(event_data, hmn);
     Ledgedash_HUDThink(event_data, hmn_data);
     Ledgedash_HitLogThink(event_data, hmn);
-    Ledgedash_ResetThink(event_data, hmn);
     Ledgedash_ChangeLedgeThink(event_data, hmn);
 
     return;
@@ -330,9 +330,6 @@ void Ledgedash_HUDThink(LedgedashData *event_data, FighterData *hmn_data)
     // only run logic if ledge exists
     if (event_data->ledge_line != -1)
     {
-        // increment timer
-        event_data->action_state.timer++;
-
         // check to initialize timer
         if ((hmn_data->state_id == ASID_CLIFFWAIT) && (hmn_data->TM.state_frame == 1))
         {
@@ -341,7 +338,7 @@ void Ledgedash_HUDThink(LedgedashData *event_data, FighterData *hmn_data)
             event_data->tip.refresh_num++;
         }
 
-        int curr_frame = event_data->action_state.timer;
+        int curr_frame = event_data->action_state.timer++;
 
         // update action log
         if (curr_frame < (sizeof(event_data->action_state.action_log) / sizeof(u8)))
@@ -468,7 +465,7 @@ void Ledgedash_HUDThink(LedgedashData *event_data, FighterData *hmn_data)
                         GXColor *bar_color;
 
                         // check if GALINT frame
-                        if ((this_frame >= curr_frame) && ((this_frame <= (curr_frame + hmn_data->hurt.intang_frames.ledge))))
+                        if (curr_frame < this_frame && this_frame <= curr_frame + hmn_data->hurt.intang_frames.ledge)
                             bar_color = &tmgbar_blue;
                         else
                             bar_color = tmgbar_colors[event_data->action_state.action_log[this_frame]];
@@ -1073,7 +1070,9 @@ void Fighter_PlaceOnLedge(LedgedashData *event_data, GOBJ *hmn, int line_index, 
         Fighter_MoveToCliff(hmn);
         Fighter_UpdatePosition(hmn);
         ftCommonData *ftcommon = *stc_ftcommon;
-        Fighter_ApplyIntang(hmn, ftcommon->cliff_invuln_time);
+
+        // This needs to be +1 for some reason, otherwise we get an off-by-one in galint calculations
+        Fighter_ApplyIntang(hmn, ftcommon->cliff_invuln_time+1);
         break;
     }
     case 1:
