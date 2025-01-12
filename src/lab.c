@@ -3616,17 +3616,8 @@ void Record_Think(GOBJ *rec_gobj)
         if (restore || rec_data.restore_timer > 0)
             rec_data.restore_timer++;
 
-        if (rec_data.restore_timer >= AUTORESTORE_DELAY) {
-            Record_LoadSavestate();
-            event_vars->game_timer = rec_state->frame;
-            rec_data.restore_timer = 0;
-
-            // reroll
-            if (LabOptions_Record[OPTREC_HMNSLOT].option_val == 0)
-                rec_data.hmn_rndm_slot = Record_GetRandomSlot(&rec_data.hmn_inputs, LabOptions_SlotChancesHMN);
-            if (LabOptions_Record[OPTREC_CPUSLOT].option_val == 0)
-                rec_data.cpu_rndm_slot = Record_GetRandomSlot(&rec_data.cpu_inputs, LabOptions_SlotChancesCPU);
-        }
+        if (rec_data.restore_timer >= AUTORESTORE_DELAY)
+            Record_LoadSavestate(rec_state);
     }
 }
 
@@ -3755,12 +3746,8 @@ void Record_Update(int ply, RecInputData *input_data, int rec_mode)
             if (curr_frame < rec_start || (curr_frame - rec_start) > (input_data->num))
                 return;
 
-            int mirrored_playback = (
-                LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].option_val &&
-                (LabOptions_Record[OPTREC_HMNMODE].option_val != RECMODE_HMN_RECORD && LabOptions_Record[OPTREC_CPUMODE].option_val != RECMODE_CPU_RECORD)
-            );
             RecInputs *inputs = &input_data->inputs[curr_frame - 1];
-            Record_SetInputs(fighter, inputs, mirrored_playback);
+            Record_SetInputs(fighter, inputs, event_vars->loaded_mirrored);
             break;
         }
         }
@@ -3784,9 +3771,10 @@ void Record_ResaveState(GOBJ *menu_gobj)
 
     // If we re-save during mirroring, then we NEED to show the new savestate as unmirrored.
     // That's just how savestates work. So to use old, unmirrored inputs, we need to reverse them in place.
-    if (LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].option_val) {
+    if (event_vars->loaded_mirrored) {
         // need to disable mirroring, as the new savestate is inherently unmirrored.
-        LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].option_val = 0;
+        event_vars->loaded_mirrored = false;
+        LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].option_val = OPTMIRROR_OFF;
         LabOptions_Record[OPTREC_HMNMODE].disable = 0;
         LabOptions_Record[OPTREC_CPUMODE].disable = 0;
 
@@ -3840,16 +3828,7 @@ void Record_DeleteState(GOBJ *menu_gobj)
 }
 void Record_RestoreState(GOBJ *menu_gobj)
 {
-    if (LabOptions_Record[OPTREC_HMNMODE].option_val == RECMODE_HMN_PLAYBACK
-            && LabOptions_Record[OPTREC_HMNSLOT].option_val == 0)
-        rec_data.hmn_rndm_slot = Record_GetRandomSlot(&rec_data.hmn_inputs, LabOptions_SlotChancesHMN);
-
-    if (LabOptions_Record[OPTREC_CPUMODE].option_val == RECMODE_CPU_PLAYBACK
-            && LabOptions_Record[OPTREC_CPUSLOT].option_val == 0)
-        rec_data.cpu_rndm_slot = Record_GetRandomSlot(&rec_data.cpu_inputs, LabOptions_SlotChancesCPU);
-
-    Record_LoadSavestate();
-    return;
+    Record_LoadSavestate(rec_state);
 }
 void Record_ChangeHMNSlot(GOBJ *menu_gobj, int value)
 {
@@ -3863,9 +3842,7 @@ void Record_ChangeHMNSlot(GOBJ *menu_gobj, int value)
     }
 
     // reload save
-    Record_LoadSavestate();
-
-    return;
+    Record_LoadSavestate(rec_state);
 }
 void Record_ChangeCPUSlot(GOBJ *menu_gobj, int value)
 {
@@ -3879,9 +3856,7 @@ void Record_ChangeCPUSlot(GOBJ *menu_gobj, int value)
     }
 
     // reload save
-    Record_LoadSavestate();
-
-    return;
+    Record_LoadSavestate(rec_state);
 }
 void Record_ChangeHMNMode(GOBJ *menu_gobj, int value)
 {
@@ -3895,7 +3870,7 @@ void Record_ChangeHMNMode(GOBJ *menu_gobj, int value)
     }
 
     if (value == RECMODE_HMN_PLAYBACK)
-        Record_LoadSavestate();
+        Record_LoadSavestate(rec_state);
 
     // disable some options if recording is in use
     if (LabOptions_Record[OPTREC_HMNMODE].option_val == RECMODE_HMN_RECORD ||
@@ -3922,8 +3897,6 @@ void Record_ChangeHMNMode(GOBJ *menu_gobj, int value)
     {
         LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].disable = 1;
     }
-
-    return;
 }
 void Record_ChangeCPUMode(GOBJ *menu_gobj, int value)
 {
@@ -3938,7 +3911,7 @@ void Record_ChangeCPUMode(GOBJ *menu_gobj, int value)
     }
 
     if (value == RECMODE_CPU_PLAYBACK)
-        Record_LoadSavestate();
+        Record_LoadSavestate(rec_state);
 
     // disable some options if recording is in use
     if (LabOptions_Record[OPTREC_HMNMODE].option_val == RECMODE_HMN_RECORD ||
@@ -3965,13 +3938,11 @@ void Record_ChangeCPUMode(GOBJ *menu_gobj, int value)
     {
         LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].disable = 1;
     }
-
-    return;
 }
 void Record_ChangeMirroredPlayback(GOBJ *menu_gobj, int value)
 {
     // Cannot change HMN/CPU Mode while mirrored playback is on.
-    if (value == 1)
+    if (value != OPTMIRROR_OFF)
     {
         LabOptions_Record[OPTREC_HMNMODE].disable = 1;
         LabOptions_Record[OPTREC_CPUMODE].disable = 1;
@@ -3982,9 +3953,7 @@ void Record_ChangeMirroredPlayback(GOBJ *menu_gobj, int value)
         LabOptions_Record[OPTREC_CPUMODE].disable = 0;
     }
 
-    Record_LoadSavestate();
-
-    return;
+    Record_LoadSavestate(rec_state);
 }
 int Record_GetRandomSlot(RecInputData **input_data, EventOption slot_menu[])
 {
@@ -4112,13 +4081,13 @@ void Record_OnSuccessfulSave(int deleteRecordings)
         LabOptions_Record[OPTREC_HMNSLOT].option_val = 1; // set hmn to slot 1
         LabOptions_Record[OPTREC_CPUMODE].option_val = RECMODE_CPU_OFF;
         LabOptions_Record[OPTREC_CPUSLOT].option_val = 1; // set cpu to slot 1
-        LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].option_val = 0;
+        LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].option_val = OPTMIRROR_OFF;
         LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].disable = 1;
     }
 
     // also save to personal savestate
     event_vars->Savestate_Save(event_vars->savestate);
-    event_vars->savestate_saved_while_mirrored = LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].option_val;
+    event_vars->savestate_saved_while_mirrored = event_vars->loaded_mirrored;
 
     // take screenshot
     snap_status = 1;
@@ -4229,13 +4198,14 @@ void Record_MemcardLoad(int slot, int file_no)
             // copy buffer to savestate
             memcpy(rec_state, &loaded_recsave->savestate, sizeof(Savestate));
             event_vars->savestate_saved_while_mirrored = false;
+            event_vars->loaded_mirrored = false;
 
             // restore controller indices
             rec_state->ft_state[0].player_block.controller = stc_hmn_controller;
             rec_state->ft_state[1].player_block.controller = stc_cpu_controller;
 
             // load state
-            Record_LoadSavestate();
+            Record_LoadSavestate(rec_state);
 
             // copy recordings
             for (int i = 0; i < REC_SLOTS; i++)
@@ -4267,7 +4237,7 @@ void Record_MemcardLoad(int slot, int file_no)
 
             // save to personal savestate
             event_vars->Savestate_Save(event_vars->savestate);
-            event_vars->savestate_saved_while_mirrored = LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].option_val;
+            event_vars->savestate_saved_while_mirrored = event_vars->loaded_mirrored;
         }
 
         HSD_Free(memcard_save.data);
@@ -4298,13 +4268,32 @@ void Record_StartExport(GOBJ *menu_gobj)
 
     return;
 }
-void Record_LoadSavestate() {
-    event_vars->Savestate_Load(
-        rec_state,
-        LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].option_val
-    );
+
+void Record_LoadSavestate(Savestate *savestate) {
+    int mirror = LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].option_val;
+    if (mirror == OPTMIRROR_RANDOM)
+        mirror = HSD_Randi(2);
+
+    // if a non-major savestate is saved while mirrored, we need to unmirror again.
+    if (savestate != rec_state)
+        mirror = mirror != event_vars->savestate_saved_while_mirrored;
+    event_vars->loaded_mirrored = mirror;
+
+    if (LabOptions_Record[OPTREC_HMNMODE].option_val == RECMODE_HMN_PLAYBACK
+            && LabOptions_Record[OPTREC_HMNSLOT].option_val == 0)
+        rec_data.hmn_rndm_slot = Record_GetRandomSlot(&rec_data.hmn_inputs, LabOptions_SlotChancesHMN);
+
+    if (LabOptions_Record[OPTREC_CPUMODE].option_val == RECMODE_CPU_PLAYBACK
+            && LabOptions_Record[OPTREC_CPUSLOT].option_val == 0)
+        rec_data.cpu_rndm_slot = Record_GetRandomSlot(&rec_data.cpu_inputs, LabOptions_SlotChancesCPU);
+
+    event_vars->game_timer = rec_state->frame;
+    rec_data.restore_timer = 0;
+
     stc_playback_cancelled_hmn = false;
     stc_playback_cancelled_cpu = false;
+
+    event_vars->Savestate_Load(savestate, mirror);
 }
 
 void Snap_CObjThink(GOBJ *gobj)
@@ -4353,7 +4342,7 @@ void Savestates_Update()
                     {
                         // save state
                         event_vars->Savestate_Save(event_vars->savestate);
-                        event_vars->savestate_saved_while_mirrored = LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].option_val;
+                        event_vars->savestate_saved_while_mirrored = event_vars->loaded_mirrored;
                         save_timer[port] = 0; // Reset timer after saving
                         lockout_timer = LOCKOUT_DURATION;
                     }
@@ -4367,11 +4356,7 @@ void Savestates_Update()
                 if ((pad->down & HSD_BUTTON_DPAD_LEFT) && !(pad->held & blacklist))
                 {
                     // load state
-                    int mirror = LabOptions_Record[OPTREC_MIRRORED_PLAYBACK].option_val;
-                    event_vars->Savestate_Load(
-                        event_vars->savestate,
-                        !(mirror == event_vars->savestate_saved_while_mirrored)
-                    );
+                    Record_LoadSavestate(event_vars->savestate);
                     stc_playback_cancelled_hmn = false;
                     stc_playback_cancelled_cpu = false;
 
@@ -5711,6 +5696,9 @@ void Event_Init(GOBJ *gobj)
 
     // theres got to be a better way to do this...
     event_vars = *event_vars_ptr;
+
+    event_vars->savestate_saved_while_mirrored = false;
+    event_vars->loaded_mirrored = false;
 
     // get this events assets
     stc_lab_data = Archive_GetPublicAddress(event_vars->event_archive, "lab");

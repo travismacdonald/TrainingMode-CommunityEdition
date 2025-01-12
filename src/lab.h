@@ -2045,6 +2045,13 @@ enum rec_playback_counter
     PLAYBACKCOUNTER_ON_HIT,
 };
 
+enum rec_mirror
+{
+    OPTMIRROR_OFF,
+    OPTMIRROR_ON,
+    OPTMIRROR_RANDOM,
+};
+
 // Aitch: Please be aware that the order of these options is important.
 // The option idx will be serialized when exported, so loading older replays could load the wrong option if we reorder/remove options.
 static char *LabValues_RecordSlot[] = {"Random", "Slot 1", "Slot 2", "Slot 3", "Slot 4", "Slot 5", "Slot 6"};
@@ -2052,6 +2059,7 @@ static char *LabValues_HMNRecordMode[] = {"Off", "Record", "Playback"};
 static char *LabValues_CPURecordMode[] = {"Off", "Control", "Record", "Playback"};
 static char *LabValues_AutoRestore[] = {"Off", "Playback Ends", "CPU Counters"};
 static char *LabValues_PlaybackCounterActions[] = {"Off", "After Playback Ends", "On Hit"};
+static char *LabOptions_ChangeMirroredPlayback[] = {"Off", "On", "Random"};
 
 static const EventOption Record_Save = {
     .option_kind = OPTKIND_FUNC,
@@ -2107,10 +2115,10 @@ static EventOption LabOptions_Record[OPTREC_COUNT] = {
     },
     {
         .option_kind = OPTKIND_STRING,
-        .value_num = sizeof(LabOptions_OffOn) / 4,
+        .value_num = sizeof(LabOptions_ChangeMirroredPlayback) / 4,
         .option_name = "Mirrored Playback",
     	.desc = "Playback with mirrored the recorded inputs,\npositions and facing directions.\n(!) This works properly only on symmetrical \nstages.",
-        .option_values = LabOptions_OffOn,
+        .option_values = LabOptions_ChangeMirroredPlayback,
         .onOptionChange = Record_ChangeMirroredPlayback,
     },
     {

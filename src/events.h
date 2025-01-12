@@ -358,6 +358,8 @@ typedef struct EventVars
     // we need to record if the minor savestate was saved duting mirroring.
     // Otherwise, the savestate will be loaded as mirrored AGAIN.
     int savestate_saved_while_mirrored;
+    int loaded_mirrored;
+
     evFunction evFunction;      // event specific functions
     HSD_Archive *event_archive; // event archive header
     DevText *db_console_text;
