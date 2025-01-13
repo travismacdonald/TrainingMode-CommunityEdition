@@ -16,8 +16,8 @@ struct LedgedashData
 {
     EventDesc *event_desc;
     LedgedashAssets *assets;
-    s16 ledge_line;
-    s16 ledge_dir;
+    int ledge;
+    bool was_successful;
     s16 reset_timer;
     GOBJ *hitlog_gobj;
     CmSubject *cam;
