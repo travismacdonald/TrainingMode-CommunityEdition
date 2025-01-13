@@ -42,48 +42,35 @@ static float LdshOptions_GameSpeeds[] = {1.0, 2.0/3.0, 1.0/2.0, 1.0/4.0};
 static char *LdshOptions_GameSpeedText[] = {"1", "2/3", "1/2", "1/4"};
 
 static EventOption LdshOptions_Main[] = {
-    // Position
     {
-        .option_kind = OPTKIND_STRING,                                             // the type of option this is; menu, string list, integers list, etc
-        .value_num = sizeof(LdshOptions_Start) / 4,                                // number of values for this option
-        .option_val = 0,                                                           // value of this option
-        .menu = 0,                                                                 // pointer to the menu that pressing A opens
-        .option_name = "Starting Position",                                        // pointer to a string
-        .desc = "Choose where the fighter is placed \nafter resetting positions.", // string describing what this option does
-        .option_values = LdshOptions_Start,                                        // pointer to an array of strings
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LdshOptions_Start) / 4,
+        .option_name = "Starting Position",
+        .desc = "Choose where the fighter is placed \nafter resetting positions.",
+        .option_values = LdshOptions_Start,
         .onOptionChange = Ledgedash_ToggleStartPosition,
     },
-    // Reset
     {
-        .option_kind = OPTKIND_STRING,                                                                  // the type of option this is; menu, string list, integers list, etc
-        .value_num = sizeof(LdshOptions_Reset) / 4,                                                     // number of values for this option
-        .option_val = 0,                                                                                // value of this option
-        .menu = 0,                                                                                      // pointer to the menu that pressing A opens
-        .option_name = "Auto-Reset",                                                                    // pointer to a string
-        .desc = "Toggle the automatic resetting of the \nfighter's position after ledgedash attempts.", // string describing what this option does
-        .option_values = LdshOptions_Reset,                                                             // pointer to an array of strings
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LdshOptions_Reset) / 4,
+        .option_name = "Auto-Reset",
+        .desc = "Toggle the automatic resetting of the \nfighter's position after ledgedash attempts.",
+        .option_values = LdshOptions_Reset,
         .onOptionChange = Ledgedash_ToggleAutoReset,
     },
-    // HUD
     {
-        .option_kind = OPTKIND_STRING,            // the type of option this is; menu, string list, integers list, etc
-        .value_num = sizeof(LdshOptions_HUD) / 4, // number of values for this option
-        .option_val = 0,                          // value of this option
-        .menu = 0,                                // pointer to the menu that pressing A opens
-        .option_name = "HUD",                     // pointer to a string
-        .desc = "Toggle visibility of the HUD.",  // string describing what this option does
-        .option_values = LdshOptions_HUD,         // pointer to an array of strings
-        .onOptionChange = 0,
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LdshOptions_HUD) / 4,
+        .option_name = "HUD",
+        .desc = "Toggle visibility of the HUD.",
+        .option_values = LdshOptions_HUD,
     },
-    // Tips
     {
-        .option_kind = OPTKIND_STRING,                  // the type of option this is; menu, string list, integers list, etc
-        .value_num = sizeof(LdshOptions_HUD) / 4,       // number of values for this option
-        .option_val = 0,                                // value of this option
-        .menu = 0,                                      // pointer to the menu that pressing A opens
-        .option_name = "Tips",                          // pointer to a string
-        .desc = "Toggle the onscreen display of tips.", // string describing what this option does
-        .option_values = LdshOptions_HUD,               // pointer to an array of strings
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LdshOptions_HUD) / 4,
+        .option_name = "Tips",
+        .desc = "Toggle the onscreen display of tips.",
+        .option_values = LdshOptions_HUD,
         .onOptionChange = Tips_Toggle,
     },
     {
@@ -108,38 +95,22 @@ static EventOption LdshOptions_Main[] = {
         .desc = "Change how fast the game engine runs.",
         .option_values = LdshOptions_GameSpeedText,
     },
-    // Help
     {
-        .option_kind = OPTKIND_FUNC,                                                                                                                                                                                                                                                  // the type of option this is; menu, string list, integers list, etc
-        .value_num = 0,                                                                                                                                                                                                                                                               // number of values for this option
-        .option_val = 0,                                                                                                                                                                                                                                                              // value of this option
-        .menu = 0,                                                                                                                                                                                                                                                                    // pointer to the menu that pressing A opens
-        .option_name = "About",                                                                                                                                                                                                                                                       // pointer to a string
-        .desc = "Ledgedashing is the act of wavedashing onto stage from ledge.\nThis is most commonly done by dropping off ledge, double jumping \nimmediately, and quickly airdodging onto stage. Each input \nis performed quickly after the last, making it difficult and risky.", // string describing what this option does
-        .option_values = 0,                                                                                                                                                                                                                                                           // pointer to an array of strings
-        .onOptionChange = 0,
+        .option_kind = OPTKIND_FUNC,
+        .option_name = "About",
+        .desc = "Ledgedashing is the act of wavedashing onto stage from ledge.\nThis is most commonly done by dropping off ledge, double jumping \nimmediately, and quickly airdodging onto stage. Each input \nis performed quickly after the last, making it difficult and risky.",
     },
-    // Exit
     {
-        .option_kind = OPTKIND_FUNC,                     // the type of option this is; menu, string list, integers list, etc
-        .value_num = 0,                                  // number of values for this option
-        .option_val = 0,                                 // value of this option
-        .menu = 0,                                       // pointer to the menu that pressing A opens
-        .option_name = "Exit",                           // pointer to a string
-        .desc = "Return to the Event Selection Screen.", // string describing what this option does
-        .option_values = 0,                              // pointer to an array of strings
-        .onOptionChange = 0,
+        .option_kind = OPTKIND_FUNC,
+        .option_name = "Exit",
+        .desc = "Return to the Event Selection Screen.",
         .onOptionSelect = Event_Exit,
     },
 };
 static EventMenu LdshMenu_Main = {
-    .name = "Ledgedash Training",                                 // the name of this menu
-    .option_num = sizeof(LdshOptions_Main) / sizeof(EventOption), // number of options this menu contains
-    .scroll = 0,                                                  // runtime variable used for how far down in the menu to start
-    .state = 0,                                                   // bool used to know if this menu is focused, used at runtime
-    .cursor = 0,                                                  // index of the option currently selected, used at runtime
-    .options = &LdshOptions_Main,                                 // pointer to all of this menu's options
-    .prev = 0,                                                    // pointer to previous menu, used at runtime
+    .name = "Ledgedash Training",
+    .option_num = sizeof(LdshOptions_Main) / sizeof(EventOption),
+    .options = &LdshOptions_Main,
 };
 
 // Init Function
@@ -239,15 +210,6 @@ void Ledgedash_HUDInit(LedgedashData *event_data)
     JOBJ *hud_jobj = JOBJ_LoadJoint(event_data->assets->hud);
     GObj_AddObject(hud_gobj, 3, hud_jobj);
     GObj_AddGXLink(hud_gobj, GXLink_Common, 18, 80);
-
-    // account for widescreen
-    /*
-    float aspect = (hud_cobj->projection_param.perspective.aspect / 1.216667) - 1;
-    JOBJ *this_jobj;
-    JOBJ_GetChild(hud_jobj, &this_jobj, 1, -1);
-    this_jobj->trans.X += (this_jobj->trans.X * aspect);
-    JOBJ_SetMtxDirtySub(hud_jobj);
-    */
 
     // create text canvas
     int canvas = Text_CreateCanvas(2, hud_gobj, 14, 15, 0, 18, 81, 19);
