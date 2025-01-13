@@ -423,6 +423,15 @@ void Lab_ChangeEnvCollDisplay(GOBJ *menu_gobj, int value)
     stc_matchcam->show_coll = value;
     return;
 }
+void Lab_ChangeItemGrabDisplay(GOBJ *menu_gobj, int value)
+{
+    GOBJ *hmn = Fighter_GetGObj(0);
+    GOBJ *cpu = Fighter_GetGObj(1);
+    FighterData *cpu_data = cpu->userdata;
+    FighterData *hmn_data = hmn->userdata;
+    cpu_data->show_item_pickup = value;
+    hmn_data->show_item_pickup = value;
+}
 void Lab_ChangeCamMode(GOBJ *menu_gobj, int value)
 {
     MatchCamera *cam = MATCH_CAM;

@@ -825,6 +825,7 @@ enum gen_option
     OPTGEN_HMNPCNT,
     OPTGEN_HMNPCNTLOCK,
     OPTGEN_MODEL,
+    OPTGEN_ITEMGRAB,
     OPTGEN_HIT,
     OPTGEN_COLL,
     OPTGEN_CAM,
@@ -898,6 +899,14 @@ static EventOption LabOptions_General[OPTGEN_COUNT] = {
         .desc = "Toggle hitbox and hurtbox visualization.\nHurtboxes: yellow=hurt, purple=ungrabbable, blue=shield.\nHitboxes: (by priority) red, green, blue, purple.",
         .option_values = LabOptions_OffOn,
         .onOptionChange = Lab_ChangeHitDisplay,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = 2,
+        .option_name = "Item Grab Sizes",
+        .desc = "Toggle item grab range visualization.\nBlue=z-catch, light grey=grounded catch,\ndark grey=unknown",
+        .option_values = LabOptions_OffOn,
+        .onOptionChange = Lab_ChangeItemGrabDisplay,
     },
     {
         .option_kind = OPTKIND_STRING,

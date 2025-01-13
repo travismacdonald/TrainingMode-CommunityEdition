@@ -398,6 +398,7 @@ void Lab_ChangeCPUIntang(GOBJ *menu_gobj, int value);
 void Lab_ChangeModelDisplay(GOBJ *menu_gobj, int value);
 void Lab_ChangeHitDisplay(GOBJ *menu_gobj, int value);
 void Lab_ChangeEnvCollDisplay(GOBJ *menu_gobj, int value);
+void Lab_ChangeItemGrabDisplay(GOBJ *menu_gobj, int value);
 void Lab_ChangeCamMode(GOBJ *menu_gobj, int value);
 void Lab_ChangeInfoPresetHMN(GOBJ *menu_gobj, int preset_id);
 void Lab_ChangeInfoPresetCPU(GOBJ *menu_gobj, int preset_id);
