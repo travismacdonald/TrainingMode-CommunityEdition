@@ -2903,13 +2903,24 @@ void CustomTDI_Apply(GOBJ *cpu, GOBJ *hmn, CustomTDI *di)
     FighterData *hmn_data = hmn->userdata;
     FighterData *cpu_data = cpu->userdata;
 
-    float direction = 1.f;
-    if (di->reversing && (cpu_data->phys.pos.X < hmn_data->phys.pos.X) != di->direction)
-        direction = -1.f;
+    float di_direction = 1.f;
+    float diff = cpu_data->phys.pos.X - hmn_data->phys.pos.X;
 
-    cpu_data->cpu.lstickX = di->lstickX * 127.f * direction;
+    int cur_direction;
+    if (diff > 3.f) {
+        cur_direction = 1;
+    } else if (diff < -3.f) {
+        cur_direction = 0;
+    } else {
+        cur_direction = hmn_data->facing_direction > 0.f;
+    }
+
+    if (di->reversing && di->direction != cur_direction)
+        di_direction = -1.f;
+
+    cpu_data->cpu.lstickX = di->lstickX * 127.f * di_direction;
     cpu_data->cpu.lstickY = di->lstickY * 127.f;
-    cpu_data->cpu.cstickX = di->cstickX * 127.f * direction;
+    cpu_data->cpu.cstickX = di->cstickX * 127.f * di_direction;
     cpu_data->cpu.cstickY = di->cstickY * 127.f;
 }
 
@@ -3046,7 +3057,7 @@ void CustomTDI_Update(GOBJ *gobj)
         GOBJ *cpu = Fighter_GetGObj(1);
         FighterData *hmn_data = hmn->userdata;
         FighterData *cpu_data = cpu->userdata;
-        int direction = cpu_data->phys.pos.X < hmn_data->phys.pos.X;
+        int direction = cpu_data->phys.pos.X < hmn_data->phys.pos.X ? 0 : 1;
 
         stc_tdi_vals[stc_tdi_val_num++] = (CustomTDI) {
             .lstickX = pad->fstickX,
