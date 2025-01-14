@@ -818,6 +818,12 @@ enum input_display_mode {
     INPUTDISPLAY_HMN_AND_CPU,
 };
 
+enum model_display {
+    MODELDISPLAY_ON,
+    MODELDISPLAY_STAGE,
+    MODELDISPLAY_CHARACTERS,
+};
+
 enum gen_option
 {
     OPTGEN_FRAME,
@@ -845,6 +851,10 @@ enum gen_option
 static char *LabOptions_CamMode[] = {"Normal", "Zoom", "Fixed", "Advanced"};
 static char *LabOptions_ShowInputs[] = {"Off", "HMN", "CPU", "HMN and CPU"};
 static char *LabOptions_FrameAdvButton[] = {"L", "Z", "X", "Y", "R"};
+
+static char *LabOptions_ModelDisplay[] = {"On", "Stage Only", "Characters Only"};
+static const bool LabValues_CharacterModelDisplay[] = {true, false, true};
+static const bool LabValues_StageModelDisplay[] = {true, true, false};
 
 static float LabOptions_GameSpeeds[] = {1.0, 2.0/3.0, 1.0/2.0, 1.0/4.0};
 static char *LabOptions_GameSpeedText[] = {"1", "2/3", "1/2", "1/4"};
@@ -885,11 +895,11 @@ static EventOption LabOptions_General[OPTGEN_COUNT] = {
     },
     {
         .option_kind = OPTKIND_STRING,
-        .value_num = 2,
-        .option_val = 1,
+        .value_num = sizeof(LabOptions_ModelDisplay)/sizeof(*LabOptions_ModelDisplay),
+        .option_val = 0,
         .option_name = "Model Display",
         .desc = "Toggle player and item model visibility.",
-        .option_values = LabOptions_OffOn,
+        .option_values = LabOptions_ModelDisplay,
         .onOptionChange = Lab_ChangeModelDisplay,
     },
     {

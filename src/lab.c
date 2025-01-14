@@ -376,8 +376,11 @@ void Lab_ChangeCPUIntang(GOBJ *menu_gobj, int value)
 
     return;
 }
+
 void Lab_ChangeModelDisplay(GOBJ *menu_gobj, int value)
 {
+    bool hide_chars = !LabValues_CharacterModelDisplay[value];
+
     // loop through all fighters
     GOBJ *this_fighter = (*stc_gobj_lookup)[MATCHPLINK_FIGHTER];
     while (this_fighter != 0)
@@ -386,14 +389,20 @@ void Lab_ChangeModelDisplay(GOBJ *menu_gobj, int value)
         FighterData *thisFighterData = this_fighter->userdata;
 
         // toggle
-        thisFighterData->show_model = value;
+        thisFighterData->show_model = !hide_chars;
 
         // get next fighter
         this_fighter = this_fighter->next;
     }
 
-    GOBJ *fighter = Fighter_GetGObj(0);
-    FighterData *fighter_data = fighter->userdata;
+    bool hide_stage = !LabValues_StageModelDisplay[value];
+    stc_matchcam->hide_stage = hide_stage;
+    stc_matchcam->hide_stage2 = hide_stage;
+    stc_matchcam->hide_background = hide_stage;
+
+    bool hide_misc = hide_stage || hide_chars;
+
+    stc_matchcam->hide_effects = hide_misc;
 
     return;
 }
