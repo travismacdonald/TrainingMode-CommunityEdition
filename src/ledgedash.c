@@ -517,8 +517,8 @@ void Ledgedash_ResetThink(LedgedashData *event_data, GOBJ *hmn)
 
         bool dead = hmn_data->flags.dead;
         bool missed_airdodge = hmn_data->state_id == ASID_ESCAPEAIR && hmn_data->TM.state_frame >= 9;
-        bool ledge_action = state >= ASID_CLIFFCLIMBSLOW && state <= ASID_CLIFFJUMPQUICK2;
-        bool aerial = state >= ASID_CLIFFCLIMBSLOW && state <= ASID_CLIFFJUMPQUICK2 && hmn_data->TM.state_frame >= 12;
+        bool ledge_action = ASID_CLIFFCLIMBSLOW <= state && state <= ASID_CLIFFJUMPQUICK2;
+        bool aerial = ASID_ATTACKAIRN <= state && state <= ASID_ATTACKAIRLW && hmn_data->TM.state_frame >= 12;
         bool non_landing_grounded = hmn_data->phys.air_state == 0
             && event_data->action_state.is_release
             && state != ASID_LANDING
