@@ -1599,6 +1599,17 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
             goto CPULOGIC_TECH;
         }
 
+        // if hit during a techable animation, enter tech lockout.
+        int state = cpu_data->TM.state_prev[0];
+        if (state == ASID_DAMAGEFALL || (ASID_DAMAGEFLYHI <= state && state <= ASID_DAMAGEFLYROLL)) {
+            int lockout_type = LabOptions_Tech[OPTTECH_LOCKOUT].option_val;
+            if (lockout_type == TECHLOCKOUT_EARLIEST)
+                eventData->cpu_tech_lockout = 20;
+            else if (lockout_type == TECHLOCKOUT_LATEST)
+                eventData->cpu_tech_lockout = 40;
+        }
+
+
         // update move instance
         if (eventData->cpu_lasthit != cpu_data->dmg.atk_instance_hurtby)
         {
@@ -2023,11 +2034,21 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         }
         }
 
-        // input tech
-        cpu_data->input.timer_LR = sincePress;
-        cpu_data->input.since_rapid_lr = since2Press;
-        cpu_data->cpu.lstickX = stickX;
-        cpu_data->input.timer_lstick_smash_x = sinceXSmash;
+        if (eventData->cpu_tech_lockout)
+            OSReport("lockout %i\n", eventData->cpu_tech_lockout);
+
+        if (eventData->cpu_tech_lockout == 0) {
+            // input tech
+            cpu_data->input.timer_LR = sincePress;
+            cpu_data->input.since_rapid_lr = since2Press;
+            cpu_data->cpu.lstickX = stickX;
+            cpu_data->input.timer_lstick_smash_x = sinceXSmash;
+        } else {
+            cpu_data->input.timer_LR = 255;
+            cpu_data->input.since_rapid_lr = 255;
+            cpu_data->cpu.lstickX = 0;
+            cpu_data->input.timer_lstick_smash_x = 255;
+        }
 
         break;
     }
@@ -6082,6 +6103,9 @@ void Event_Think(GOBJ *event)
     GOBJ *cpu = Fighter_GetGObj(1);
     FighterData *cpu_data = cpu->userdata;
     HSD_Pad *pad = PadGet(hmn_data->pad_index, PADGET_ENGINE);
+
+    if (eventData->cpu_tech_lockout != 0)
+        eventData->cpu_tech_lockout--;
 
     // Disable the D-pad up button according to the OPTGEN_TAUNT value
     if (LabOptions_General[OPTGEN_TAUNT].option_val == 1)

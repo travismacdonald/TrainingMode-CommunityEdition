@@ -1699,6 +1699,14 @@ static EventMenu LabMenu_CPU = {
 
 // TECH MENU --------------------------------------------------------------
 
+enum tech_lockout {
+    TECHLOCKOUT_NONE,
+    TECHLOCKOUT_EARLIEST,
+    TECHLOCKOUT_LATEST,
+};
+
+static char *LabOptions_TechLockout[] = {"None", "Earliest Tech Input", "Latest Tech Input"};
+
 static int tech_frame_distinguishable[27] = {
      8, // Mario
      4, // Fox
@@ -1731,10 +1739,11 @@ static int tech_frame_distinguishable[27] = {
 
 enum tech_option
 {
+    OPTTECH_TECH,
     OPTTECH_INVISIBLE,
     OPTTECH_INVISIBLE_DELAY,
     OPTTECH_SOUND,
-    OPTTECH_TECH,
+    OPTTECH_LOCKOUT,
     OPTTECH_TECHINPLACECHANCE,
     OPTTECH_TECHAWAYCHANCE,
     OPTTECH_TECHTOWARDCHANCE,
@@ -1748,8 +1757,15 @@ enum tech_option
     OPTTECH_COUNT
 };
 
-
 static EventOption LabOptions_Tech[OPTTECH_COUNT] = {
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_Tech) / 4,
+        .option_name = "Tech Option",
+        .desc = "Adjust what the CPU will do upon colliding\nwith the stage.",
+        .option_values = LabValues_Tech,
+        .onOptionChange = Lab_ChangeTech,
+    },
     {
         .option_kind = OPTKIND_STRING,
         .value_num = 2,
@@ -1773,11 +1789,10 @@ static EventOption LabOptions_Tech[OPTTECH_COUNT] = {
     },
     {
         .option_kind = OPTKIND_STRING,
-        .value_num = sizeof(LabValues_Tech) / 4,
-        .option_name = "Tech Option",
-        .desc = "Adjust what the CPU will do upon colliding\nwith the stage.",
-        .option_values = LabValues_Tech,
-        .onOptionChange = Lab_ChangeTech,
+        .value_num = sizeof(LabOptions_TechLockout)/sizeof(*LabOptions_TechLockout),
+        .option_name = "Lockout",
+        .desc = "TODO TODO TODO.",
+        .option_values = LabOptions_TechLockout,
     },
     {
         .option_kind = OPTKIND_INT,
