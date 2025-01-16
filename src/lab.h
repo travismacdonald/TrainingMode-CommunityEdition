@@ -1791,7 +1791,7 @@ static EventOption LabOptions_Tech[OPTTECH_COUNT] = {
         .option_kind = OPTKIND_STRING,
         .value_num = sizeof(LabOptions_TechLockout)/sizeof(*LabOptions_TechLockout),
         .option_name = "Lockout",
-        .desc = "TODO TODO TODO.",
+        .desc = "Set a window where the CPU cannot tech\nafter being hit out of tumble.",
         .option_values = LabOptions_TechLockout,
     },
     {
