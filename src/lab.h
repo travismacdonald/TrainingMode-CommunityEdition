@@ -1705,7 +1705,7 @@ enum tech_lockout {
     TECHLOCKOUT_LATEST,
 };
 
-static char *LabOptions_TechLockout[] = {"None", "Earliest Tech Input", "Latest Tech Input"};
+static char *LabOptions_TechTrap[] = {"None", "Earliest Tech Input", "Latest Tech Input"};
 
 static int tech_frame_distinguishable[27] = {
      8, // Mario
@@ -1743,7 +1743,8 @@ enum tech_option
     OPTTECH_INVISIBLE,
     OPTTECH_INVISIBLE_DELAY,
     OPTTECH_SOUND,
-    OPTTECH_LOCKOUT,
+    OPTTECH_TRAP,
+    OPTTECH_UNREACTABLE,
     OPTTECH_TECHINPLACECHANCE,
     OPTTECH_TECHAWAYCHANCE,
     OPTTECH_TECHTOWARDCHANCE,
@@ -1789,10 +1790,17 @@ static EventOption LabOptions_Tech[OPTTECH_COUNT] = {
     },
     {
         .option_kind = OPTKIND_STRING,
-        .value_num = sizeof(LabOptions_TechLockout)/sizeof(*LabOptions_TechLockout),
-        .option_name = "Lockout",
+        .value_num = sizeof(LabOptions_TechTrap)/sizeof(*LabOptions_TechTrap),
+        .option_name = "Simulate Tech Trap",
         .desc = "Set a window where the CPU cannot tech\nafter being hit out of tumble.",
-        .option_values = LabOptions_TechLockout,
+        .option_values = LabOptions_TechTrap,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = 2,
+        .option_name = "Unreactable Techs",
+        .desc = "Allow the CPU to tech when the hit\n is unreactable.",
+        .option_values = LabOptions_OffOn,
     },
     {
         .option_kind = OPTKIND_INT,

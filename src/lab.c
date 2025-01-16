@@ -959,9 +959,7 @@ float Fighter_GetOpponentDir(FighterData *from, FighterData *to)
     return dir;
 }
 
-static int in_hitstun_anim(GOBJ *character) {
-    FighterData *data = character->userdata;
-    int state = data->state_id;
+static int in_hitstun_anim(int state) {
     return ASID_DAMAGEHI1 <= state && state <= ASID_DAMAGEFLYROLL;
 }
 
@@ -969,6 +967,10 @@ static int hitstun_ended(GOBJ *character) {
     FighterData *data = character->userdata;
     float hitstun = *((float*)&data->state_var.state_var1);
     return hitstun == 0.0;
+}
+
+static int in_tumble_anim(int state) {
+    return state == ASID_DAMAGEFALL || (ASID_DAMAGEFLYHI <= state && state <= ASID_DAMAGEFLYROLL);
 }
 
 static int check_IASA(FighterData *data) {
@@ -988,7 +990,7 @@ static int CheckOverlay(GOBJ *character, OverlayGroup overlay)
     {
         case (OVERLAY_ACTIONABLE):
         {
-            if (in_hitstun_anim(character) && hitstun_ended(character))
+            if (in_hitstun_anim(state) && hitstun_ended(character))
                 return true;
 
             if (state == ASID_LANDING && data->state.frame >= data->attr.normal_landing_lag)
@@ -1009,7 +1011,7 @@ static int CheckOverlay(GOBJ *character, OverlayGroup overlay)
         }
 
         case (OVERLAY_HITSTUN):
-            return in_hitstun_anim(character) && !hitstun_ended(character);
+            return in_hitstun_anim(state) && !hitstun_ended(character);
 
         case (OVERLAY_LEDGE_ACTIONABLE):
             return state == ASID_CLIFFWAIT && data->TM.state_frame > 1;
@@ -1028,7 +1030,7 @@ static int CheckOverlay(GOBJ *character, OverlayGroup overlay)
             if (!in_air)
                 return false;
 
-            if (in_hitstun_anim(character) && !hitstun_ended(character))
+            if (in_hitstun_anim(state) && !hitstun_ended(character))
                 return false;
 
             if ((state < ASID_JUMPF || state > ASID_DAMAGEFALL)
@@ -1122,7 +1124,7 @@ int CPUAction_CheckASID(GOBJ *cpu, int asid_kind)
         case (ASID_ANY): return true;
         case (ASID_DAMAGEAIR):
             return in_air
-                && (in_hitstun_anim(cpu) || cpu_state == ASID_DAMAGEFALL)
+                && (in_hitstun_anim(cpu_state) || cpu_state == ASID_DAMAGEFALL)
                 && hitstun_ended(cpu);
 
         case (ASID_ACTIONABLE):
@@ -1139,7 +1141,7 @@ int CPUAction_CheckASID(GOBJ *cpu, int asid_kind)
             if (!in_air)
                 return false;
 
-            if (in_hitstun_anim(cpu) && hitstun_ended(cpu))
+            if (in_hitstun_anim(cpu_state) && hitstun_ended(cpu))
                 return true;
 
             return cpu_state == ASID_JUMPF 
@@ -1160,7 +1162,7 @@ int CPUAction_CheckASID(GOBJ *cpu, int asid_kind)
             if (in_air)
                 return false;
 
-            if (in_hitstun_anim(cpu) && hitstun_ended(cpu))
+            if (in_hitstun_anim(cpu_state) && hitstun_ended(cpu))
                 return true;
 
             if (cpu_state == ASID_LANDING && cpu_data->state.frame >= cpu_data->attr.normal_landing_lag)
@@ -1361,6 +1363,7 @@ int Lab_CPUPerformAction(GOBJ *cpu, int action_id, GOBJ *hmn)
 
     return action_done;
 }
+
 void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
 {
     // get gobjs data
@@ -1391,6 +1394,18 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
     eventData->cpu_isthrown = is_thrown;
 
     // ALWAYS CHECK FOR X AND OVERRIDE STATE
+
+    // Simulate tech lockouts
+    if (ASID_PASSIVE <= cpu_state && cpu_state <= ASID_PASSIVESTANDB && cpu_data->TM.state_frame == 1) {
+        int fall_frames = 0;
+        int prev_state = cpu_data->TM.state_prev[0];
+        if (in_tumble_anim(prev_state))
+            fall_frames = cpu_data->TM.state_prev_frames[0];
+
+        int lockout = 40 - fall_frames;
+        if (lockout < 20) lockout = 20;
+        eventData->cpu_tech_lockout = lockout;
+    }
 
     // check if damaged
     if (cpu_data->flags.hitstun == 1)
@@ -1598,15 +1613,13 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         }
 
         // if hit during a techable animation, enter tech lockout.
-        int state = cpu_data->TM.state_prev[0];
-        if (state == ASID_DAMAGEFALL || (ASID_DAMAGEFLYHI <= state && state <= ASID_DAMAGEFLYROLL)) {
-            int lockout_type = LabOptions_Tech[OPTTECH_LOCKOUT].option_val;
+        if (in_tumble_anim(cpu_data->TM.state_prev[0])) {
+            int lockout_type = LabOptions_Tech[OPTTECH_TRAP].option_val;
             if (lockout_type == TECHLOCKOUT_EARLIEST)
                 eventData->cpu_tech_lockout = 20;
             else if (lockout_type == TECHLOCKOUT_LATEST)
                 eventData->cpu_tech_lockout = 40;
         }
-
 
         // update move instance
         if (eventData->cpu_lasthit != cpu_data->dmg.atk_instance_hurtby)
@@ -2032,7 +2045,14 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         }
         }
 
-        if (eventData->cpu_tech_lockout == 0) {
+        bool teching = eventData->cpu_tech_lockout == 0;
+
+        if (!LabOptions_Tech[OPTTECH_UNREACTABLE].option_val) {
+            if (in_tumble_anim(cpu_data->state_id))
+                teching &= cpu_data->TM.state_frame > 15;
+        }
+
+        if (teching) {
             // input tech
             cpu_data->input.timer_LR = sincePress;
             cpu_data->input.since_rapid_lr = since2Press;
@@ -6101,6 +6121,8 @@ void Event_Think(GOBJ *event)
 
     if (eventData->cpu_tech_lockout != 0)
         eventData->cpu_tech_lockout--;
+
+    OSReport("lockout: %i\n", eventData->cpu_tech_lockout);
 
     // Disable the D-pad up button according to the OPTGEN_TAUNT value
     if (LabOptions_General[OPTGEN_TAUNT].option_val == 1)
