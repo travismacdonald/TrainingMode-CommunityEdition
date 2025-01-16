@@ -1211,23 +1211,21 @@ int CPU_IsGrabbed(GOBJ *cpu, GOBJ *hmn)
     int cpu_state = cpu_data->state_id;
     int hmn_kind = hmn_data->kind;
 
-    // hardcode DK cargo throw
-    if (hmn_kind == 3 && (cpu_state == ASID_THROWNF || cpu_state == ASID_THROWNFF)) return 1;
-
-    if (cpu_state == ASID_CAPTUREWAITHI)        return 1;
-    if (cpu_state == ASID_CAPTUREWAITLW)        return 1;
-    if (cpu_state == ASID_CAPTUREWAITKOOPA)     return 1;
-    if (cpu_state == ASID_CAPTUREWAITKOOPAAIR)  return 1;
-    if (cpu_state == ASID_CAPTUREWAITKIRBY)     return 1;
-    if (cpu_state == ASID_DAMAGEICE)            return 1;
-    if (cpu_state == ASID_CAPTUREMASTERHAND)    return 1;
-    if (cpu_state == ASID_YOSHIEGG)             return 1;
-    if (cpu_state == ASID_CAPTUREKIRBYYOSHI)    return 1;
-    if (cpu_state == ASID_KIRBYYOSHIEGG)        return 1;
-    if (cpu_state == ASID_CAPTURELEADEAD)       return 1;
-    if (cpu_state == ASID_CAPTURELIKELIKE)      return 1;
-    if (cpu_state == ASID_CAPTUREWAITCRAZYHAND) return 1;
-    if (ASID_SHOULDEREDWAIT <= cpu_state && cpu_state <= ASID_SHOULDEREDTURN) return 1;
+    return (ASID_CAPTUREPULLEDHI <= cpu_state && cpu_state <= ASID_CAPTURECUT)
+        || cpu_state == ASID_CAPTUREWAITKOOPA
+        || cpu_state == ASID_CAPTUREWAITKOOPAAIR
+        || cpu_state == ASID_CAPTUREWAITKIRBY
+        || cpu_state == ASID_DAMAGEICE
+        || cpu_state == ASID_CAPTUREMASTERHAND
+        || cpu_state == ASID_YOSHIEGG
+        || cpu_state == ASID_CAPTUREKIRBYYOSHI
+        || cpu_state == ASID_KIRBYYOSHIEGG
+        || cpu_state == ASID_CAPTURELEADEAD
+        || cpu_state == ASID_CAPTURELIKELIKE
+        || cpu_state == ASID_CAPTUREWAITCRAZYHAND
+        // hardcode DK cargo throw
+        || (ASID_SHOULDEREDWAIT <= cpu_state && cpu_state <= ASID_SHOULDEREDTURN)
+        || (hmn_kind == 3 && (cpu_state == ASID_THROWNF || cpu_state == ASID_THROWNFF));
 
     return 0;
 }
@@ -2033,9 +2031,6 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
             break;
         }
         }
-
-        if (eventData->cpu_tech_lockout)
-            OSReport("lockout %i\n", eventData->cpu_tech_lockout);
 
         if (eventData->cpu_tech_lockout == 0) {
             // input tech
