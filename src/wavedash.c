@@ -85,7 +85,7 @@ void Event_Init(GOBJ *gobj)
     // theres got to be a better way to do this...
     event_vars = *event_vars_ptr;
 
-    // get l-cancel assets
+    // get wavedash assets
     event_data->assets = Archive_GetPublicAddress(event_vars->event_archive, "wavedash");
 
     // create HUD
@@ -419,7 +419,7 @@ void Wavedash_Think(WavedashData *event_data, FighterData *hmn_data)
 
                 // update succession
                 event_data->wd_attempted++;
-                Text_SetText(event_data->hud.text_succession, 0, "%.2f%", ((float)event_data->wd_succeeded / (float)event_data->wd_attempted) * 100.0);
+                Text_SetText(event_data->hud.text_succession, 0, "%d (%.2f%)", event_data->wd_succeeded, ((float)event_data->wd_succeeded / (float)event_data->wd_attempted) * 100.0);
 
                 // hide tip so bar is unobscured
                 //event_vars->Tip_Destroy();
