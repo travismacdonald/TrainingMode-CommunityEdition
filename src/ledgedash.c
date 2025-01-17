@@ -511,7 +511,10 @@ void Ledgedash_ResetThink(LedgedashData *event_data, GOBJ *hmn)
         Fighter_PlaceOnLedge();
     } else if (event_data->action_state.is_actionable) {
         event_data->reset_timer = 60;
-        SFX_Play(303);
+        if (event_data->was_successful)
+            SFX_Play(303);
+        else
+            SFX_PlayCommon(3);
     } else {
         int state = hmn_data->state_id;
 
