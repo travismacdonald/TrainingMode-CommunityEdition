@@ -643,6 +643,7 @@ void Stage_InitLineHazardDescUnk(void *unk, LineHazardDesc *hazard_desc); // 0x8
 void Stage_InitColAnim(JOBJ *map_jobj);
 void Stage_ApplyColAnim(GOBJ *map, ColAnimDesc *colanim);
 void Stage_DisableColAnim(GOBJ *map);
+void Stages_MovingCollisionPointsUpdate(int moving_collision_idx);
 int Stage_GetExternalID();
 int Stage_ExternalToInternal(int ext_id);
 #endif

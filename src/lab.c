@@ -5670,11 +5670,22 @@ static void Stage_SetFODPlatformHeight(int side) {
     int idx = LabOptions_Stage_FOD[option_idx].option_val;
     if (idx == 0) return; // random default
     float height = LabValues_FODPlatformHeights[idx];
-    GOBJ *gobj = Stage_GetMapGObj(3);
-    JOBJ *stage_jobj = gobj->hsd_object;
+
+    GOBJ *platform_gobj = Stage_GetMapGObj(4);
+    if (side == 0)
+        platform_gobj = platform_gobj->previous;
+
+    GOBJ *stage_gobj = Stage_GetMapGObj(3);
+    JOBJ *stage_jobj = stage_gobj->hsd_object;
     JOBJ *plat_jobj = stage_jobj->child->child;
     if (side != 0)
         plat_jobj = plat_jobj->sibling;
+
+    struct FODData { u16 mode, timer; } *data = (void*)((u8*)platform_gobj->userdata + 0xC4);
+
+    data->mode = 1;
+    data->timer = 0xFF;
+
     plat_jobj->trans.Y = height * 1.21875;
     JOBJ_SetMtxDirtySub(plat_jobj);
 }
@@ -6122,7 +6133,7 @@ void Event_Think(GOBJ *event)
     if (eventData->cpu_tech_lockout != 0)
         eventData->cpu_tech_lockout--;
 
-    OSReport("lockout: %i\n", eventData->cpu_tech_lockout);
+    //OSReport("lockout: %i\n", eventData->cpu_tech_lockout);
 
     // Disable the D-pad up button according to the OPTGEN_TAUNT value
     if (LabOptions_General[OPTGEN_TAUNT].option_val == 1)
