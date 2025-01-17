@@ -271,8 +271,9 @@ void LCancel_Think(LCancelData *event_data, FighterData *hmn_data)
         should_update_fastfall_hud = true;
 
         // Print succession
+        int successful = event_data->hud.lcl_success;
         float succession = ((float)event_data->hud.lcl_success / (float)event_data->hud.lcl_total) * 100.0;
-        Text_SetText(event_data->hud.text_scs, 0, "%.1f%%", succession);
+        Text_SetText(event_data->hud.text_scs, 0, "%d (%.2f%)", successful, succession);
 
         // Play HUD anim
         JOBJ_RemoveAnimAll(hud_jobj);

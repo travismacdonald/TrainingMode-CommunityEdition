@@ -419,7 +419,9 @@ void Wavedash_Think(WavedashData *event_data, FighterData *hmn_data)
 
                 // update succession
                 event_data->wd_attempted++;
-                Text_SetText(event_data->hud.text_succession, 0, "%d (%.2f%)", event_data->wd_succeeded, ((float)event_data->wd_succeeded / (float)event_data->wd_attempted) * 100.0);
+                int successful = event_data->wd_succeeded;
+                float succession = ((float)event_data->wd_succeeded / (float)event_data->wd_attempted) * 100.0;
+                Text_SetText(event_data->hud.text_succession, 0, "%d (%.2f%)", successful, succession);
 
                 // hide tip so bar is unobscured
                 //event_vars->Tip_Destroy();
