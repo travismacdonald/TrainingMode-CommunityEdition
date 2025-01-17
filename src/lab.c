@@ -1397,13 +1397,21 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
 
     // Simulate tech lockouts
     if (ASID_PASSIVE <= cpu_state && cpu_state <= ASID_PASSIVESTANDB && cpu_data->TM.state_frame == 1) {
-        int fall_frames = 0;
-        int prev_state = cpu_data->TM.state_prev[0];
-        if (in_tumble_anim(prev_state))
-            fall_frames = cpu_data->TM.state_prev_frames[0];
+        int lockout;
+        int lockout_type = LabOptions_Tech[OPTTECH_LOCKOUT].option_val;
 
-        int lockout = 40 - fall_frames;
-        if (lockout < 20) lockout = 20;
+        if (lockout_type == TECHLOCKOUT_EARLIEST) {
+            int fall_frames = 0;
+            int prev_state = cpu_data->TM.state_prev[0];
+            if (in_tumble_anim(prev_state))
+                fall_frames = cpu_data->TM.state_prev_frames[0];
+
+            lockout = 40 - fall_frames;
+            if (lockout < 20) lockout = 20;
+        } else {
+            lockout = 40;
+        }
+
         eventData->cpu_tech_lockout = lockout;
     }
 
@@ -1614,10 +1622,10 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
 
         // if hit during a techable animation, enter tech lockout.
         if (in_tumble_anim(cpu_data->TM.state_prev[0])) {
-            int lockout_type = LabOptions_Tech[OPTTECH_TRAP].option_val;
-            if (lockout_type == TECHLOCKOUT_EARLIEST)
+            int trap_type = LabOptions_Tech[OPTTECH_TRAP].option_val;
+            if (trap_type == TECHTRAP_EARLIEST)
                 eventData->cpu_tech_lockout = 20;
-            else if (lockout_type == TECHLOCKOUT_LATEST)
+            else if (trap_type == TECHTRAP_LATEST)
                 eventData->cpu_tech_lockout = 40;
         }
 
@@ -2045,14 +2053,7 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         }
         }
 
-        bool teching = eventData->cpu_tech_lockout == 0;
-
-        if (!LabOptions_Tech[OPTTECH_UNREACTABLE].option_val) {
-            if (in_tumble_anim(cpu_data->state_id))
-                teching &= cpu_data->TM.state_frame > 15;
-        }
-
-        if (teching) {
+        if (eventData->cpu_tech_lockout == 0) {
             // input tech
             cpu_data->input.timer_LR = sincePress;
             cpu_data->input.since_rapid_lr = since2Press;
@@ -6132,8 +6133,6 @@ void Event_Think(GOBJ *event)
 
     if (eventData->cpu_tech_lockout != 0)
         eventData->cpu_tech_lockout--;
-
-    //OSReport("lockout: %i\n", eventData->cpu_tech_lockout);
 
     // Disable the D-pad up button according to the OPTGEN_TAUNT value
     if (LabOptions_General[OPTGEN_TAUNT].option_val == 1)
