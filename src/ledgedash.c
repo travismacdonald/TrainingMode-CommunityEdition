@@ -397,7 +397,6 @@ void Ledgedash_HUDThink(LedgedashData *event_data, FighterData *hmn_data)
         if (hmn_data->hurt.intang_frames.ledge > 0)
         {
             event_data->was_successful = true;
-            SFX_Play(303);
             matanim = event_data->assets->hudmatanim[0];
             Text_SetText(text_galint, 0, "%df", hmn_data->hurt.intang_frames.ledge);
         }
@@ -512,6 +511,7 @@ void Ledgedash_ResetThink(LedgedashData *event_data, GOBJ *hmn)
         Fighter_PlaceOnLedge();
     } else if (event_data->action_state.is_actionable) {
         event_data->reset_timer = 60;
+        SFX_Play(303);
     } else {
         int state = hmn_data->state_id;
 
@@ -523,7 +523,8 @@ void Ledgedash_ResetThink(LedgedashData *event_data, GOBJ *hmn)
             && event_data->action_state.is_release
             && state != ASID_LANDING
             && state != ASID_LANDINGFALLSPECIAL
-            && state != ASID_REBIRTHWAIT;
+            && state != ASID_REBIRTHWAIT
+            && hmn_data->TM.state_frame >= 12;
 
         if (dead || missed_airdodge || ledge_action || aerial || non_landing_grounded) {
             event_data->reset_timer = 20;
