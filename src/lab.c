@@ -1401,13 +1401,11 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         int lockout_type = LabOptions_Tech[OPTTECH_LOCKOUT].option_val;
 
         if (lockout_type == TECHLOCKOUT_EARLIEST) {
-            int fall_frames = 0;
-            int prev_state = cpu_data->TM.state_prev[0];
-            if (in_tumble_anim(prev_state))
-                fall_frames = cpu_data->TM.state_prev_frames[0];
-
-            lockout = 40 - fall_frames;
+            // If we have passed the lockout window (cpu_tech_lockout <= 0),
+            // We can say the CPU could have teched right after the lockout ended.
+            lockout = 40 + eventData->cpu_tech_lockout;
             if (lockout < 20) lockout = 20;
+            if (lockout > 40) lockout = 40;
         } else {
             lockout = 40;
         }
@@ -2053,7 +2051,7 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
         }
         }
 
-        if (eventData->cpu_tech_lockout == 0) {
+        if (eventData->cpu_tech_lockout <= 0) {
             // input tech
             cpu_data->input.timer_LR = sincePress;
             cpu_data->input.since_rapid_lr = since2Press;
@@ -6131,8 +6129,8 @@ void Event_Think(GOBJ *event)
     FighterData *cpu_data = cpu->userdata;
     HSD_Pad *pad = PadGet(hmn_data->pad_index, PADGET_ENGINE);
 
-    if (eventData->cpu_tech_lockout != 0)
-        eventData->cpu_tech_lockout--;
+    // We allow negative values to track how long we have not been in lockout for.
+    eventData->cpu_tech_lockout--;
 
     // Disable the D-pad up button according to the OPTGEN_TAUNT value
     if (LabOptions_General[OPTGEN_TAUNT].option_val == 1)

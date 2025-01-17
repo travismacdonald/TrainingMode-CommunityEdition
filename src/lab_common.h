@@ -202,7 +202,7 @@ typedef struct LabData
     // Aitch: This counter needs to be manually set. We can't use the baked in ssbm timer, because
     // It'll mess with internal ssbm stuff probably. If the timer is not zero, then no tech.stuff
     // This is set when hit in tumble.
-    u8 cpu_tech_lockout;
+    int cpu_tech_lockout;
 
     // We need a place to store the current playback frame when the cpu is set to use a slot as a counter action.
     u16 counter_slot_frame;
