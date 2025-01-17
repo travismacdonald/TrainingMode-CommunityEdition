@@ -178,6 +178,20 @@ void Lab_ChangeOverlays(GOBJ *menu_gobj, int value) {
     }
 }
 
+void Lab_ChangeOSDs(GOBJ *menu_gobj, int value) {
+    Memcard *memcard = R13_PTR(MEMCARD);
+
+    int newValue;
+
+    if (value == 1) {
+        newValue = memcard->TM_OSDEnabled | (1 << 0); //replace 0 with OSD bit
+    } else {
+        newValue = memcard->TM_OSDEnabled & ~(1 << 0);
+    }
+
+    memcard->TM_OSDEnabled = newValue;
+}
+
 void Lab_ChangePlayerPercent(GOBJ *menu_gobj, int value)
 {
     GOBJ *fighter = Fighter_GetGObj(0);
@@ -5776,6 +5790,19 @@ void Event_Init(GOBJ *gobj)
             LabOptions_OverlaysCPU[save_cpu.group].option_val = save_cpu.overlay;
     }
 
+    // travismd osd memcard here
+
+    OSReport("foo");
+    int enabledOSDs = memcard->TM_OSDEnabled;
+    OSReport("%d", enabledOSDs);
+
+    int wd_enabled = (enabledOSDs & ( 1 << 0 )) >> 0;
+    OSReport("wd enabled: ");
+
+    LabOptions_OSDs[OPTOSD_WAVEDASH].option_val = enabledOSDs & 1 == 1;
+    
+    
+
     // stage options
     EventMenu *stage_menu = stage_menus[Stage_GetExternalID()];
     if (stage_menu != NULL) {
@@ -6508,4 +6535,19 @@ static bool check_has_jump(GOBJ *g) {
     int jumps_used = data->jump.jumps_used;
 
     return jumps_used < max_jumps;
+}
+
+void Lab_ChangeWavedashOSD(GOBJ *menu_gobj, int value) { rebound_tech_chances(LabOptions_Tech, tech_option_menu_lookup, 0); }
+
+static void change_OSD(EventOption OSD_menu[4], int menu_lookup[], int slot_idx_changed) {
+    u16 *chances[4];
+    int enabled_slots = 0;
+
+    for (int i = 0; i < 4; i++) {
+        int osd_menu_idx = menu_lookup[i];
+        chances[enabled_slots] = &OSD_menu[osd_menu_idx].option_val;
+        enabled_slots++;
+    }
+
+    rebound_chances(chances, 4, slot_idx_changed);
 }

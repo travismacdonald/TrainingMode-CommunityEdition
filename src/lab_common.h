@@ -377,6 +377,7 @@ void Button_Think(GOBJ *button_gobj);
 void Lab_CustomOSDsThink(void);
 void Lab_RemoveCustomOSD(GOBJ *menu_gobj);
 void Lab_AddCustomOSD(GOBJ *menu_gobj);
+void Lab_ChangeOSDs(GOBJ *menu_gobj, int value);
 void Lab_ChangeStadiumTransformation(GOBJ *menu_gobj, int value);
 void Lab_ChangeInputDisplay(GOBJ *menu_gobj, int value);
 void Lab_ChangeOverlays(GOBJ *menu_gobj, int value);
@@ -462,6 +463,7 @@ int Export_SelCardThink(GOBJ *export_gobj);
 int Export_Compress(u8 *dest, u8 *source, u32 size);
 void Lab_Exit(int value);
 void InfoDisplay_Update(GOBJ *menu_gobj, EventOption menu[], GOBJ *fighter, GOBJ *below);
+void Lab_ChangeWavedashOSD(GOBJ *menu_gobj, int value);
 
 // info display
 #define GXPRI_INFDISP GXPRI_MENUMODEL - 2

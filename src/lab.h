@@ -14,6 +14,7 @@ static EventMenu LabMenu_Record;
 static EventMenu LabMenu_Tech;
 static EventMenu LabMenu_Stage_FOD;
 static EventMenu LabMenu_CustomOSDs;
+static EventMenu LabMenu_OSDs;
 
 #define AUTORESTORE_DELAY 20
 #define INTANG_COLANIM 10
@@ -844,6 +845,7 @@ enum gen_option
     OPTGEN_STALE,
     OPTGEN_TAUNT,
     OPTGEN_CUSTOM_OSD,
+    OPTGEN_OSDS,
 
     OPTGEN_COUNT
 };
@@ -999,6 +1001,12 @@ static EventOption LabOptions_General[OPTGEN_COUNT] = {
         .menu = &LabMenu_CustomOSDs,
         .option_name = "Custom OSDs",
         .desc = "Set up a display for any action state.",
+    },
+    {
+        .option_kind = OPTKIND_MENU,
+        .menu = &LabMenu_OSDs,
+        .option_name = "OSD Menu",
+        .desc = "Enable/disable OSDs",
     },
 };
 static EventMenu LabMenu_General = {
@@ -1306,6 +1314,7 @@ enum custom_osds_option
     OPTCUSTOMOSD_MAX_COUNT = OPTCUSTOMOSD_FIRST_CUSTOM + OPTCUSTOMOSD_MAX_ADDED,
 };
 
+
 static EventOption LabOptions_CustomOSDs[OPTCUSTOMOSD_MAX_COUNT] = {
     {
         .option_kind = OPTKIND_FUNC,
@@ -1327,6 +1336,43 @@ static EventMenu LabMenu_CustomOSDs = {
     .name = "Custom OSDs",
     .option_num = OPTCUSTOMOSD_MAX_COUNT,
     .options = &LabOptions_CustomOSDs,
+};
+
+// OSDS MENU --------------------------------------------------------------
+
+enum osds_option
+{
+    OPTOSD_LCANCEL,
+    OPTOSD_WAVEDASH,
+
+    OPTOSD_MAX,
+};
+
+static char *LabValues_OSDs[] = {"Off", "On"};
+
+static EventOption LabOptions_OSDs[OPTOSD_MAX] = {
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_OSDs) / 4,
+        .option_name = "L-Cancel",
+        .desc = "L cancel desc",
+        .option_values = LabValues_OSDs,
+        .onOptionChange = Lab_ChangeOSDs,
+    },
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_OSDs) / 4,
+        .option_name = "Wavedash",
+        .desc = "WD desc",
+        .option_values = LabValues_OSDs,
+        .onOptionChange = Lab_ChangeOSDs,
+    },
+};
+
+static EventMenu LabMenu_OSDs = {
+    .name = "OSDs",
+    .option_num = OPTOSD_MAX,
+    .options = &LabOptions_OSDs,
 };
 
 // CPU MENU --------------------------------------------------------------
