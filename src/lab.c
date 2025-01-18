@@ -1183,26 +1183,27 @@ int CPUAction_CheckASID(GOBJ *cpu, int asid_kind)
     }
 }
 
-int CPU_IsThrown(GOBJ *cpu, GOBJ *hmn) {
-    FighterData *cpu_data = cpu->userdata;
-    FighterData *hmn_data = hmn->userdata;
+int IsThrown(GOBJ *fighter) {
+    FighterData *data = fighter->userdata;
 
-    int is_thrown = 0;
-    int cpu_state = cpu_data->state_id;
-    int hmn_kind = hmn_data->kind;
+    int state = data->state_id;
 
-    // hardcode DK cargo throw
-    if (hmn_kind == 3 && (cpu_state == ASID_THROWNF || cpu_state == ASID_THROWNFF)) return 0;
+    GOBJ *attacker = data->grab.attacker;
+    if (attacker) {
+        FighterData *attacker_data = attacker->userdata;
+        int attacker_kind = attacker_data->kind;
 
-    if (ASID_THROWNF <= cpu_state && cpu_state <= ASID_THROWNLW)   return 1;
-    if (ASID_THROWNFF <= cpu_state && cpu_state <= ASID_THROWNFLW) return 1;
-    if (cpu_state == ASID_CAPTURECAPTAIN)                          return 1;
-    if (cpu_state == ASID_THROWNKOOPAF)                            return 1;
-    if (cpu_state == ASID_THROWNKOOPAB)                            return 1;
-    if (cpu_state == ASID_THROWNKOOPAAIRF)                         return 1;
-    if (cpu_state == ASID_THROWNKOOPAAIRB)                         return 1;
+        // hardcode DK cargo throw
+        if (attacker_kind == FTKIND_DK && (state == ASID_THROWNF || state == ASID_THROWNFF)) return 0;
+    }
 
-    return 0;
+    return (ASID_THROWNF <= state && state <= ASID_THROWNLW)
+        || (ASID_THROWNFF <= state && state <= ASID_THROWNFLW)
+        || state == ASID_CAPTURECAPTAIN
+        || state == ASID_THROWNKOOPAF
+        || state == ASID_THROWNKOOPAB
+        || state == ASID_THROWNKOOPAAIRF
+        || state == ASID_THROWNKOOPAAIRB;
 }
 
 int CPU_IsGrabbed(GOBJ *cpu, GOBJ *hmn)
@@ -1388,7 +1389,7 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
     }
 
     // if first throw frame, advance hitnum
-    int is_thrown = CPU_IsThrown(cpu, hmn);
+    int is_thrown = IsThrown(cpu);
     if (is_thrown == 1 && eventData->cpu_isthrown == 0)
         eventData->cpu_hitnum++;
     eventData->cpu_isthrown = is_thrown;
@@ -2471,7 +2472,7 @@ void DIDraw_Update()
             DIDraw *didraw = &didraws[ply];
 
             // if in hitlag and hitstun simulate and update trajectory
-            if ((fighter_data->flags.hitlag == 1) && (fighter_data->flags.hitstun == 1))
+            if (fighter_data->flags.hitstun == 1)
             {
                 // free old
                 if (didraw->vertices[ply] != 0)
@@ -2518,57 +2519,59 @@ void DIDraw_Update()
                 // get fighter constants
                 ftCommonData *ftCmDt = R13_PTR(PLCO_FTCOMMON);
 
-                // Calculate ASDI
-                float asdi_mag = pow(ftCmDt->asdi_mag, 2);
-                float asdi_units = ftCmDt->asdi_units;
-                // CStick has priority, check if mag > 0.7
-                if (pow(cstickX, 2) + (pow(cstickY, 2)) >= asdi_mag)
-                {
-                    asdi.X = cstickX * asdi_units;
-                    asdi.Y = cstickY * asdi_units;
-                }
-                // now check if lstick mag > 0.7
-                else if (pow(lstickX, 2) + (pow(lstickY, 2)) >= asdi_mag)
-                {
-                    asdi.X = lstickX * asdi_units;
-                    asdi.Y = lstickY * asdi_units;
-                }
-                // Remember original ASDI
-                asdi_orig = asdi;
-
-                // Calculate TDI
-                if ((lstickX != 0) || (lstickY != 0)) // exclude input vector 0,0
-                {
-                    // kb vector must exceed 0.00001
-                    float kb_mult = (kb.Y * kb.Y) + (kb.X * kb.X);
-                    if (kb_mult >= 0.00001)
+                if (fighter_data->flags.hitlag) {
+                    // Calculate ASDI
+                    float asdi_mag = pow(ftCmDt->asdi_mag, 2);
+                    float asdi_units = ftCmDt->asdi_units;
+                    // CStick has priority, check if mag > 0.7
+                    if (pow(cstickX, 2) + (pow(cstickY, 2)) >= asdi_mag)
                     {
+                        asdi.X = cstickX * asdi_units;
+                        asdi.Y = cstickY * asdi_units;
+                    }
+                    // now check if lstick mag > 0.7
+                    else if (pow(lstickX, 2) + (pow(lstickY, 2)) >= asdi_mag)
+                    {
+                        asdi.X = lstickX * asdi_units;
+                        asdi.Y = lstickY * asdi_units;
+                    }
+                    // Remember original ASDI
+                    asdi_orig = asdi;
 
-                        // get values
-                        float tdi_input = pow((-1 * kb.X * lstickY) + (lstickX * kb.Y), 2) / kb_mult;
-                        float max_angle = ftCmDt->tdi_maxAngle * M_1DEGREE;
-                        float kb_mag = sqrtf(kb_mult);
+                    // Calculate TDI
+                    if ((lstickX != 0) || (lstickY != 0)) // exclude input vector 0,0
+                    {
+                        // kb vector must exceed 0.00001
+                        float kb_mult = (kb.Y * kb.Y) + (kb.X * kb.X);
+                        if (kb_mult >= 0.00001)
+                        {
 
-                        // check to negate
-                        Vec3 inputs = {lstickX, lstickY, 0};
-                        Vec3 result;
-                        VECCrossProduct(&kb, &inputs, &result);
-                        if (result.Z < 0)
-                            tdi_input *= -1;
+                            // get values
+                            float tdi_input = pow((-1 * kb.X * lstickY) + (lstickX * kb.Y), 2) / kb_mult;
+                            float max_angle = ftCmDt->tdi_maxAngle * M_1DEGREE;
+                            float kb_mag = sqrtf(kb_mult);
 
-                        // apply TDI
-                        kb_angle = (max_angle * tdi_input) + kb_angle;
+                            // check to negate
+                            Vec3 inputs = {lstickX, lstickY, 0};
+                            Vec3 result;
+                            VECCrossProduct(&kb, &inputs, &result);
+                            if (result.Z < 0)
+                                tdi_input *= -1;
 
-                        // New X KB
-                        kb.X = cos(kb_angle) * kb_mag;
-                        // New Y KB
-                        kb.Y = sin(kb_angle) * kb_mag;
+                            // apply TDI
+                            kb_angle = (max_angle * tdi_input) + kb_angle;
+
+                            // New X KB
+                            kb.X = cos(kb_angle) * kb_mag;
+                            // New Y KB
+                            kb.Y = sin(kb_angle) * kb_mag;
+                        }
                     }
                 }
 
                 //simulation variables
                 int air_state = fighter_data->phys.air_state;
-                float gravity = 0;
+                float y_vel = fighter_data->phys.self_vel.Y;
                 Vec3 pos = fighter_data->phys.pos;
                 ftCommonData *ftCommon = R13_PTR(-0x514C);
                 float decay = ftCommon->kb_frameDecay;
@@ -2623,11 +2626,11 @@ void DIDraw_Update()
                     asdi.X = 0; // zero out ASDI
                     asdi.Y = 0; // zero out ASDI
 
-                    // update gravity
-                    gravity -= fighter_data->attr.gravity;
+                    // update y_vel
+                    y_vel -= fighter_data->attr.gravity;
                     float terminal_velocity = fighter_data->attr.terminal_velocity * -1;
-                    if (gravity < terminal_velocity)
-                        gravity = terminal_velocity;
+                    if (y_vel < terminal_velocity)
+                        y_vel = terminal_velocity;
                     // decay KB vector
                     float angle = atan2(kb.Y, kb.X);
                     kb.X = kb.X - (cos(angle) * decay);
@@ -2635,8 +2638,8 @@ void DIDraw_Update()
 
                     // add knockback
                     VECAdd(&pos, &kb, &pos);
-                    // apply gravity
-                    pos.Y += gravity;
+                    // apply y_vel
+                    pos.Y += y_vel;
 
                     // ecb prev = ecb curr
                     ecb.topN_Prev = ecb.topN_Curr;
@@ -2693,8 +2696,8 @@ void DIDraw_Update()
                                 kb.X *= ecb.ground_slope.Y;
                                 kb.Y *= ecb.ground_slope.X;
 
-                                // zero out gravity
-                                gravity = 0;
+                                // zero out y_vel
+                                y_vel = 0;
 
                                 // zero out Y KB
                                 kb.Y = 0;
@@ -2707,7 +2710,7 @@ void DIDraw_Update()
                             {
                                 // combine KB and Gravity
                                 Vec3 kb_temp = kb;
-                                Vec3 vel_temp = {0, gravity, 0};
+                                Vec3 vel_temp = {0, y_vel, 0};
                                 VECAdd(&vel_temp, &kb_temp, &vel_temp);
 
                                 // apply slope
@@ -2737,7 +2740,7 @@ void DIDraw_Update()
 
                                 // combine KB and Gravity
                                 Vec3 kb_temp = kb;
-                                Vec3 vel_temp = {0, gravity, 0};
+                                Vec3 vel_temp = {0, y_vel, 0};
                                 VECAdd(&vel_temp, &kb_temp, &vel_temp);
 
                                 // apply slope
@@ -2747,8 +2750,8 @@ void DIDraw_Update()
                                 kb.X = vel_temp.X * ftCmDt->kb_bounceDecay;
                                 kb.Y = vel_temp.Y * ftCmDt->kb_bounceDecay;
 
-                                // zero gravity
-                                gravity = 0;
+                                // zero y_vel
+                                y_vel = 0;
                             }
                         }
 
