@@ -1710,7 +1710,7 @@ enum tech_lockout {
     TECHLOCKOUT_LATEST,
 };
 
-static char *LabOptions_TechTrap[] = {"None", "Earliest Tech Input", "Latest Tech Input"};
+static char *LabOptions_TechTrap[] = {"Off", "Earliest Tech Input", "Latest Tech Input"};
 static char *LabOptions_TechLockout[] = {"Earliest Tech Input", "Latest Tech Input"};
 
 static int tech_frame_distinguishable[27] = {
@@ -1805,7 +1805,7 @@ static EventOption LabOptions_Tech[OPTTECH_COUNT] = {
         .option_kind = OPTKIND_STRING,
         .value_num = sizeof(LabOptions_TechLockout)/sizeof(*LabOptions_TechLockout),
         .option_name = "Tech Lockout",
-        .desc = "Prevent the CPU from teching in quick\nsuccession.",
+        .desc = "Prevent the CPU from teching in succession.\nEarliest - as little lockout as possible\nLatest - as much lockout as possible.",
         .option_values = LabOptions_TechLockout,
     },
     {
