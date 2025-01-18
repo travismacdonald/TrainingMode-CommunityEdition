@@ -181,12 +181,18 @@ void Lab_ChangeOverlays(GOBJ *menu_gobj, int value) {
 void Lab_ChangeOSDs(GOBJ *menu_gobj, int value) {
     Memcard *memcard = R13_PTR(MEMCARD);
 
-    int newValue;
+    int newValue = memcard->TM_OSDEnabled;
 
-    if (value == 1) {
-        newValue = memcard->TM_OSDEnabled | (1 << 0); //replace 0 with OSD bit
-    } else {
-        newValue = memcard->TM_OSDEnabled & ~(1 << 0);
+    for (int i = 0; i < OPTOSD_MAX; i++) {
+        int bitValue = osd_memory_bit_position[i];
+
+        if (LabOptions_OSDs[i].option_val == 1) {
+            // Set OSD bit to 1
+            newValue = newValue | (1 << bitValue);
+        } else {
+            // Set OSD bit to 0
+            newValue = newValue & ~(1 << bitValue);
+        }
     }
 
     memcard->TM_OSDEnabled = newValue;
@@ -5790,19 +5796,13 @@ void Event_Init(GOBJ *gobj)
             LabOptions_OverlaysCPU[save_cpu.group].option_val = save_cpu.overlay;
     }
 
-    // travismd osd memcard here
-
-    OSReport("foo");
+    // Read saved OSD values
     int enabledOSDs = memcard->TM_OSDEnabled;
-    OSReport("%d", enabledOSDs);
-
-    int wd_enabled = (enabledOSDs & ( 1 << 0 )) >> 0;
-    OSReport("wd enabled: ");
-
-    LabOptions_OSDs[OPTOSD_WAVEDASH].option_val = enabledOSDs & 1 == 1;
+    for (int i = 0; i < OPTOSD_MAX; i++) {
+        int bitPosition = osd_memory_bit_position[i];
+        LabOptions_OSDs[i].option_val = (enabledOSDs & (1 << bitPosition)) == 1;
+    }
     
-    
-
     // stage options
     EventMenu *stage_menu = stage_menus[Stage_GetExternalID()];
     if (stage_menu != NULL) {

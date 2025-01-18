@@ -1340,17 +1340,50 @@ static EventMenu LabMenu_CustomOSDs = {
 
 // OSDS MENU --------------------------------------------------------------
 
-enum osds_option
+static enum osds_option
 {
     OPTOSD_LCANCEL,
     OPTOSD_WAVEDASH,
+    OPTOSD_ACT_OO_SHIELD,
 
     OPTOSD_MAX,
+};
+
+// Bit position that corresponds to each OSD. These values should match
+// the OSD IDs from "training-mode/Globals.s"
+static int osd_memory_bit_position[27] = {
+    0,  // Wavedash
+    1,  // L-Cancel
+    3,  // Act OoS Frame
+    5,  // Dashback
+    8,  // Fighter-specific
+    9,  // Powershield Frame
+    10, // SDI Inputs
+    12, // Lockout Timers
+    14, // Boost Grab
+    16, // Act OoLag
+    18, // Act OoAirborne
+    19, // Jump Cancel Timing
+    20, // Fastfall Timing
+    21, // Frame Advantage
+    22, // Combo Counter
+    24, // Grab Breakout
+    26, // Ledgedash Info
+    28, // Act OoHitstun
+    // 9,  // Item Throw Interrupts
 };
 
 static char *LabValues_OSDs[] = {"Off", "On"};
 
 static EventOption LabOptions_OSDs[OPTOSD_MAX] = {
+    {
+        .option_kind = OPTKIND_STRING,
+        .value_num = sizeof(LabValues_OSDs) / 4,
+        .option_name = "Wavedash",
+        .desc = "WD desc",
+        .option_values = LabValues_OSDs,
+        .onOptionChange = Lab_ChangeOSDs,
+    },
     {
         .option_kind = OPTKIND_STRING,
         .value_num = sizeof(LabValues_OSDs) / 4,
@@ -1362,8 +1395,8 @@ static EventOption LabOptions_OSDs[OPTOSD_MAX] = {
     {
         .option_kind = OPTKIND_STRING,
         .value_num = sizeof(LabValues_OSDs) / 4,
-        .option_name = "Wavedash",
-        .desc = "WD desc",
+        .option_name = "Act Oo Shield Frame",
+        .desc = "todo",
         .option_values = LabValues_OSDs,
         .onOptionChange = Lab_ChangeOSDs,
     },
