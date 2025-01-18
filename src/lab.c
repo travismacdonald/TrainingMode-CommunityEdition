@@ -422,9 +422,6 @@ void Lab_ChangeHitDisplay(GOBJ *menu_gobj, int value)
         this_fighter = this_fighter->next;
     }
 
-    GOBJ *fighter = Fighter_GetGObj(0);
-    FighterData *fighter_data = fighter->userdata;
-
     return;
 }
 void Lab_ChangeEnvCollDisplay(GOBJ *menu_gobj, int value)
@@ -6133,7 +6130,10 @@ void Event_Think(GOBJ *event)
     HSD_Pad *pad = PadGet(hmn_data->pad_index, PADGET_ENGINE);
 
     // We allow negative values to track how long we have not been in lockout for.
-    eventData->cpu_tech_lockout--;
+    // If the CPU is in hitlag, do not finish the lockout. This prevents insta techs
+    // when the tech windows is the 1f between hitlag and knockdown.
+    if (cpu_data->flags.hitlag == 0 || eventData->cpu_tech_lockout > 2)
+        eventData->cpu_tech_lockout--;
 
     // Disable the D-pad up button according to the OPTGEN_TAUNT value
     if (LabOptions_General[OPTGEN_TAUNT].option_val == 1)
