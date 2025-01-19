@@ -5799,6 +5799,8 @@ void Event_Init(GOBJ *gobj)
     // Read saved OSD values
     int enabledOSDs = memcard->TM_OSDEnabled;
     for (int i = 0; i < OPTOSD_MAX; i++) {
+        bp();
+        OSReport("%d", enabledOSDs);
         int bitPosition = osd_memory_bit_position[i];
         LabOptions_OSDs[i].option_val = (enabledOSDs & (1 << bitPosition)) == 1;
     }
