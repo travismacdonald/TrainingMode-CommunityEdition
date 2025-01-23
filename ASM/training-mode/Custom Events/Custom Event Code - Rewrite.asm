@@ -2270,6 +2270,10 @@ ReversalDecideSmashAttack:
     beq ReversalDTilt
     cmpwi r3, 0xA
     beq ReversalUTilt
+    cmpwi r3, 0xB
+    beq ReversalGetupAttackStomach
+    cmpwi r3, 0xC
+    beq ReversalGetupAttackBack
 
 ReversalRandomSmashAttack:
     li r3, 3
@@ -2374,6 +2378,30 @@ ReversalDTilt:
     li r3, 0x100
     stw r3, 0x1A88(r29)
     # Set Attack as ended
+    li r3, 0x1
+    stb r3, AerialThinkStruct(r31)
+    b ReversalCheckToReset
+
+ReversalGetupAttackStomach:
+    # Enter DownWait
+    mr r3, P2GObj
+    branchl r12, 0x80097e8c
+
+    li r3, 0x100
+    stw r3, 0x1A88(r29)
+    li r3, 0x1
+    stb r3, AerialThinkStruct(r31)
+    b ReversalCheckToReset
+
+ReversalGetupAttackBack:
+    # Hack: set state id as DownBoundU to force back getup attack
+    li r3, 183
+    stw r3, 0x10(P2Data)
+
+    mr r3, P2GObj
+    branchl r12, 0x80097e8c
+    li r3, 0x100
+    stw r3, 0x1A88(r29)
     li r3, 0x1
     stb r3, AerialThinkStruct(r31)
     b ReversalCheckToReset
@@ -2607,7 +2635,7 @@ ReversalWindowInfo:
     blrl
 # amount of options, amount of options in each window
 
-    .long 0x020A0101                                    # 3 window, Smash Attack has 11 options, Facing Direction Has 2
+    .long 0x020C0101                                    # 3 window, Smash Attack has 13 options, Facing Direction Has 2
 
 ####################################################
 
@@ -2675,6 +2703,14 @@ ReversalWindowText:
     # Option 11 = UTilt
     .long 0x5554696c
     .long 0x74000000
+
+    # Option 12 - Getup Attack (Stomach)
+    .ascii "Getup Attack (Stomach)"
+    .align 2
+
+    # Option 13 - Getup Attack (Back)
+    .ascii "Getup Attack (Back)"
+    .align 2
 
 #########$$$#############
 ## P1 Facing Direction ##

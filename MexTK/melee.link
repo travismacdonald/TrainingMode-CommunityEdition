@@ -239,6 +239,7 @@
 800969D8:Fighter_EnterSpecialFallLoseJumps
 800C3BE8:Fighter_EnterAirCatch
 8009794C:Fighter_EnterDownBound
+80097e8c:Fighter_EnterDownWait
 800CBBC0:Fighter_EnterJumpAerial
 800D3BC8:Fighter_EnterDeadDown
 800D3E40:Fighter_EnterDeadUp

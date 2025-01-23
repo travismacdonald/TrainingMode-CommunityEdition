@@ -2401,7 +2401,8 @@ struct FighterData
     int x2084;                            // 0x2084
     u16 atk_instance;                     // 0x2088, Contains an ID unique to the current move instance. e.g, if two dairs are done back to back, this ID will differ to tell them apart from each other. It is stored to 0x18EC of the victim upon colliding with someone.
     int x208c;                            // 0x208c
-    int x2090;                            // 0x2090
+    u16 combo_count;                      // 0x2090
+    u16 x2092;                            // 0x2092
     GOBJ *victim;                         // 0x2094
     u16 x2098;                            // 0x2098
     u16 is_hide_player_indicator;         // 0x209a
@@ -3192,6 +3193,7 @@ void Fighter_EnterSpecialLanding(GOBJ *fighter, int unk, float state_length);
 void Fighter_EnterSleep(GOBJ *fighter, int ms);
 void Fighter_EnterEntry(GOBJ *fighter);
 void Fighter_EnterDownBound(GOBJ *f);
+void Fighter_EnterDownWait(GOBJ *f);
 void Fighter_EnterJumpAerial(GOBJ *f);
 void Fighter_EnterDeadDown(GOBJ *f);
 void Fighter_EnterDeadUp(GOBJ *f);
