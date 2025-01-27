@@ -3638,7 +3638,7 @@ void Record_Think(GOBJ *rec_gobj)
     int loop_mode = LabOptions_Record[OPTREC_LOOP].option_val;
     int modes_allow_loop = hmn_mode != RECMODE_HMN_RECORD && cpu_mode != RECMODE_CPU_CONTROL && cpu_mode != RECMODE_CPU_RECORD;
     int has_inputs = input_num != 0;
-    int past_last_input = Record_PastLastInput(1);
+    int past_last_input = Record_GetCurrFrame() >= input_num;
     if (loop_mode & modes_allow_loop & has_inputs & past_last_input)
     {
         event_vars->game_timer = rec_state->frame;
