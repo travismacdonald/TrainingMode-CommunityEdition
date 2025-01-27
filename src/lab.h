@@ -2078,6 +2078,7 @@ enum rec_option
    OPTREC_LOOP,
    OPTREC_AUTORESTORE,
    OPTREC_RESAVE,
+   OPTREC_PRUNE,
    OPTREC_DELETE,
    OPTREC_HMNCHANCE,
    OPTREC_CPUCHANCE,
@@ -2196,8 +2197,14 @@ static EventOption LabOptions_Record[OPTREC_COUNT] = {
     {
         .option_kind = OPTKIND_FUNC,
         .option_name = "Re-Save Positions",
-        .desc = "Save the current position, without\nremoving recorded inputs.",
+        .desc = "Save the current position, keeping\nall recorded inputs.",
         .onOptionSelect = Record_ResaveState,
+    },
+    {
+        .option_kind = OPTKIND_FUNC,
+        .option_name = "Prune Positions",
+        .desc = "Save the current position, keeping\nrecorded inputs from this point onwards.",
+        .onOptionSelect = Record_PruneState,
     },
     {
         .option_kind = OPTKIND_FUNC,

@@ -3828,6 +3828,27 @@ void Record_InitState(GOBJ *menu_gobj)
 }
 void Record_ResaveState(GOBJ *menu_gobj)
 {
+    int prev_savestate_frame = rec_state->frame;
+    Record_PruneState(menu_gobj);
+    int new_savestate_frame = rec_state->frame;
+    int savestate_diff = new_savestate_frame - prev_savestate_frame;
+
+    // change start frame
+    for (int ply = 0; ply < 2; ++ply) {
+        for (int slot = 0; slot < REC_SLOTS; ++slot) {
+            RecInputData *input_data;
+            if (ply == 0)
+                input_data = rec_data.hmn_inputs[slot];
+            else
+                input_data = rec_data.cpu_inputs[slot];
+
+            if (input_data->start_frame != -1)
+                input_data->start_frame += savestate_diff;
+        }
+    }
+}
+void Record_PruneState(GOBJ *menu_gobj)
+{
     stc_playback_cancelled_hmn = false;
     stc_playback_cancelled_cpu = false;
     if (event_vars->Savestate_Save(rec_state))

@@ -432,6 +432,7 @@ void Record_MemcardSave(GOBJ *menu_gobj);
 void Record_MemcardLoad(int slot, int file_no);
 void Record_InitState(GOBJ *menu_gobj);
 void Record_ResaveState(GOBJ *menu_gobj);
+void Record_PruneState(GOBJ *menu_gobj);
 void Record_DeleteState(GOBJ *menu_gobj);
 void Record_RestoreState(GOBJ *menu_gobj);
 void Record_CObjThink(GOBJ *gobj);
