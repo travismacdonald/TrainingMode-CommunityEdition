@@ -2090,7 +2090,9 @@ enum rec_playback_counter
 {
     PLAYBACKCOUNTER_OFF,
     PLAYBACKCOUNTER_ENDS,
-    PLAYBACKCOUNTER_ON_HIT,
+    PLAYBACKCOUNTER_ON_HIT_CPU,
+    PLAYBACKCOUNTER_ON_HIT_HMN,
+    PLAYBACKCOUNTER_ON_HIT_EITHER,
 };
 
 enum rec_mirror
@@ -2106,7 +2108,7 @@ static char *LabValues_RecordSlot[] = {"Random", "Slot 1", "Slot 2", "Slot 3", "
 static char *LabValues_HMNRecordMode[] = {"Off", "Record", "Playback"};
 static char *LabValues_CPURecordMode[] = {"Off", "Control", "Record", "Playback"};
 static char *LabValues_AutoRestore[] = {"Off", "Playback Ends", "CPU Counters"};
-static char *LabValues_PlaybackCounterActions[] = {"Off", "After Playback Ends", "On Hit"};
+static char *LabValues_PlaybackCounterActions[] = {"Off", "After Playback Ends", "On CPU Hit", "On HMN Hit", "On Any Hit"};
 static char *LabOptions_ChangeMirroredPlayback[] = {"Off", "On", "Random"};
 
 static const EventOption Record_Save = {

@@ -6028,8 +6028,14 @@ void Event_Think_LabState_Normal(GOBJ *event) {
         case PLAYBACKCOUNTER_ENDS:
             stc_playback_cancelled_cpu |= Record_PastLastInput(1);
             break;
-        case PLAYBACKCOUNTER_ON_HIT:
-            stc_playback_cancelled_cpu |= cpu_data->flags.hitlag;
+        case PLAYBACKCOUNTER_ON_HIT_CPU:
+            stc_playback_cancelled_cpu |= cpu_data->flags.hitlag_victim;
+            break;
+        case PLAYBACKCOUNTER_ON_HIT_HMN:
+            stc_playback_cancelled_cpu |= hmn_data->flags.hitlag_victim;
+            break;
+        case PLAYBACKCOUNTER_ON_HIT_EITHER:
+            stc_playback_cancelled_cpu |= cpu_data->flags.hitlag_victim || hmn_data->flags.hitlag_victim;
             break;
         }
 

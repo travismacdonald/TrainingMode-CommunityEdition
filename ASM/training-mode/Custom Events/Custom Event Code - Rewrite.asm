@@ -2705,11 +2705,11 @@ ReversalWindowText:
     .long 0x74000000
 
     # Option 12 - Getup Attack (Stomach)
-    .ascii "Getup Attack (Stomach)"
+    .string "Getup Attack (Stomach)"
     .align 2
 
     # Option 13 - Getup Attack (Back)
-    .ascii "Getup Attack (Back)"
+    .string "Getup Attack (Back)"
     .align 2
 
 #########$$$#############
