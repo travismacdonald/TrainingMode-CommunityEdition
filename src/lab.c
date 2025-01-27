@@ -195,6 +195,8 @@ void Lab_ChangeOSDs(GOBJ *menu_gobj, int value) {
         }
     }
 
+    OSReport("newValue: %d \n", newValue);
+
     memcard->TM_OSDEnabled = newValue;
 }
 
@@ -1442,6 +1444,7 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
     // check if being held in a grab
     if (CPU_IsGrabbed(cpu, hmn) == 1)
     {
+        OSReport("foo");
         eventData->cpu_state = CPUSTATE_GRABBED;
     }
     // check if being thrown
@@ -5796,13 +5799,21 @@ void Event_Init(GOBJ *gobj)
             LabOptions_OverlaysCPU[save_cpu.group].option_val = save_cpu.overlay;
     }
 
+    // travismd TODO
     // Read saved OSD values
+
+
+
     int enabledOSDs = memcard->TM_OSDEnabled;
+    OSReport("enabledOSDs: %d \n", enabledOSDs);
+
     for (int i = 0; i < OPTOSD_MAX; i++) {
-        bp();
-        OSReport("%d", enabledOSDs);
         int bitPosition = osd_memory_bit_position[i];
-        LabOptions_OSDs[i].option_val = (enabledOSDs & (1 << bitPosition)) == 1;
+        int isOSDEnabled = (enabledOSDs & (1 << bitPosition)) != 0;
+        LabOptions_OSDs[i].option_val = isOSDEnabled;
+
+        OSReport("bitPosition: %d, isEnabled: %d \n", bitPosition, isOSDEnabled);
+
     }
     
     // stage options
