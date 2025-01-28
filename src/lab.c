@@ -180,26 +180,23 @@ void Lab_ChangeOverlays(GOBJ *menu_gobj, int value) {
 
 void Lab_ChangeOSDs(GOBJ *menu_gobj, int value) {
     Memcard *memcard = R13_PTR(MEMCARD);
-
-    int newValue = memcard->TM_OSDEnabled;
+    int new_osds_value = memcard->TM_OSDEnabled;
 
     for (int i = 0; i < OPTOSD_MAX; i++) {
-        int bitValue = osd_memory_bit_position[i];
+        int bit_value = osd_memory_bit_position[i];
 
         if (LabOptions_OSDs[i].option_val == 1) {
             // Set OSD bit to 1
-            newValue = newValue | (1 << bitValue);
+            new_osds_value = new_osds_value | (1 << bit_value);
         } else {
             // Set OSD bit to 0
-            newValue = newValue & ~(1 << bitValue);
+            new_osds_value = new_osds_value & ~(1 << bit_value);
         }
     }
 
-    OSReport("newValue: %d \n", newValue);
-
-    memcard->TM_OSDEnabled = newValue;
-    
-    RTOC_INT(-0xDA8) = newValue;
+    memcard->TM_OSDEnabled = new_osds_value;
+    // Write OSD bitfield to backup address
+    RTOC_INT(-0xDA8) = new_osds_value;
 }
 
 void Lab_ChangePlayerPercent(GOBJ *menu_gobj, int value)
@@ -1446,7 +1443,6 @@ void CPUThink(GOBJ *event, GOBJ *hmn, GOBJ *cpu)
     // check if being held in a grab
     if (CPU_IsGrabbed(cpu, hmn) == 1)
     {
-        OSReport("foo");
         eventData->cpu_state = CPUSTATE_GRABBED;
     }
     // check if being thrown
@@ -5801,18 +5797,11 @@ void Event_Init(GOBJ *gobj)
             LabOptions_OverlaysCPU[save_cpu.group].option_val = save_cpu.overlay;
     }
 
-    int enabledOSDs = memcard->TM_OSDEnabled;
-    OSReport("enabledOSDs: %d \n", enabledOSDs);
-
-    bp();
-
+    int enabled_osds = memcard->TM_OSDEnabled;
     for (int i = 0; i < OPTOSD_MAX; i++) {
-        int bitPosition = osd_memory_bit_position[i];
-        int isOSDEnabled = (enabledOSDs & (1 << bitPosition)) != 0;
-        LabOptions_OSDs[i].option_val = isOSDEnabled;
-
-        OSReport("bitPosition: %d, isEnabled: %d \n", bitPosition, isOSDEnabled);
-
+        int osd_bit_position = osd_memory_bit_position[i];
+        int is_osd_enabled = (enabled_osds & (1 << osd_bit_position)) != 0;
+        LabOptions_OSDs[i].option_val = is_osd_enabled;
     }
     
     // stage options
@@ -6547,19 +6536,4 @@ static bool check_has_jump(GOBJ *g) {
     int jumps_used = data->jump.jumps_used;
 
     return jumps_used < max_jumps;
-}
-
-void Lab_ChangeWavedashOSD(GOBJ *menu_gobj, int value) { rebound_tech_chances(LabOptions_Tech, tech_option_menu_lookup, 0); }
-
-static void change_OSD(EventOption OSD_menu[4], int menu_lookup[], int slot_idx_changed) {
-    u16 *chances[4];
-    int enabled_slots = 0;
-
-    for (int i = 0; i < 4; i++) {
-        int osd_menu_idx = menu_lookup[i];
-        chances[enabled_slots] = &OSD_menu[osd_menu_idx].option_val;
-        enabled_slots++;
-    }
-
-    rebound_chances(chances, 4, slot_idx_changed);
 }
