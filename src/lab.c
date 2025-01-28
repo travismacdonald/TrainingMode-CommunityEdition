@@ -198,6 +198,8 @@ void Lab_ChangeOSDs(GOBJ *menu_gobj, int value) {
     OSReport("newValue: %d \n", newValue);
 
     memcard->TM_OSDEnabled = newValue;
+    
+    RTOC_INT(-0xDA8) = newValue;
 }
 
 void Lab_ChangePlayerPercent(GOBJ *menu_gobj, int value)
@@ -5799,13 +5801,10 @@ void Event_Init(GOBJ *gobj)
             LabOptions_OverlaysCPU[save_cpu.group].option_val = save_cpu.overlay;
     }
 
-    // travismd TODO
-    // Read saved OSD values
-
-
-
     int enabledOSDs = memcard->TM_OSDEnabled;
     OSReport("enabledOSDs: %d \n", enabledOSDs);
+
+    bp();
 
     for (int i = 0; i < OPTOSD_MAX; i++) {
         int bitPosition = osd_memory_bit_position[i];
