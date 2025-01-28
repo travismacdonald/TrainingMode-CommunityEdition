@@ -463,7 +463,6 @@ int Export_SelCardThink(GOBJ *export_gobj);
 int Export_Compress(u8 *dest, u8 *source, u32 size);
 void Lab_Exit(int value);
 void InfoDisplay_Update(GOBJ *menu_gobj, EventOption menu[], GOBJ *fighter, GOBJ *below);
-void Lab_ChangeWavedashOSD(GOBJ *menu_gobj, int value);
 
 // info display
 #define GXPRI_INFDISP GXPRI_MENUMODEL - 2
